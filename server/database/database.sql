@@ -5,7 +5,7 @@ CREATE TABLE role IF NOT EXISTS (
     name VARCHAR(15) NOT NULL UNIQUE
 );
 
-CREATE TABLE user IF NOT EXIST (
+CREATE TABLE user IF NOT EXISTS (
     id INT PRIMARY KEY CHECK (id > 0),
     role INT NOT NULL REFERENCES role(id),
     password VARCHAR(255) NOT NULL,
@@ -34,5 +34,5 @@ CREATE TABLE property IF NOT EXISTS (
     county VARCHAR(50) NOT NULL,
     postcode VARCHAR(10) NOT NULL,
     flat_number VARCHAR(10) NULL,
-    property_status INT NOT NULL REFERENCES property_status(id) DEFAULT 4,
+    property_status INT NOT NULL REFERENCES property_status(id) DEFAULT 4
 );
