@@ -1,6 +1,6 @@
 -- landlordproject;
 
-CREATE TABLE role IF NOT EXISTS (
+CREATE TABLE IF NOT EXISTS role (
     id INT PRIMARY KEY,
     name VARCHAR(15) NOT NULL UNIQUE
 );
