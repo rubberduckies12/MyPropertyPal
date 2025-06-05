@@ -99,3 +99,15 @@ router.post('/login', async (req, res) => {
 });
 
 module.exports = router;
+
+/*
+  --- LIBRARIES USED IN THIS FILE ---
+
+  express      - Web framework for Node.js, used to create the router and define API endpoints.
+  bcrypt       - Library for hashing and comparing passwords securely.
+  jsonwebtoken - Library for creating and verifying JWT tokens for authentication.
+  crypto       - Node.js built-in module for generating secure random tokens (used for email verification).
+  nodemailer   - Library for sending emails (used here to send verification emails).
+  pg           - PostgreSQL client for Node.js, used via the imported 'pool' object to interact with the database.
+*/
+
