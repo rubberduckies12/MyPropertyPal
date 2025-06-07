@@ -1,3 +1,4 @@
+/* Root layout */
 .landing-root {
   font-family: 'Segoe UI', Arial, sans-serif;
   background: #f6f8fa;
@@ -8,26 +9,44 @@
 
 /* Header */
 .landing-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 28px 40px 16px 40px;
-  background: #fff;
   border-bottom: 1px solid #e5e7eb;
 }
 .landing-logo { height: 38px; }
-.landing-login-btn {
+.landing-login-btn,
+.landing-cta-btn {
   background: #2563eb;
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 10px 28px;
+  padding: 12px 32px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
 }
-.landing-login-btn:hover { background: #1746a2; }
+.landing-login-btn:hover,
+.landing-cta-btn:hover {
+  background: #1746a2;
+}
+.landing-cta-btn {
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.04);
+  margin-top: 16px;
+}
+.landing-cta-subtext {
+  margin-top: 8px;
+  color: #2563eb;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
 
 /* Hero */
 .landing-hero {
@@ -35,6 +54,7 @@
   padding: 80px 20px 60px 20px;
   background: #fff;
   border-bottom: 1px solid #ececec;
+  margin-bottom: 32px;
 }
 .landing-hero h1 {
   font-size: 2.7rem;
@@ -50,37 +70,50 @@
   margin-left: auto;
   margin-right: auto;
 }
-.landing-cta-btn {
-  background: #2563eb;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 12px 32px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.04);
-  margin-top: 18px;
-}
-.landing-cta-btn:hover { background: #1746a2; }
 
 /* Section backgrounds and titles */
 .landing-features,
-.landing-pricing {
+.landing-pricing,
+.landing-about,
+.landing-why {
   background: #f7f8fa;
   padding: 64px 0 48px 0;
   text-align: center;
-  margin-bottom: 48px;
+  margin-bottom: 32px;
+  border-radius: 0;
+}
+.landing-about {
+  background: #fff;
+}
+.landing-why {
+  background: #fff;
+  padding: 48px 0 40px 0;
+  text-align: center;
+  margin-bottom: 32px;
   border-radius: 0;
 }
 .landing-features h2,
 .landing-pricing h2,
-.landing-about h2 {
+.landing-about h2,
+.landing-why h2 {
   font-size: 2rem;
-  margin-bottom: 36px;
+  margin-bottom: 32px;
   color: #1a237e;
   letter-spacing: 0.01em;
+}
+.landing-why p {
+  font-size: 1.15rem;
+  color: #444;
+  max-width: 950px;
+  margin: 0 auto 18px auto;
+  line-height: 1.7;
+  padding: 0 8px;
+}
+.landing-why p:last-child {
+  margin-bottom: 0;
+}
+.landing-pricing {
+  margin-bottom: 0;
 }
 
 /* Carousel containers */
@@ -91,7 +124,7 @@
   align-items: center;
   justify-content: center;
   gap: 24px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   flex-direction: row;
 }
 
@@ -114,7 +147,7 @@
   max-width: 320px;
   min-width: 220px;
   margin: 12px 0;
-  padding: 18px 6px;
+  padding: 16px 8px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   background: #f8fafc;
@@ -153,6 +186,7 @@
   cursor: pointer;
   outline: none;
   border: 1.5px solid #e5e7eb;
+  margin: 0 8px;
 }
 .carousel-arrow:hover, .carousel-arrow:focus {
   background: #2563eb;
@@ -187,19 +221,13 @@
 .carousel-dot.active { background: #2563eb; }
 
 /* About section */
-.landing-about {
-  background: #fff;
-  padding: 56px 0 48px 0;
-  text-align: center;
-  margin-bottom: 48px;
-  border-radius: 0;
-}
 .landing-about p {
   font-size: 1.15rem;
   color: #444;
   max-width: 950px;
   margin: 0 auto;
   line-height: 1.7;
+  padding: 0 8px;
 }
 
 /* Carousel/pricing cards' lists */
@@ -207,7 +235,7 @@
 .pricing-card ul {
   list-style: disc inside;
   padding: 0;
-  margin: 18px auto 0 auto;
+  margin: 16px auto 0 auto;
   text-align: left;
   max-width: 220px;
   min-height: 48px;
@@ -217,7 +245,7 @@
 .pricing-card ul li {
   font-size: 1rem;
   color: #444;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   padding-left: 0;
   line-height: 1.5;
 }
@@ -233,6 +261,127 @@
   font-size: 0.97rem;
   background: #fff;
   border-top: 1px solid #ececec;
+}
+
+/* Content container */
+.landing-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Forms */
+.landing-form,
+.landing-form input,
+.landing-form textarea,
+.landing-form select {
+  padding: 8px 12px;
+  box-sizing: border-box;
+}
+.landing-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.landing-form input,
+.landing-form textarea,
+.landing-form select {
+  margin-bottom: 0;
+}
+
+/* Modal/dialogs */
+.landing-modal,
+.landing-dialog {
+  padding: 24px;
+}
+
+/* Sidebar */
+.landing-sidebar {
+  padding: 16px 8px;
+}
+
+/* FAQ Section */
+.landing-faq {
+  background: #f7f8fa;
+  padding: 48px 0 32px 0;
+  text-align: center;
+  margin-bottom: 32px;
+  border-radius: 0;
+}
+.landing-faq h2 {
+  font-size: 2rem;
+  margin-bottom: 32px;
+  color: #1a237e;
+  letter-spacing: 0.01em;
+}
+.faq-list {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.faq-item {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(37,99,235,0.08);
+  border: 2px solid #e5e7eb;
+  overflow: hidden;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+.faq-item:has(.faq-question:focus),
+.faq-item:has(.faq-question:hover),
+.faq-item.open {
+  border-color: #2563eb;
+  box-shadow: 0 6px 32px rgba(37,99,235,0.13);
+}
+.faq-question {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 24px 32px 20px 32px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1a237e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.15s;
+  letter-spacing: 0.01em;
+}
+.faq-question:hover, .faq-question:focus {
+  background: #f0f4ff;
+}
+.faq-arrow {
+  font-size: 1.3rem;
+  margin-left: 16px;
+  color: #2563eb;
+  transition: transform 0.2s, color 0.2s;
+}
+.faq-arrow.open {
+  transform: rotate(180deg);
+  color: #1746a2;
+}
+.faq-answer {
+  padding: 0 32px 24px 32px;
+  color: #444;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  animation: fadeInFaq 0.25s;
+  margin-top: 4px;
+}
+@keyframes fadeInFaq {
+  from { opacity: 0; transform: translateY(-8px);}
+  to { opacity: 1; transform: translateY(0);}
 }
 
 /* Responsive adjustments */
@@ -299,5 +448,49 @@
   .landing-about p {
     font-size: 1rem;
     padding: 0 2vw;
+  }
+}
+
+/* Responsive spacing for main sections */
+.landing-hero,
+.landing-features,
+.landing-pricing,
+.landing-about,
+.landing-why {
+  padding-top: 32px;
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+}
+@media (min-width: 768px) {
+  .landing-hero,
+  .landing-features,
+  .landing-pricing,
+  .landing-about,
+  .landing-why {
+    padding-top: 48px;
+    padding-bottom: 32px;
+    margin-bottom: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  .landing-hero,
+  .landing-features,
+  .landing-pricing,
+  .landing-about,
+  .landing-why {
+    padding-top: 64px;
+    padding-bottom: 48px;
+    margin-bottom: 48px;
+  }
+}
+@media (min-width: 1280px) {
+  .landing-hero,
+  .landing-features,
+  .landing-pricing,
+  .landing-about,
+  .landing-why {
+    padding-top: 80px;
+    padding-bottom: 60px;
+    margin-bottom: 64px;
   }
 }

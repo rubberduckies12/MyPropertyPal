@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import "./landing.css";
 
 const FEATURES = [
@@ -24,11 +25,51 @@ const PRICING = [
 	{ name: "Enterprise", price: "Custom", per: "", details: ["More than 10 properties", "All features included"], cta: "Contact Sales" },
 ];
 
+function FAQItem({ question, answer, isOpen, onClick }) {
+    return (
+        <div className="faq-item">
+            <button className="faq-question" onClick={onClick} aria-expanded={isOpen}>
+                <span>{question}</span>
+                <span className={`faq-arrow${isOpen ? " open" : ""}`}>{isOpen ? "▲" : "▼"}</span>
+            </button>
+            {isOpen && <div className="faq-answer">{answer}</div>}
+        </div>
+    );
+}
+
 function Landing() {
 	const [featureIdx, setFeatureIdx] = useState(0);
 	const [pricingIdx, setPricingIdx] = useState(0);
+	const [openFAQ, setOpenFAQ] = useState(null);
 	const pricingRef = useRef(null);
 	const navigate = useNavigate();
+
+	const faqs = [
+		{
+			question: "Is there a free trial?",
+			answer: (
+				<>
+					Yes! MyPropertyPal offers a 14-day free trial with full access to all features — no credit card required. You can explore everything from automated rent payments to maintenance tracking and tenant communication with zero commitment. Our goal is to give landlords and tenants the freedom to see how easy and powerful our property management platform really is.
+				</>
+			),
+		},
+		{
+			question: "Do I need to be tech-savvy to use MyPropertyPal?",
+			answer: (
+				<>
+					Not at all. MyPropertyPal is designed to be user-friendly and intuitive, even if you're not tech-savvy. Whether you're managing a single property or a large portfolio, our simple interface makes it easy to handle rent collection, repairs, and tenant updates — all in just a few clicks. Landlords love how it saves time without the tech overwhelm.
+				</>
+			),
+		},
+		{
+			question: "Can I add HMOs (Houses in Multiple Occupation)?",
+			answer: (
+				<>
+					Yes — MyPropertyPal fully supports HMO property management. You can add multi-unit buildings, manage multiple tenants per property, and track shared utilities, maintenance requests, and room-specific leases. Whether you manage one HMO or several, our tools make it easy to stay organized and compliant.
+				</>
+			),
+		},
+	];
 
 	// Carousel helpers
 	const getVisible = (arr, idx) => {
@@ -46,6 +87,16 @@ function Landing() {
 
 	return (
 		<div className="landing-root">
+			<Helmet>
+				<title>MyPropertyPal – Modern Landlord Platform</title>
+				<meta name="description" content="Manage your rental income, properties, and tenants in one place. Modern tools for modern landlords." />
+				<meta property="og:title" content="MyPropertyPal – Modern Landlord Platform" />
+				<meta property="og:description" content="Manage your rental income, properties, and tenants in one place. Modern tools for modern landlords." />
+				<meta property="og:type" content="website" />
+				<meta property="og:image" content="/logo.png" />
+				<meta name="twitter:card" content="summary_large_image" />
+			</Helmet>
+
 			<header className="landing-header">
 				<img src="/logo.png" alt="Logo" className="landing-logo" />
 				<button className="landing-login-btn" onClick={() => navigate("/login")}>
@@ -60,8 +111,11 @@ function Landing() {
 						The all in one rental ecosystem - Manage your rental income, properties and tenants in one place.
 					</p>
 					<button className="landing-cta-btn" onClick={scrollToPricing}>
-						Get Started
+						Get Started Free
 					</button>
+					<p className="landing-cta-subtext">
+						Built for landlords, loved by tenants.
+					</p>
 				</section>
 
 				<section className="landing-features">
@@ -104,8 +158,8 @@ function Landing() {
 				<section className="landing-about">
 					<h2>About Us</h2>
 					<p>
-						MyPropertyPal is dedicated to making property management simple, transparent, and stress-free for landlords and tenants alike.
-						Our platform brings together all the tools you need to manage your rental business efficiently, from maintenance tracking to automated payments and more.
+						<strong>Stress-Free Property Management, All in One Place</strong><br />
+						MyPropertyPal gives landlords and tenants everything they need to manage rentals — track maintenance, automate payments, and stay connected — all in one simple, transparent platform.
 					</p>
 				</section>
 
@@ -158,6 +212,31 @@ function Landing() {
 								key={idx}
 								className={`carousel-dot${idx === pricingIdx ? " active" : ""}`}
 								onClick={() => setPricingIdx(idx)}
+							/>
+						))}
+					</div>
+				</section>
+
+				<section className="landing-why">
+  <h2>Why MyPropertyPal?</h2>
+  <p>
+    MyPropertyPal brings together everything landlords and tenants need to manage rental properties, without the stress. From automated rent collection and HMO support to real-time maintenance updates and in-app messaging, our platform is built for simplicity and speed.
+  </p>
+  <p>
+    Whether you’re managing one flat or a growing portfolio, MyPropertyPal helps you save time, stay organized, and keep tenants happy. No jargon. No bloat. Just tools that work.
+  </p>
+</section>
+
+				<section className="landing-faq">
+					<h2>FAQs</h2>
+					<div className="faq-list">
+						{faqs.map((faq, idx) => (
+							<FAQItem
+								key={idx}
+								question={faq.question}
+								answer={faq.answer}
+								isOpen={openFAQ === idx}
+								onClick={() => setOpenFAQ(openFAQ === idx ? null : idx)}
 							/>
 						))}
 					</div>
