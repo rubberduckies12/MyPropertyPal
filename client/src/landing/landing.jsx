@@ -53,25 +53,52 @@ const FEATURES = [
 	},
 ];
 
+const PRICING = [
+	{
+		name: "Starter",
+		price: "£15",
+		per: "/mo",
+		details: ["1 property", "All features included"],
+		cta: "Start Free",
+	},
+	{
+		name: "Pro",
+		price: "£35",
+		per: "/mo",
+		details: ["Up to 5 properties", "All features included"],
+		cta: "Try Pro",
+	},
+	{
+		name: "Premium",
+		price: "£50",
+		per: "/mo",
+		details: ["Up to 10 properties", "All features included"],
+		cta: "Go Premium",
+	},
+	{
+		name: "Enterprise",
+		price: "Custom",
+		per: "",
+		details: ["More than 10 properties", "All features included"],
+		cta: "Contact Sales",
+	},
+];
+
 function Landing() {
 	const [featureIdx, setFeatureIdx] = useState(0);
+	const [pricingIdx, setPricingIdx] = useState(0);
 	const pricingRef = useRef(null);
 	const navigate = useNavigate();
 
-	
-	const getVisibleFeatures = () => {
-		const total = FEATURES.length;
+	// Carousel helpers
+	const getVisible = (arr, idx) => {
+		const total = arr.length;
 		return [
-			FEATURES[(featureIdx + total - 1) % total],
-			FEATURES[featureIdx],
-			FEATURES[(featureIdx + 1) % total],
+			arr[(idx + total - 1) % total],
+			arr[idx],
+			arr[(idx + 1) % total],
 		];
 	};
-
-	const prevFeature = () =>
-		setFeatureIdx((featureIdx - 1 + FEATURES.length) % FEATURES.length);
-	const nextFeature = () =>
-		setFeatureIdx((featureIdx + 1) % FEATURES.length);
 
 	const scrollToPricing = () => {
 		pricingRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -99,30 +126,25 @@ function Landing() {
 
 				<section className="landing-features">
 					<h2>Features</h2>
-					<div className="features-carousel">
+					<div className="carousel-container">
 						<button
-							className="carousel-arrow improved-arrow"
-							onClick={prevFeature}
+							className="carousel-arrow"
+							onClick={() => setFeatureIdx((featureIdx - 1 + FEATURES.length) % FEATURES.length)}
 							aria-label="Previous feature"
 						>
 							<span>&#8592;</span>
 						</button>
 						<div className="carousel-track">
-							{getVisibleFeatures().map((feature, idx) => (
-								<div
-									className={`feature-card carousel-card${
-										idx === 1 ? " active" : ""
-									}`}
-									key={feature.title}
-								>
+							{getVisible(FEATURES, featureIdx).map((feature, idx) => (
+								<div className={`carousel-card${idx === 1 ? " active" : ""}`} key={feature.title}>
 									<h3>{feature.title}</h3>
 									<p>{feature.desc}</p>
 								</div>
 							))}
 						</div>
 						<button
-							className="carousel-arrow improved-arrow"
-							onClick={nextFeature}
+							className="carousel-arrow"
+							onClick={() => setFeatureIdx((featureIdx + 1) % FEATURES.length)}
 							aria-label="Next feature"
 						>
 							<span>&#8594;</span>
@@ -132,73 +154,72 @@ function Landing() {
 						{FEATURES.map((_, idx) => (
 							<span
 								key={idx}
-								className={`carousel-dot${
-									idx === featureIdx ? " active" : ""
-								}`}
+								className={`carousel-dot${idx === featureIdx ? " active" : ""}`}
 								onClick={() => setFeatureIdx(idx)}
 							/>
 						))}
 					</div>
 				</section>
 
+				<section className="landing-about">
+					<h2>About Us</h2>
+					<p>
+						MyPropertyPal is dedicated to making property management simple, transparent, and stress-free for landlords and tenants alike. 
+						Our platform brings together all the tools you need to manage your rental business efficiently, from maintenance tracking to automated payments and more.
+					</p>
+				</section>
+
 				<section className="landing-pricing" ref={pricingRef}>
 					<h2>Pricing</h2>
-					<div className="pricing-cards">
-						<div className="pricing-card">
-							<h3>Starter</h3>
-							<p className="price">
-								£15<span>/mo</span>
-							</p>
-							<ul>
-								<li>1 property</li>
-								<li>All features included</li>
-							</ul>
-							<button className="landing-cta-btn" onClick={() => navigate("/login")}>
-								Start Free
-							</button>
+					<div className="carousel-container">
+						<button
+							className="carousel-arrow"
+							onClick={() => setPricingIdx((pricingIdx - 1 + PRICING.length) % PRICING.length)}
+							aria-label="Previous pricing"
+						>
+							<span>&#8592;</span>
+						</button>
+						<div className="carousel-track">
+							{getVisible(PRICING, pricingIdx).map((tier, idx) => (
+								<div className={`pricing-card carousel-card${idx === 1 ? " active" : ""}`} key={tier.name}>
+									<h3>{tier.name}</h3>
+									<p className="price">
+										{tier.price}
+										{tier.per && <span>{tier.per}</span>}
+									</p>
+									<ul>
+										{tier.details.map((d, i) => (
+											<li key={i}>{d}</li>
+										))}
+									</ul>
+									{tier.name !== "Enterprise" ? (
+										<button className="landing-cta-btn" onClick={() => navigate("/login")}>
+											{tier.cta}
+										</button>
+									) : (
+										<button className="landing-cta-btn" onClick={() => (window.location = "mailto:sales@mypropertypal.com")}>
+											{tier.cta}
+										</button>
+									)}
+								</div>
+							))}
 						</div>
-						<div className="pricing-card">
-							<h3>Pro</h3>
-							<p className="price">
-								£35<span>/mo</span>
-							</p>
-							<ul>
-								<li>Up to 5 properties</li>
-								<li>All features included</li>
-							</ul>
-							<button className="landing-cta-btn" onClick={() => navigate("/login")}>
-								Try Pro
-							</button>
-						</div>
-						<div className="pricing-card">
-							<h3>Premium</h3>
-							<p className="price">
-								£50<span>/mo</span>
-							</p>
-							<ul>
-								<li>Up to 10 properties</li>
-								<li>All features included</li>
-							</ul>
-							<button className="landing-cta-btn" onClick={() => navigate("/login")}>
-								Go Premium
-							</button>
-						</div>
-						<div className="pricing-card">
-							<h3>Enterprise</h3>
-							<p className="price">Custom</p>
-							<ul>
-								<li>More than 10 properties</li>
-								<li>All features included</li>
-							</ul>
-							<button
-								className="landing-cta-btn"
-								onClick={() =>
-									(window.location = "mailto:sales@mypropertypal.com")
-								}
-							>
-								Contact Sales
-							</button>
-						</div>
+						<button
+							className="carousel-arrow"
+							onClick={() => setPricingIdx((pricingIdx + 1) % PRICING.length)}
+							aria-label="Next pricing"
+						>
+							<span>&#8594;</span>
+						</button>
+					</div>
+					<div className="carousel-dots">
+						{PRICING.map((_, idx) => (
+							<span
+								key={idx}
+								className={`carousel-dot${idx === pricingIdx ? " active" : ""}`}
+								onClick={() => setPricingIdx(idx)}
+							/>
+						))}
 					</div>
 				</section>
 			</main>
