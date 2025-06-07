@@ -3,85 +3,25 @@ import { useNavigate } from "react-router-dom";
 import "./landing.css";
 
 const FEATURES = [
-	{
-		title: "Maintenance Tracking",
-		desc: "Log, assign, and resolve maintenance requests quickly.",
-	},
-	{
-		title: "Automated Payments",
-		desc: "Collect rent and send reminders automatically.",
-	},
-	{
-		title: "Open Banking",
-		desc: "Connect your bank for seamless rent and expense tracking.",
-	},
-	{
-		title: "Tenant Screening",
-		desc: "Screen tenants with background and credit checks.",
-	},
-	{
-		title: "AI Business Support",
-		desc: "Get AI-powered insights and support for your property business.",
-	},
-	{
-		title: "Finance Tracking",
-		desc: "Monitor income, expenses, and cash flow in real time.",
-	},
-	{
-		title: "Contract Storage",
-		desc: "Securely store and manage all your contracts and documents.",
-	},
-	{
-		title: "S21 Forms",
-		desc: "Generate and manage S21 forms with ease.",
-	},
-	{
-		title: "Contractor & Local Business Search",
-		desc: "Find trusted contractors and local services quickly.",
-	},
-	{
-		title: "Accounting Tool",
-		desc: "Built-in accounting for landlords and property managers.",
-	},
-	{
-		title: "Mortgage Estimator",
-		desc: "Estimate mortgage costs and compare deals.",
-	},
-	{
-		title: "Tenant Portal",
-		desc: "Give tenants a portal for payments, requests, and communication.",
-	},
+	{ title: "Maintenance Tracking", desc: "Log, assign, and resolve maintenance requests quickly." },
+	{ title: "Automated Payments", desc: "Collect rent and send reminders automatically." },
+	{ title: "Open Banking", desc: "Connect your bank for seamless rent and expense tracking." },
+	{ title: "Tenant Screening", desc: "Screen tenants with background and credit checks." },
+	{ title: "AI Business Support", desc: "Get AI-powered insights and support for your property business." },
+	{ title: "Finance Tracking", desc: "Monitor income, expenses, and cash flow in real time." },
+	{ title: "Contract Storage", desc: "Securely store and manage all your contracts and documents." },
+	{ title: "S21 Forms", desc: "Generate and manage S21 forms with ease." },
+	{ title: "Contractor & Local Business Search", desc: "Find trusted contractors and local services quickly." },
+	{ title: "Accounting Tool", desc: "Built-in accounting for landlords and property managers." },
+	{ title: "Mortgage Estimator", desc: "Estimate mortgage costs and compare deals." },
+	{ title: "Tenant Portal", desc: "Give tenants a portal for payments, requests, and communication." },
 ];
 
 const PRICING = [
-	{
-		name: "Starter",
-		price: "£15",
-		per: "/mo",
-		details: ["1 property", "All features included"],
-		cta: "Start Free",
-	},
-	{
-		name: "Pro",
-		price: "£35",
-		per: "/mo",
-		details: ["Up to 5 properties", "All features included"],
-		cta: "Try Pro",
-	},
-	{
-		name: "Premium",
-		price: "£50",
-		per: "/mo",
-		details: ["Up to 10 properties", "All features included"],
-		cta: "Go Premium",
-	},
-	{
-		name: "Enterprise",
-		price: "Custom",
-		per: "",
-		details: ["More than 10 properties", "All features included"],
-		cta: "Contact Sales",
-	},
+	{ name: "Starter", price: "£15", per: "/mo", details: ["1 property", "All features included"], cta: "Start Free" },
+	{ name: "Pro", price: "£35", per: "/mo", details: ["Up to 5 properties", "All features included"], cta: "Try Pro" },
+	{ name: "Premium", price: "£50", per: "/mo", details: ["Up to 10 properties", "All features included"], cta: "Go Premium" },
+	{ name: "Enterprise", price: "Custom", per: "", details: ["More than 10 properties", "All features included"], cta: "Contact Sales" },
 ];
 
 function Landing() {
@@ -164,7 +104,7 @@ function Landing() {
 				<section className="landing-about">
 					<h2>About Us</h2>
 					<p>
-						MyPropertyPal is dedicated to making property management simple, transparent, and stress-free for landlords and tenants alike. 
+						MyPropertyPal is dedicated to making property management simple, transparent, and stress-free for landlords and tenants alike.
 						Our platform brings together all the tools you need to manage your rental business efficiently, from maintenance tracking to automated payments and more.
 					</p>
 				</section>

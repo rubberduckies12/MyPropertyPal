@@ -65,7 +65,7 @@
 }
 .landing-cta-btn:hover { background: #1746a2; }
 
-/* Features & Pricing: same background, padding, margin */
+/* Section backgrounds and titles */
 .landing-features,
 .landing-pricing {
   background: #f7f8fa;
@@ -75,7 +75,8 @@
   border-radius: 0;
 }
 .landing-features h2,
-.landing-pricing h2 {
+.landing-pricing h2,
+.landing-about h2 {
   font-size: 2rem;
   margin-bottom: 36px;
   color: #1a237e;
@@ -84,12 +85,14 @@
 
 /* Carousel containers */
 .features-carousel,
-.pricing-carousel {
+.pricing-carousel,
+.carousel-container {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 24px;
   margin-bottom: 18px;
+  flex-direction: row;
 }
 
 /* Carousel track */
@@ -97,25 +100,29 @@
   display: flex;
   gap: 24px;
   transition: transform 0.5s cubic-bezier(.77,0,.18,1);
-  min-width: 840px;
   justify-content: center;
+  overflow-x: auto;
+  width: auto;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 /* Carousel/pricing cards */
 .carousel-card,
 .pricing-card {
-  min-width: 270px;
+  width: 90vw;
   max-width: 320px;
+  min-width: 220px;
+  margin: 12px 0;
+  padding: 18px 6px;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   background: #f8fafc;
   border-radius: 14px;
-  padding: 32px 28px;
   opacity: 0.8;
   transform: scale(0.96);
   transition: box-shadow 0.2s, opacity 0.2s, transform 0.2s;
   border: 1.5px solid #e5e7eb;
-  margin: 0 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -187,12 +194,6 @@
   margin-bottom: 48px;
   border-radius: 0;
 }
-.landing-about h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  color: #1a237e;
-  letter-spacing: 0.01em;
-}
 .landing-about p {
   font-size: 1.15rem;
   color: #444;
@@ -251,16 +252,19 @@
   }
 }
 @media (max-width: 800px) {
-  .landing-header {
-    flex-direction: column;
-    gap: 12px;
-    padding: 18px 10px 10px 10px;
-  }
-  .carousel-track, .features-carousel, .pricing-carousel {
-    flex-direction: column;
+  .carousel-track {
+    flex-direction: row;
     align-items: center;
-    min-width: 0;
+    min-width: 0 !important;
+    width: 100%;
     gap: 0;
+  }
+  .features-carousel,
+  .pricing-carousel,
+  .carousel-container {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
   }
   .carousel-card, .pricing-card {
     width: 95vw;
