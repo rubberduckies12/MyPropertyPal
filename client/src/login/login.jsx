@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { login, requestPasswordReset } from "./login";
+import { useNavigate } from "react-router-dom";
 import "./login.css";
 
 function Login({ onRegisterClick }) {
@@ -9,11 +10,13 @@ function Login({ onRegisterClick }) {
   const [showReset, setShowReset] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetMsg, setResetMsg] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (login(email, password)) {
       setMessage("Login successful!");
+      navigate("/"); // Redirect to home or dashboard
     } else {
       setMessage("Invalid email or password.");
     }
@@ -31,6 +34,13 @@ function Login({ onRegisterClick }) {
   return (
     <div className="login-popup-container">
       <div className="login-popup">
+        <button
+          className="login-back-btn"
+          style={{ marginBottom: 16 }}
+          onClick={() => navigate("/")}
+        >
+          ← Back to Home
+        </button>
         <img src="/logo.png" alt="Logo" className="login-logo" />
         {message && <p className="login-error">{message}</p>}
         {!showReset ? (
