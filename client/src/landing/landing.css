@@ -254,6 +254,12 @@
   border-color: var(--primary-blue);
   box-shadow: 0 4px 16px rgba(37,99,235,0.12);
 }
+.carousel-arrow svg {
+  fill: currentColor;
+  width: 2rem;
+  height: 2rem;
+  display: block;
+}
 .carousel-arrow span {
   display: flex;
   align-items: center;

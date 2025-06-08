@@ -126,7 +126,11 @@ function Landing() {
 							onClick={() => setFeatureIdx((featureIdx - 1 + FEATURES.length) % FEATURES.length)}
 							aria-label="Previous feature"
 						>
-							<span>&#8592;</span>
+							<span>
+								<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+</svg>
+							</span>
 						</button>
 						<div className="carousel-track">
 							{getVisible(FEATURES, featureIdx).map((feature, idx) => (
@@ -141,7 +145,11 @@ function Landing() {
 							onClick={() => setFeatureIdx((featureIdx + 1) % FEATURES.length)}
 							aria-label="Next feature"
 						>
-							<span>&#8594;</span>
+							<span>
+								<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+  <path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+</svg>
+							</span>
 						</button>
 					</div>
 					<div className="carousel-dots">
@@ -171,7 +179,11 @@ function Landing() {
 							onClick={() => setPricingIdx((pricingIdx - 1 + PRICING.length) % PRICING.length)}
 							aria-label="Previous pricing"
 						>
-							<span>&#8592;</span>
+							<span>
+								<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+    </svg>
+							</span>
 						</button>
 						<div className="carousel-track">
 							{getVisible(PRICING, pricingIdx).map((tier, idx) => (
@@ -203,7 +215,11 @@ function Landing() {
 							onClick={() => setPricingIdx((pricingIdx + 1) % PRICING.length)}
 							aria-label="Next pricing"
 						>
-							<span>&#8594;</span>
+							<span>
+								<svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+    </svg>
+							</span>
 						</button>
 					</div>
 					<div className="carousel-dots">
