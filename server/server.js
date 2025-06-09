@@ -11,6 +11,7 @@ const createDatabaseConnection = require('./assets/databaseConnect');
 const login = require('./endpoints/login');
 const register = require('./endpoints/register');
 const forgetPassword = require('./endpoints/forgetPassword');
+const verifyEmail = require('./endpoints/verifyEmail');
 
 const app = express();
 app.use(express.json());
@@ -28,6 +29,7 @@ app.post('/login', async (req, res) => login(req, res, pool));
 app.post('/forget-password', async (req, res) => forgetPassword(req, res, pool));
 
 app.post('/register', async (req, res) => register(req, res, pool));
+app.get('/verify-email/:emailToken',async (req, res) => verifyEmail(req, res, pool));
 
 //Client Endpoints
 app.get('/', (req, res) => {});
