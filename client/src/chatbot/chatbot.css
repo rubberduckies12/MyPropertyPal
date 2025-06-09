@@ -43,30 +43,33 @@
   box-shadow: none;
 }
 
-/* Message bubbles */
+/* Chat message bubbles */
 .chatbot-message {
-  max-width: 55%;
-  padding: 10px 14px;
-  border-radius: 16px;
+  max-width: 600px;
+  width: fit-content;
+  padding: 1px 8px;
+  border-radius: 18px;
+  margin: 8px 0;
   font-size: 1rem;
-  line-height: 1.4;
-  margin: 0;
+  line-height: 1.5;
   word-break: break-word;
-  box-shadow: 0 2px 8px rgba(59,130,246,0.04);
-  transition: background 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
+/* User messages: right aligned, blue background */
 .chatbot-message.user {
-  background: var(--primary-blue, #3b82f6);
-  color: #fff;
   align-self: flex-end;
+  background: #2563eb;
+  color: #fff;
+  border-bottom-right-radius: 6px;
 }
 
+/* Assistant messages: left aligned, light background */
 .chatbot-message.assistant {
-  background: #fff;
-  color: #22223b;
-  border: 1px solid #e5e7eb;
   align-self: flex-start;
+  background: #f3f4f6;
+  color: #22223b;
+  border-bottom-left-radius: 6px;
 }
 
 /* Loading indicator */
@@ -98,7 +101,7 @@
   outline: none;
   background: transparent;
   font-size: 1.15rem;
-  padding: 12px 0;
+  padding: 4px 0;
   color: #22223b;
 }
 

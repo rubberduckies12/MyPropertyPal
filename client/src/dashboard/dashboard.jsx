@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './dashboard.css';
-import Sidebar from '../sidebar/sidebar.jsx'; // Import the Sidebar
+import Sidebar from '../sidebar/sidebar.jsx';
 import {
   fetchUser,
   fetchTenantCount,
@@ -9,6 +9,7 @@ import {
   fetchProperties,
 } from './dashboard.js';
 
+// Severity color mapping for incidents
 const severityColors = {
   red: 'dashboard-severity-red',
   yellow: 'dashboard-severity-yellow',
@@ -16,35 +17,26 @@ const severityColors = {
 };
 
 function Dashboard() {
+  // State hooks
   const [showYearly, setShowYearly] = useState(false);
   const [user, setUser] = useState(null);
   const [tenantCount, setTenantCount] = useState(0);
   const [messages, setMessages] = useState([]);
   const [incidents, setIncidents] = useState([]);
   const [properties, setProperties] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
 
+  // Fetch data on mount
   useEffect(() => {
-    // These will be async API calls in the future
     setUser(fetchUser());
     setTenantCount(fetchTenantCount());
     setMessages(fetchMessages());
     setIncidents(fetchIncidents());
     setProperties(fetchProperties());
+    // setUpcomingEvents(fetchEvents()); // Uncomment when backend is ready
   }, []);
 
-  const incomingMessages = messages.filter(
-    msg => msg.fromRole === 'tenant' || msg.fromUserId !== user?.userId
-  );
-  const sorted = [...incomingMessages].sort(
-    (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-  );
-  const mostRecent = sorted[0];
-
-  const sortedIncidents = [...(incidents || [])].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
-  const recentIncidents = sortedIncidents.slice(0, 2);
-
+  // Helper: Get property label by ID
   const getPropertyLabel = (propertyId) => {
     const property = properties.find(
       p => p._id === propertyId || p.propertyId === propertyId
@@ -55,15 +47,23 @@ function Dashboard() {
       : property.address || propertyId;
   };
 
+  // Income calculations
   const monthlyIncome = properties
     .filter(p => !!p.tenantId)
     .reduce((sum, p) => sum + Number(p.rent || 0), 0);
   const yearlyIncome = monthlyIncome * 12;
 
+  // Recent incidents (show 2 most recent)
+  const sortedIncidents = [...(incidents || [])].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+  const recentIncidents = sortedIncidents.slice(0, 2);
+
   return (
     <div className="dashboard-container">
-      <Sidebar /> {/* Sidebar is now imported here */}
+      <Sidebar />
       <main className="dashboard-main">
+        {/* Header */}
         <header className="dashboard-header">
           <div className="dashboard-welcome">
             <h1>Welcome, {user?.name || "User"}</h1>
@@ -73,9 +73,9 @@ function Dashboard() {
           </div>
         </header>
 
-        {/* Dashboard Grid with Cards */}
+        {/* Dashboard Grid */}
         <div className="dashboard-grid">
-          {/* Card 1: Tenants */}
+          {/* Tenants Card */}
           <div className="dashboard-card">
             <h3>Tenants</h3>
             <div className="dashboard-card-main">{tenantCount}</div>
@@ -83,7 +83,7 @@ function Dashboard() {
             <button className="dashboard-btn">View Tenants</button>
           </div>
 
-          {/* Card 2: Income */}
+          {/* Income Card */}
           <div className="dashboard-card dashboard-card-income">
             <div className="dashboard-toggle">
               <span className={!showYearly ? "active" : ""}>Monthly</span>
@@ -106,7 +106,7 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Card (Formerly Properties) - Now Messages (Tall Card) */}
+          {/* Messages Card */}
           <div className="dashboard-card dashboard-card-tall">
             <h3>Messages</h3>
             <div className="dashboard-card-main">{messages.length}</div>
@@ -122,7 +122,7 @@ function Dashboard() {
             <button className="dashboard-btn">View All Messages</button>
           </div>
 
-          {/* Card (Formerly Messages) - Now Properties */}
+          {/* Properties Card */}
           <div className="dashboard-card">
             <h3>Properties</h3>
             <div className="dashboard-card-main">{properties.length}</div>
@@ -145,37 +145,26 @@ function Dashboard() {
             <button className="dashboard-btn">View All Properties</button>
           </div>
 
-          {/* Card 4: Recent Incidents */}
+          {/* Upcoming Events Card */}
           <div className="dashboard-card">
-            <h3>Recent Incidents</h3>
+            <h3>Upcoming Events</h3>
             <div>
-              {recentIncidents.length === 0 ? (
-                <div className="dashboard-message-empty">No incidents reported.</div>
+              {(!Array.isArray(upcomingEvents) || upcomingEvents.length === 0) ? (
+                <div className="dashboard-message-empty">No upcoming events.</div>
               ) : (
-                recentIncidents.map(incident => (
-                  <div key={incident.incidentId} className="dashboard-incident">
-                    <div className="dashboard-incident-row">
-                      <span className={`dashboard-severity ${severityColors[incident.severity] || ''}`}>
-                        {incident.severity ? incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1) : '-'}
-                      </span>
-                      <span className="dashboard-status">
-                        {incident.status ? incident.status.charAt(0).toUpperCase() + incident.status.slice(1) : '-'}
-                      </span>
-                    </div>
-                    <div className="dashboard-incident-prop">
-                      {getPropertyLabel(incident.propertyId)}
-                    </div>
-                    <div className="dashboard-incident-desc">
-                      {incident.description}
-                    </div>
+                upcomingEvents.slice(0, 3).map(event => (
+                  <div key={event.id || event.title} className="dashboard-event">
+                    <div className="dashboard-event-title">{event.title}</div>
+                    <div className="dashboard-event-date">{event.date}</div>
+                    <div className="dashboard-event-desc">{event.description}</div>
                   </div>
                 ))
               )}
             </div>
-            <button className="dashboard-btn">View All Incidents</button>
+            <button className="dashboard-btn">View Calender</button>
           </div>
 
-          {/* Card (Formerly Recent Activity) - Now Recent Incidents (Wide Card) */}
+          {/* Recent Incidents (Wide Card) */}
           <div className="dashboard-card dashboard-card-wide">
             <h3>Recent Incidents</h3>
             <div className="dashboard-activity-list">
