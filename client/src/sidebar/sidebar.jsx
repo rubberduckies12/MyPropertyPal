@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import './sidebar.css';
 
 function Sidebar() {
@@ -7,13 +7,13 @@ function Sidebar() {
     <aside className="dashboard-sidebar">
       <div className="dashboard-logo">Logo</div>
       <nav className="dashboard-nav">
-        <Link to="/dashboard" className="dashboard-nav-link">Dashboard</Link>
-        <Link to="/dashboard" className="dashboard-nav-link">Properties</Link>
-        <Link to="/dashboard" className="dashboard-nav-link">Tenants</Link>
-        <Link to="/dashboard" className="dashboard-nav-link">Incidents</Link>
-        <Link to="/dashboard" className="dashboard-nav-link">Messages</Link>
-        <Link to="/chatbot" className="dashboard-nav-link">Chatbot</Link>
-        <Link to="/dashboard" className="dashboard-nav-link">Settings</Link>
+        <NavLink to="/dashboard" className="dashboard-nav-link">Dashboard</NavLink>
+        <NavLink to="/properties" className="dashboard-nav-link">Properties</NavLink>
+        <NavLink to="/tenants" className="dashboard-nav-link">Tenants</NavLink>
+        <NavLink to="/incidents" className="dashboard-nav-link">Incidents</NavLink>
+        <NavLink to="/messages" className="dashboard-nav-link">Messages</NavLink>
+        <NavLink to="/chatbot" className="dashboard-nav-link">Chatbot</NavLink>
+        <NavLink to="/settings" className="dashboard-nav-link">Settings</NavLink>
       </nav>
     </aside>
   );

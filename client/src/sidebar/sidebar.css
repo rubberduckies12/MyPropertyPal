@@ -5,10 +5,12 @@
   display: flex;
   flex-direction: column;
   padding: 24px 0;
-  position: sticky;
+  position: fixed;      /* <-- changed from sticky to fixed */
   top: 0;
+  left: 0;              /* <-- ensure it's fixed to the left */
   height: 100vh;
   overflow-y: auto;
+  z-index: 100;         /* <-- optional: keeps sidebar above other content */
 }
 
 .dashboard-logo {

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Sidebar from '../sidebar/sidebar.jsx';
 import './chatbot.css';
 import { fetchChatbotReply } from './chatbot.js';
+import ReactMarkdown from 'react-markdown';
 
 function Chatbot() {
   const [message, setMessage] = useState('');
@@ -42,12 +43,16 @@ function Chatbot() {
       <main className="dashboard-main">
         <div className={`chatbot-container${chatHistory.length > 0 ? ' has-messages' : ''}`}>
           <div className="chatbot-header">
-            What are you working on?
+            What's on your mind?
           </div>
           <div className="chatbot-history">
             {chatHistory.map((msg, idx) => (
               <div key={idx} className={`chatbot-message ${msg.role}`}>
-                <p>{msg.content}</p>
+                {msg.role === 'assistant' ? (
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                ) : (
+                  <p>{msg.content}</p>
+                )}
               </div>
             ))}
             {loading && (
@@ -63,7 +68,7 @@ function Chatbot() {
               value={message}
               onChange={e => setMessage(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
-              placeholder="Ask anything"
+              placeholder="Ask anything about property management..."
               className="chatbot-input"
               disabled={loading}
             />

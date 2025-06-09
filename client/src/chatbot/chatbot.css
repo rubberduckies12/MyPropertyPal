@@ -18,19 +18,22 @@
   font-weight: 600;
   color: #22223b;
   text-align: center;
-  margin: 40px 0 40px 0;
+  margin: 40px auto 40px auto;
   background: none;
   border: none;
   padding: 0;
+  max-width: 700px;      /* Match input bar */
+  width: 100%;
+  display: block;
 }
 
 /* Chat history area, scrollable, centered */
 .chatbot-history {
   flex: 1;
   width: 100%;
-  max-width: 700px;
-  margin: 0 auto 24px auto;
-  padding: 0 16px;
+  max-width: none;         /* Remove max-width limit */
+  margin: 0;               /* Remove side margins */
+  padding: 0 0;            /* Remove horizontal padding */
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -88,6 +91,7 @@
   z-index: 10;
 }
 
+/* Keep the input bar focused and centered */
 .chatbot-input {
   flex: 1;
   border: none;
@@ -143,7 +147,11 @@
 
 /* Responsive adjustments */
 @media (max-width: 800px) {
-  .chatbot-history,
+  .chatbot-history {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
   .chatbot-input-container {
     max-width: 98vw;
     padding-left: 4vw;
