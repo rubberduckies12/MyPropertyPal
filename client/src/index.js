@@ -5,7 +5,8 @@ import './index.css';
 
 // Path imports
 import Landing from './landing/landing.jsx';
-import Dashboard from './dashboard/dashboard.jsx'; // Import the dashboard
+import Dashboard from './dashboard/dashboard.jsx';
+import Chatbot from './chatbot/chatbot.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,7 +14,8 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/dashboard" element={<Dashboard />} /> {/* Add dashboard route */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/chatbot" element={<Chatbot />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

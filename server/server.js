@@ -1,6 +1,5 @@
-require('dotenv').config();
+require('dotenv').config(); // <-- add this as the first line
 const express = require('express');
-const { Pool } = require('pg');
 const cors = require('cors');
 const path = require('path');
 
@@ -14,13 +13,17 @@ const forgetPassword = require('./endpoints/forgetPassword');
 const verifyEmail = require('./endpoints/verifyEmail');
 
 const app = express();
-app.use(express.json());
-app.use(express.static(path.join(__dirname, '../client')));
+const port = 5001;
+
+const chatRoute = require('./endpoints/chat');
+
 app.use(cors());
+app.use(express.json());
+app.use('/api/chat', chatRoute);
 
-const port = 5000;
+app.get('/test', (req, res) => res.send('OK'));
 
-const pool = createDatabaseConnection();
+app.listen(port, () => console.log(`Server running on port ${port}`));
 
 // API Endpoints
 
