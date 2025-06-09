@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './dashboard.css';
-import Sidebar from '../sidebar/sidebar.jsx';
+import Sidebar from '../sidebar/sidebar.jsx'; // Import the Sidebar
 import {
   fetchUser,
   fetchTenantCount,
@@ -62,10 +62,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      {/* Sidebar is now its own component */}
-      <Sidebar />
-
-      {/* Main Dashboard Content */}
+      <Sidebar /> {/* Sidebar is now imported here */}
       <main className="dashboard-main">
         <header className="dashboard-header">
           <div className="dashboard-welcome">
@@ -148,7 +145,7 @@ function Dashboard() {
             <button className="dashboard-btn">View All Properties</button>
           </div>
 
-          {/* Card 4: Recent Incidents (unchanged) */}
+          {/* Card 4: Recent Incidents */}
           <div className="dashboard-card">
             <h3>Recent Incidents</h3>
             <div>
