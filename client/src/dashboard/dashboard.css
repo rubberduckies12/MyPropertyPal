@@ -1,0 +1,391 @@
+/* ==================================================
+   Root Variables
+================================================== */
+:root {
+  --primary-blue: #3b82f6;
+  --primary-dark: #2563eb;
+  --section-bg: #f7f8fa;
+  --white: #fff;
+  --border: #e5e7eb;
+  --shadow: 0 8px 32px rgba(37,99,235,0.06);
+  --radius: 18px;
+  --heading-size: 2.2rem;
+  --heading-spacing: 36px;
+  --section-padding: 56px;
+  --section-margin: 48px;
+  --text: #1f2937;
+  --error: #ef4444;
+  --sidebar-bg: #4da9ff;
+  --sidebar-width: 250px;
+}
+
+/* ==================================================
+   Layout & Container
+================================================== */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.dashboard-main {
+  flex: 1;
+  background: var(--section-bg);
+  padding: 32px 16px;
+  overflow-y: auto;
+}
+
+/* ==================================================
+   Header
+================================================== */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.dashboard-welcome h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: var(--primary-dark);
+}
+
+.dashboard-user-info {
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+/* ==================================================
+   Grid & Card Layout
+================================================== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: auto auto auto;
+  gap: 24px;
+}
+
+/* Card Base */
+.dashboard-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.dashboard-card h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.dashboard-card-main {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--primary-blue);
+  margin-bottom: 8px;
+}
+
+.dashboard-income {
+  color: var(--primary-blue);
+}
+
+.dashboard-card-label {
+  color: #374151;
+  font-size: 0.98rem;
+  margin-bottom: 16px;
+}
+
+.dashboard-btn {
+  margin-top: auto;
+  background: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dashboard-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* Special Card Positions */
+.dashboard-card-tall {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}
+
+.dashboard-card-wide {
+  grid-column: 1 / span 3;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* ==================================================
+   Toggle Switch
+================================================== */
+.dashboard-toggle {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-toggle span {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #6b7280;
+  transition: color 0.18s;
+}
+
+.dashboard-toggle span.active {
+  color: var(--primary-dark);
+}
+
+.dashboard-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+
+.dashboard-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.dashboard-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #d1d5db;
+  border-radius: 20px;
+  transition: background 0.2s;
+}
+
+.dashboard-switch input:checked + .dashboard-slider {
+  background: var(--primary-blue);
+}
+
+.dashboard-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--white);
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.dashboard-switch input:checked + .dashboard-slider:before {
+  transform: translateX(18px);
+}
+
+/* ==================================================
+   Messages Section
+================================================== */
+.dashboard-messages-list {
+  margin-top: 8px;
+}
+
+.dashboard-message-item {
+  margin-bottom: 8px;
+}
+
+.dashboard-message-item strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--primary-dark);
+}
+
+.dashboard-message-item p {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ==================================================
+   Incidents Section
+================================================== */
+.dashboard-incident {
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.dashboard-incident-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.dashboard-severity {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-block;
+}
+
+.dashboard-severity-red {
+  background: var(--error);
+  color: #fff;
+}
+
+.dashboard-severity-yellow {
+  background: #fde68a;
+  color: #92400e;
+}
+
+.dashboard-severity-green {
+  background: var(--primary-blue);
+  color: #fff;
+}
+
+.dashboard-status {
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.dashboard-incident-prop {
+  font-size: 0.97rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.dashboard-incident-desc {
+  color: var(--text);
+  font-size: 0.97rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-incident-time {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+/* ==================================================
+   Properties List (for Properties Card)
+================================================== */
+.dashboard-properties-list {
+  margin: 16px 0;
+}
+
+.dashboard-property-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-property-status {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.dashboard-property-status.occupied {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.dashboard-property-status.vacant {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* ==================================================
+   Activity List (for Wide Card - Recent Incidents)
+================================================== */
+.dashboard-activity-list {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-activity-empty {
+  color: #9ca3af;
+  font-size: 1rem;
+}
+
+/* ==================================================
+   Responsive Adjustments
+================================================== */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .dashboard-card-tall {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  
+  .dashboard-card-wide {
+    grid-column: 1 / span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    flex-direction: column;
+  }
+  
+  .dashboard-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 16px 0;
+  }
+  
+  .dashboard-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    margin-top: 0;
+  }
+  
+  .dashboard-nav-link {
+    padding: 8px 16px;
+    border-left: none;
+    border-bottom: 4px solid transparent;
+  }
+  
+  .dashboard-nav-link:hover,
+  .dashboard-nav-link.active {
+    border-left-color: transparent;
+    border-bottom-color: #fff;
+  }
+  
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-card-wide {
+    grid-column: 1;
+  }
+}

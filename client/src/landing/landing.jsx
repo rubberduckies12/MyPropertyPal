@@ -102,6 +102,14 @@ function Landing() {
 				<button className="landing-login-btn" onClick={() => navigate("/login")}>
 					Log In
 				</button>
+				{/* Temporary dashboard link for testing */}
+				<button
+					className="landing-login-btn"
+					style={{ marginLeft: 12, background: "#10b981" }}
+					onClick={() => navigate("/dashboard")}
+				>
+					Test Dashboard
+				</button>
 			</header>
 
 			<main>

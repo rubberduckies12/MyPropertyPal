@@ -5,8 +5,7 @@ import './index.css';
 
 // Path imports
 import Landing from './landing/landing.jsx';
-import Login from './login/login.jsx';
-import Register from './register/register.jsx';
+import Dashboard from './dashboard/dashboard.jsx'; // Import the dashboard
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,8 +13,7 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} /> {/* Add dashboard route */}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
