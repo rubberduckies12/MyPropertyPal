@@ -37,16 +37,13 @@ CREATE TABLE IF NOT EXISTS payment_plan (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description TEXT NOT NULL,
-    monthly_rate DECIMAL(10, 2) NOT NULL,
+    monthly_rate DECIMAL(10, 2) NOT NULL
 );
 
--- Payment plan insert statement
-
--- [payment_plan_id] might not need for on delete cascade
-CREATE TALBE IF NOT EXISTS landlord (
+CREATE TABLE IF NOT EXISTS landlord (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
-    payment_plan_id INT NOT NULL REFERENCES payment_plan(id) ON DELETE CASCADE,
+    payment_plan_id INT NOT NULL REFERENCES payment_plan(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS property_status (
@@ -65,7 +62,7 @@ CREATE TABLE IF NOT EXISTS property (
     id SERIAL PRIMARY KEY,
     landlord_id INT NOT NULL REFERENCES landlord(id) ON DELETE CASCADE,
     property_status_id INT NOT NULL REFERENCES property_status(id),
-    lead_tenant_id INT NULL REFERENCES tenant(id) ON DELETE SET NULL,
+    lead_tenant_id INT NULL REFERENCES tenant(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS property_tenant (
