@@ -1,19 +1,21 @@
-require('dotenv').config(); // <-- add this as the first line
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const axios = require('axios'); // <-- Import axios
 
 // Importing Assets
 const createDatabaseConnection = require('./assets/databaseConnect');
 
 // Importing Endpoints
-// const login = require('./endpoints/login');
-// const register = require('./endpoints/register');
-// const forgetPassword = require('./endpoints/forgetPassword');
-// const verifyEmail = require('./endpoints/verifyEmail');
+const login = require('./endpoints/login');
+const register = require('./endpoints/register');
 
 const app = express();
 const port = 5001;
+
+// Create and attach the database pool
+const pool = createDatabaseConnection();
 
 const chatRoute = require('./endpoints/chat');
 
@@ -21,22 +23,29 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/chat', chatRoute);
 
-// app.get('/test', (req, res) => res.send('OK'));
+// Example: Using axios in a route
+app.get('/external-api', async (req, res) => {
+  try {
+    const response = await axios.get('https://api.example.com/data');
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch external data' });
+  }
+});
 
 // API Endpoints
 
 // Login / Register Page
-// app.post('/login', async (req, res) => login(req, res, pool));
-// app.post('/forget-password', async (req, res) => forgetPassword(req, res, pool));
-// app.post('/register', async (req, res) => register(req, res, pool));
-// app.get('/verify-email/:emailToken',async (req, res) => verifyEmail(req, res, pool));
+app.post('/login', (req, res) => login(req, res, pool));
+app.post('/register', (req, res) => register(req, res, pool));
 
-// Client Endpoints
-// app.get('/', (req, res) => {});
-// app.get('/login', (req, res) => {});
-// app.get('/register', (req, res) => {});
-// app.get('/landing-page', (req, res) => {});
+// Client Endpoints (placeholders)
+app.get('/', (req, res) => res.send('Welcome to the Property Management API'));
+app.get('/login', (req, res) => res.send('Login page placeholder'));
+app.get('/register', (req, res) => res.send('Register page placeholder'));
+app.get('/landing-page', (req, res) => res.send('Landing page placeholder'));
 
-// app.get('*', (req, res) => {});
+// Catch-all route
+app.get('*', (req, res) => res.status(404).send('Not Found'));
 
 app.listen(port, () => console.log(`Server running on port ${port}`));

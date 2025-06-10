@@ -12,12 +12,13 @@ function Login({ onRegisterClick }) {
   const [resetMsg, setResetMsg] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (login(email, password)) {
+    try {
+      const user = await login(email, password);
       setMessage("Login successful!");
-      navigate("/"); // Redirect to home or dashboard
-    } else {
+      navigate("/dashboard"); // Redirect to dashboard
+    } catch (err) {
       setMessage("Invalid email or password.");
     }
   };

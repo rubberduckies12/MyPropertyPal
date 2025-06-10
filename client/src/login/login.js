@@ -1,11 +1,28 @@
-export function login(email, password) {
-  // Mock login functionality
-  // Replace with real API call in production
-  return email === "admin@example.com" && password === "password";
+export async function login(email, password) {
+  try {
+    const response = await fetch('http://localhost:5001/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Login failed');
+    }
+
+    // On success, return the user data
+    const userData = await response.json();
+    return userData;
+  } catch (err) {
+    // Handle error (e.g., show message to user)
+    throw err;
+  }
 }
 
-export function requestPasswordReset(email) {
-  // Mock password reset functionality
-  // Replace with real API call in production
+export async function requestPasswordReset(email) {
+  // Implement this if you add a password reset endpoint to your backend
   return !!email;
 }

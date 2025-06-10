@@ -207,11 +207,17 @@ function Landing() {
 										))}
 									</ul>
 									{tier.name !== "Enterprise" ? (
-										<button className="landing-cta-btn" onClick={() => navigate("/login")}>
+										<button
+											className="landing-cta-btn"
+											onClick={() => navigate("/register")}
+										>
 											{tier.cta}
 										</button>
 									) : (
-										<button className="landing-cta-btn" onClick={() => (window.location = "mailto:sales@mypropertypal.com")}>
+										<button
+											className="landing-cta-btn"
+											onClick={() => (window.location = "mailto:sales@mypropertypal.com")}
+										>
 											{tier.cta}
 										</button>
 									)}
