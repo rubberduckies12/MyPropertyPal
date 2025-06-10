@@ -12,7 +12,7 @@ VALUES
     ('landlord'),
     ('tenant');
 
--- [password] data type will depend on the hashing algorithm used
+-- [password] data type will depend on the hashing algorithm used, bcrypt is okay for passwords
 CREATE TABLE IF NOT EXISTS account (
     id SERIAL PRIMARY KEY,
     role_id INT NOT NULL REFERENCES account_role(id),
@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS tenant (
 
 
 -- Might be worth adding more columns for payment etc
+-- i think logging past payments is a good idea to create rent payment receipts
+-- adding a tax columnn for zoho accounting integration
+-- landlord bank info using SHA-256 hashing
 CREATE TABLE IF NOT EXISTS payment_plan (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
@@ -51,7 +54,7 @@ CREATE TABLE IF NOT EXISTS property_status (
     status VARCHAR(20) NOT NULL UNIQUE
 );
 
--- Needs confirming
+-- Needs confirming, looks fine starndard as available i think
 INSERT INTO property_status (status) VALUES
     ('Available'),
     ('Occupied'),
