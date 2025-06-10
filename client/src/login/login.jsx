@@ -63,18 +63,6 @@ function Login({ onRegisterClick }) {
               />
               <button type="submit">Log In</button>
             </form>
-            <div className="login-divider">
-              <div className="login-divider-line" />
-              <span>OR</span>
-              <div className="login-divider-line" />
-            </div>
-            <button
-              type="button"
-              className="login-register-btn"
-              onClick={onRegisterClick}
-            >
-              Don’t have an account? Sign up
-            </button>
             <div className="login-forgot">
               <button
                 type="button"

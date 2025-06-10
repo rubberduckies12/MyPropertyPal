@@ -1,4 +1,5 @@
 -- Might need to consider encrypting all the data depending on what our hosting provider provides
+-- User Names first and last
 
 CREATE TABLE IF NOT EXISTS account_role (
     id SERIAL PRIMARY KEY,

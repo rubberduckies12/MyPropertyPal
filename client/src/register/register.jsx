@@ -10,6 +10,8 @@ const ROLES = [
 
 export default function Register() {
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");      // <-- Add state
+  const [lastName, setLastName] = useState("");        // <-- Add state
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState(""); // <-- Add state
   const [role, setRole] = useState(ROLES[0].value);
@@ -26,6 +28,10 @@ export default function Register() {
       setError("Passwords do not match.");
       return;
     }
+    if (!firstName || !lastName) {
+      setError("First name and last name are required.");
+      return;
+    }
     try {
       if (role === "tenant" && !landlordId) {
         setError("Please enter your landlord's user ID.");
@@ -33,6 +39,8 @@ export default function Register() {
       }
       await register({
         email,
+        firstName,
+        lastName,
         password,
         role,
         landlordId: role === "tenant" ? landlordId : null,
@@ -49,6 +57,20 @@ export default function Register() {
       <div className="register-popup">
         <h2>Register</h2>
         <form className="register-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={e => setFirstName(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={e => setLastName(e.target.value)}
+            required
+          />
           <input
             type="email"
             placeholder="Email"
