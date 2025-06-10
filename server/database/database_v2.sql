@@ -17,6 +17,8 @@ VALUES
 CREATE TABLE IF NOT EXISTS account (
     id SERIAL PRIMARY KEY,
     role_id INT NOT NULL REFERENCES account_role(id),
+    first__name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     email_verified BOOLEAN NOT NULL DEFAULT FALSE
