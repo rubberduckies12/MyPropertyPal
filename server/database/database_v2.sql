@@ -17,7 +17,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS account (
     id SERIAL PRIMARY KEY,
     role_id INT NOT NULL REFERENCES account_role(id),
-    first__name VARCHAR(50) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -65,7 +65,13 @@ CREATE TABLE IF NOT EXISTS property (
     id SERIAL PRIMARY KEY,
     landlord_id INT NOT NULL REFERENCES landlord(id) ON DELETE CASCADE,
     property_status_id INT NOT NULL REFERENCES property_status(id),
-    lead_tenant_id INT NULL REFERENCES tenant(id) ON DELETE SET NULL
+    lead_tenant_id INT NULL REFERENCES tenant(id) ON DELETE SET NULL,
+    number VARCHAR(10) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    city VARCHAR(50) NOT NULL,
+    county VARCHAR(50) NOT NULL,
+    postcode VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS property_tenant (
