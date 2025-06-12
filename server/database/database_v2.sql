@@ -74,10 +74,14 @@ CREATE TABLE IF NOT EXISTS property (
     postcode VARCHAR(20) NOT NULL
 );
 
+-- Modified to include rent stuff
 CREATE TABLE IF NOT EXISTS property_tenant (
     id SERIAL PRIMARY KEY,
     property_id INT NOT NULL REFERENCES property(id) ON DELETE CASCADE,
     tenant_id INT NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
+    pays_rent BOOLEAN NOT NULL DEFAULT TRUE,
+    rent_amount DECIMAL(10, 2) NOT NULL,
+    rent_due_date SMALLINT NOT NULL,
     UNIQUE (property_id, tenant_id)
 );
 
