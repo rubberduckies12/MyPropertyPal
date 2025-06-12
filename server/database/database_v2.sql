@@ -129,9 +129,15 @@ CREATE TABLE IF NOT EXISTS incident (
     id SERIAL PRIMARY KEY,
     property_id INT NOT NULL REFERENCES property(id) ON DELETE CASCADE,
     severity_id INT NOT NULL REFERENCES incident_severity(id) ON DELETE CASCADE,
-    document_id INT REFERENCES document(id) ON DELETE SET NULL,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     closed BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS incident_document (
+    id SERIAL PRIMARY KEY,
+    incident_id INT NOT NULL REFERENCES incident(id) ON DELETE CASCADE,
+    document_id INT NOT NULL REFERENCES document(id) ON DELETE CASCADE,
+    UNIQUE (incident_id, document_id)
 );
