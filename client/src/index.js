@@ -7,8 +7,9 @@ import './index.css';
 import Landing from './landing/landing.jsx';
 import Dashboard from './dashboard/dashboard.jsx';
 import Chatbot from './chatbot/chatbot.jsx';
-import Login from './login/login.jsx'; // <-- Import Login component
-import Register from './register/register.jsx'; // <-- Import Register component
+import Login from './login/login.jsx';
+import Register from './register/register.jsx';
+import Admin from './admin/admin.jsx'; 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -16,10 +17,11 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} /> {/* <-- Add Login route */}
-        <Route path="/register" element={<Register />} /> {/* <-- Add Register route */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chatbot" element={<Chatbot />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
