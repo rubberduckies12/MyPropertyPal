@@ -67,7 +67,6 @@ CREATE TABLE IF NOT EXISTS property (
     property_status_id INT NOT NULL REFERENCES property_status(id),
     lead_tenant_id INT NULL REFERENCES tenant(id) ON DELETE SET NULL,
     number VARCHAR(10) NOT NULL,
-    name VARCHAR(50) NOT NULL,
     address VARCHAR(255) NOT NULL,
     city VARCHAR(50) NOT NULL,
     county VARCHAR(50) NOT NULL,
@@ -139,3 +138,10 @@ CREATE TABLE IF NOT EXISTS incident (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     closed BOOLEAN NOT NULL DEFAULT FALSE
 );
+
+
+-- Views
+CREATE OR REPLACE VIEW v_property_info AS
+SELECT
+    p.id AS propertyId,
+    p.
