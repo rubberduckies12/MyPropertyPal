@@ -22,6 +22,9 @@ export default function Properties() {
       status: "Occupied",
       leadTenant: { first_name: "Alice", last_name: "Smith" },
       rent_amount: 1200.0,
+      nextRentDue: "2024-07-01",
+      maintenanceIssue: "",
+      roi: "5.2%",
     },
     {
       id: 2,
@@ -106,35 +109,54 @@ export default function Properties() {
               onClick={() => handleCardClick(prop)}
               style={{ cursor: "pointer" }}
             >
-              <div className="property-header">
-                <span
-                  className={`property-status status-${prop.status
-                    .toLowerCase()
-                    .replace(/\s/g, "-")}`}
-                >
+              {/* 1. Property Name or Address */}
+              <div className="property-title-bar">
+                {`${prop.address}, ${prop.city}, ${prop.county}, ${prop.postcode}`}
+              </div>
+              {/* 2. Monthly Rent Amount */}
+              <div className="property-card-row">
+                <span className="property-label">Monthly Rent:</span>
+                <span className="property-value">
+                  {prop.rent_amount ? `£${prop.rent_amount}` : "N/A"}
+                </span>
+              </div>
+              {/* 3. Unit Status */}
+              <div className="property-card-row">
+                <span className="property-label">Status:</span>
+                <span className={`property-status status-${prop.status.toLowerCase().replace(/\s/g, "-")}`}>
                   {prop.status}
                 </span>
               </div>
-              <div className="property-address">
-                <strong>
-                  {prop.number} {prop.name}
-                </strong>
-                <div>
-                  {prop.address}, {prop.city}, {prop.county}, {prop.postcode}
-                </div>
+              {/* 4. Next Rent Due Date */}
+              <div className="property-card-row">
+                <span className="property-label">Next Rent Due:</span>
+                <span className="property-value">
+                  {prop.nextRentDue ? prop.nextRentDue : "N/A"}
+                </span>
               </div>
-              {/* Show tenant info if occupied */}
-              {prop.status === "Occupied" && prop.leadTenant && (
-                <div className="property-tenant">
-                  <div>
-                    <span>Lead Tenant:</span>{" "}
-                    {prop.leadTenant.first_name} {prop.leadTenant.last_name}
-                  </div>
-                  <div>
-                    <span>Rental Income:</span> £{prop.rent_amount}
-                  </div>
-                </div>
-              )}
+              {/* 5. Tenant Name */}
+              <div className="property-card-row">
+                <span className="property-label">Tenant:</span>
+                <span className="property-value">
+                  {prop.leadTenant
+                    ? `${prop.leadTenant.first_name} ${prop.leadTenant.last_name}`
+                    : "No tenant assigned"}
+                </span>
+              </div>
+              {/* 6. Maintenance Issue */}
+              <div className="property-card-row">
+                <span className="property-label">Maintenance:</span>
+                <span className="property-value">
+                  {prop.maintenanceIssue ? prop.maintenanceIssue : "None"}
+                </span>
+              </div>
+              {/* 7. ROI */}
+              <div className="property-card-row">
+                <span className="property-label">ROI:</span>
+                <span className="property-value">
+                  {prop.roi ? prop.roi : "N/A"}
+                </span>
+              </div>
             </div>
           ))}
         </div>

@@ -5,7 +5,7 @@
   --section-bg: #f7f8fa;
   --white: #fff;
   --border: #e5e7eb;
-  --shadow: 0 8px 32px rgba(37,99,235,0.06);
+  --shadow: 0 4px 24px rgba(37,99,235,0.08);
   --radius: 18px;
   --sidebar-width: 250px;
   --text: #1f2937;
@@ -21,11 +21,20 @@
 .properties-main {
   flex: 1;
   background: var(--section-bg);
-  padding: 40px 40px 40px 40px; /* top, right, bottom, left */
+  padding: 32px 32px 32px 32px; /* Equal left and right padding */
   min-width: 0;
   display: flex;
   flex-direction: column;
-  margin-left: var(--sidebar-width); /* Space for sidebar */
+  box-sizing: border-box;
+  margin-left: var(--sidebar-width); /* <-- Add this back for desktop */
+}
+
+/* Responsive: Remove margin-left on mobile */
+@media (max-width: 900px) {
+  .properties-main {
+    margin-left: 0;
+    padding: 16px 8px 16px 8px; /* Equal left/right padding on mobile */
+  }
 }
 
 /* ===== Header ===== */
@@ -33,15 +42,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
-  border-bottom: 2px solid var(--border);
-  padding-bottom: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1.5px solid var(--border);
+  padding-bottom: 10px;
 }
 
 .properties-title {
-  font-size: 2rem;
+  font-size: 2.1rem;
   color: var(--primary-dark);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -1px;
   margin: 0;
 }
@@ -50,8 +59,9 @@
 .properties-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 32px;
-  margin: 32px 0;
+  gap: 24px;
+  margin: 24px 0;
+  align-items: stretch;
 }
 
 /* ===== Property Card ===== */
@@ -59,20 +69,23 @@
   background: var(--white);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  padding: 28px 22px;
-  min-width: 280px;
-  max-width: 340px;
-  flex: 1 1 300px;
+  border: 1.5px solid var(--border);
+  padding: 22px 18px 18px 18px;
+  min-width: 260px;
+  max-width: 320px;
+  flex: 1 1 260px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  gap: 10px;
+  transition: box-shadow 0.18s, border-color 0.18s, transform 0.18s;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 .property-card:hover {
   box-shadow: 0 8px 32px rgba(37,99,235,0.13);
-  border-color: #bcd0fa;
+  border-color: var(--primary-dark);
+  transform: translateY(-2px) scale(1.025);
 }
 
 /* ===== Card Header & Status ===== */
@@ -80,16 +93,18 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 
 .property-status {
-  padding: 5px 14px;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.98rem;
+  font-weight: 700;
   color: #fff;
   letter-spacing: 0.5px;
+  background: var(--primary-dark);
+  box-shadow: 0 1px 4px rgba(37,99,235,0.08);
 }
 .status-available { background: #10b981; }
 .status-occupied { background: var(--primary-dark); }
@@ -97,18 +112,30 @@
 .status-not-available { background: #d32f2f; }
 
 /* ===== Card Content ===== */
-.property-address {
-  font-size: 1.13rem;
-  margin-bottom: 6px;
-  color: var(--text);
+.property-address,
+.property-title-bar {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+  text-align: left;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-radius: 0;
 }
 
 .property-tenant {
-  background: #f6f8fa;
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 1.02rem;
+  background: #f7f8fa;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.98rem;
   color: #374151;
+  width: 100%;
+  text-align: left;
+  margin-top: 6px;
 }
 .property-tenant span {
   font-weight: 600;
@@ -123,12 +150,14 @@
   border-radius: 8px;
   padding: 10px 22px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.18s;
+  transition: background 0.18s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.07);
 }
 .add-property-btn:hover {
   background: var(--primary-blue);
+  box-shadow: 0 4px 16px rgba(37,99,235,0.13);
 }
 
 /* ===== Modal Styles ===== */
@@ -146,11 +175,11 @@
 .property-notes-modal-content {
   background: var(--white);
   border-radius: 16px;
-  padding: 32px 28px;
+  padding: 28px 22px;
   box-shadow: 0 8px 32px rgba(37,99,235,0.13);
-  min-width: 340px;
+  min-width: 320px;
   max-width: 95vw;
-  width: 400px;
+  width: 370px;
 }
 
 /* ===== Property Info in Modal ===== */
@@ -205,6 +234,10 @@
   font-weight: 600;
   cursor: pointer;
   margin-right: 10px;
+  transition: background 0.18s;
+}
+.add-note-btn:hover {
+  background: var(--primary-blue);
 }
 .close-notes-btn {
   background: var(--border);
@@ -215,6 +248,46 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.18s;
+}
+.close-notes-btn:hover {
+  background: #e0e7ef;
+}
+
+/* ===== Property Title Bar (Address) ===== */
+.property-title-bar {
+  width: 100%;
+  color: var(--primary-dark);
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-align: left;
+  margin-bottom: 8px;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* ===== Property Card Row ===== */
+.property-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0;
+  font-size: 1rem;
+  gap: 8px;
+}
+
+.property-label {
+  font-weight: 600;
+  color: #222;
+}
+
+.property-value {
+  color: #374151;
+  font-weight: 500;
+  text-align: right;
 }
 
 /* ===== Responsive Design ===== */
@@ -224,9 +297,14 @@
   }
   .properties-main {
     margin-left: 0;
-    padding: 24px 8px;
+    padding: 16px 8px 16px 8px; /* Equal left/right padding on mobile */
   }
   .properties-list {
-    gap: 18px;
+    gap: 12px;
+  }
+  .property-card {
+    min-width: 90vw;
+    max-width: 98vw;
+    padding: 16px 8px 12px 8px;
   }
 }
