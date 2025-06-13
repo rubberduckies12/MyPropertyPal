@@ -10,6 +10,7 @@ import Chatbot from './chatbot/chatbot.jsx';
 import Login from './login/login.jsx';
 import Register from './register/register.jsx';
 import Admin from './admin/admin.jsx'; 
+import Properties from './properties/properties.jsx'; // <-- Add this import
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -22,6 +23,7 @@ root.render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/properties" element={<Properties />} /> {/* <-- Add this line */}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

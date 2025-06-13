@@ -1,0 +1,232 @@
+/* ===== Root Variables for Consistent Theming ===== */
+:root {
+  --primary-blue: #3b82f6;
+  --primary-dark: #2563eb;
+  --section-bg: #f7f8fa;
+  --white: #fff;
+  --border: #e5e7eb;
+  --shadow: 0 8px 32px rgba(37,99,235,0.06);
+  --radius: 18px;
+  --sidebar-width: 250px;
+  --text: #1f2937;
+}
+
+/* ===== Layout ===== */
+.properties-page {
+  display: flex;
+  min-height: 100vh;
+  background: var(--section-bg);
+}
+
+.properties-main {
+  flex: 1;
+  background: var(--section-bg);
+  padding: 40px 40px 40px 40px; /* top, right, bottom, left */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-left: var(--sidebar-width); /* Space for sidebar */
+}
+
+/* ===== Header ===== */
+.properties-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.properties-title {
+  font-size: 2rem;
+  color: var(--primary-dark);
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+/* ===== Property Card List ===== */
+.properties-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin: 32px 0;
+}
+
+/* ===== Property Card ===== */
+.property-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 28px 22px;
+  min-width: 280px;
+  max-width: 340px;
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.property-card:hover {
+  box-shadow: 0 8px 32px rgba(37,99,235,0.13);
+  border-color: #bcd0fa;
+}
+
+/* ===== Card Header & Status ===== */
+.property-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+
+.property-status {
+  padding: 5px 14px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+.status-available { background: #10b981; }
+.status-occupied { background: var(--primary-dark); }
+.status-under-maintenance { background: #f59e42; }
+.status-not-available { background: #d32f2f; }
+
+/* ===== Card Content ===== */
+.property-address {
+  font-size: 1.13rem;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.property-tenant {
+  background: #f6f8fa;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 1.02rem;
+  color: #374151;
+}
+.property-tenant span {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+/* ===== Add Property Button ===== */
+.add-property-btn {
+  background: var(--primary-dark);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.add-property-btn:hover {
+  background: var(--primary-blue);
+}
+
+/* ===== Modal Styles ===== */
+.add-property-modal,
+.property-notes-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30, 41, 59, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.add-property-modal-content,
+.property-notes-modal-content {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 32px 28px;
+  box-shadow: 0 8px 32px rgba(37,99,235,0.13);
+  min-width: 340px;
+  max-width: 95vw;
+  width: 400px;
+}
+
+/* ===== Property Info in Modal ===== */
+.property-info {
+  background: #f6f8fa;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  font-size: 1rem;
+  color: #374151;
+}
+.property-info strong {
+  color: var(--primary-dark);
+}
+
+/* ===== Notes List & Note Item ===== */
+.property-notes-list {
+  max-height: 180px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+.property-note {
+  background: #f6f8fa;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+.property-note-date {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* ===== Note Input & Modal Buttons ===== */
+.property-note-input {
+  width: 100%;
+  min-height: 60px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 8px;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+.add-note-btn {
+  background: var(--primary-dark);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 10px;
+}
+.close-notes-btn {
+  background: var(--border);
+  color: #222;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 900px) {
+  .properties-page {
+    flex-direction: column;
+  }
+  .properties-main {
+    margin-left: 0;
+    padding: 24px 8px;
+  }
+  .properties-list {
+    gap: 18px;
+  }
+}
