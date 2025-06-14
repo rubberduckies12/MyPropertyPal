@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './dashboard.css';
 import Sidebar from '../sidebar/sidebar.jsx';
 import {
@@ -23,7 +24,6 @@ function capitalize(str) {
 }
 
 function Dashboard() {
-  // State hooks
   const [showYearly, setShowYearly] = useState(false);
   const [user, setUser] = useState(null);
   const [tenantCount, setTenantCount] = useState(0);
@@ -32,7 +32,8 @@ function Dashboard() {
   const [properties, setProperties] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
 
-  // Fetch data on mount
+  const navigate = useNavigate();
+
   useEffect(() => {
     async function loadData() {
       setUser(await fetchUser());
@@ -144,16 +145,20 @@ function Dashboard() {
                   <div>
                     {property.name || property.address || `Property ${index + 1}`}
                   </div>
-                  {property.tenantId && (
+                  {property.tenantId ? (
                     <div className="dashboard-property-status occupied">Occupied</div>
-                  )}
-                  {!property.tenantId && (
+                  ) : (
                     <div className="dashboard-property-status vacant">Vacant</div>
                   )}
                 </div>
               ))}
             </div>
-            <button className="dashboard-btn">View All Properties</button>
+            <button
+              className="dashboard-btn"
+              onClick={() => navigate('/properties')}
+            >
+              View All Properties
+            </button>
           </div>
 
           {/* Upcoming Events Card */}
@@ -188,10 +193,10 @@ function Dashboard() {
                   <div key={incident.incidentId} className="dashboard-incident">
                     <div className="dashboard-incident-row">
                       <span className={`dashboard-severity ${severityColors[incident.severity] || ''}`}>
-                        {incident.severity ? incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1) : '-'}
+                        {incident.severity ? capitalize(incident.severity) : '-'}
                       </span>
                       <span className="dashboard-status">
-                        {incident.status ? incident.status.charAt(0).toUpperCase() + incident.status.slice(1) : '-'}
+                        {incident.status ? capitalize(incident.status) : '-'}
                       </span>
                     </div>
                     <div className="dashboard-incident-prop">
