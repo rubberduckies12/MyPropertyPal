@@ -10,6 +10,7 @@ const createDatabaseConnection = require('./assets/databaseConnect');
 // Importing Endpoints
 const login = require('./endpoints/login');
 const register = require('./endpoints/register');
+const dashboard = require('./endpoints/dashboard');
 
 const app = express();
 const port = 5001;
@@ -38,6 +39,17 @@ app.get('/external-api', async (req, res) => {
 // Login / Register Page
 app.post('/login', (req, res) => login(req, res, pool));
 app.post('/register', (req, res) => register(req, res, pool));
+
+// Dashboard
+
+app.get('/dashboard', (req, res) => dashboard(req, res, pool));
+
+// Tenants
+// Income
+// Messages
+// Properties
+// Calendar
+// Incidents
 
 // Client Endpoints (placeholders)
 app.get('/', (req, res) => res.send('Welcome to the Property Management API'));
