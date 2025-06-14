@@ -28,7 +28,9 @@ CREATE TABLE IF NOT EXISTS account (
 -- although can be found going through properties table
 CREATE TABLE IF NOT EXISTS tenant (
     id SERIAL PRIMARY KEY,
-    account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE
+    account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    landlord_code VARCHAR(6) NOT NULL,
+    landlord_confirmed BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 
@@ -46,7 +48,8 @@ CREATE TABLE IF NOT EXISTS payment_plan (
 CREATE TABLE IF NOT EXISTS landlord (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
-    payment_plan_id INT NOT NULL REFERENCES payment_plan(id) ON DELETE CASCADE
+    payment_plan_id INT NOT NULL REFERENCES payment_plan(id) ON DELETE CASCADE,
+    landlord_code VARCHAR(6) NOT NULL UNIQUE,
 );
 
 CREATE TABLE IF NOT EXISTS property_status (
@@ -140,9 +143,56 @@ CREATE TABLE IF NOT EXISTS incident (
     closed BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+CREATE TABLE IF NOT EXISTS chat (
+    id SERIAL PRIMARY KEY,
+    property_id INT NOT NULL REFERENCES property(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS chat_tenant (
+    id SERIAL PRIMARY KEY,
+    chat_id INT NOT NULL REFERENCES chat(id) ON DELETE CASCADE,
+    tenant_id INT NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
+    UNIQUE (chat_id, tenant_id)
+);
+
+CREATE TABLE IF NOT EXISTS chat_message (
+    id SERIAL PRIMARY KEY,
+    chat_id INT NOT NULL REFERENCES chat(id) ON DELETE CASCADE,
+    sender_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    incident_id INT REFERENCES incident(id) ON DELETE SET NULL,
+    message_text VARCHAR(512) NOT NULL,
+    sent_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 
 -- Views
 CREATE OR REPLACE VIEW v_property_info AS
 SELECT
     p.id AS propertyId,
-    p.
+    p.name AS propertyName,
+    p.number AS propertyNumber,
+    p.address AS propertyAddress,
+    p.city AS propertyCity,
+    p.county AS propertyCounty,
+    p.postcode AS propertyPostcode,
+    p.landlord_id AS landlordId,
+    ps.status AS propertyStatus,
+FROM
+    property p
+JOIN
+    property_status ps ON p.property_status_id = ps.id;
+
+CREATE OR REPLACE VIEW v_tenant_info AS 
+SELECT
+    a.id AS accountId,
+    a.first_name AS firstName,
+    a.last_name AS lastName,
+    a.email AS email,
+    t.id AS tenantId,
+    pt.property_id AS propertyId,
+FROM
+    account a
+JOIN
+    tenant t ON a.id = t.account_id
+JOIN
+    property_tenant pt ON t.id = pt.tenant_id;
