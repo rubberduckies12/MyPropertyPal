@@ -16,6 +16,12 @@ const severityColors = {
   green: 'dashboard-severity-green',
 };
 
+// Capitalize the first letter of a string
+function capitalize(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function Dashboard() {
   // State hooks
   const [showYearly, setShowYearly] = useState(false);
@@ -28,12 +34,15 @@ function Dashboard() {
 
   // Fetch data on mount
   useEffect(() => {
-    setUser(fetchUser());
-    setTenantCount(fetchTenantCount());
-    setMessages(fetchMessages());
-    setIncidents(fetchIncidents());
-    setProperties(fetchProperties());
-    // setUpcomingEvents(fetchEvents()); // Uncomment when backend is ready
+    async function loadData() {
+      setUser(await fetchUser());
+      setTenantCount(await fetchTenantCount());
+      setMessages(await fetchMessages());
+      setIncidents(await fetchIncidents());
+      setProperties(await fetchProperties());
+      // setUpcomingEvents(await fetchEvents()); // Uncomment when backend is ready
+    }
+    loadData();
   }, []);
 
   // Helper: Get property label by ID
@@ -66,10 +75,12 @@ function Dashboard() {
         {/* Header */}
         <header className="dashboard-header">
           <div className="dashboard-welcome">
-            <h1>Welcome, {user?.name || "User"}</h1>
+            <h1>
+              Welcome, {user ? capitalize(user.first_name) : "User"}
+            </h1>
           </div>
           <div className="dashboard-user-info">
-            <span>User ID: <strong>{user?.userId || "—"}</strong></span>
+            <span>User ID: <strong>{user?.id || "—"}</strong></span>
           </div>
         </header>
 

@@ -1,20 +1,27 @@
-// Placeholder functions for future API calls
-export function fetchUser() {
-  return null; // Replace with API call when backend is ready
+const API_BASE = "http://localhost:5001";
+
+export async function fetchUser() {
+  const res = await fetch(`${API_BASE}/api/dashboard/user`);
+  return res.json();
 }
 
-export function fetchTenantCount() {
-  return 0; // Replace with API call when backend is ready
+export async function fetchTenantCount() {
+  const res = await fetch(`${API_BASE}/api/dashboard/tenants/count`);
+  const data = await res.json();
+  return data.count;
 }
 
-export function fetchMessages() {
-  return []; // Replace with API call when backend is ready
+export async function fetchMessages() {
+  const res = await fetch(`${API_BASE}/api/dashboard/messages`);
+  return res.json();
 }
 
-export function fetchIncidents() {
-  return []; // Replace with API call when backend is ready
+export async function fetchIncidents() {
+  const res = await fetch(`${API_BASE}/api/dashboard/incidents`);
+  return res.json();
 }
 
-export function fetchProperties() {
-  return []; // Replace with API call when backend is ready
+export async function fetchProperties() {
+  const res = await fetch(`${API_BASE}/api/dashboard/properties`);
+  return res.json();
 }

@@ -45,6 +45,10 @@ app.get('/login', (req, res) => res.send('Login page placeholder'));
 app.get('/register', (req, res) => res.send('Register page placeholder'));
 app.get('/landing-page', (req, res) => res.send('Landing page placeholder'));
 
+// Register dashboard endpoints
+const dashEndpoints = require('./endpoints/dash.js');
+dashEndpoints(app, pool);
+
 // Catch-all route
 app.get('*', (req, res) => res.status(404).send('Not Found'));
 
