@@ -1,6 +1,4 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 async function login(req, res, pool) {
     // Get the info from the request body
@@ -33,22 +31,17 @@ async function login(req, res, pool) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // Generate JWT token
-        const token = jwt.sign(
-          { id: user.id, email: user.email, role_id: user.role_id },
-          SECRET,
-          { expiresIn: '1d' }
-        );
+        // Optionally, check if email is verified
+        // if (!user.email_verified) {
+        //     return res.status(403).json({ error: 'Email not verified' });
+        // }
 
-        // Return token and user info (never return password)
+        // Return user info (never return password)
         return res.status(200).json({
-            token,
-            user: {
-                id: user.id,
-                email: user.email,
-                role_id: user.role_id,
-                email_verified: user.email_verified
-            }
+            id: user.id,
+            email: user.email,
+            role_id: user.role_id,
+            email_verified: user.email_verified
         });
 
     } catch(err) {

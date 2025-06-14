@@ -49,19 +49,6 @@ app.get('/landing-page', (req, res) => res.send('Landing page placeholder'));
 const dashEndpoints = require('./endpoints/dash.js');
 dashEndpoints(app, pool);
 
-// Get properties endpoint
-const getProperties = require('./endpoints/properties');
-app.all('/api/properties', (req, res) => getProperties(req, res, pool));
-
-// In your server.js or route file
-const authenticateJWT = require('./middleware/jwt');
-
-// Protect a route:
-app.get('/api/dashboard/user', authenticateJWT, async (req, res) => {
-  const userId = req.user.id;
-  // ...fetch user from DB using userId...
-});
-
 // Catch-all route
 app.get('*', (req, res) => res.status(404).send('Not Found'));
 
