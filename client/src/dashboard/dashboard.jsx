@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './dashboard.css';
 import Sidebar from '../sidebar/sidebar.jsx';
 import {
@@ -16,8 +17,13 @@ const severityColors = {
   green: 'dashboard-severity-green',
 };
 
+// Capitalize the first letter of a string
+function capitalize(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function Dashboard() {
-  // State hooks
   const [showYearly, setShowYearly] = useState(false);
   const [user, setUser] = useState(null);
   const [tenantCount, setTenantCount] = useState(0);
@@ -26,14 +32,18 @@ function Dashboard() {
   const [properties, setProperties] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
 
-  // Fetch data on mount
+  const navigate = useNavigate();
+
   useEffect(() => {
-    setUser(fetchUser());
-    setTenantCount(fetchTenantCount());
-    setMessages(fetchMessages());
-    setIncidents(fetchIncidents());
-    setProperties(fetchProperties());
-    // setUpcomingEvents(fetchEvents()); // Uncomment when backend is ready
+    async function loadData() {
+      setUser(await fetchUser());
+      setTenantCount(await fetchTenantCount());
+      setMessages(await fetchMessages());
+      setIncidents(await fetchIncidents());
+      setProperties(await fetchProperties());
+      // setUpcomingEvents(await fetchEvents()); // Uncomment when backend is ready
+    }
+    loadData();
   }, []);
 
   // Helper: Get property label by ID
@@ -66,10 +76,12 @@ function Dashboard() {
         {/* Header */}
         <header className="dashboard-header">
           <div className="dashboard-welcome">
-            <h1>Welcome, {user?.name || "User"}</h1>
+            <h1>
+              Welcome, {user ? capitalize(user.first_name) : "User"}
+            </h1>
           </div>
           <div className="dashboard-user-info">
-            <span>User ID: <strong>{user?.userId || "—"}</strong></span>
+            <span>User ID: <strong>{user?.id || "—"}</strong></span>
           </div>
         </header>
 
@@ -133,16 +145,20 @@ function Dashboard() {
                   <div>
                     {property.name || property.address || `Property ${index + 1}`}
                   </div>
-                  {property.tenantId && (
+                  {property.tenantId ? (
                     <div className="dashboard-property-status occupied">Occupied</div>
-                  )}
-                  {!property.tenantId && (
+                  ) : (
                     <div className="dashboard-property-status vacant">Vacant</div>
                   )}
                 </div>
               ))}
             </div>
-            <button className="dashboard-btn">View All Properties</button>
+            <button
+              className="dashboard-btn"
+              onClick={() => navigate('/properties')}
+            >
+              View All Properties
+            </button>
           </div>
 
           {/* Upcoming Events Card */}
@@ -177,10 +193,10 @@ function Dashboard() {
                   <div key={incident.incidentId} className="dashboard-incident">
                     <div className="dashboard-incident-row">
                       <span className={`dashboard-severity ${severityColors[incident.severity] || ''}`}>
-                        {incident.severity ? incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1) : '-'}
+                        {incident.severity ? capitalize(incident.severity) : '-'}
                       </span>
                       <span className="dashboard-status">
-                        {incident.status ? incident.status.charAt(0).toUpperCase() + incident.status.slice(1) : '-'}
+                        {incident.status ? capitalize(incident.status) : '-'}
                       </span>
                     </div>
                     <div className="dashboard-incident-prop">
