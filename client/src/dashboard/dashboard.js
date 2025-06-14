@@ -1,12 +1,7 @@
 const API_BASE = "http://localhost:5001";
 
 export async function fetchUser() {
-  const token = localStorage.getItem('token');
-  const res = await fetch(`${API_BASE}/api/dashboard/user`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
+  const res = await fetch(`${API_BASE}/api/dashboard/user`);
   return res.json();
 }
 
