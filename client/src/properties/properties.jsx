@@ -1,52 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../sidebar/sidebar.jsx";
 import "./properties.css";
+import { fetchUser, fetchProperties, addProperty } from "../properties/properties.js";
 
 export default function Properties() {
   // ===== State Management =====
-  const [showAddModal, setShowAddModal] = useState(false); // Controls add property modal
-  const [selectedProperty, setSelectedProperty] = useState(null); // Property selected for notes modal
-  const [propertyNotes, setPropertyNotes] = useState({}); // Stores notes per property
-  const [noteInput, setNoteInput] = useState(""); // Input for new note
-
-  // Sample property data (replace with API data in production)
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      number: "12A",
-      name: "Maple House",
-      address: "123 Main St",
-      city: "London",
-      county: "Greater London",
-      postcode: "E1 2AB",
-      status: "Occupied",
-      leadTenant: { first_name: "Alice", last_name: "Smith" },
-      rent_amount: 1200.0,
-      nextRentDue: "2024-07-01",
-      maintenanceIssue: "",
-      roi: "5.2%",
-    },
-    {
-      id: 2,
-      number: "7",
-      name: "Oak Villa",
-      address: "456 Oak Rd",
-      city: "London",
-      county: "Greater London",
-      postcode: "E2 3CD",
-      status: "Available",
-    },
-    {
-      id: 3,
-      number: "22",
-      name: "Birch Cottage",
-      address: "789 Birch Lane",
-      city: "London",
-      county: "Greater London",
-      postcode: "E3 4EF",
-      status: "Not Available",
-    },
-  ]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [propertyNotes, setPropertyNotes] = useState({});
+  const [noteInput, setNoteInput] = useState("");
+  const [properties, setProperties] = useState([]);
+  const [user, setUser] = useState(null);
 
   // ===== Handlers =====
 
@@ -83,6 +47,21 @@ export default function Properties() {
       )
     );
   };
+
+  // Fetch user and properties from the server
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const userData = await fetchUser();
+        setUser(userData);
+        const data = await fetchProperties();
+        setProperties(data);
+      } catch (err) {
+        setProperties([]);
+      }
+    }
+    loadData();
+  }, []);
 
   // ===== Render =====
   return (
@@ -123,7 +102,7 @@ export default function Properties() {
               {/* 3. Unit Status */}
               <div className="property-card-row">
                 <span className="property-label">Status:</span>
-                <span className={`property-status status-${prop.status.toLowerCase().replace(/\s/g, "-")}`}>
+                <span className={`property-status status-${prop.status?.toLowerCase().replace(/\s/g, "-")}`}>
                   {prop.status}
                 </span>
               </div>
@@ -166,8 +145,50 @@ export default function Properties() {
           <div className="add-property-modal">
             <div className="add-property-modal-content">
               <h2>Add Property</h2>
-              <p>This is a placeholder for the add property form.</p>
-              <button onClick={() => setShowAddModal(false)}>Close</button>
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (!user) {
+                    alert("User not loaded");
+                    return;
+                  }
+                  const form = e.target;
+                  const newProperty = {
+                    address: form.address.value,
+                    city: form.city.value,
+                    county: form.county.value,
+                    postcode: form.postcode.value,
+                    status: form.status.value,
+                    landlord_id: form.landlord_id.value, // <-- get from hidden input
+                  };
+                  try {
+                    await addProperty(newProperty);
+                    setShowAddModal(false);
+                    // Refresh property list
+                    const data = await fetchProperties();
+                    setProperties(data);
+                  } catch (err) {
+                    alert("Failed to add property");
+                  }
+                }}
+              >
+                <input name="address" placeholder="Address" required />
+                <input name="city" placeholder="City" required />
+                <input name="county" placeholder="County" required />
+                <input name="postcode" placeholder="Postcode" required />
+                <select name="status" required>
+                  <option value="Available">Available</option>
+                  <option value="Occupied">Occupied</option>
+                  <option value="Under Maintenance">Under Maintenance</option>
+                  <option value="Not Available">Not Available</option>
+                </select>
+                {/* Hidden landlord_id input */}
+                <input type="hidden" name="landlord_id" value={user ? user.landlord_id : ""} />
+                <button type="submit">Add</button>
+                <button type="button" onClick={() => setShowAddModal(false)}>
+                  Close
+                </button>
+              </form>
             </div>
           </div>
         )}

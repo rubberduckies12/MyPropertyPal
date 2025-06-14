@@ -15,6 +15,12 @@ export async function login(email, password) {
 
     // On success, return the user data
     const userData = await response.json();
+
+    // --- Store the JWT token for future requests ---
+    if (userData.token) {
+      localStorage.setItem('token', userData.token);
+    }
+
     return userData;
   } catch (err) {
     // Handle error (e.g., show message to user)
