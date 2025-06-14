@@ -12,7 +12,11 @@ export async function fetchTenantCount() {
 }
 
 export async function fetchMessages() {
-  const res = await fetch(`${API_BASE}/api/dashboard/messages`);
+  const token = localStorage.getItem('token');
+  const res = await fetch("http://localhost:5001/api/dashboard/messages", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error("Failed to fetch messages");
   return res.json();
 }
 

@@ -10,7 +10,9 @@ import Chatbot from './chatbot/chatbot.jsx';
 import Login from './login/login.jsx';
 import Register from './register/register.jsx';
 import Admin from './admin/admin.jsx'; 
-import Properties from './properties/properties.jsx'; // <-- Add this import
+import Properties from './properties/properties.jsx';
+import Tenants from './tenants/tenants.jsx';
+import Incidents from './incidents/incidents.jsx'; // <-- Add this import
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -23,7 +25,9 @@ root.render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/admin" element={<Admin />} />
-        <Route path="/properties" element={<Properties />} /> {/* <-- Add this line */}
+        <Route path="/properties" element={<Properties />} />
+        <Route path="/tenants" element={<Tenants />} />
+        <Route path="/incidents" element={<Incidents />} /> {/* <-- Add this line */}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
