@@ -132,7 +132,7 @@ function Landing() {
 				<section className="landing-hero grid">
 					<div className="hero-content">
 						<h1>
-							Modern Property Management<br />
+							Full Property Management<br />
 							<span className="hero-highlight">For Landlords & Tenants</span>
 						</h1>
 						<p>
