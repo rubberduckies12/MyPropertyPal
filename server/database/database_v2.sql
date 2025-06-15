@@ -177,6 +177,13 @@ CREATE TABLE IF NOT EXISTS chat_message (
     sent_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS chat_message_status (
+    id SERIAL PRIMARY KEY,
+    chat_message_id INT NOT NULL REFERENCES chat_message(id) ON DELETE CASCADE,
+    account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE
+);
+
 
 -- Views
 CREATE OR REPLACE VIEW v_property_info AS
