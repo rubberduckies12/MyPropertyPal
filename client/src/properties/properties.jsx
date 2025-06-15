@@ -3,13 +3,11 @@ import Sidebar from "../sidebar/sidebar.jsx";
 import "./properties.css";
 
 export default function Properties() {
-  // ===== State Management =====
-  const [showAddModal, setShowAddModal] = useState(false); // Controls add property modal
-  const [selectedProperty, setSelectedProperty] = useState(null); // Property selected for notes modal
-  const [propertyNotes, setPropertyNotes] = useState({}); // Stores notes per property
-  const [noteInput, setNoteInput] = useState(""); // Input for new note
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [propertyNotes, setPropertyNotes] = useState({});
+  const [noteInput, setNoteInput] = useState("");
 
-  // Sample property data (replace with API data in production)
   const [properties, setProperties] = useState([
     {
       id: 1,
@@ -48,20 +46,12 @@ export default function Properties() {
     },
   ]);
 
-  // ===== Handlers =====
-
-  // Open notes modal for a property
-  const handleCardClick = (property) => {
+  // Handlers (same as before)
+  const handleRowClick = (property) => {
     setSelectedProperty(property);
     setNoteInput("");
   };
-
-  // Close notes modal
-  const handleCloseNotesModal = () => {
-    setSelectedProperty(null);
-  };
-
-  // Add a note to the selected property
+  const handleCloseNotesModal = () => setSelectedProperty(null);
   const handleAddNote = () => {
     if (!noteInput.trim()) return;
     setPropertyNotes((prev) => ({
@@ -73,8 +63,6 @@ export default function Properties() {
     }));
     setNoteInput("");
   };
-
-  // Change property status (updates both modal and main list)
   const handleStatusChange = (newStatus) => {
     setSelectedProperty((prev) => ({ ...prev, status: newStatus }));
     setProperties((prev) =>
@@ -83,13 +71,15 @@ export default function Properties() {
       )
     );
   };
+  const handleRemoveProperty = (id) => {
+    setProperties((prev) => prev.filter((p) => p.id !== id));
+    setSelectedProperty(null);
+  };
 
-  // ===== Render =====
   return (
     <div className="properties-page">
       <Sidebar />
       <main className="properties-main">
-        {/* Header with title and add property button */}
         <div className="properties-header">
           <h1 className="properties-title">Your Properties</h1>
           <button
@@ -100,65 +90,47 @@ export default function Properties() {
           </button>
         </div>
 
-        {/* Property cards list */}
-        <div className="properties-list">
-          {properties.map((prop) => (
-            <div
-              className="property-card"
-              key={prop.id}
-              onClick={() => handleCardClick(prop)}
-              style={{ cursor: "pointer" }}
-            >
-              {/* 1. Property Name or Address */}
-              <div className="property-title-bar">
-                {`${prop.address}, ${prop.city}, ${prop.county}, ${prop.postcode}`}
-              </div>
-              {/* 2. Monthly Rent Amount */}
-              <div className="property-card-row">
-                <span className="property-label">Monthly Rent:</span>
-                <span className="property-value">
-                  {prop.rent_amount ? `£${prop.rent_amount}` : "N/A"}
-                </span>
-              </div>
-              {/* 3. Unit Status */}
-              <div className="property-card-row">
-                <span className="property-label">Status:</span>
-                <span className={`property-status status-${prop.status.toLowerCase().replace(/\s/g, "-")}`}>
-                  {prop.status}
-                </span>
-              </div>
-              {/* 4. Next Rent Due Date */}
-              <div className="property-card-row">
-                <span className="property-label">Next Rent Due:</span>
-                <span className="property-value">
-                  {prop.nextRentDue ? prop.nextRentDue : "N/A"}
-                </span>
-              </div>
-              {/* 5. Tenant Name */}
-              <div className="property-card-row">
-                <span className="property-label">Tenant:</span>
-                <span className="property-value">
-                  {prop.leadTenant
-                    ? `${prop.leadTenant.first_name} ${prop.leadTenant.last_name}`
-                    : "No tenant assigned"}
-                </span>
-              </div>
-              {/* 6. Maintenance Issue */}
-              <div className="property-card-row">
-                <span className="property-label">Maintenance:</span>
-                <span className="property-value">
-                  {prop.maintenanceIssue ? prop.maintenanceIssue : "None"}
-                </span>
-              </div>
-              {/* 7. ROI */}
-              <div className="property-card-row">
-                <span className="property-label">ROI:</span>
-                <span className="property-value">
-                  {prop.roi ? prop.roi : "N/A"}
-                </span>
-              </div>
-            </div>
-          ))}
+        {/* Table layout */}
+        <div className="properties-table-container">
+          <table className="properties-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Status</th>
+                <th>Tenant</th>
+                <th>Monthly Rent</th>
+              </tr>
+            </thead>
+            <tbody>
+              {properties.map((prop) => (
+                <tr
+                  key={prop.id}
+                  className="property-row"
+                  onClick={() => handleRowClick(prop)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{prop.name || "-"}</td>
+                  <td>
+                    {`${prop.address}, ${prop.city}, ${prop.county}, ${prop.postcode}`}
+                  </td>
+                  <td>
+                    <span className={`property-status status-${prop.status?.toLowerCase().replace(/\s/g, "-")}`}>
+                      {prop.status}
+                    </span>
+                  </td>
+                  <td>
+                    {prop.leadTenant
+                      ? `${prop.leadTenant.first_name} ${prop.leadTenant.last_name}`
+                      : "No tenant"}
+                  </td>
+                  <td>
+                    {prop.rent_amount ? `£${prop.rent_amount}` : "N/A"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
         {/* Add Property Modal */}
@@ -172,14 +144,13 @@ export default function Properties() {
           </div>
         )}
 
-        {/* Property Notes Modal */}
+        {/* Property Notes Modal (card style) */}
         {selectedProperty && (
           <div className="property-notes-modal">
             <div className="property-notes-modal-content">
               <h2>
                 Notes for {selectedProperty.number} {selectedProperty.name}
               </h2>
-              {/* Property info section */}
               <div className="property-info">
                 <div>
                   <strong>Address:</strong> {selectedProperty.address},{" "}
@@ -199,7 +170,6 @@ export default function Properties() {
                     <option value="Not Available">Not Available</option>
                   </select>
                 </div>
-                {/* Show tenant info if occupied */}
                 {selectedProperty.status === "Occupied" &&
                   selectedProperty.leadTenant && (
                     <>
@@ -213,8 +183,21 @@ export default function Properties() {
                       </div>
                     </>
                   )}
+                {/* Add these details */}
+                <div>
+                  <strong>Next Rent Due:</strong>{" "}
+                  {selectedProperty.nextRentDue ? selectedProperty.nextRentDue : "N/A"}
+                </div>
+                <div>
+                  <strong>Maintenance:</strong>{" "}
+                  {selectedProperty.maintenanceIssue
+                    ? selectedProperty.maintenanceIssue
+                    : "None"}
+                </div>
+                <div>
+                  <strong>ROI:</strong> {selectedProperty.roi ? selectedProperty.roi : "N/A"}
+                </div>
               </div>
-              {/* Notes list */}
               <div className="property-notes-list">
                 {(propertyNotes[selectedProperty.id] || []).length === 0 && (
                   <p>No notes yet.</p>
@@ -226,19 +209,35 @@ export default function Properties() {
                   </div>
                 ))}
               </div>
-              {/* Add note input */}
               <textarea
                 className="property-note-input"
                 placeholder="Add a note or event..."
                 value={noteInput}
                 onChange={(e) => setNoteInput(e.target.value)}
               />
-              <div style={{ marginTop: 12 }}>
+              <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
                 <button onClick={handleAddNote} className="add-note-btn">
                   Add Note
                 </button>
                 <button onClick={handleCloseNotesModal} className="close-notes-btn">
                   Close
+                </button>
+                <button
+                  onClick={() => handleRemoveProperty(selectedProperty.id)}
+                  className="remove-property-btn"
+                  style={{
+                    background: "#ef4444",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: 8,
+                    padding: "10px 22px",
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    marginLeft: "auto",
+                  }}
+                >
+                  Remove Property
                 </button>
               </div>
             </div>

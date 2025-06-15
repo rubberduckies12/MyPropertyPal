@@ -97,19 +97,29 @@
 }
 
 .property-status {
-  padding: 4px 12px;
-  border-radius: 8px;
+  padding: 5px 14px;
+  border-radius: 12px;
+  font-weight: 600;
   font-size: 0.98rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.5px;
-  background: var(--primary-dark);
-  box-shadow: 0 1px 4px rgba(37,99,235,0.08);
+  letter-spacing: 0.02em;
+  display: inline-block;
 }
-.status-available { background: #10b981; }
-.status-occupied { background: var(--primary-dark); }
-.status-under-maintenance { background: #f59e42; }
-.status-not-available { background: #d32f2f; }
+.status-available {
+  background: #dbeafe;
+  color: #2563eb;
+}
+.status-occupied {
+  background: #dbeafe;
+  color: #2563eb;
+}
+.status-under-maintenance {
+  background: #fef9c3;
+  color: #92400e;
+}
+.status-not-available {
+  background: #fee2e2;
+  color: #b91c1c;
+}
 
 /* ===== Card Content ===== */
 .property-address,
@@ -171,6 +181,7 @@
   justify-content: center;
   z-index: 1000;
 }
+
 .add-property-modal-content,
 .property-notes-modal-content {
   background: var(--white);
@@ -182,76 +193,118 @@
   width: 370px;
 }
 
-/* ===== Property Info in Modal ===== */
+/* Modern Property Modal Styles */
+.property-notes-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30, 41, 59, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.property-notes-modal-content {
+  background: var(--white);
+  border-radius: 22px;
+  padding: 38px 38px 28px 38px;
+  box-shadow: 0 12px 48px rgba(37,99,235,0.15);
+  min-width: 420px;
+  max-width: 98vw;
+  width: 520px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  animation: modalIn 0.18s;
+}
+
+@keyframes modalIn {
+  from { transform: translateY(40px) scale(0.97); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.property-notes-modal-content h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
 .property-info {
   background: #f6f8fa;
-  border-radius: 8px;
-  padding: 12px 14px;
-  margin-bottom: 18px;
-  font-size: 1rem;
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 10px;
+  font-size: 1.08rem;
   color: #374151;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
+
 .property-info strong {
   color: var(--primary-dark);
 }
 
-/* ===== Notes List & Note Item ===== */
 .property-notes-list {
   max-height: 180px;
   overflow-y: auto;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
+  margin-top: 8px;
+  padding-left: 2px;
 }
+
 .property-note {
   background: #f6f8fa;
   border-radius: 8px;
-  padding: 8px 10px;
-  margin-bottom: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
   font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
+
 .property-note-date {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: #888;
   margin-top: 2px;
 }
 
-/* ===== Note Input & Modal Buttons ===== */
 .property-note-input {
   width: 100%;
-  min-height: 60px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  padding: 8px;
+  min-height: 70px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  padding: 10px;
   margin-bottom: 8px;
-  font-size: 1rem;
+  font-size: 1.05rem;
+  margin-top: 8px;
 }
-.add-note-btn {
-  background: var(--primary-dark);
-  color: var(--white);
-  border: none;
-  border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-right: 10px;
-  transition: background 0.18s;
+
+.property-notes-modal-content .add-note-btn,
+.property-notes-modal-content .close-notes-btn {
+  margin-top: 8px;
+  margin-right: 12px;
+  padding: 10px 24px;
+  font-size: 1.08rem;
 }
-.add-note-btn:hover {
-  background: var(--primary-blue);
+
+.property-notes-modal-content .close-notes-btn {
+  margin-right: 0;
 }
-.close-notes-btn {
-  background: var(--border);
-  color: #222;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.18s;
-}
-.close-notes-btn:hover {
-  background: #e0e7ef;
+
+@media (max-width: 600px) {
+  .property-notes-modal-content {
+    min-width: 90vw;
+    width: 98vw;
+    padding: 18px 6vw;
+  }
+  .property-info {
+    padding: 12px 4vw;
+  }
 }
 
 /* ===== Property Title Bar (Address) ===== */
@@ -288,6 +341,63 @@
   color: #374151;
   font-weight: 500;
   text-align: right;
+}
+
+/* ===== Table Styles ===== */
+.properties-table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 32px;
+}
+
+.properties-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--white, #fff);
+  border-radius: 18px;
+  box-shadow: 0 6px 32px rgba(37,99,235,0.07);
+  font-size: 1rem;
+  margin: 0 auto;
+  min-width: 900px;
+  overflow: hidden;
+}
+
+.properties-table th,
+.properties-table td {
+  padding: 18px 14px;
+  text-align: left;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+.properties-table th {
+  background: var(--section-bg, #f7f8fa);
+  color: var(--primary-dark, #2563eb);
+  font-weight: 700;
+  border-bottom: 2px solid var(--border, #e5e7eb);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.properties-table tr {
+  transition: background 0.18s;
+}
+
+.properties-table tbody tr:nth-child(even) {
+  background: #f4f7fb;
+}
+
+.properties-table tbody tr:nth-child(odd) {
+  background: #fff;
+}
+
+.properties-table tr:hover {
+  background: #e8f0fe;
+}
+
+.properties-table tr:not(:last-child) td {
+  border-bottom: 1px solid var(--border, #e5e7eb);
 }
 
 /* ===== Responsive Design ===== */
