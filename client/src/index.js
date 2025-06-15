@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 
 // Path imports
-import Landing from './landing/landing.jsx';
+import Landing from './webpage/landing/landing.jsx';
 import Dashboard from './dashboard/dashboard.jsx';
 import Chatbot from './chatbot/chatbot.jsx';
 import Login from './login/login.jsx';

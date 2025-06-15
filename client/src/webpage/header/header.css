@@ -1,0 +1,53 @@
+.webpage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 7vw 18px 7vw;
+  background: #fff;
+  box-shadow: 0 2px 16px rgba(37,99,235,0.04);
+  position: relative;
+  z-index: 10;
+}
+
+.webpage-logo {
+  height: 38px;
+  width: auto;
+  margin-right: 10px;
+}
+
+.webpage-nav-link {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 1.08rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.01em;
+}
+.webpage-nav-link:hover,
+.webpage-nav-link:focus {
+  background: #e0e7ff;
+  color: #1746a2;
+  outline: none;
+}
+
+.webpage-login-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  letter-spacing: 0.01em;
+}
+.webpage-login-btn:hover,
+.webpage-login-btn:focus {
+  background: #1746a2;
+  outline: none;
+}
