@@ -13,6 +13,7 @@ import Admin from './admin/admin.jsx';
 import Properties from './properties/properties.jsx';
 import Tenants from './tenants/tenants.jsx';
 import Incidents from './incidents/incidents.jsx'; // <-- Add this import
+import About from './webpage/about/about.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -27,7 +28,8 @@ root.render(
         <Route path="/admin" element={<Admin />} />
         <Route path="/properties" element={<Properties />} />
         <Route path="/tenants" element={<Tenants />} />
-        <Route path="/incidents" element={<Incidents />} /> {/* <-- Add this line */}
+        <Route path="/incidents" element={<Incidents />} />
+        <Route path="/about" element={<About />} /> {/* <-- Add this line */}
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

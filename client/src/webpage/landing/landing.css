@@ -218,16 +218,6 @@
   transform: translateY(-6px) scale(1.035);
   border-color: var(--primary-blue);
 }
-.feature-icon {
-  font-size: 2.3rem;
-  margin-bottom: 0.9rem;
-  color: var(--primary-blue);
-  background: #e0e7ff;
-  border-radius: 50%;
-  padding: 0.6rem 1rem;
-  display: inline-block;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.06);
-}
 .feature-card h3 {
   font-size: 1.22rem;
   font-weight: 700;

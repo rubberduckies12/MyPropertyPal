@@ -25,7 +25,7 @@ export default function WebpageHeader() {
           </button>
           <button
             className="webpage-nav-link"
-            onClick={() => navigate("/company")}
+            onClick={() => navigate("/about")}
             type="button"
           >
             About Us
