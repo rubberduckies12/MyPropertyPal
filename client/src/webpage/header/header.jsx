@@ -7,7 +7,7 @@ export default function WebpageHeader() {
 
   return (
     <header className="webpage-header">
-      <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+      <div className="webpage-header-inner">
         <img
           src="/logo.png"
           alt="Logo"
@@ -15,7 +15,7 @@ export default function WebpageHeader() {
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/")}
         />
-        <nav className="webpage-nav" style={{ display: "flex", gap: 24 }}>
+        <nav className="webpage-nav">
           <button
             className="webpage-nav-link"
             onClick={() => navigate("/features")}
@@ -31,14 +31,15 @@ export default function WebpageHeader() {
             About Us
           </button>
         </nav>
+        <button
+          className="webpage-login-btn-modern"
+          onClick={() => navigate("/login")}
+          type="button"
+          aria-label="Log in to your account"
+        >
+          <span className="login-text">Log In</span>
+        </button>
       </div>
-      <button
-        className="webpage-login-btn"
-        onClick={() => navigate("/login")}
-        type="button"
-      >
-        Log In
-      </button>
     </header>
   );
 }
