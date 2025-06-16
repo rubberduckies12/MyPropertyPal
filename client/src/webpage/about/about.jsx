@@ -68,14 +68,16 @@ const About = () => {
 
 			{/* Founders Section */}
 			<section className="about-section about-team">
-				<h2 className="about-team-title">Meet the MyPropertyPal Team</h2>
-				<div className="about-team-desc-wrapper">
+				<div className="about-team-card about-team-intro">
+					<h2 className="about-team-title">Meet the MyPropertyPal Team</h2>
 					<p className="about-team-desc">
-						At MyPropertyPal, we’re passionate builders and problem-solvers dedicated to making property management effortless.<br /><br />
-						
-						As aspiring property investors ourselves, we’re committed to creating the tools we want to use — because we believe landlords deserve better.
+						At MyPropertyPal, we’re builders, problem-solvers, and customer-obsessed founders.
+ We’ve worked closely with landlords, property managers, and tenants to deeply understand the frustrations of managing rental properties in the UK.
+We’re also aspiring property investors ourselves, which means we’re building the exact tools we plan to use on our own journeys—because we believe landlords deserve better.
+
 					</p>
 				</div>
+
 				<div className="about-team-grid">
 					{founders.map((f) => (
 						<div className="about-team-card" key={f.name}>

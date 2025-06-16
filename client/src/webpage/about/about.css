@@ -90,7 +90,6 @@
   border: none;
   margin-top: 0;
   margin-bottom: 4rem;
-  padding: 0 0 4rem 0;
 }
 .about-team-title {
   font-size: 2.2rem;
@@ -256,6 +255,62 @@
 }
 .about-locations-list li:hover {
   background: #dbeafe;
+}
+
+/* Team Intro Section */
+.about-team-intro {
+  background: #fff;
+  border-radius: 1.7rem;
+  box-shadow: 0 8px 40px rgba(37,99,235,0.10);
+  max-width: 1100px;
+  margin: 4rem auto 2.5rem auto;
+  padding: 1.2rem 3vw 0 3vw;
+  border: 1.5px solid #e5e7eb;
+  text-align: center;
+  /* Remove any transition or hover effect */
+  transition: none;
+}
+.about-team-intro:hover {
+  /* Explicitly disable hover animation */
+  box-shadow: 0 8px 40px rgba(37,99,235,0.10);
+  transform: none;
+  border-color: #e5e7eb;
+}
+
+/* Ensure consistent border-radius for all main cards and sections */
+.about-values,
+.about-team-card,
+.about-mission,
+.about-locations,
+.about-team-avatar,
+.about-value,
+.about-team-grid,
+.about-team-desc-wrapper,
+.about-uk-map-img {
+  border-radius: 1.7rem !important;
+}
+
+/* For avatar circles, keep them perfectly round */
+.about-team-avatar {
+  border-radius: 50% !important;
+}
+
+/* Responsive: maintain consistent border-radius on small screens */
+@media (max-width: 900px) {
+  .about-values,
+  .about-team-card,
+  .about-mission,
+  .about-locations {
+    border-radius: 1.2rem !important;
+  }
+}
+@media (max-width: 600px) {
+  .about-values,
+  .about-team-card,
+  .about-mission,
+  .about-locations {
+    border-radius: 0.7rem !important;
+  }
 }
 
 /* Responsive */
