@@ -6,7 +6,7 @@
   padding-bottom: 64px;
 }
 
-/* Hero Section */
+/* ===== Hero Section ===== */
 .about-hero {
   background: linear-gradient(100deg, #2563eb 60%, #3b82f6 100%);
   color: #fff;
@@ -45,7 +45,7 @@
   line-height: 1.8;
 }
 
-/* Value Props */
+/* ===== Value Props Section ===== */
 .about-values {
   background: #fff;
   border-radius: 1.7rem;
@@ -82,8 +82,11 @@
 .about-value:hover {
   background: #e0e7ff;
 }
+.about-value-icon {
+  /* Icon styling if needed */
+}
 
-/* Team Section */
+/* ===== Team Section ===== */
 .about-team {
   background: transparent;
   box-shadow: none;
@@ -182,13 +185,31 @@
   line-height: 1.7;
 }
 
-/* Mission Section */
+/* ===== Team Intro Card (above grid) ===== */
+.about-team-intro {
+  background: #fff;
+  border-radius: 1.7rem;
+  box-shadow: 0 8px 40px rgba(37,99,235,0.10);
+  max-width: 1100px;
+  margin: 4rem auto 2.5rem auto;
+  padding: 1.2rem 3vw 0 3vw;
+  border: 1.5px solid #e5e7eb;
+  text-align: center;
+  transition: none;
+}
+.about-team-intro:hover {
+  box-shadow: 0 8px 40px rgba(37,99,235,0.10);
+  transform: none;
+  border-color: #e5e7eb;
+}
+
+/* ===== Mission Section ===== */
 .about-mission {
   background: #fff;
   border-radius: 1.7rem;
   box-shadow: 0 8px 40px rgba(37,99,235,0.10);
   max-width: 1100px;
-  margin: 2.2rem auto 4rem auto; /* Reduced top margin from 4rem to 2.2rem */
+  margin: 2.2rem auto 4rem auto;
   padding: 3rem 3vw;
   border: 1.5px solid #e5e7eb;
   text-align: center;
@@ -207,7 +228,7 @@
   line-height: 1.8;
 }
 
-/* Locations Section */
+/* ===== Locations Section ===== */
 .about-locations {
   background: #fff;
   border-radius: 1.7rem;
@@ -233,51 +254,8 @@
   font-weight: 500;
   line-height: 1.7;
 }
-.about-locations-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem 2.7rem;
-  margin: 2.2rem 0 0 0;
-  padding: 0;
-  list-style: none;
-  justify-content: center;
-}
-.about-locations-list li {
-  background: #e0e7ff;
-  color: #2563eb;
-  border-radius: 12px;
-  padding: 0.7em 1.6em;
-  font-weight: 600;
-  font-size: 1.13rem;
-  box-shadow: 0 1px 6px rgba(37,99,235,0.07);
-  margin-bottom: 0;
-  transition: background 0.2s;
-}
-.about-locations-list li:hover {
-  background: #dbeafe;
-}
 
-/* Team Intro Section */
-.about-team-intro {
-  background: #fff;
-  border-radius: 1.7rem;
-  box-shadow: 0 8px 40px rgba(37,99,235,0.10);
-  max-width: 1100px;
-  margin: 4rem auto 2.5rem auto;
-  padding: 1.2rem 3vw 0 3vw;
-  border: 1.5px solid #e5e7eb;
-  text-align: center;
-  /* Remove any transition or hover effect */
-  transition: none;
-}
-.about-team-intro:hover {
-  /* Explicitly disable hover animation */
-  box-shadow: 0 8px 40px rgba(37,99,235,0.10);
-  transform: none;
-  border-color: #e5e7eb;
-}
-
-/* Ensure consistent border-radius for all main cards and sections */
+/* ===== Consistent Border Radius for Cards/Sections ===== */
 .about-values,
 .about-team-card,
 .about-mission,
@@ -285,35 +263,14 @@
 .about-team-avatar,
 .about-value,
 .about-team-grid,
-.about-team-desc-wrapper,
-.about-uk-map-img {
+.about-team-desc-wrapper {
   border-radius: 1.7rem !important;
 }
-
-/* For avatar circles, keep them perfectly round */
 .about-team-avatar {
   border-radius: 50% !important;
 }
 
-/* Responsive: maintain consistent border-radius on small screens */
-@media (max-width: 900px) {
-  .about-values,
-  .about-team-card,
-  .about-mission,
-  .about-locations {
-    border-radius: 1.2rem !important;
-  }
-}
-@media (max-width: 600px) {
-  .about-values,
-  .about-team-card,
-  .about-mission,
-  .about-locations {
-    border-radius: 0.7rem !important;
-  }
-}
-
-/* Responsive */
+/* ===== Responsive Design ===== */
 @media (max-width: 1100px) {
   .about-values,
   .about-team-grid,
@@ -344,6 +301,12 @@
   .about-locations {
     padding: 1.7rem 1vw;
   }
+  .about-values,
+  .about-team-card,
+  .about-mission,
+  .about-locations {
+    border-radius: 1.2rem !important;
+  }
 }
 @media (max-width: 600px) {
   .about-hero-main,
@@ -364,5 +327,11 @@
   .about-mission,
   .about-locations {
     padding: 1rem 0.5vw;
+  }
+  .about-values,
+  .about-team-card,
+  .about-mission,
+  .about-locations {
+    border-radius: 0.7rem !important;
   }
 }

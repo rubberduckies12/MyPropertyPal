@@ -18,6 +18,13 @@ export default function WebpageHeader() {
         <nav className="webpage-nav">
           <button
             className="webpage-nav-link"
+            onClick={() => navigate("/")}
+            type="button"
+          >
+            Home
+          </button>
+          <button
+            className="webpage-nav-link"
             onClick={() => navigate("/features")}
             type="button"
           >
