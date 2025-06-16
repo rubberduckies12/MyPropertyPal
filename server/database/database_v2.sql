@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS account (
     last_name VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    email_verified BOOLEAN NOT NULL DEFAULT FALSE
+    email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    date_of_birth DATE NOT NULL
 );
 
 -- ===== Tenants =====
