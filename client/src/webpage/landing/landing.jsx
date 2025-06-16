@@ -54,6 +54,15 @@ function FeatureCarousel() {
 
 const Landing = () => {
     const navigate = useNavigate();
+    const [yearly, setYearly] = useState(false);
+
+    // Example prices (adjust as needed)
+    const pricing = {
+        starter: yearly ? "£300" : "£30",
+        pro: yearly ? "£500" : "£50",
+        starterLabel: yearly ? "/yr" : "/mo",
+        proLabel: yearly ? "/yr" : "/mo",
+    };
 
     return (
         <div className="landing-root">
@@ -129,10 +138,29 @@ const Landing = () => {
             {/* Pricing Section */}
             <section className="landing-section landing-pricing">
                 <h2 className="landing-features-title">Simple, Transparent Pricing</h2>
+                <div className="pricing-toggle-wrap">
+                  <div className="pricing-toggle-row">
+                    <span className={!yearly ? "toggle-label active" : "toggle-label"}>Monthly</span>
+                    <label className="pricing-toggle">
+                      <input
+                        type="checkbox"
+                        checked={yearly}
+                        onChange={() => setYearly(!yearly)}
+                      />
+                      <span className="slider"></span>
+                    </label>
+                    <span className={yearly ? "toggle-label active" : "toggle-label"}>Yearly</span>
+                  </div>
+                  {yearly && <span className="toggle-save">Get 2 Months Free!</span>}
+                </div>
+                
                 <div className="pricing-cards">
                     <div className="pricing-card">
                         <div className="pricing-title">Starter</div>
-                        <div className="pricing-price">£30<span>/mo</span></div>
+                        <div className="pricing-price">
+                            {pricing.starter}
+                            <span>{pricing.starterLabel}</span>
+                        </div>
                         <ul className="pricing-features">
                             <li>Manage up to 5 properties</li>
                             <li>All features included</li>
@@ -148,7 +176,10 @@ const Landing = () => {
                     <div className="pricing-card pricing-card-popular">
                         <div className="pricing-popular">Most Popular</div>
                         <div className="pricing-title">Pro</div>
-                        <div className="pricing-price">£50<span>/mo</span></div>
+                        <div className="pricing-price">
+                            {pricing.pro}
+                            <span>{pricing.proLabel}</span>
+                        </div>
                         <ul className="pricing-features">
                             <li>Up to 10 properties</li>
                             <li>All features included</li>
