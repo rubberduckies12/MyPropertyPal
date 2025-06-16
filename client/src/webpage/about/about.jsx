@@ -5,14 +5,14 @@ import "./about.css";
 const founders = [
 	{
 		name: "Tommy Rowe",
-		role: "CEO",
+		role: "CEO & Managing Director",
 		bio: "Leads vision and product strategy. Passionate about seamless user experiences and building a smarter platform for UK landlords.",
 		color: "#34d399",
 	},
 	{
 		name: "Chris Thomson",
-		role: "COO",
-		bio: "Operational backbone. Ensures MyPropertyPal is secure, reliable, and ready to scale with every landlord’s portfolio.",
+		role: "Director of Business Operations",
+		bio: "Oversees operations and customer success. Ensures MyPropertyPal delivers exceptional support and value to every landlord.",
 		color: "#fbbf24",
 	},
 	{
