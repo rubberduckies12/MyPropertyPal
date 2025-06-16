@@ -132,7 +132,7 @@ const Landing = () => {
                 <div className="pricing-cards">
                     <div className="pricing-card">
                         <div className="pricing-title">Starter</div>
-                        <div className="pricing-price">£15<span>/mo</span></div>
+                        <div className="pricing-price">£30<span>/mo</span></div>
                         <ul className="pricing-features">
                             <li>Manage up to 5 properties</li>
                             <li>All features included</li>
