@@ -31,23 +31,23 @@ function FeatureCarousel() {
 
     return (
         <div className="features-carousel">
-            <button className="carousel-arrow left" onClick={prev} aria-label="Previous feature">
-                <span className="material-icons">arrow_back_ios</span>
-            </button>
-            <div className="features-carousel-track">
-                {getVisible().map((feature, idx) => (
-                    <div
-                        className={`feature-card carousel-card${idx === 1 ? " active" : " faded"}`}
-                        key={feature.title}
-                    >
-                        <h3>{feature.title}</h3>
-                        <p>{feature.desc}</p>
-                    </div>
-                ))}
-            </div>
-            <button className="carousel-arrow right" onClick={next} aria-label="Next feature">
-                <span className="material-icons">arrow_forward_ios</span>
-            </button>
+          <button className="carousel-arrow left" onClick={prev} aria-label="Previous feature">
+            <span className="material-icons">arrow_back</span>
+          </button>
+          <div className="features-carousel-track">
+            {getVisible().map((feature, idx) => (
+              <div
+                className={`feature-card carousel-card${idx === 1 ? " active" : " faded"}`}
+                key={feature.title}
+              >
+                <h3>{feature.title}</h3>
+                <p>{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+          <button className="carousel-arrow right" onClick={next} aria-label="Next feature">
+            <span className="material-icons">arrow_forward</span>
+          </button>
         </div>
     );
 }

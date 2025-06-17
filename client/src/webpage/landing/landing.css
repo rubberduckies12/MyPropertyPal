@@ -15,8 +15,8 @@
   border-radius: 0 0 2.5rem 2.5rem;
   margin-bottom: 0;
   box-shadow: 0 8px 32px rgba(37,99,235,0.10);
-  background-size: 340px; /* Adjust this value for pattern scale */
 }
+
 .landing-hero-main {
   font-size: 3.5rem;
   font-weight: 900;
@@ -25,6 +25,7 @@
   display: block;
   line-height: 1.1;
 }
+
 .landing-hero-highlight {
   font-size: 3rem;
   font-weight: 900;
@@ -37,6 +38,7 @@
   letter-spacing: -1.5px;
   box-shadow: 0 2px 16px rgba(37,99,235,0.10);
 }
+
 .landing-hero-sub {
   font-size: 1.35rem;
   margin-top: 2.2rem;
@@ -48,52 +50,51 @@
   text-align: center;
 }
 
-/* ===== Value Section (Overlapping Card) ===== */
-.landing-values {
-  background: #fff;
-  border-radius: 1.7rem;
-  box-shadow: 0 8px 40px rgba(37,99,235,0.10);
-  max-width: 1100px;
-  margin: -48px auto 4rem auto; /* Overlaps hero */
-  padding: 3rem 3vw 2.5rem 3vw;
-  border: 1.5px solid #e5e7eb;
-  position: relative;
-  z-index: 2;
-}
-
-/* ===== Features Carousel Section ===== */
+/* ===== Overlapping Card Section ===== */
+.landing-values,
+.landing-mission,
+.landing-why,
 .landing-features {
   background: #fff;
   border-radius: 1.7rem;
   box-shadow: 0 8px 40px rgba(37,99,235,0.10);
   max-width: 1100px;
-  margin: 4rem auto 4rem auto;
+  margin: 3rem auto 4rem auto;
   padding: 3rem 3vw;
   border: 1.5px solid #e5e7eb;
   text-align: center;
 }
+
+.landing-values {
+  margin: -48px auto 4rem auto;
+  z-index: 2;
+  position: relative;
+}
+
+/* ===== Features Carousel ===== */
 .landing-features-title {
   font-size: 1.7rem;
   color: #2563eb;
   font-weight: 800;
   margin-bottom: 0.7em;
 }
+
 .features-carousel {
   display: flex;
-  align-items: center;
+  align-items: center;      /* This is key! */
   justify-content: center;
   gap: 2rem;
-  margin-top: 2rem;
+  width: 100%;
+  min-height: 240px;        /* Should match or exceed .carousel-card height */
 }
+
 .features-carousel-track {
   display: flex;
   gap: 2rem;
-  align-items: stretch;
+  align-items: center;      /* Also helps with vertical alignment */
   justify-content: center;
-  width: calc(3 * 300px + 2 * 2rem); /* 3 cards, 2 gaps */
-  max-width: 100%;
-  margin: 0 auto;
 }
+
 .carousel-arrow {
   background: #2563eb;
   color: #fff;
@@ -107,10 +108,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.08);
 }
+
 .carousel-arrow:hover {
   background: #1746a2;
 }
+
+.carousel-arrow .material-icons {
+  font-size: 2rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  line-height: 1;
+}
+
+/* ===== Carousel Card ===== */
 .carousel-card {
   min-width: 260px;
   max-width: 300px;
@@ -128,6 +145,7 @@
   border: 1.5px solid #e5e7eb;
   text-align: center;
 }
+
 .carousel-card h3 {
   text-align: center;
   width: 100%;
@@ -136,12 +154,14 @@
   font-size: 1.25rem;
   color: #2563eb;
 }
+
 .carousel-card.faded {
   opacity: 0.45;
   filter: blur(1px);
   transform: scale(0.93);
   transition: opacity 0.2s, filter 0.2s, transform 0.2s;
 }
+
 .carousel-card.active {
   opacity: 1;
   filter: none;
@@ -167,6 +187,7 @@
   display: block;
   width: fit-content;
 }
+
 .landing-cta-btn:hover,
 .landing-cta-btn:focus {
   background: linear-gradient(90deg, #1746a2 60%, #2563eb 100%);
@@ -177,15 +198,6 @@
 }
 
 /* ===== How It Works Section ===== */
-.landing-mission.landing-how-it-works {
-  background: #fff;
-  border-radius: 1.7rem;
-  box-shadow: 0 8px 40px rgba(37,99,235,0.10);
-  max-width: 1100px;
-  margin: 4rem auto 4rem auto;
-  padding: 3rem 3vw;
-  border: 1.5px solid #e5e7eb;
-}
 .landing-how-it-works h2 {
   text-align: center;
   margin-left: 0;
@@ -207,24 +219,10 @@
   background: #f4f7fd;
   border-radius: 1.1rem;
   padding: 1em 1.2em;
-  box-shadow: none;
   position: relative;
-}
-.how-step-icon {
-  display: none !important;
 }
 
 /* ===== Why Section ===== */
-.landing-why {
-  background: #fff;
-  border-radius: 1.7rem;
-  box-shadow: 0 8px 40px rgba(37,99,235,0.10);
-  max-width: 1100px;
-  margin: 3rem auto 4rem auto;
-  padding: 2.5rem 3vw;
-  border: 1.5px solid #e5e7eb;
-  text-align: center;
-}
 .why-paragraph {
   margin: 2rem auto 0 auto;
   max-width: 600px;
@@ -336,7 +334,6 @@
   font-size: 1.08rem;
   flex-direction: column;
 }
-
 .pricing-toggle-row {
   display: flex;
   align-items: center;
@@ -344,20 +341,17 @@
   gap: 1rem;
   width: 100%;
 }
-
 .pricing-toggle {
   position: relative;
   display: inline-block;
   width: 48px;
   height: 28px;
 }
-
 .pricing-toggle input {
   opacity: 0;
   width: 0;
   height: 0;
 }
-
 .slider {
   position: absolute;
   cursor: pointer;
@@ -366,7 +360,6 @@
   border-radius: 34px;
   transition: background 0.2s;
 }
-
 .slider:before {
   position: absolute;
   content: "";
@@ -378,26 +371,21 @@
   border-radius: 50%;
   transition: transform 0.2s;
 }
-
 .pricing-toggle input:checked + .slider {
   background: #2563eb;
 }
-
 .pricing-toggle input:checked + .slider:before {
   background: #fff;
   transform: translateX(20px);
 }
-
 .toggle-label {
   color: #64748b;
   font-weight: 600;
   transition: color 0.2s;
 }
-
 .toggle-label.active {
   color: #2563eb;
 }
-
 .toggle-save {
   display: block;
   min-width: 120px;
