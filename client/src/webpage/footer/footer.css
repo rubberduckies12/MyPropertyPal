@@ -24,7 +24,8 @@
   justify-content: flex-start;
   flex: 1 1 220px;
   min-width: 200px;
-  min-height: 130px; /* Prevents excessive growth */
+  min-height: 130px;
+  margin-bottom: 0;
 }
 
 .footer-logo {
@@ -80,10 +81,13 @@
 
 .footer-social {
   display: flex;
-  gap: 18px;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
+  gap: 18px;
   font-size: 1.6rem;
-  margin-top: 16px;
+  margin: 16px 0 0 0;   /* Add space above, remove left margin */
+  min-height: 54px;
 }
 
 .footer-social a {

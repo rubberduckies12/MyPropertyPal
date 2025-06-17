@@ -8,13 +8,14 @@
 
 /* ===== Hero Section ===== */
 .landing-hero {
-  background: linear-gradient(100deg, #2563eb 60%, #3b82f6 100%);
+  background: #2563eb;
   color: #fff;
   text-align: center;
   padding: 96px 16px 72px 16px;
   border-radius: 0 0 2.5rem 2.5rem;
   margin-bottom: 0;
   box-shadow: 0 8px 32px rgba(37,99,235,0.10);
+  background-size: 340px; /* Adjust this value for pattern scale */
 }
 .landing-hero-main {
   font-size: 3.5rem;

@@ -1,7 +1,11 @@
 import React from 'react';
 import './footer.css';
+import { FaXTwitter, FaFacebookF, FaLinkedinIn, FaEnvelope } from 'react-icons/fa6';
+import { useNavigate } from 'react-router-dom';
 
 function Footer() {
+  const navigate = useNavigate();
+
   return (
     <footer className="awesome-footer">
       <div className="footer-content">
@@ -10,8 +14,19 @@ function Footer() {
             src="/publicassets/LogoBB.png"
             alt="MyPropertyPal Logo"
             className="footer-logo-img"
-            style={{ height: "230px", width: "auto", marginBottom: "8px" }}
+            style={{ height: "130px", width: "auto", marginBottom: "8px" }}
           />
+          <div className="footer-social">
+            <a href="https://x.com/propertypal_app" aria-label="X" target="_blank" rel="noopener noreferrer">
+              <FaXTwitter />
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61577330848552" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+              <FaFacebookF />
+            </a>
+            <a href="https://linkedin.com/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+              <FaLinkedinIn />
+            </a>
+          </div>
         </div>
         <div className="footer-links">
           <div>
@@ -31,12 +46,6 @@ function Footer() {
             <a href="/terms">Terms</a>
             <a href="/privacy">Privacy</a>
           </div>
-        </div>
-        <div className="footer-social">
-          <a href="https://twitter.com/" aria-label="Twitter" target="_blank" rel="noopener noreferrer">x</a>
-          <a href="https://facebook.com/" aria-label="Facebook" target="_blank" rel="noopener noreferrer">f</a>
-          <a href="https://linkedin.com/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">li</a>
-          <a href="mailto:support@landlordpro.com" aria-label="Email">E-mail</a>
         </div>
       </div>
       <div className="footer-bottom">
