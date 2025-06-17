@@ -4,39 +4,107 @@ import './sidebar.css';
 
 function Sidebar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Clear auth tokens or user state here if needed
-    // localStorage.removeItem('token');
     setShowLogoutModal(false);
     navigate('/'); // Redirect to landing page
   };
 
   const handleLogoutClick = (e) => {
-    e.preventDefault(); // Prevent navigation
+    e.preventDefault();
     setShowLogoutModal(true);
+  };
+
+  const toggleDropdown = (section) => {
+    setOpenDropdown(openDropdown === section ? null : section);
   };
 
   return (
     <aside className="dashboard-sidebar">
       <div className="dashboard-logo">Logo</div>
       <nav className="dashboard-nav">
-        <NavLink to="/dashboard" className="dashboard-nav-link">Dashboard</NavLink>
-        <NavLink to="/properties" className="dashboard-nav-link">Properties</NavLink>
-        <NavLink to="/tenants" className="dashboard-nav-link">Tenants</NavLink>
-        <NavLink to="/incidents" className="dashboard-nav-link">Incidents</NavLink>
-        <NavLink to="/messages" className="dashboard-nav-link">Messages</NavLink>
-        <NavLink to="/chatbot" className="dashboard-nav-link">Chatbot</NavLink>
-        <NavLink to="/settings" className="dashboard-nav-link">Settings</NavLink>
-        <span
-          className="dashboard-nav-link dashboard-logout-link"
-          style={{ marginTop: 'auto', cursor: 'pointer' }}
-          onClick={handleLogoutClick}
-        >
-          Log Out
-        </span>
+
+        {/* Dashboard Link */}
+        <div className="sidebar-section">
+          <NavLink to="/dashboard" className="dashboard-nav-link">Dashboard</NavLink>
+        </div>
+
+        {/* Property Manager */}
+        <div className="sidebar-section">
+          <button
+            className="sidebar-section-btn"
+            onClick={() => toggleDropdown('property')}
+            aria-expanded={openDropdown === 'property'}
+          >
+            Property Manager
+            <span className={`sidebar-dropdown-arrow${openDropdown === 'property' ? ' open' : ''}`}>▼</span>
+          </button>
+          {openDropdown === 'property' && (
+            <div className="sidebar-dropdown">
+              <NavLink to="/properties" className="dashboard-nav-link">Properties</NavLink>
+              <NavLink to="/tenants" className="dashboard-nav-link">Tenants</NavLink>
+              <NavLink to="/incidents" className="dashboard-nav-link">Incidents</NavLink>
+              <NavLink to="/contractors" className="dashboard-nav-link">Contractors</NavLink>
+            </div>
+          )}
+        </div>
+
+        {/* Financial Manager */}
+        <div className="sidebar-section">
+          <button
+            className="sidebar-section-btn"
+            onClick={() => toggleDropdown('financial')}
+            aria-expanded={openDropdown === 'financial'}
+          >
+            Financial Manager
+            <span className={`sidebar-dropdown-arrow${openDropdown === 'financial' ? ' open' : ''}`}>▼</span>
+          </button>
+          {openDropdown === 'financial' && (
+            <div className="sidebar-dropdown">
+              <NavLink to="/expenses" className="dashboard-nav-link">Finances</NavLink>
+              <NavLink to="/documents" className="dashboard-nav-link">Documents</NavLink>
+            </div>
+          )}
+        </div>
+
+        {/* Legal Manager */}
+        <div className="sidebar-section">
+          <NavLink to="/legal" className="dashboard-nav-link">Legal Manager</NavLink>
+        </div>
+
+        {/* Business Management */}
+        <div className="sidebar-section">
+          <button
+            className="sidebar-section-btn"
+            onClick={() => toggleDropdown('business')}
+            aria-expanded={openDropdown === 'business'}
+          >
+            Business Manager
+            <span className={`sidebar-dropdown-arrow${openDropdown === 'business' ? ' open' : ''}`}>▼</span>
+          </button>
+          {openDropdown === 'business' && (
+            <div className="sidebar-dropdown">
+              <NavLink to="/mortgage-calc" className="dashboard-nav-link">Mortgage's</NavLink>
+              <NavLink to="/listings" className="dashboard-nav-link">Listings</NavLink>
+              <NavLink to="/tasks" className="dashboard-nav-link">Tasks</NavLink>
+            </div>
+          )}
+        </div>
+
+        {/* AI Chatbot */}
+        <div className="sidebar-section">
+          <NavLink to="/chatbot" className="dashboard-nav-link">AI Chatbot</NavLink>
+        </div>
       </nav>
+      <span
+        className="dashboard-nav-link dashboard-logout-link"
+        style={{ cursor: 'pointer' }}
+        onClick={handleLogoutClick}
+      >
+        Log Out
+      </span>
       {showLogoutModal && (
         <div className="logout-modal-overlay">
           <div className="logout-modal">
