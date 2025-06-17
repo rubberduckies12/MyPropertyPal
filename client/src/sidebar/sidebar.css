@@ -12,7 +12,8 @@
   position: fixed;
   top: 0;
   left: 0;
-  border-radius: 0 2rem 2rem 0;
+  /* border-radius: 0 2rem 2rem 0; */ /* Remove rounded corners */
+  border-radius: 0; /* No rounded corners */
   box-shadow: 0 8px 32px rgba(37,99,235,0.13);
   z-index: 100;
   transition: box-shadow 0.18s, background 0.18s;
@@ -179,7 +180,7 @@
   .dashboard-sidebar {
     left: 0;
     top: 0;
-    border-radius: 0 0 2rem 0;
+    border-radius: 0; /* No rounded corners on mobile */
     width: 100vw;
     height: auto;
     min-height: 0;
