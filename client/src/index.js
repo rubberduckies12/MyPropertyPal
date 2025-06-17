@@ -16,6 +16,7 @@ import Properties from './properties/properties.jsx';
 import Tenants from './tenants/tenants.jsx';
 import Incidents from './incidents/incidents.jsx';
 import Footer from './webpage/footer/footer.jsx'; // <-- Import Footer
+import Contact from './webpage/contact/contact.jsx'; // <-- Import Contact
 
 function PublicPageWithFooter({ Component }) {
   return (
@@ -35,6 +36,7 @@ root.render(
         <Route path="/" element={<PublicPageWithFooter Component={Landing} />} />
         <Route path="/about" element={<PublicPageWithFooter Component={About} />} />
         <Route path="/features" element={<PublicPageWithFooter Component={Features} />} />
+        <Route path="/contact" element={<PublicPageWithFooter Component={Contact} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
