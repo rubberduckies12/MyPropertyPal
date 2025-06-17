@@ -23,7 +23,14 @@ function Sidebar() {
 
   return (
     <aside className="dashboard-sidebar">
-      <div className="dashboard-logo">Logo</div>
+      <div className="dashboard-logo">
+        <img
+          src="/publicassets/LogoBB.png"
+          alt="MyPropertyPal Logo"
+          className="sidebar-logo-img"
+          style={{ height: "100px", width: "auto", marginBottom: "12px" }}
+        />
+      </div>
       <nav className="dashboard-nav">
 
         {/* Dashboard Link */}

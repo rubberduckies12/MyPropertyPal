@@ -9,8 +9,8 @@ export default function WebpageHeader() {
     <header className="webpage-header">
       <div className="webpage-header-inner">
         <img
-          src="/logo.png"
-          alt="Logo"
+          src="/publicassets/LogoWB.png" // Use the image from publicassets
+          alt="MyPropertyPal Logo"
           className="webpage-logo"
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/")}

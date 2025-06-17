@@ -175,6 +175,15 @@
   background: #cbd5e1;
 }
 
+/* ===== Sidebar Logo Image ===== */
+.sidebar-logo-img {
+  display: block;
+  height: 100px;
+  width: auto;
+  margin: 0 auto 12px auto;
+  object-fit: contain;
+}
+
 /* ===== Responsive Sidebar ===== */
 @media (max-width: 900px) {
   .dashboard-sidebar {

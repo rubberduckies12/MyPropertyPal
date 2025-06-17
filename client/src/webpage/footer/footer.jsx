@@ -6,8 +6,12 @@ function Footer() {
     <footer className="awesome-footer">
       <div className="footer-content">
         <div className="footer-brand">
-          <span className="footer-logo">MyPropertyPal</span>
-          <p className="footer-tagline">Empowering property management for the modern landlord.</p>
+          <img
+            src="/publicassets/LogoBB.png"
+            alt="MyPropertyPal Logo"
+            className="footer-logo-img"
+            style={{ height: "230px", width: "auto", marginBottom: "8px" }}
+          />
         </div>
         <div className="footer-links">
           <div>
