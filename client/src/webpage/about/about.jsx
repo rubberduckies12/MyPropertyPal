@@ -16,7 +16,7 @@ const founders = [
         color: "#fbbf24",
     },
     {
-        name: "Fin Perkins",
+        name: "Finn Perkins",
         role: "Director of Engineering",
         bio: "Heads engineering and product. Delivers intuitive, high-performance solutions for daily property management.",
         color: "#60a5fa",
