@@ -117,12 +117,21 @@
 .login-back-btn {
   background: none;
   border: none;
-  color: #888;
-  font-size: 0.93rem;
+  color: #2563eb;
+  font-size: 1rem;
   cursor: pointer;
-  margin-top: 8px;
-  text-decoration: underline;
-  display: block;
-  margin-left: auto;
+  margin-bottom: 18px;
+  margin-left: 0;
   margin-right: auto;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.18s;
+  display: block;
+  padding: 0;
+}
+
+.login-back-btn:hover,
+.login-back-btn:focus {
+  color: #1746a2;
+  text-decoration: underline;
 }

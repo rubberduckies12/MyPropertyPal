@@ -243,6 +243,50 @@ const Landing = () => {
                     Get Started
                 </button>
             </section>
+
+            {/* Mobile App Section */}
+            <section className="landing-section landing-mobile-app">
+                <h2 className="landing-features-title">Currently In Development</h2>
+                <div
+                    className="landing-mobile-app-subtitle"
+                    style={{
+                        color: "#64748b",
+                        fontSize: "1.18rem",
+                        marginTop: "0.5rem",
+                        marginBottom: "1.7rem",
+                        textAlign: "center"
+                    }}
+                >
+                    The MyPropertyPal Mobile App for Landlords & Tenants
+                </div>
+                <div className="mobile-app-content">
+                    <div className="mobile-app-text" style={{ margin: "0 auto", textAlign: "center" }}>
+                        <p>
+                            <strong>Your Portfolio in Your Pocket — Because Landlords Deserve Freedom, Too.</strong>
+                            <br /><br/>
+                            Property management made easy—track rent, handle repairs, store documents, and talk to tenants, anytime, anywhere.
+                        </p>
+                        <div className="mobile-app-features-list">
+                            <div className="mobile-app-feature-card">
+                                <span className="mobile-app-feature-title"><strong>Instant rent notifications</strong></span>
+                                <div>Get notified the moment rent is paid or overdue.</div>
+                            </div>
+                            <div className="mobile-app-feature-card">
+                                <span className="mobile-app-feature-title"><strong>Easy maintenance logging</strong></span>
+                                <div>Log and track repairs from anywhere, anytime.</div>
+                            </div>
+                            <div className="mobile-app-feature-card">
+                                <span className="mobile-app-feature-title"><strong>Secure messaging with tenants</strong></span>
+                                <div>Communicate safely and keep all conversations in one place.</div>
+                            </div>
+                            <div className="mobile-app-feature-card">
+                                <span className="mobile-app-feature-title"><strong>Real-time financial tracking</strong></span>
+                                <div>See your property income and expenses at a glance.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 };

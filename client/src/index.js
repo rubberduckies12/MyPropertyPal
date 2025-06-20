@@ -22,6 +22,8 @@ import ContractorsPage from './main/propertymanager/contractors/contractors.jsx'
 import Tos from './webpage/tos/tos.jsx';
 import Privacy from './webpage/privacy/privacy.jsx';
 import Blog from './webpage/blog/blog.jsx';
+import Finances from './main/financialmanager/finances/finances.jsx';
+import Documents from './main/financialmanager/documents/documents.jsx';
 
 function PublicPageWithFooter({ Component }) {
   return (
@@ -57,6 +59,8 @@ root.render(
         <Route path="/tenants" element={<Tenants />} />
         <Route path="/incidents" element={<Incidents />} />
         <Route path="/contractors" element={<ContractorsPage />} />
+        <Route path="/finances" element={<Finances />} />
+        <Route path="/documents" element={<Documents />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

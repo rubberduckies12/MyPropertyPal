@@ -1,0 +1,190 @@
+/* Root variables (reuse from dashboard.css if needed) */
+:root {
+  --primary-blue: #3b82f6;
+  --primary-dark: #2563eb;
+  --section-bg: #f7f8fa;
+  --white: #fff;
+  --border: #e5e7eb;
+  --shadow: 0 8px 32px rgba(37,99,235,0.06);
+  --radius: 18px;
+  --heading-size: 2.2rem;
+  --text: #1f2937;
+  --error: #ef4444;
+}
+
+/* Main layout */
+.finances-main {
+  background: var(--section-bg);
+  padding: 32px 16px;
+  min-height: 100vh;
+}
+
+.finances-title {
+  font-size: 2rem;
+  color: var(--primary-dark);
+  margin-bottom: 32px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+/* Summary cards */
+.finances-summary-cards {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.finances-summary-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1.5px solid var(--border);
+  padding: 24px 32px;
+  min-width: 210px;
+  flex: 1 1 210px;
+  text-align: center;
+}
+
+.finances-summary-label {
+  color: #64748b;
+  font-size: 1.02rem;
+  margin-bottom: 8px;
+}
+
+.finances-summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+}
+
+/* Section styling */
+.finances-section {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1.5px solid var(--border);
+  padding: 28px 20px 24px 20px;
+  margin-bottom: 32px;
+}
+
+.finances-section h2 {
+  font-size: 1.25rem;
+  color: var(--primary-dark);
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+/* Table styling */
+.finances-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+  background: var(--white);
+}
+
+.finances-table th,
+.finances-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 1rem;
+}
+
+.finances-table th {
+  background: #f3f6fc;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.finances-table tr:last-child td {
+  border-bottom: none;
+}
+
+.finances-status-received {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.finances-status-pending {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+/* Tax summary */
+.finances-tax-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 1.08rem;
+  margin-top: 10px;
+  margin-bottom: 18px;
+}
+
+.finances-export-btn {
+  margin-top: 14px;
+  background: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.finances-export-btn:hover,
+.finances-export-btn:focus {
+  background: var(--primary-dark);
+}
+
+/* Period toggle styling */
+.finances-period-toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.finances-period-btn {
+  background: #f3f6fc;
+  border: 1.5px solid #e5e7eb;
+  color: #2563eb;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 7px 20px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.finances-period-btn.active,
+.finances-period-btn:hover,
+.finances-period-btn:focus {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .finances-summary-cards {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .finances-summary-card {
+    min-width: 0;
+    padding: 20px 12px;
+  }
+  .finances-section {
+    padding: 18px 6px 16px 6px;
+  }
+  .finances-title {
+    font-size: 1.4rem;
+    margin-bottom: 18px;
+  }
+  .finances-table th,
+  .finances-table td {
+    padding: 8px 4px;
+    font-size: 0.98rem;
+  }
+}

@@ -70,7 +70,7 @@ function Sidebar() {
           </button>
           {openDropdown === 'financial' && (
             <div className="sidebar-dropdown">
-              <NavLink to="/expenses" className="dashboard-nav-link">Finances</NavLink>
+              <NavLink to="/finances" className="dashboard-nav-link">Finances</NavLink>
               <NavLink to="/documents" className="dashboard-nav-link">Documents</NavLink>
             </div>
           )}

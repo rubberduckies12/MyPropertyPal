@@ -42,7 +42,7 @@ function Login({ onRegisterClick }) {
         >
           ← Back to Home
         </button>
-        <img src="/logo.png" alt="Logo" className="login-logo" />
+        <img src="/publicassets/LogoWB.png" alt="MyPropertyPal Logo" className="login-logo" />
         {message && <p className="login-error">{message}</p>}
         {!showReset ? (
           <>
