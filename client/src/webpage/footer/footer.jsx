@@ -43,8 +43,24 @@ function Footer() {
           </div>
           <div>
             <h4>Legal</h4>
-            <a href="/terms">Terms</a>
-            <a href="/privacy">Privacy</a>
+            <a
+              href="/tos"
+              onClick={e => {
+                e.preventDefault();
+                navigate('/tos');
+              }}
+            >
+              Terms of Service
+            </a>
+            <a
+              href="/privacy"
+              onClick={e => {
+                e.preventDefault();
+                navigate('/privacy');
+              }}
+            >
+              Privacy
+            </a>
           </div>
         </div>
       </div>

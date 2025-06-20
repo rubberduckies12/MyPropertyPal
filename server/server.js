@@ -34,6 +34,23 @@ app.get('/external-api', async (req, res) => {
   }
 });
 
+// Import contractor search utility
+const { searchContractors } = require('./database/getcontractors');
+
+// API endpoint: Search for local contractors using Google Places API
+app.get('/api/contractors', async (req, res) => {
+  const { location, keyword } = req.query;
+  if (!location) {
+    return res.status(400).json({ error: "Missing required 'location' query parameter." });
+  }
+  try {
+    const results = await searchContractors(location, keyword);
+    res.json({ contractors: results });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch contractors' });
+  }
+});
+
 // API Endpoints
 
 // Login / Register Page

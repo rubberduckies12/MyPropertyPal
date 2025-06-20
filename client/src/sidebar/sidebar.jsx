@@ -53,7 +53,7 @@ function Sidebar() {
               <NavLink to="/properties" className="dashboard-nav-link">Properties</NavLink>
               <NavLink to="/tenants" className="dashboard-nav-link">Tenants</NavLink>
               <NavLink to="/incidents" className="dashboard-nav-link">Incidents</NavLink>
-              <NavLink to="/contractors" className="dashboard-nav-link">Contractors</NavLink>
+              <NavLink to="/contractors" className="dashboard-nav-link">Contractors</NavLink> {/* <-- This links to contractors.jsx */}
             </div>
           )}
         </div>

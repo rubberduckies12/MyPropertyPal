@@ -18,6 +18,9 @@ import Incidents from './incidents/incidents.jsx';
 import Footer from './webpage/footer/footer.jsx'; // <-- Import Footer
 import Contact from './webpage/contact/contact.jsx'; // <-- Import Contact
 import MTD from './webpage/mtd/mtd.jsx';
+import ContractorsPage from './contractors/contractors.jsx';
+import Tos from './webpage/tos/tos.jsx';
+import Privacy from './webpage/privacy/privacy.jsx';
 
 function PublicPageWithFooter({ Component }) {
   return (
@@ -39,6 +42,8 @@ root.render(
         <Route path="/features" element={<PublicPageWithFooter Component={Features} />} />
         <Route path="/contact" element={<PublicPageWithFooter Component={Contact} />} />
         <Route path="/mtd" element={<PublicPageWithFooter Component={MTD} />} />
+        <Route path="/tos" element={<PublicPageWithFooter Component={Tos} />} />
+        <Route path="/privacy" element={<PublicPageWithFooter Component={Privacy} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -49,6 +54,7 @@ root.render(
         <Route path="/properties" element={<Properties />} />
         <Route path="/tenants" element={<Tenants />} />
         <Route path="/incidents" element={<Incidents />} />
+        <Route path="/contractors" element={<ContractorsPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
