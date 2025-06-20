@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import "./blog.css";
 import WebpageHeader from "../../webpage/header/header.jsx";
 
-const MEDIUM_RSS_FEED = "https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@tommy.rowe.dev"; // Replace with your Medium username
+const MEDIUM_RSS_FEED = "https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@tommy.rowe.dev"; // Our Medium RSS feed
+const RSS_FEED = MEDIUM_RSS_FEED;
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(MEDIUM_RSS_FEED)
+    fetch(RSS_FEED)
       .then(res => res.json())
       .then(data => {
         if (data.items) {
@@ -25,7 +26,12 @@ export default function Blog() {
       <WebpageHeader />
       <main className="blog-container">
         <h1 className="blog-title">MyPropertyPal Blog</h1>
-        {loading && <p>Loading articles...</p>}
+        {loading && (
+          <div className="blog-loading-spinner">
+            <div className="spinner"></div>
+            <div className="spinner-text">Loading articles...</div>
+          </div>
+        )}
         {!loading && posts.length === 0 && <p>No articles found.</p>}
         <div className="blog-list">
           {posts.map(post => (

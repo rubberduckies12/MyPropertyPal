@@ -92,3 +92,31 @@
     height: 160px;
   }
 }
+
+.blog-loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 48px 0 32px 0;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #e0e7ff;
+  border-top: 5px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner-text {
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
