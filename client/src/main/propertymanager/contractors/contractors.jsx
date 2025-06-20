@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import fetchContractors from "./contractors.js";
 import "./contractors.css";
-import Sidebar from "../sidebar/sidebar.jsx";
+import Sidebar from "../../sidebar/sidebar.jsx";
 import ReactStars from "react-rating-stars-component";
 
 const RECOMMENDED_KEYWORDS = [

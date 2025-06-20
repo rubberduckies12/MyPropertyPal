@@ -7,18 +7,18 @@ import './index.css';
 import Landing from './webpage/landing/landing.jsx';
 import About from './webpage/about/about.jsx';
 import Features from './webpage/features/features.jsx';
-import Dashboard from './dashboard/dashboard.jsx';
-import Chatbot from './chatbot/chatbot.jsx';
-import Login from './login/login.jsx';
-import Register from './register/register.jsx';
+import Dashboard from './main/dashboard/dashboard.jsx';
+import Chatbot from './main/chatbot/chatbot.jsx';
+import Login from './log-reg/login/login.jsx';
+import Register from './log-reg/register/register.jsx';
 import Admin from './admin/admin.jsx'; 
-import Properties from './properties/properties.jsx';
-import Tenants from './tenants/tenants.jsx';
-import Incidents from './incidents/incidents.jsx';
+import Properties from './main/propertymanager/properties/properties.jsx';
+import Tenants from './main/propertymanager/tenants/tenants.jsx';
+import Incidents from './main/propertymanager/incidents/incidents.jsx';
 import Footer from './webpage/footer/footer.jsx'; // <-- Import Footer
 import Contact from './webpage/contact/contact.jsx'; // <-- Import Contact
 import MTD from './webpage/mtd/mtd.jsx';
-import ContractorsPage from './contractors/contractors.jsx';
+import ContractorsPage from './main/propertymanager/contractors/contractors.jsx';
 import Tos from './webpage/tos/tos.jsx';
 import Privacy from './webpage/privacy/privacy.jsx';
 import Blog from './webpage/blog/blog.jsx';

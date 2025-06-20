@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./incidents.css";
-import Sidebar from "../sidebar/sidebar.jsx";
+import Sidebar from "../../sidebar/sidebar.jsx";
 
 const sampleIncidents = [
   {

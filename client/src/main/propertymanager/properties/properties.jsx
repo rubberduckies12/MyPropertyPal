@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "../sidebar/sidebar.jsx";
+import Sidebar from "../../sidebar/sidebar.jsx";
 import "./properties.css";
 
 export default function Properties() {
