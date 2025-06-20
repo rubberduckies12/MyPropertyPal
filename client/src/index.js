@@ -21,6 +21,7 @@ import MTD from './webpage/mtd/mtd.jsx';
 import ContractorsPage from './contractors/contractors.jsx';
 import Tos from './webpage/tos/tos.jsx';
 import Privacy from './webpage/privacy/privacy.jsx';
+import Blog from './webpage/blog/blog.jsx';
 
 function PublicPageWithFooter({ Component }) {
   return (
@@ -44,6 +45,7 @@ root.render(
         <Route path="/mtd" element={<PublicPageWithFooter Component={MTD} />} />
         <Route path="/tos" element={<PublicPageWithFooter Component={Tos} />} />
         <Route path="/privacy" element={<PublicPageWithFooter Component={Privacy} />} />
+        <Route path="/blog" element={<PublicPageWithFooter Component={Blog} />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 

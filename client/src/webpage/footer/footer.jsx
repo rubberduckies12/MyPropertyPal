@@ -37,7 +37,15 @@ function Footer() {
           </div>
           <div>
             <h4>Resources</h4>
-            <a href="/blog">Blog</a>
+            <a
+              href="/blog"
+              onClick={e => {
+                e.preventDefault();
+                navigate('/blog');
+              }}
+            >
+              Blog
+            </a>
             <a href="/help">Help Center</a>
             <a href="/contact">Contact</a>
           </div>

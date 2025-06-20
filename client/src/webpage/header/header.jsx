@@ -1,10 +1,27 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./header.css";
 
 export default function WebpageHeader() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [resourcesOpen, setResourcesOpen] = useState(false);
+  const resourcesRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    function handleClickOutside(event) {
+      if (resourcesRef.current && !resourcesRef.current.contains(event.target)) {
+        setResourcesOpen(false);
+      }
+    }
+    if (resourcesOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [resourcesOpen]);
 
   return (
     <header className="webpage-header">
@@ -44,6 +61,49 @@ export default function WebpageHeader() {
           >
             About Us
           </button>
+          <div
+            className={`webpage-nav-dropdown${resourcesOpen ? " open" : ""}`}
+            ref={resourcesRef}
+          >
+            <button
+              className={`webpage-nav-link${
+                location.pathname.startsWith("/blog") ? " active" : ""
+              }`}
+              type="button"
+              onClick={() => setResourcesOpen((open) => !open)}
+              aria-haspopup="menu"
+              aria-expanded={resourcesOpen}
+            >
+              Resources{" "}
+              <span
+                className={`dropdown-arrow${resourcesOpen ? " open" : ""}`}
+                style={{
+                  fontSize: "0.8em",
+                  display: "inline-block",
+                  transition: "transform 0.2s",
+                }}
+              >
+                ▼
+              </span>
+            </button>
+            {resourcesOpen && (
+              <div className="webpage-nav-dropdown-menu">
+                <button
+                  className={`webpage-nav-link${
+                    location.pathname.startsWith("/blog") ? " active" : ""
+                  }`}
+                  onClick={() => {
+                    setResourcesOpen(false);
+                    navigate("/blog");
+                  }}
+                  type="button"
+                >
+                  Blog
+                </button>
+                {/* Training Courses option TBA here */}
+              </div>
+            )}
+          </div>
           <button
             className={`webpage-nav-link${
               location.pathname.startsWith("/mtd") ? " active" : ""
