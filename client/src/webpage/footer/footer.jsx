@@ -30,13 +30,13 @@ function Footer() {
         </div>
         <div className="footer-links">
           <div>
-            <h4>Product</h4>
+            <h3>Product</h3>
             <a href="/features">Features</a>
             <a href="/pricing">Pricing</a>
             <a href="/about">About Us</a>
           </div>
           <div>
-            <h4>Resources</h4>
+            <h3>Resources</h3>
             <a
               href="/blog"
               onClick={e => {
@@ -50,7 +50,7 @@ function Footer() {
             <a href="/contact">Contact</a>
           </div>
           <div>
-            <h4>Legal</h4>
+            <h3>Legal</h3>
             <a
               href="/tos"
               onClick={e => {

@@ -32,7 +32,7 @@ function FeatureCarousel() {
     return (
         <div className="features-carousel">
           <button className="carousel-arrow left" onClick={prev} aria-label="Previous feature">
-            <span className="material-icons">arrow_back</span>
+            <span className="material-icons" aria-hidden="true">arrow_back</span>
           </button>
           <div className="features-carousel-track">
             {getVisible().map((feature, idx) => (
@@ -46,7 +46,7 @@ function FeatureCarousel() {
             ))}
           </div>
           <button className="carousel-arrow right" onClick={next} aria-label="Next feature">
-            <span className="material-icons">arrow_forward</span>
+            <span className="material-icons" aria-hidden="true">arrow_forward</span>
           </button>
         </div>
     );
@@ -142,6 +142,7 @@ const Landing = () => {
                   <div className="pricing-toggle-row">
                     <span className={!yearly ? "toggle-label active" : "toggle-label"}>Monthly</span>
                     <label className="pricing-toggle">
+                      <span className="visually-hidden">Toggle yearly pricing</span>
                       <input
                         type="checkbox"
                         checked={yearly}

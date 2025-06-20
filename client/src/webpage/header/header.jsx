@@ -87,7 +87,7 @@ export default function WebpageHeader() {
               </span>
             </button>
             {resourcesOpen && (
-              <div className="webpage-nav-dropdown-menu">
+              <div className="webpage-nav-dropdown-menu" role="menu">
                 <button
                   className={`webpage-nav-link${
                     location.pathname.startsWith("/blog") ? " active" : ""
@@ -97,10 +97,11 @@ export default function WebpageHeader() {
                     navigate("/blog");
                   }}
                   type="button"
+                  role="menuitem"
                 >
                   Blog
                 </button>
-                {/* Training Courses option TBA here */}
+                {/* Add more menu items here if needed */}
               </div>
             )}
           </div>
