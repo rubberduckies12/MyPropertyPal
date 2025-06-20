@@ -15,8 +15,8 @@ import Admin from './admin/admin.jsx';
 import Properties from './main/propertymanager/properties/properties.jsx';
 import Tenants from './main/propertymanager/tenants/tenants.jsx';
 import Incidents from './main/propertymanager/incidents/incidents.jsx';
-import Footer from './webpage/footer/footer.jsx'; // <-- Import Footer
-import Contact from './webpage/contact/contact.jsx'; // <-- Import Contact
+import Footer from './webpage/footer/footer.jsx'; 
+import Contact from './webpage/contact/contact.jsx'; 
 import MTD from './webpage/mtd/mtd.jsx';
 import ContractorsPage from './main/propertymanager/contractors/contractors.jsx';
 import Tos from './webpage/tos/tos.jsx';
@@ -37,7 +37,7 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* Public pages (with footer) */}
+        {/* Public pages*/}
         <Route path="/" element={<PublicPageWithFooter Component={Landing} />} />
         <Route path="/about" element={<PublicPageWithFooter Component={About} />} />
         <Route path="/features" element={<PublicPageWithFooter Component={Features} />} />
@@ -49,7 +49,7 @@ root.render(
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* App pages (no footer) */}
+        {/* App pages*/}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chatbot" element={<Chatbot />} />
         <Route path="/admin" element={<Admin />} />
