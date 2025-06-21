@@ -69,7 +69,7 @@ const Landing = () => {
             <WebpageHeader />
 
             {/* Hero Section */}
-            <section className="landing-hero">
+            <section id="hero-section" className="landing-hero">
                 <h1>
 					<span className="landing-hero-main">MyPropertyPal</span>
                     <br />
