@@ -75,6 +75,15 @@ export default function WebpageHeader() {
             >
               About Us
             </button>
+            <button
+              className={`webpage-nav-link${
+                location.pathname.startsWith("/mtd") ? " active" : ""
+              }`}
+              onClick={() => navigate("/mtd")}
+              type="button"
+            >
+              MTD
+            </button>
             <div
               className={`webpage-nav-dropdown${resourcesOpen ? " open" : ""}`}
               ref={resourcesRef}
@@ -115,19 +124,35 @@ export default function WebpageHeader() {
                   >
                     Blog
                   </button>
-                  {/* Add more menu items here if needed */}
+                  <button
+                    className={`webpage-nav-link${
+                      location.pathname.startsWith("/privacy") ? " active" : ""
+                    }`}
+                    onClick={() => {
+                      setResourcesOpen(false);
+                      navigate("/privacy");
+                    }}
+                    type="button"
+                    role="menuitem"
+                  >
+                    Privacy Policy
+                  </button>
+                  <button
+                    className={`webpage-nav-link${
+                      location.pathname.startsWith("/tos") ? " active" : ""
+                    }`}
+                    onClick={() => {
+                      setResourcesOpen(false);
+                      navigate("/tos");
+                    }}
+                    type="button"
+                    role="menuitem"
+                  >
+                    Terms of Service
+                  </button>
                 </div>
               )}
             </div>
-            <button
-              className={`webpage-nav-link${
-                location.pathname.startsWith("/mtd") ? " active" : ""
-              }`}
-              onClick={() => navigate("/mtd")}
-              type="button"
-            >
-              MTD
-            </button>
           </nav>
           <button
             className="webpage-login-btn-modern"
