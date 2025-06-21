@@ -78,7 +78,20 @@ function Sidebar() {
 
         {/* Legal Manager */}
         <div className="sidebar-section">
-          <NavLink to="/legal" className="dashboard-nav-link">Legal Manager</NavLink>
+          <button
+            className="sidebar-section-btn"
+            onClick={() => toggleDropdown('legal')}
+            aria-expanded={openDropdown === 'legal'}
+          >
+            Legal Manager
+            <span className={`sidebar-dropdown-arrow${openDropdown === 'legal' ? ' open' : ''}`}>▼</span>
+          </button>
+          {openDropdown === 'legal' && (
+            <div className="sidebar-dropdown">
+              <NavLink to="/compliance" className="dashboard-nav-link">Compliance</NavLink>
+              <NavLink to="/contracts" className="dashboard-nav-link">Contracts</NavLink>
+            </div>
+          )}
         </div>
 
         {/* Business Management */}
