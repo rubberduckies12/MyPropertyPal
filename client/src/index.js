@@ -24,6 +24,7 @@ import Privacy from './webpage/privacy/privacy.jsx';
 import Blog from './webpage/blog/blog.jsx';
 import Finances from './main/financialmanager/finances/finances.jsx';
 import Documents from './main/financialmanager/documents/documents.jsx';
+import Compliance from './main/legalmanager/compliance/compliance.jsx';
 
 function PublicPageWithFooter({ Component }) {
   return (
@@ -61,6 +62,7 @@ root.render(
         <Route path="/contractors" element={<ContractorsPage />} />
         <Route path="/finances" element={<Finances />} />
         <Route path="/documents" element={<Documents />} />
+        <Route path="/compliance" element={<Compliance />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
