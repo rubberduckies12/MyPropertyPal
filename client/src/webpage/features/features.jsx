@@ -197,7 +197,7 @@ export default function Features() {
 						fontWeight: 500,
 					}}
 				>
-					30-Day Money-Back Guarantee - No Questions Asked
+					<strong>30-Day Money-Back Guarantee - No Questions Asked</strong>
 				</div>
 			</section>
 

@@ -35,7 +35,7 @@ const About = () => (
                 <span className="about-hero-highlight">requires a great team</span>
             </h1>
             <p className="about-hero-sub">
-                MyPropertyPal is built for landlords. We’re here to make your life easier with intuitive tools, expert support, and a team that cares about your success.
+                <strong>MyPropertyPal is built for landlords. We’re here to make your life easier with intuitive tools, expert support, and a team that cares about your success.</strong>
             </p>
         </section>
 

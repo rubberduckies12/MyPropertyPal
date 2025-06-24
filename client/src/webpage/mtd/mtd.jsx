@@ -127,8 +127,15 @@ const MTD = () => {
             Stay Compliant with MTD
           </span>
         </h1>
-        <div className="mtd-hero-guarantee">
-          30-Day Money-Back Guarantee - No Questions Asked
+        <div
+          style={{
+            marginTop: "2.2rem",
+            fontSize: "1.15rem",
+            color: "#e0e7ff",
+            fontWeight: 500,
+          }}
+        >
+          <strong>30-Day Money-Back Guarantee - No Questions Asked</strong>
         </div>
       </section>
 
