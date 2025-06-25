@@ -101,25 +101,6 @@ function Sidebar() {
           )}
         </div>
 
-        {/* Business Management */}
-        <div className="sidebar-section">
-          <button
-            className="sidebar-section-btn"
-            onClick={() => toggleDropdown('business')}
-            aria-expanded={openDropdown === 'business'}
-          >
-            Business Manager
-            <span className={`sidebar-dropdown-arrow${openDropdown === 'business' ? ' open' : ''}`}>▼</span>
-          </button>
-          {openDropdown === 'business' && (
-            <div className="sidebar-dropdown">
-              <NavLink to="/mortgage-calc" className="dashboard-nav-link">Mortgage's</NavLink>
-              <NavLink to="/listings" className="dashboard-nav-link">Listings</NavLink>
-              <NavLink to="/tasks" className="dashboard-nav-link">Tasks</NavLink>
-            </div>
-          )}
-        </div>
-
         {/* AI Chatbot */}
         <div className="sidebar-section">
           <NavLink to="/chatbot" className="dashboard-nav-link">AI Chatbot</NavLink>
