@@ -1,14 +1,14 @@
 import React from "react";
-import "./tos.css";
+import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
+import "../../styles/tos/tos.css";
 
 const Tos = () => (
   <>
-    {/* Prevent indexing by search engines */}
-    <head>
+    <Head>
       <meta name="robots" content="noindex, nofollow" />
       <title>Terms of Service</title>
-    </head>
+    </Head>
     <WebpageHeader />
     <main className="tos-container">
       <h1 className="tos-title">Terms of Service</h1>
@@ -54,7 +54,7 @@ const Tos = () => (
 
       <h2>7. Privacy</h2>
       <p>
-        Please review our <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> to understand how we collect, use, and protect your personal information. By using MyPropertyPal, you consent to our data practices as described therein.
+        Please review our <a href="/privacy/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> to understand how we collect, use, and protect your personal information. By using MyPropertyPal, you consent to our data practices as described therein.
       </p>
 
       <h2>8. Limitation of Liability</h2>

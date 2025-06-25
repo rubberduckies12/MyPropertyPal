@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import "./blog.css";
+import "../../styles/blog/blog.css";
 import WebpageHeader from "../header/header.jsx";
 
-const MEDIUM_RSS_FEED = "https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@tommy.rowe.dev"; // Our Medium RSS feed
+const MEDIUM_RSS_FEED = "https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@tommy.rowe.dev";
 const RSS_FEED = MEDIUM_RSS_FEED;
 
 export default function Blog() {

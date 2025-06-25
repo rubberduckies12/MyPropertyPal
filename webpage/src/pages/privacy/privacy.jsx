@@ -1,14 +1,25 @@
 import React from "react";
-import "./privacy.css";
+import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
+import "../../styles/privacy/privacy.css";
 
 const Privacy = () => (
   <>
-    {/* Prevent indexing by search engines */}
-    <head>
+    <Head>
+      <title>Privacy Policy – MyPropertyPal</title>
       <meta name="robots" content="noindex, nofollow" />
-      <title>Privacy Policy</title>
-    </head>
+      <meta name="description" content="Read the privacy policy for MyPropertyPal. Learn how we collect, use, and protect your data in compliance with UK GDPR and HMRC requirements." />
+      <meta property="og:title" content="Privacy Policy – MyPropertyPal" />
+      <meta property="og:description" content="How MyPropertyPal collects, uses, and protects your data in compliance with UK GDPR and HMRC requirements." />
+      <meta property="og:type" content="article" />
+      <meta property="og:image" content="/publicassets/LogoWB.png" />
+      <meta property="og:url" content="https://mypropertypal.co.uk/privacy" />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="Privacy Policy – MyPropertyPal" />
+      <meta name="twitter:description" content="Read the privacy policy for MyPropertyPal. Learn how we collect, use, and protect your data in compliance with UK GDPR and HMRC requirements." />
+      <meta name="twitter:image" content="/publicassets/LogoWB.png" />
+      <link rel="canonical" href="https://mypropertypal.co.uk/privacy" />
+    </Head>
     <WebpageHeader />
     <main className="tos-container">
       <h1 className="tos-title">Privacy Policy</h1>
@@ -137,7 +148,7 @@ const Privacy = () => (
       </p>
 
       <p className="tos-footer">
-        Last Updated: {new Date().toLocaleDateString()} <br />
+        Last Updated: 25/06/2025 <br />
         &copy; {new Date().getFullYear()} MyPropertyPal. All rights reserved.
       </p>
     </main>

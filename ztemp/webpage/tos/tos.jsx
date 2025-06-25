@@ -1,6 +1,6 @@
 import React from "react";
 import "./tos.css";
-import WebpageHeader from "../header/header.jsx";
+import WebpageHeader from "../header/header.js";
 
 const Tos = () => (
   <>
