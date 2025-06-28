@@ -31,7 +31,8 @@ async function getProperties(req, res, pool) {
       status: row.property_status,
       tenant: row.lead_tenant_name && row.lead_tenant_name.trim() !== '' ? row.lead_tenant_name : 'No tenant',
       rent: row.rent_amount != null ? `£${parseFloat(row.rent_amount).toFixed(2)}` : 'N/A',
-      nextRentDue: row.rent_due_date ? row.rent_due_date.toISOString().slice(0, 10) : 'N/A'
+      // rent_due_date is a SMALLINT (day of month), not a date
+      nextRentDue: row.rent_due_date != null ? `Day ${row.rent_due_date} of each month` : 'N/A'
     }));
 
     res.json({ properties });
@@ -82,7 +83,23 @@ async function addProperty(req, res, pool) {
       await pool.query(
         `INSERT INTO property_tenant (property_id, tenant_id, rent_amount, rent_due_date)
          VALUES ($1, $2, $3, $4)`,
-        [propertyId, lead_tenant_id, rent_amount, rent_due_date || null]
+        [
+          propertyId,
+          lead_tenant_id,
+          rent_amount,
+          rent_due_date !== undefined && rent_due_date !== null && rent_due_date !== ""
+            ? Number(rent_due_date)
+            : null
+        ]
+      );
+      // Set property status to "Occupied"
+      await pool.query(
+        `UPDATE property
+         SET property_status_id = (
+           SELECT id FROM property_status WHERE status = 'Occupied'
+         )
+         WHERE id = $1`,
+        [propertyId]
       );
     }
 
@@ -93,4 +110,16 @@ async function addProperty(req, res, pool) {
   }
 }
 
-module.exports = { getProperties, addProperty };
+async function deleteProperty(req, res, pool) {
+  try {
+    const propertyId = req.params.id;
+    // Optionally: check ownership here
+    await pool.query("DELETE FROM property WHERE id = $1", [propertyId]);
+    res.json({ message: "Property deleted" });
+  } catch (err) {
+    console.error("Error deleting property:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+module.exports = { getProperties, addProperty, deleteProperty };

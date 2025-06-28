@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import fetchContractors from "./contractors.js";
 import "./contractors.css";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import ReactStars from "react-rating-stars-component";
+
+const API_BASE = "http://localhost:5001";
 
 const RECOMMENDED_KEYWORDS = [
   "plumber",
@@ -16,6 +17,20 @@ const RECOMMENDED_KEYWORDS = [
   "locksmith"
 ];
 
+
+async function fetchContractors(location, keyword = "contractor") {
+  const params = new URLSearchParams({ location, keyword });
+  try {
+    const response = await fetch(`${API_BASE}/api/contractors?${params.toString()}`);
+    if (!response.ok) throw new Error("Network response was not ok");
+    const data = await response.json();
+    return data.contractors || [];
+  } catch (error) {
+    console.error("Error fetching contractors:", error);
+    return [];
+  }
+}
+
 const ContractorsPage = () => {
   const [location, setLocation] = useState("");
   const [keyword, setKeyword] = useState("");
@@ -23,6 +38,7 @@ const ContractorsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Search handler
   const handleSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -38,7 +54,7 @@ const ContractorsPage = () => {
     setLoading(false);
   };
 
-  // Helper to build Google Maps Place URL
+  // Google Maps Place URL builder
   const getGoogleMapsUrl = (placeId) =>
     `https://www.google.com/maps/place/?q=place_id:${placeId}`;
 
@@ -73,6 +89,7 @@ const ContractorsPage = () => {
             {loading ? "Searching..." : "Search"}
           </button>
         </form>
+
         <div className="contractors-recommended">
           <span>Recommended: </span>
           {RECOMMENDED_KEYWORDS.map((kw) => (
@@ -86,7 +103,9 @@ const ContractorsPage = () => {
             </button>
           ))}
         </div>
+
         {error && <div className="contractors-error">{error}</div>}
+
         <ul className="contractors-results">
           {results.map((c, idx) => (
             <li className="contractors-result-card" key={c.place_id || idx}>

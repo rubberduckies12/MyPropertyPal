@@ -1,4 +1,3 @@
-
 -- ===== Account Roles =====
 CREATE TABLE IF NOT EXISTS account_role (
     id SERIAL PRIMARY KEY,
@@ -19,16 +18,16 @@ CREATE TABLE IF NOT EXISTS account (
     last_name VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    email_verified BOOLEAN NOT NULL DEFAULT FALSE,
-    date_of_birth DATE NOT NULL
+    email_verified BOOLEAN NOT NULL DEFAULT FALSE
+    -- date_of_birth removed
 );
 
 -- ===== Tenants =====
 CREATE TABLE IF NOT EXISTS tenant (
     id SERIAL PRIMARY KEY,
-    account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
-    landlord_code VARCHAR(6) NOT NULL,
-    landlord_confirmed BOOLEAN NOT NULL DEFAULT FALSE
+    account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE
+    -- landlord_code removed
+    -- landlord_confirmed removed
 );
 
 -- ===== Payment Plans =====
@@ -43,8 +42,8 @@ CREATE TABLE IF NOT EXISTS payment_plan (
 CREATE TABLE IF NOT EXISTS landlord (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
-    payment_plan_id INT NOT NULL REFERENCES payment_plan(id) ON DELETE CASCADE,
-    landlord_code VARCHAR(6) NOT NULL UNIQUE
+    payment_plan_id INT NOT NULL REFERENCES payment_plan(id) ON DELETE CASCADE
+    -- landlord_code removed
 );
 
 -- ===== Property Status =====

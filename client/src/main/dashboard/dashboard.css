@@ -10,9 +10,7 @@
   --shadow: 0 8px 32px rgba(37,99,235,0.06);
   --radius: 18px;
   --heading-size: 2.2rem;
-  --heading-spacing: 36px;
   --section-padding: 56px;
-  --section-margin: 48px;
   --text: #1f2937;
   --error: #ef4444;
   --sidebar-bg: #4da9ff;
@@ -64,11 +62,9 @@
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: auto auto auto;
   gap: 24px;
 }
 
-/* Card Base */
 .dashboard-card {
   background: var(--white);
   border-radius: var(--radius);
@@ -282,43 +278,6 @@
   text-overflow: ellipsis;
 }
 
-.dashboard-incident-time {
-  color: #6b7280;
-  font-size: 0.85rem;
-}
-
-/* ==================================================
-   Properties List (for Properties Card)
-================================================== */
-.dashboard-properties-list {
-  margin: 16px 0;
-}
-
-.dashboard-property-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.dashboard-property-status {
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
-.dashboard-property-status.occupied {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.dashboard-property-status.vacant {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
 /* ==================================================
    Activity List (for Wide Card - Recent Incidents)
 ================================================== */
@@ -341,12 +300,10 @@
   .dashboard-grid {
     grid-template-columns: 1fr 1fr;
   }
-  
   .dashboard-card-tall {
     grid-column: auto;
     grid-row: auto;
   }
-  
   .dashboard-card-wide {
     grid-column: 1 / span 2;
   }
@@ -356,36 +313,12 @@
   .dashboard-container {
     flex-direction: column;
   }
-  
-  .dashboard-sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    padding: 16px 0;
+  .dashboard-main {
+    margin-left: 0;
   }
-  
-  .dashboard-nav {
-    flex-direction: row;
-    overflow-x: auto;
-    margin-top: 0;
-  }
-  
-  .dashboard-nav-link {
-    padding: 8px 16px;
-    border-left: none;
-    border-bottom: 4px solid transparent;
-  }
-  
-  .dashboard-nav-link:hover,
-  .dashboard-nav-link.active {
-    border-left-color: transparent;
-    border-bottom-color: #fff;
-  }
-  
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-  
   .dashboard-card-wide {
     grid-column: 1;
   }

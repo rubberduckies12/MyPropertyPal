@@ -8,7 +8,7 @@ const createDatabaseConnection = require('./assets/databaseConnect');
 const login = require('./endpoints/login');
 const register = require('./endpoints/register');
 const dashEndpoints = require('./endpoints/dash.js');
-const { getProperties, addProperty } = require('./endpoints/properties.js');
+const { getProperties, addProperty, deleteProperty } = require('./endpoints/properties.js');
 const authenticate = require('./middleware/authenticate');
 
 const app = express();
@@ -16,9 +16,11 @@ const port = 5001;
 const pool = createDatabaseConnection();
 
 const chatRoute = require('./endpoints/chat');
+const tenantsRouter = require('./endpoints/tenants');
+const propertiesRouter = require('./endpoints/properties');
 
 app.use(cors({
-  origin: 'http://localhost:3000', // your React app's URL
+  origin: ['http://localhost:3000', 'http://localhost:3001'],
 }));
 app.use(express.json());
 app.use('/api/chat', chatRoute);
@@ -58,6 +60,18 @@ dashEndpoints(app, pool);
 // Properties endpoint (JWT protected)
 app.get('/api/properties', authenticate, (req, res) => getProperties(req, res, pool));
 app.post('/api/properties', authenticate, (req, res) => addProperty(req, res, pool));
+app.delete('/api/properties/:id', authenticate, (req, res) => deleteProperty(req, res, pool));
+
+// Mount the tenants API with authentication and pool
+app.use(
+  '/api/tenants',
+  authenticate,
+  (req, res, next) => {
+    req.app.set("pool", pool);
+    next();
+  },
+  tenantsRouter
+);
 
 // Client Endpoints (placeholders)
 app.get('/', (req, res) => res.send('Welcome to the Property Management API'));

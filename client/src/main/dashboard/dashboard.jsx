@@ -2,31 +2,70 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './dashboard.css';
 import Sidebar from '../sidebar/sidebar.jsx';
-import {
-  fetchUser,
-  fetchTenantCount,
-  fetchMessages,
-  fetchIncidents,
-  fetchProperties,
-} from './dashboard.js';
 
-// Severity color mapping for incidents
+const API_BASE = "http://localhost:5001";
+
+// --- API Calls ---
+async function fetchUser() {
+  const res = await fetch(`${API_BASE}/api/dashboard/user`);
+  return res.json();
+}
+
+async function fetchTenantCount() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_BASE}/api/tenants/count`, {
+    headers: { Authorization: token ? `Bearer ${token}` : "" }
+  });
+  const data = await res.json();
+  return data.count;
+}
+
+async function fetchMessages() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_BASE}/api/dashboard/messages`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!res.ok) throw new Error("Failed to fetch messages");
+  return res.json();
+}
+
+async function fetchIncidents() {
+  const res = await fetch(`${API_BASE}/api/dashboard/incidents`);
+  return res.json();
+}
+
+async function fetchProperties() {
+  const res = await fetch(`${API_BASE}/api/dashboard/properties`);
+  return res.json();
+}
+
+async function fetchTenants() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_BASE}/api/tenants`, {
+    headers: { Authorization: token ? `Bearer ${token}` : "" }
+  });
+  const data = await res.json();
+  return data.tenants || [];
+}
+
+// --- Utility ---
 const severityColors = {
   red: 'dashboard-severity-red',
   yellow: 'dashboard-severity-yellow',
   green: 'dashboard-severity-green',
 };
 
-// Capitalize the first letter of a string
 function capitalize(str) {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// --- Main Dashboard Component ---
 function Dashboard() {
   const [showYearly, setShowYearly] = useState(false);
   const [user, setUser] = useState(null);
   const [tenantCount, setTenantCount] = useState(0);
+  const [tenants, setTenants] = useState([]);
   const [messages, setMessages] = useState([]);
   const [incidents, setIncidents] = useState([]);
   const [properties, setProperties] = useState([]);
@@ -38,6 +77,7 @@ function Dashboard() {
     async function loadData() {
       setUser(await fetchUser());
       setTenantCount(await fetchTenantCount());
+      setTenants(await fetchTenants());
       setMessages(await fetchMessages());
       setIncidents(await fetchIncidents());
       setProperties(await fetchProperties());
@@ -46,7 +86,7 @@ function Dashboard() {
     loadData();
   }, []);
 
-  // Helper: Get property label by ID
+  // Get property label by ID
   const getPropertyLabel = (propertyId) => {
     const property = properties.find(
       p => p._id === propertyId || p.propertyId === propertyId
@@ -57,14 +97,20 @@ function Dashboard() {
       : property.address || propertyId;
   };
 
-  // Income calculations
-  const monthlyIncome = properties
-    .filter(p => !!p.tenantId)
-    .reduce((sum, p) => sum + Number(p.rent || 0), 0);
+  // Income: sum rent_amount for all tenants
+  const occupiedTenants = tenants.filter(
+    t => typeof t.rent_amount !== "undefined" && t.rent_amount !== null
+  );
+  const monthlyIncome = occupiedTenants.reduce((sum, t) => {
+    const rent = typeof t.rent_amount === "string"
+      ? Number(t.rent_amount.replace(/[£,]/g, ""))
+      : Number(t.rent_amount || 0);
+    return sum + (isNaN(rent) ? 0 : rent);
+  }, 0);
   const yearlyIncome = monthlyIncome * 12;
 
   // Recent incidents (show 2 most recent)
-  const sortedIncidents = [...(incidents || [])].sort(
+  const sortedIncidents = [...incidents].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
   const recentIncidents = sortedIncidents.slice(0, 2);
@@ -139,20 +185,6 @@ function Dashboard() {
             <h3>Properties</h3>
             <div className="dashboard-card-main">{properties.length}</div>
             <div className="dashboard-card-label">Total Properties</div>
-            <div className="dashboard-properties-list">
-              {properties.slice(0, 3).map((property, index) => (
-                <div key={index} className="dashboard-property-item">
-                  <div>
-                    {property.name || property.address || `Property ${index + 1}`}
-                  </div>
-                  {property.tenantId ? (
-                    <div className="dashboard-property-status occupied">Occupied</div>
-                  ) : (
-                    <div className="dashboard-property-status vacant">Vacant</div>
-                  )}
-                </div>
-              ))}
-            </div>
             <button
               className="dashboard-btn"
               onClick={() => navigate('/properties')}

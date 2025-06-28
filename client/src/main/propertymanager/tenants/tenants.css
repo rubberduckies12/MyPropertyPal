@@ -304,6 +304,38 @@
   background: #b91c1c;
 }
 
+/* Add Tenant Form Styles */
+.add-tenant-form label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #2563eb;
+}
+.add-tenant-form input,
+.add-tenant-form select {
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: 1.2px solid #e5e7eb;
+  margin-top: 4px;
+  font-size: 1rem;
+  background: #f7f8fa;
+}
+.add-tenant-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.add-tenant-btn:hover {
+  background: #3b82f6;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .properties-list {
