@@ -2,25 +2,24 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const axios = require('axios'); // <-- Import axios
+const axios = require('axios');
 
-// Importing Assets
 const createDatabaseConnection = require('./assets/databaseConnect');
-
-// Importing Endpoints
 const login = require('./endpoints/login');
 const register = require('./endpoints/register');
-const dashboard = require('./endpoints/dashboard');
+const dashEndpoints = require('./endpoints/dash.js');
+const { getProperties, addProperty } = require('./endpoints/properties.js');
+const authenticate = require('./middleware/authenticate');
 
 const app = express();
 const port = 5001;
-
-// Create and attach the database pool
 const pool = createDatabaseConnection();
 
 const chatRoute = require('./endpoints/chat');
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // your React app's URL
+}));
 app.use(express.json());
 app.use('/api/chat', chatRoute);
 
@@ -34,10 +33,8 @@ app.get('/external-api', async (req, res) => {
   }
 });
 
-// Import contractor search utility
+// Contractors API
 const { searchContractors } = require('./database/getcontractors');
-
-// API endpoint: Search for local contractors using Google Places API
 app.get('/api/contractors', async (req, res) => {
   const { location, keyword } = req.query;
   if (!location) {
@@ -51,32 +48,22 @@ app.get('/api/contractors', async (req, res) => {
   }
 });
 
-// API Endpoints
-
-// Login / Register Page
+// Auth endpoints
 app.post('/login', (req, res) => login(req, res, pool));
 app.post('/register', (req, res) => register(req, res, pool));
 
-// Dashboard
+// Dashboard endpoints
+dashEndpoints(app, pool);
 
-app.get('/dashboard', (req, res) => dashboard(req, res, pool));
-
-// Tenants
-// Income
-// Messages
-// Properties
-// Calendar
-// Incidents
+// Properties endpoint (JWT protected)
+app.get('/api/properties', authenticate, (req, res) => getProperties(req, res, pool));
+app.post('/api/properties', authenticate, (req, res) => addProperty(req, res, pool));
 
 // Client Endpoints (placeholders)
 app.get('/', (req, res) => res.send('Welcome to the Property Management API'));
 app.get('/login', (req, res) => res.send('Login page placeholder'));
 app.get('/register', (req, res) => res.send('Register page placeholder'));
 app.get('/landing-page', (req, res) => res.send('Landing page placeholder'));
-
-// Register dashboard endpoints
-const dashEndpoints = require('./endpoints/dash.js');
-dashEndpoints(app, pool);
 
 // Catch-all route
 app.get('*', (req, res) => res.status(404).send('Not Found'));

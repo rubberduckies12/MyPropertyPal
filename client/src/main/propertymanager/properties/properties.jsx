@@ -1,52 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import "./properties.css";
+
+const API_BASE = "http://localhost:5001";
 
 export default function Properties() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [propertyNotes, setPropertyNotes] = useState({});
   const [noteInput, setNoteInput] = useState("");
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      number: "12A",
-      name: "Maple House",
-      address: "123 Main St",
-      city: "London",
-      county: "Greater London",
-      postcode: "E1 2AB",
-      status: "Occupied",
-      leadTenant: { first_name: "Alice", last_name: "Smith" },
-      rent_amount: 1200.0,
-      nextRentDue: "2024-07-01",
-      maintenanceIssue: "",
-      roi: "5.2%",
-    },
-    {
-      id: 2,
-      number: "7",
-      name: "Oak Villa",
-      address: "456 Oak Rd",
-      city: "London",
-      county: "Greater London",
-      postcode: "E2 3CD",
-      status: "Available",
-    },
-    {
-      id: 3,
-      number: "22",
-      name: "Birch Cottage",
-      address: "789 Birch Lane",
-      city: "London",
-      county: "Greater London",
-      postcode: "E3 4EF",
-      status: "Not Available",
-    },
-  ]);
+  // Fetch properties from backend
+  useEffect(() => {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    fetch(`${API_BASE}/api/properties`, {
+      headers: {
+        "Authorization": token ? `Bearer ${token}` : "",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setProperties(data.properties || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err.message === "401") {
+          setError("You must be logged in to view properties.");
+        } else if (err.message === "403") {
+          setError("You do not have permission to view these properties.");
+        } else if (err.message === "404") {
+          setError("Properties endpoint not found.");
+        } else {
+          setError(err.message || "Error loading properties");
+        }
+        setLoading(false);
+      });
+  }, []);
 
-  // Handlers (same as before)
+  // Handlers
   const handleRowClick = (property) => {
     setSelectedProperty(property);
     setNoteInput("");
@@ -56,24 +51,91 @@ export default function Properties() {
     if (!noteInput.trim()) return;
     setPropertyNotes((prev) => ({
       ...prev,
-      [selectedProperty.id]: [
-        ...(prev[selectedProperty.id] || []),
+      [selectedProperty.name]: [
+        ...(prev[selectedProperty.name] || []),
         { text: noteInput, date: new Date().toLocaleString() },
       ],
     }));
     setNoteInput("");
   };
-  const handleStatusChange = (newStatus) => {
-    setSelectedProperty((prev) => ({ ...prev, status: newStatus }));
-    setProperties((prev) =>
-      prev.map((p) =>
-        p.id === selectedProperty.id ? { ...p, status: newStatus } : p
-      )
-    );
+
+  // Add Property Form State
+  const [addForm, setAddForm] = useState({
+    name: "",
+    address: "",
+    city: "",
+    county: "",
+    postcode: "",
+    rent_amount: "",
+    status: "Available",
+  });
+  const [addError, setAddError] = useState("");
+  const [addLoading, setAddLoading] = useState(false);
+
+  const handleAddFormChange = (e) => {
+    setAddForm({ ...addForm, [e.target.name]: e.target.value });
   };
-  const handleRemoveProperty = (id) => {
-    setProperties((prev) => prev.filter((p) => p.id !== id));
-    setSelectedProperty(null);
+
+  const handleAddProperty = async (e) => {
+    e.preventDefault();
+    setAddError("");
+    setAddLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE}/api/properties`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify(addForm),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to add property");
+      }
+      setShowAddModal(false);
+      setAddForm({
+        name: "",
+        address: "",
+        city: "",
+        county: "",
+        postcode: "",
+        rent_amount: "",
+        status: "Available",
+      });
+      // Refresh property list with JWT header
+      setLoading(true);
+      fetch(`${API_BASE}/api/properties`, {
+        headers: {
+          "Authorization": token ? `Bearer ${token}` : "",
+        },
+      })
+        .then(async (res) => {
+          if (!res.ok) {
+            let errorMsg = "Failed to fetch properties";
+            try {
+              const data = await res.json();
+              errorMsg = data.error || errorMsg;
+            } catch {
+              errorMsg = `Error: ${res.status}`;
+            }
+            throw new Error(errorMsg);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          setProperties(data.properties || []);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError(err.message || "Error loading properties");
+          setLoading(false);
+        });
+    } catch (err) {
+      setAddError(err.message);
+      setAddLoading(false);
+    }
   };
 
   return (
@@ -90,56 +152,144 @@ export default function Properties() {
           </button>
         </div>
 
+        {loading && <div>Loading properties...</div>}
+        {error && <div style={{ color: "red" }}>{error}</div>}
+
         {/* Table layout */}
-        <div className="properties-table-container">
-          <table className="properties-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Status</th>
-                <th>Tenant</th>
-                <th>Monthly Rent</th>
-              </tr>
-            </thead>
-            <tbody>
-              {properties.map((prop) => (
-                <tr
-                  key={prop.id}
-                  className="property-row"
-                  onClick={() => handleRowClick(prop)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>{prop.name || "-"}</td>
-                  <td>
-                    {`${prop.address}, ${prop.city}, ${prop.county}, ${prop.postcode}`}
-                  </td>
-                  <td>
-                    <span className={`property-status status-${prop.status?.toLowerCase().replace(/\s/g, "-")}`}>
-                      {prop.status}
-                    </span>
-                  </td>
-                  <td>
-                    {prop.leadTenant
-                      ? `${prop.leadTenant.first_name} ${prop.leadTenant.last_name}`
-                      : "No tenant"}
-                  </td>
-                  <td>
-                    {prop.rent_amount ? `£${prop.rent_amount}` : "N/A"}
-                  </td>
+        {!loading && !error && (
+          <div className="properties-table-container">
+            <table className="properties-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>Tenant</th>
+                  <th>Monthly Rent</th>
+                  <th>Next Rent Due</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {properties.length === 0 && (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: "center" }}>
+                      No properties found.
+                    </td>
+                  </tr>
+                )}
+                {properties.map((prop, idx) => (
+                  <tr
+                    key={idx}
+                    className="property-row"
+                    onClick={() => handleRowClick(prop)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <td>{prop.name || "-"}</td>
+                    <td>{prop.address || "-"}</td>
+                    <td>
+                      <span className={`property-status status-${prop.status?.toLowerCase().replace(/\s/g, "-")}`}>
+                        {prop.status}
+                      </span>
+                    </td>
+                    <td>{prop.leadTenant || "No tenant"}</td>
+                    <td>{prop.rent || "N/A"}</td>
+                    <td>{prop.nextRentDue || "N/A"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Add Property Modal */}
         {showAddModal && (
           <div className="add-property-modal">
             <div className="add-property-modal-content">
               <h2>Add Property</h2>
-              <p>This is a placeholder for the add property form.</p>
-              <button onClick={() => setShowAddModal(false)}>Close</button>
+              <form onSubmit={handleAddProperty}>
+                <label>
+                  Name
+                  <input
+                    name="name"
+                    value={addForm.name}
+                    onChange={handleAddFormChange}
+                    required
+                  />
+                </label>
+                <label>
+                  Address
+                  <input
+                    name="address"
+                    value={addForm.address}
+                    onChange={handleAddFormChange}
+                    required
+                  />
+                </label>
+                <label>
+                  City
+                  <input
+                    name="city"
+                    value={addForm.city}
+                    onChange={handleAddFormChange}
+                    required
+                  />
+                </label>
+                <label>
+                  County
+                  <input
+                    name="county"
+                    value={addForm.county}
+                    onChange={handleAddFormChange}
+                  />
+                </label>
+                <label>
+                  Postcode
+                  <input
+                    name="postcode"
+                    value={addForm.postcode}
+                    onChange={handleAddFormChange}
+                    required
+                  />
+                </label>
+                <label>
+                  Monthly Rent (£)
+                  <input
+                    name="rent_amount"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={addForm.rent_amount}
+                    onChange={handleAddFormChange}
+                    required
+                  />
+                </label>
+                <label>
+                  Status
+                  <select
+                    name="status"
+                    value={addForm.status}
+                    onChange={handleAddFormChange}
+                  >
+                    <option value="Available">Available</option>
+                    <option value="Occupied">Occupied</option>
+                    <option value="Under Maintenance">Under Maintenance</option>
+                    <option value="Not Available">Not Available</option>
+                  </select>
+                </label>
+                {addError && <div style={{ color: "red" }}>{addError}</div>}
+                <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
+                  <button type="submit" className="add-note-btn" disabled={addLoading}>
+                    {addLoading ? "Adding..." : "Add Property"}
+                  </button>
+                  <button
+                    type="button"
+                    className="close-notes-btn"
+                    onClick={() => setShowAddModal(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
@@ -149,60 +299,30 @@ export default function Properties() {
           <div className="property-notes-modal">
             <div className="property-notes-modal-content">
               <h2>
-                Notes for {selectedProperty.number} {selectedProperty.name}
+                Notes for {selectedProperty.name}
               </h2>
               <div className="property-info">
                 <div>
-                  <strong>Address:</strong> {selectedProperty.address},{" "}
-                  {selectedProperty.city}, {selectedProperty.county},{" "}
-                  {selectedProperty.postcode}
+                  <strong>Address:</strong> {selectedProperty.address}
                 </div>
                 <div>
-                  <strong>Status:</strong>
-                  <select
-                    value={selectedProperty.status}
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                    style={{ marginLeft: 8, padding: "4px 8px", borderRadius: 6 }}
-                  >
-                    <option value="Available">Available</option>
-                    <option value="Occupied">Occupied</option>
-                    <option value="Under Maintenance">Under Maintenance</option>
-                    <option value="Not Available">Not Available</option>
-                  </select>
-                </div>
-                {selectedProperty.status === "Occupied" &&
-                  selectedProperty.leadTenant && (
-                    <>
-                      <div>
-                        <strong>Lead Tenant:</strong>{" "}
-                        {selectedProperty.leadTenant.first_name}{" "}
-                        {selectedProperty.leadTenant.last_name}
-                      </div>
-                      <div>
-                        <strong>Rental Income:</strong> £{selectedProperty.rent_amount}
-                      </div>
-                    </>
-                  )}
-                {/* Add these details */}
-                <div>
-                  <strong>Next Rent Due:</strong>{" "}
-                  {selectedProperty.nextRentDue ? selectedProperty.nextRentDue : "N/A"}
+                  <strong>Status:</strong> {selectedProperty.status}
                 </div>
                 <div>
-                  <strong>Maintenance:</strong>{" "}
-                  {selectedProperty.maintenanceIssue
-                    ? selectedProperty.maintenanceIssue
-                    : "None"}
+                  <strong>Lead Tenant:</strong> {selectedProperty.leadTenant || "No tenant"}
                 </div>
                 <div>
-                  <strong>ROI:</strong> {selectedProperty.roi ? selectedProperty.roi : "N/A"}
+                  <strong>Rental Income:</strong> {selectedProperty.rent || "N/A"}
+                </div>
+                <div>
+                  <strong>Next Rent Due:</strong> {selectedProperty.nextRentDue || "N/A"}
                 </div>
               </div>
               <div className="property-notes-list">
-                {(propertyNotes[selectedProperty.id] || []).length === 0 && (
+                {(propertyNotes[selectedProperty.name] || []).length === 0 && (
                   <p>No notes yet.</p>
                 )}
-                {(propertyNotes[selectedProperty.id] || []).map((note, idx) => (
+                {(propertyNotes[selectedProperty.name] || []).map((note, idx) => (
                   <div key={idx} className="property-note">
                     <div>{note.text}</div>
                     <div className="property-note-date">{note.date}</div>
@@ -221,23 +341,6 @@ export default function Properties() {
                 </button>
                 <button onClick={handleCloseNotesModal} className="close-notes-btn">
                   Close
-                </button>
-                <button
-                  onClick={() => handleRemoveProperty(selectedProperty.id)}
-                  className="remove-property-btn"
-                  style={{
-                    background: "#ef4444",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 8,
-                    padding: "10px 22px",
-                    fontSize: "1rem",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    marginLeft: "auto",
-                  }}
-                >
-                  Remove Property
                 </button>
               </div>
             </div>

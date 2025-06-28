@@ -1,6 +1,8 @@
+const API_BASE = "http://localhost:5001";
+
 export async function login(email, password) {
   try {
-    const response = await fetch('http://localhost:5001/login', {
+    const response = await fetch(`${API_BASE}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -14,8 +16,12 @@ export async function login(email, password) {
     }
 
     // On success, return the user data
-    const userData = await response.json();
-    return userData;
+    const data = await response.json();
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
+
+    return data;
   } catch (err) {
     // Handle error (e.g., show message to user)
     throw err;
