@@ -168,7 +168,7 @@ export default function Tenants() {
                                     <th>Rent Due</th>
                                     <th>Status</th>
                                     <th>Days Left</th>
-                                    <th>Total Earned</th>
+                                    {/* Removed Total Earned column */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -212,23 +212,7 @@ export default function Tenants() {
                                                 {daysLeft(tenant.rent_due_date)} days
                                             </span>
                                         </td>
-                                        <td>
-                                            £
-                                            {tenant.rent_amount && tenant.rent_due_date
-                                                ? (() => {
-                                                    const rent = Number(tenant.rent_amount);
-                                                    const start = new Date(tenant.rent_due_date);
-                                                    const end = new Date(tenant.contract_end);
-                                                    if (!rent || isNaN(start) || isNaN(end) || end < start)
-                                                        return 0;
-                                                    const months =
-                                                        (end.getFullYear() - start.getFullYear()) * 12 +
-                                                        (end.getMonth() - start.getMonth()) +
-                                                        1;
-                                                    return (rent * months).toLocaleString();
-                                                })()
-                                                : "0"}
-                                        </td>
+                                        {/* Removed Total Earned cell */}
                                     </tr>
                                 ))}
                             </tbody>
@@ -278,12 +262,7 @@ export default function Tenants() {
                             <p>
                                 <b>Days Left:</b> {daysLeft(selectedTenant.rent_due_date)} days
                             </p>
-                            <p>
-                                <b>Total Earned:</b> £
-                                {selectedTenant.rent_amount
-                                    ? Number(selectedTenant.rent_amount).toLocaleString()
-                                    : "0"}
-                            </p>
+                            {/* Removed Total Earned from modal */}
                             <button
                                 className="remove-tenant-btn"
                                 style={{ marginTop: 16, background: "#d9534f", color: "#fff" }}
@@ -373,10 +352,7 @@ export default function Tenants() {
                                         placeholder="Day of month"
                                     />
                                 </label>
-                                <div>
-                                    <strong>Total Earned: </strong>
-                                    £{calculateTotalEarned()}
-                                </div>
+                                {/* Removed Total Earned from add tenant modal */}
                                 {addError && <div style={{ color: "red" }}>{addError}</div>}
                                 <button type="submit" className="add-tenant-btn" style={{ marginTop: 12 }}>
                                     Add Tenant

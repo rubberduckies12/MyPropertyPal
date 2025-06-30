@@ -18,6 +18,7 @@ const pool = createDatabaseConnection();
 const chatRoute = require('./endpoints/chat');
 const tenantsRouter = require('./endpoints/tenants');
 const propertiesRouter = require('./endpoints/properties');
+const financesRouter = require('./endpoints/finances');
 
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001'],
@@ -72,6 +73,8 @@ app.use(
   },
   tenantsRouter
 );
+
+app.use('/api/finances', financesRouter);
 
 // Client Endpoints (placeholders)
 app.get('/', (req, res) => res.send('Welcome to the Property Management API'));

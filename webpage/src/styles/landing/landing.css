@@ -320,8 +320,12 @@
 }
 .pricing-note {
   margin-top: 1.5rem;
-  color: #475569;
-  font-size: 1.08rem;
+  color: #111827;      /* Even darker for maximum contrast */
+  font-size: 1.13rem;  /* Slightly larger for readability */
+  font-weight: 700;    /* Bolder for clarity */
+  background: #fff;    /* Explicitly set background if needed */
+  padding: 0.2em 0.6em; /* Optional: add padding for clarity */
+  border-radius: 0.5em; /* Optional: subtle background highlight */
 }
 
 /* ===== Pricing Toggle ===== */

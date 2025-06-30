@@ -10,7 +10,7 @@ function Footer() {
         <div className="footer-brand">
           <img
             src="/publicassets/LogoBB.png"
-            alt="MyPropertyPal Logo"
+            alt=""
             className="footer-logo-img"
             style={{ height: "130px", width: "auto", marginBottom: "8px" }}
           />

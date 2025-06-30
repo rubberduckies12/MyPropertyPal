@@ -2,7 +2,16 @@
 
 async function getProperties(req, res, pool) {
   try {
-    const landlordId = req.user.id;
+    const accountId = req.user.id;
+    // Look up the landlord id for this account
+    const landlordResult = await pool.query(
+      'SELECT id FROM landlord WHERE account_id = $1',
+      [accountId]
+    );
+    if (landlordResult.rows.length === 0) {
+      return res.status(400).json({ error: 'No landlord record for this user' });
+    }
+    const landlordId = landlordResult.rows[0].id;
 
     const query = `
       SELECT
@@ -31,7 +40,6 @@ async function getProperties(req, res, pool) {
       status: row.property_status,
       tenant: row.lead_tenant_name && row.lead_tenant_name.trim() !== '' ? row.lead_tenant_name : 'No tenant',
       rent: row.rent_amount != null ? `£${parseFloat(row.rent_amount).toFixed(2)}` : 'N/A',
-      // rent_due_date is a SMALLINT (day of month), not a date
       nextRentDue: row.rent_due_date != null ? `Day ${row.rent_due_date} of each month` : 'N/A'
     }));
 
