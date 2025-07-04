@@ -73,7 +73,7 @@ export default function Incidents() {
       <Sidebar />
       <main className="properties-main">
         <div className="properties-header">
-          <h2 className="properties-title">Incidents</h2>
+          <h2 className="properties-title">Maintenance Requests</h2>
         </div>
         <div className="incidents-table-container">
           <table className="incidents-table">

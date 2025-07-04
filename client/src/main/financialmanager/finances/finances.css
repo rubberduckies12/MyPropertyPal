@@ -165,6 +165,105 @@
   border-color: #2563eb;
 }
 
+/* Modal backdrop and modal */
+.finances-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(31, 41, 55, 0.25);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.finances-modal {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px 28px 24px 28px;
+  min-width: 320px;
+  max-width: 95vw;
+  position: relative;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.finances-modal h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: var(--primary-dark);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.finances-modal label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 10px;
+  font-weight: 500;
+  gap: 4px;
+}
+
+.finances-modal input,
+.finances-modal select {
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-size: 1rem;
+  background: #f7f8fa;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  transition: border 0.2s;
+}
+
+.finances-modal input:focus,
+.finances-modal select:focus {
+  border-color: var(--primary-dark);
+  outline: none;
+}
+
+.finances-add-btn {
+  background: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.finances-add-btn:hover,
+.finances-add-btn:focus {
+  background: var(--primary-dark);
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.7rem;
+  color: #64748b;
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.2s;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+  color: var(--primary-dark);
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .finances-summary-cards {
@@ -186,5 +285,14 @@
   .finances-table td {
     padding: 8px 4px;
     font-size: 0.98rem;
+  }
+}
+
+/* Responsive modal */
+@media (max-width: 600px) {
+  .finances-modal {
+    padding: 16px 6px 12px 6px;
+    min-width: 0;
+    width: 98vw;
   }
 }

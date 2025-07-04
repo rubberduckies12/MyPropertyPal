@@ -214,7 +214,7 @@ function Dashboard() {
 
           {/* Recent Incidents (Wide Card) */}
           <div className="dashboard-card dashboard-card-wide">
-            <h3>Recent Incidents</h3>
+            <h3>Maintenance Requests</h3>
             <div className="dashboard-activity-list">
               {recentIncidents.length === 0 ? (
                 <div className="dashboard-activity-empty">

@@ -68,4 +68,41 @@ router.get("/", authenticate, async (req, res) => {
   }
 });
 
+router.post("/expense", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  try {
+    const accountId = req.user.id;
+    const landlordId = await getLandlordId(pool, accountId);
+    const { property_id, amount, category, description, incurred_on } = req.body;
+    const result = await pool.query(
+      `INSERT INTO expense (landlord_id, property_id, amount, category, description, incurred_on)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [landlordId, property_id, amount, category, description, incurred_on]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error adding expense:", err);
+    res.status(500).json({ error: "Failed to add expense" });
+  }
+});
+
+router.post("/rent", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  try {
+    const accountId = req.user.id;
+    const landlordId = await getLandlordId(pool, accountId);
+    const { property_id, tenant_id, amount, paid_on, method, reference } = req.body;
+    // Optionally, validate property/tenant belong to this landlord
+    const result = await pool.query(
+      `INSERT INTO rent_payment (property_id, tenant_id, amount, paid_on, method, reference)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [property_id, tenant_id, amount, paid_on, method, reference]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error adding rent payment:", err);
+    res.status(500).json({ error: "Failed to add rent payment" });
+  }
+});
+
 module.exports = router;

@@ -35,6 +35,8 @@ function filterByPeriod(items, period) {
   });
 }
 
+const API_BASE = "http://localhost:5001/api/finances";
+
 export default function Finances() {
   const [period, setPeriod] = useState("month");
   const [rentPayments, setRentPayments] = useState([]);
@@ -44,6 +46,27 @@ export default function Finances() {
   const [taxableProfit, setTaxableProfit] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showRentModal, setShowRentModal] = useState(false);
+  const [expenseForm, setExpenseForm] = useState({
+    property_id: "",
+    amount: "",
+    category: "",
+    description: "",
+    incurred_on: "",
+  });
+  const [rentForm, setRentForm] = useState({
+    property_id: "",
+    tenant_id: "",
+    amount: "",
+    paid_on: "",
+    method: "",
+    reference: "",
+  });
+
+  // Optionally, fetch properties/tenants for dropdowns
+  const [properties, setProperties] = useState([]);
+  const [tenants, setTenants] = useState([]);
 
   useEffect(() => {
     async function fetchFinances() {
@@ -51,7 +74,7 @@ export default function Finances() {
       setError("");
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5001/api/finances", {
+        const res = await fetch(API_BASE, {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         });
         if (!res.ok) throw new Error("Failed to fetch finances");
@@ -70,8 +93,103 @@ export default function Finances() {
     fetchFinances();
   }, []);
 
+  // Fetch properties and tenants for dropdowns (optional, for better UX)
+  useEffect(() => {
+    async function fetchDropdowns() {
+      const token = localStorage.getItem("token");
+      try {
+        const propRes = await fetch("http://localhost:5001/api/properties", {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        });
+        if (propRes.ok) {
+          const data = await propRes.json();
+          setProperties(data.properties || []);
+        }
+        const tenantRes = await fetch("http://localhost:5001/api/tenants", {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        });
+        if (tenantRes.ok) {
+          const data = await tenantRes.json();
+          setTenants(data.tenants || []);
+        }
+      } catch {}
+    }
+    fetchDropdowns();
+  }, []);
+
   const filteredRent = filterByPeriod(rentPayments, period);
   const filteredExpenses = filterByPeriod(expenses, period);
+
+  // Add Expense Handler
+  async function handleAddExpense(e) {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE}/expense`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify(expenseForm),
+      });
+      if (!res.ok) throw new Error("Failed to add expense");
+      setShowExpenseModal(false);
+      setExpenseForm({
+        property_id: "",
+        amount: "",
+        category: "",
+        description: "",
+        incurred_on: "",
+      });
+      // Refresh data
+      const refreshed = await fetch(API_BASE, {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      });
+      const data = await refreshed.json();
+      setExpenses(data.expenses || []);
+      setTotalExpenses(data.totalExpenses || 0);
+      setTaxableProfit(data.taxableProfit || 0);
+    } catch (err) {
+      alert(err.message || "Failed to add expense");
+    }
+  }
+
+  // Add Rent Payment Handler
+  async function handleAddRent(e) {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_BASE}/rent`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify(rentForm),
+      });
+      if (!res.ok) throw new Error("Failed to add rent payment");
+      setShowRentModal(false);
+      setRentForm({
+        property_id: "",
+        tenant_id: "",
+        amount: "",
+        paid_on: "",
+        method: "",
+        reference: "",
+      });
+      // Refresh data
+      const refreshed = await fetch(API_BASE, {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      });
+      const data = await refreshed.json();
+      setRentPayments(data.rentPayments || []);
+      setTotalIncome(data.totalIncome || 0);
+      setTaxableProfit(data.taxableProfit || 0);
+    } catch (err) {
+      alert(err.message || "Failed to add rent payment");
+    }
+  }
 
   return (
     <div className="dashboard-container">
@@ -89,6 +207,14 @@ export default function Finances() {
               {opt.label}
             </button>
           ))}
+        </div>
+        <div style={{ marginBottom: 24 }}>
+          <button className="finances-add-btn" onClick={() => setShowExpenseModal(true)}>
+            + Add Expense
+          </button>
+          <button className="finances-add-btn" onClick={() => setShowRentModal(true)} style={{ marginLeft: 12 }}>
+            + Mark Rent Received
+          </button>
         </div>
         {loading ? (
           <div>Loading...</div>
@@ -174,9 +300,148 @@ export default function Finances() {
             </section>
           </>
         )}
+
+        {/* Add Expense Modal */}
+        {showExpenseModal && (
+          <div className="finances-modal-backdrop" onClick={() => setShowExpenseModal(false)}>
+            <div className="finances-modal" onClick={e => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setShowExpenseModal(false)}>&times;</button>
+              <h3>Add Expense</h3>
+              <form onSubmit={handleAddExpense}>
+                <label>
+                  Property
+                  <select
+                    required
+                    value={expenseForm.property_id}
+                    onChange={e => setExpenseForm(f => ({ ...f, property_id: e.target.value }))}
+                  >
+                    <option value="">Select property</option>
+                    {properties.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Amount (£)
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={expenseForm.amount}
+                    onChange={e => setExpenseForm(f => ({ ...f, amount: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Category
+                  <input
+                    required
+                    value={expenseForm.category}
+                    onChange={e => setExpenseForm(f => ({ ...f, category: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Description
+                  <input
+                    required
+                    value={expenseForm.description}
+                    onChange={e => setExpenseForm(f => ({ ...f, description: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Date
+                  <input
+                    type="date"
+                    required
+                    value={expenseForm.incurred_on}
+                    onChange={e => setExpenseForm(f => ({ ...f, incurred_on: e.target.value }))}
+                  />
+                </label>
+                <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
+                  Add Expense
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Add Rent Payment Modal */}
+        {showRentModal && (
+          <div className="finances-modal-backdrop" onClick={() => setShowRentModal(false)}>
+            <div className="finances-modal" onClick={e => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setShowRentModal(false)}>&times;</button>
+              <h3>Mark Rent as Received</h3>
+              <form onSubmit={handleAddRent}>
+                <label>
+                  Property
+                  <select
+                    required
+                    value={rentForm.property_id}
+                    onChange={e => setRentForm(f => ({ ...f, property_id: e.target.value }))}
+                  >
+                    <option value="">Select property</option>
+                    {properties.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Tenant
+                  <select
+                    required
+                    value={rentForm.tenant_id}
+                    onChange={e => setRentForm(f => ({ ...f, tenant_id: e.target.value }))}
+                  >
+                    <option value="">Select tenant</option>
+                    {tenants.map(t => (
+                      <option key={t.id} value={t.id}>
+                        {t.first_name} {t.last_name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Amount (£)
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={rentForm.amount}
+                    onChange={e => setRentForm(f => ({ ...f, amount: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Date
+                  <input
+                    type="date"
+                    required
+                    value={rentForm.paid_on}
+                    onChange={e => setRentForm(f => ({ ...f, paid_on: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Method
+                  <input
+                    value={rentForm.method}
+                    onChange={e => setRentForm(f => ({ ...f, method: e.target.value }))}
+                    placeholder="e.g. Bank Transfer"
+                  />
+                </label>
+                <label>
+                  Reference
+                  <input
+                    value={rentForm.reference}
+                    onChange={e => setRentForm(f => ({ ...f, reference: e.target.value }))}
+                    placeholder="Reference (optional)"
+                  />
+                </label>
+                <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
+                  Mark as Received
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
 }
-
-//needs testing live data
