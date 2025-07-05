@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const authenticate = require("../middleware/authenticate");
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
 
 // Helper to get landlordId from accountId
 async function getLandlordId(pool, accountId) {
@@ -12,8 +15,9 @@ async function getLandlordId(pool, accountId) {
   return res.rows[0].id;
 }
 
+// Get finances summary
 router.get("/", authenticate, async (req, res) => {
-  const pool = req.app.get("pool"); // or however you access your pool
+  const pool = req.app.get("pool");
   try {
     const accountId = req.user.id;
     const landlordId = await getLandlordId(pool, accountId);
@@ -68,6 +72,7 @@ router.get("/", authenticate, async (req, res) => {
   }
 });
 
+// Add expense
 router.post("/expense", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   try {
@@ -86,13 +91,13 @@ router.post("/expense", authenticate, async (req, res) => {
   }
 });
 
+// Add rent payment
 router.post("/rent", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   try {
     const accountId = req.user.id;
     const landlordId = await getLandlordId(pool, accountId);
     const { property_id, tenant_id, amount, paid_on, method, reference } = req.body;
-    // Optionally, validate property/tenant belong to this landlord
     const result = await pool.query(
       `INSERT INTO rent_payment (property_id, tenant_id, amount, paid_on, method, reference)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
@@ -102,6 +107,131 @@ router.post("/rent", authenticate, async (req, res) => {
   } catch (err) {
     console.error("Error adding rent payment:", err);
     res.status(500).json({ error: "Failed to add rent payment" });
+  }
+});
+
+// Generate and serve tax return PDF
+router.get("/tax-report", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  try {
+    const accountId = req.user.id;
+    const landlordId = await getLandlordId(pool, accountId);
+    const year = parseInt(req.query.year, 10) || new Date().getFullYear();
+
+    // Fetch landlord info
+    const landlordResult = await pool.query(
+      `SELECT a.first_name, a.last_name, a.email FROM landlord l JOIN account a ON l.account_id = a.id WHERE l.id = $1`,
+      [landlordId]
+    );
+    const landlord = landlordResult.rows[0];
+
+    // Fetch rent payments for the tax year
+    const rentPaymentsResult = await pool.query(
+      `SELECT rp.paid_on, rp.amount, p.name AS property
+       FROM rent_payment rp
+       JOIN property p ON rp.property_id = p.id
+       WHERE p.landlord_id = $1
+         AND EXTRACT(YEAR FROM rp.paid_on) = $2
+       ORDER BY rp.paid_on`,
+      [landlordId, year]
+    );
+    const rentPayments = rentPaymentsResult.rows;
+
+    // Fetch expenses for the tax year
+    const expensesResult = await pool.query(
+      `SELECT incurred_on, amount, category, description
+       FROM expense
+       WHERE landlord_id = $1
+         AND EXTRACT(YEAR FROM incurred_on) = $2
+       ORDER BY incurred_on`,
+      [landlordId, year]
+    );
+    const expenses = expensesResult.rows;
+
+    // Group expenses by category
+    const expensesByCategory = {};
+    expenses.forEach(e => {
+      if (!expensesByCategory[e.category]) expensesByCategory[e.category] = 0;
+      expensesByCategory[e.category] += Number(e.amount);
+    });
+
+    // Totals
+    const totalIncome = rentPayments.reduce((sum, p) => sum + Number(p.amount), 0);
+    const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
+    const netProfit = totalIncome - totalExpenses;
+
+    // Generate PDF
+    const doc = new PDFDocument({ margin: 40, size: "A4" });
+    const fileName = `tax-report-${landlordId}-${year}.pdf`;
+    const exportDir = path.join(__dirname, "../../exports");
+    if (!fs.existsSync(exportDir)) fs.mkdirSync(exportDir);
+    const filePath = path.join(exportDir, fileName);
+
+    const stream = fs.createWriteStream(filePath);
+    doc.pipe(stream);
+
+    // --- Write PDF content BEFORE doc.end() ---
+    doc.fontSize(20).text("HMRC Tax Return Report", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(12).text(`Landlord: ${landlord.first_name} ${landlord.last_name} (${landlord.email})`);
+    doc.text(`Tax Year: ${year}`);
+    doc.text(`Generated: ${new Date().toLocaleString()}`);
+    doc.moveDown();
+
+    doc.fontSize(14).text("Summary", { underline: true });
+    doc.fontSize(12).text(`Total Rental Income: £${totalIncome.toLocaleString()}`);
+    doc.text(`Total Allowable Expenses: £${totalExpenses.toLocaleString()}`);
+    doc.text(`Net Profit/Loss: £${netProfit.toLocaleString()}`);
+    doc.moveDown();
+
+    doc.fontSize(14).text("Expenses by Category", { underline: true });
+    Object.entries(expensesByCategory).forEach(([cat, amt]) =>
+      doc.fontSize(12).text(`${cat}: £${amt.toLocaleString()}`)
+    );
+    doc.moveDown();
+
+    doc.fontSize(14).text("Detailed Expense Breakdown", { underline: true });
+    doc.fontSize(12).text("Date        Category           Description           Amount");
+    expenses.forEach(item => {
+      const dateStr = item.incurred_on
+        ? String(item.incurred_on).slice(0, 10)
+        : "";
+      doc.text(
+        `${dateStr}  ${item.category?.padEnd(18) ?? ""}  ${item.description?.padEnd(20) ?? ""}  £${item.amount?.toLocaleString() ?? ""}`
+      );
+    });
+    doc.moveDown();
+
+    doc.fontSize(14).text("Rental Income Breakdown", { underline: true });
+    doc.fontSize(12).text("Date        Property           Amount");
+    rentPayments.forEach(item => {
+      const dateStr = item.paid_on
+        ? String(item.paid_on).slice(0, 10)
+        : "";
+      doc.text(
+        `${dateStr}  ${item.property?.padEnd(18) ?? ""}  £${item.amount?.toLocaleString() ?? ""}`
+      );
+    });
+
+    doc.moveDown();
+    doc.fontSize(10).text("This report was generated by MyPropertyPal. For reference only.", { align: "center" });
+    doc.text(`Page 1`, { align: "right" });
+
+    // --- End the PDF after writing content ---
+    doc.end();
+
+    // Only respond after the PDF is fully written
+    stream.on("finish", () => {
+      res.json({ url: `/exports/${fileName}` });
+    });
+
+    stream.on("error", (err) => {
+      console.error("PDF stream error:", err);
+      res.status(500).json({ error: "Failed to generate tax report" });
+    });
+  } catch (err) {
+    console.error("Error generating tax report:", err);
+    res.status(500).json({ error: "Failed to generate tax report" });
   }
 });
 

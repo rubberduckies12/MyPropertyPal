@@ -89,14 +89,7 @@ function Sidebar() {
           {openDropdown === 'legal' && (
             <div className="sidebar-dropdown">
               <NavLink to="/compliance" className="dashboard-nav-link">Compliance</NavLink>
-              <NavLink
-                to="/contracts"
-                className={({ isActive }) =>
-                  "dashboard-nav-link" + (isActive ? " active" : "")
-                }
-              >
-                Contracts
-              </NavLink>
+              {/* Contracts link removed */}
             </div>
           )}
         </div>

@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const axios = require('axios');
+const { Pool } = require("pg");
 
 const createDatabaseConnection = require('./assets/databaseConnect');
 const login = require('./endpoints/login');
@@ -14,6 +15,8 @@ const authenticate = require('./middleware/authenticate');
 const app = express();
 const port = 5001;
 const pool = createDatabaseConnection();
+
+app.set("pool", pool);
 
 const chatRoute = require('./endpoints/chat');
 const tenantsRouter = require('./endpoints/tenants');
@@ -75,6 +78,9 @@ app.use(
 );
 
 app.use('/api/finances', financesRouter);
+
+// Serve static files from the "exports" directory
+app.use("/exports", express.static(path.join(__dirname, "../exports")));
 
 // Client Endpoints (placeholders)
 app.get('/', (req, res) => res.send('Welcome to the Property Management API'));

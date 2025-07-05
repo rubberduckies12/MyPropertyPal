@@ -19,15 +19,25 @@ async function getProperties(req, res, pool) {
         p.name,
         CONCAT_WS(', ', p.address, p.city, p.county, p.postcode) AS full_address,
         ps.status AS property_status,
-        a.first_name || ' ' || a.last_name AS lead_tenant_name,
-        pt.rent_amount,
-        pt.rent_due_date
+        COALESCE(SUM(pt.rent_amount), 0) AS total_rent,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'first_name', a.first_name,
+              'last_name', a.last_name,
+              'rent_amount', pt.rent_amount,
+              'rent_due_date', pt.rent_due_date
+            )
+          ) FILTER (WHERE pt.tenant_id IS NOT NULL), '[]'
+        ) AS tenants,
+        MIN(pt.rent_due_date) AS next_rent_due
       FROM property p
       JOIN property_status ps ON p.property_status_id = ps.id
       LEFT JOIN property_tenant pt ON pt.property_id = p.id
       LEFT JOIN tenant t ON pt.tenant_id = t.id
       LEFT JOIN account a ON t.account_id = a.id
       WHERE p.landlord_id = $1
+      GROUP BY p.id, p.name, p.address, p.city, p.county, p.postcode, ps.status
       ORDER BY p.name;
     `;
 
@@ -38,9 +48,9 @@ async function getProperties(req, res, pool) {
       name: row.name,
       address: row.full_address,
       status: row.property_status,
-      tenant: row.lead_tenant_name && row.lead_tenant_name.trim() !== '' ? row.lead_tenant_name : 'No tenant',
-      rent: row.rent_amount != null ? `£${parseFloat(row.rent_amount).toFixed(2)}` : 'N/A',
-      nextRentDue: row.rent_due_date != null ? `Day ${row.rent_due_date} of each month` : 'N/A'
+      rental_income: row.total_rent > 0 ? `£${parseFloat(row.total_rent).toFixed(2)}` : 'N/A',
+      tenants: row.tenants,
+      nextRentDue: row.next_rent_due ? `Day ${row.next_rent_due} of month` : "N/A"
     }));
 
     res.json({ properties });

@@ -16,7 +16,7 @@ import ContractorsPage from './main/propertymanager/contractors/contractors.jsx'
 import Finances from './main/financialmanager/finances/finances.jsx';
 import Documents from './main/financialmanager/documents/documents.jsx';
 import Compliance from './main/legalmanager/compliance/compliance.jsx';
-import Contracts from './main/legalmanager/contracts/contracts.jsx';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -39,7 +39,6 @@ root.render(
         <Route path="/finances" element={<Finances />} />
         <Route path="/documents" element={<Documents />} />
         <Route path="/compliance" element={<Compliance />} />
-        <Route path="/contracts" element={<Contracts />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

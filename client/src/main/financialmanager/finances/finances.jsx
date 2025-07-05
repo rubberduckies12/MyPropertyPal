@@ -191,6 +191,33 @@ export default function Finances() {
     }
   }
 
+  async function handleExportTaxReport() {
+    try {
+      const year = new Date().getFullYear(); // Always use this year
+      const token = localStorage.getItem("token");
+      const res = await fetch(`http://localhost:5001/api/finances/tax-report?year=${year}`, {
+        headers: { Authorization: token ? `Bearer ${token}` : "" }
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.open(data.url, "_blank");
+      } else {
+        alert("Failed to generate tax report.");
+      }
+    } catch (err) {
+      alert("Failed to generate tax report.");
+    }
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   return (
     <div className="dashboard-container">
       <Sidebar />
@@ -252,7 +279,7 @@ export default function Finances() {
                 <tbody>
                   {filteredRent.map(payment => (
                     <tr key={payment.id}>
-                      <td>{payment.date}</td>
+                      <td>{formatDate(payment.date)}</td>
                       <td>{payment.property}</td>
                       <td>{payment.tenant}</td>
                       <td>£{payment.amount}</td>
@@ -279,7 +306,7 @@ export default function Finances() {
                 <tbody>
                   {filteredExpenses.map(expense => (
                     <tr key={expense.id}>
-                      <td>{expense.date}</td>
+                      <td>{formatDate(expense.date)}</td>
                       <td>{expense.category}</td>
                       <td>{expense.description}</td>
                       <td>£{expense.amount}</td>
@@ -295,7 +322,9 @@ export default function Finances() {
                 <div><strong>Total Income:</strong> £{totalIncome.toLocaleString()}</div>
                 <div><strong>Total Expenses:</strong> £{totalExpenses.toLocaleString()}</div>
                 <div><strong>Taxable Profit:</strong> £{taxableProfit.toLocaleString()}</div>
-                <button className="finances-export-btn">Export HMRC Tax Report</button>
+                <button className="finances-export-btn" onClick={handleExportTaxReport}>
+                  Export HMRC Tax Report
+                </button>
               </div>
             </section>
           </>
@@ -372,24 +401,20 @@ export default function Finances() {
               <h3>Mark Rent as Received</h3>
               <form onSubmit={handleAddRent}>
                 <label>
-                  Property
-                  <select
-                    required
-                    value={rentForm.property_id}
-                    onChange={e => setRentForm(f => ({ ...f, property_id: e.target.value }))}
-                  >
-                    <option value="">Select property</option>
-                    {properties.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-                </label>
-                <label>
                   Tenant
                   <select
                     required
                     value={rentForm.tenant_id}
-                    onChange={e => setRentForm(f => ({ ...f, tenant_id: e.target.value }))}
+                    onChange={e => {
+                      const tenantId = e.target.value;
+                      const selectedTenant = tenants.find(t => String(t.id) === tenantId);
+                      setRentForm(f => ({
+                        ...f,
+                        tenant_id: tenantId,
+                        property_id: selectedTenant ? selectedTenant.property_id : "",
+                        amount: selectedTenant && selectedTenant.rent_amount ? selectedTenant.rent_amount : ""
+                      }));
+                    }}
                   >
                     <option value="">Select tenant</option>
                     {tenants.map(t => (
@@ -407,6 +432,7 @@ export default function Finances() {
                     min="0"
                     value={rentForm.amount}
                     onChange={e => setRentForm(f => ({ ...f, amount: e.target.value }))}
+                    readOnly={!!rentForm.tenant_id}
                   />
                 </label>
                 <label>

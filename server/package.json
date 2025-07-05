@@ -12,13 +12,16 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.9.0",
+    "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^4.18.2",
+    "express": "^4.21.2",
+    "fs": "^0.0.1-security",
     "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
     "openai": "^5.1.1",
     "path": "^0.12.7",
-    "pg": "^8.16.0"
+    "pdfkit": "^0.17.1",
+    "pg": "^8.16.3"
   }
 }

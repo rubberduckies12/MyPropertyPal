@@ -152,12 +152,13 @@ export default function Properties() {
                   <th>Tenant</th>
                   <th>Monthly Rent</th>
                   <th>Next Rent Due</th>
+                  <th>Rental Income</th>
                 </tr>
               </thead>
               <tbody>
                 {properties.length === 0 && (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: "center" }}>
+                    <td colSpan={7} style={{ textAlign: "center" }}>
                       No properties found.
                     </td>
                   </tr>
@@ -176,9 +177,18 @@ export default function Properties() {
                         {prop.status}
                       </span>
                     </td>
-                    <td>{prop.tenant || "No tenant"}</td>
-                    <td>{prop.rent || "N/A"}</td>
+                    <td>
+                      {prop.tenants && prop.tenants.length > 0
+                        ? prop.tenants.map(t => `${t.first_name} ${t.last_name}`).join(", ")
+                        : "No tenant"}
+                    </td>
+                    <td>
+                      {prop.tenants && prop.tenants.length > 0
+                        ? prop.tenants.map(t => t.rent_amount ? `£${Number(t.rent_amount).toFixed(2)}` : "N/A").join(", ")
+                        : "N/A"}
+                    </td>
                     <td>{prop.nextRentDue || "N/A"}</td>
+                    <td>{prop.rental_income}</td>
                   </tr>
                 ))}
               </tbody>
@@ -232,18 +242,6 @@ export default function Properties() {
                   <input
                     name="postcode"
                     value={addForm.postcode}
-                    onChange={handleAddFormChange}
-                    required
-                  />
-                </label>
-                <label>
-                  Monthly Rent (£)
-                  <input
-                    name="rent_amount"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={addForm.rent_amount}
                     onChange={handleAddFormChange}
                     required
                   />

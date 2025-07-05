@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 
     // Get tenants linked to this landlord's properties
     const tenantsResult = await pool.query(
-      `SELECT t.id, a.first_name, a.last_name, a.email, p.address, pt.rent_amount, pt.rent_due_date, pt.pays_rent
+      `SELECT t.id, a.first_name, a.last_name, a.email, pt.property_id, p.address, pt.rent_amount, pt.rent_due_date, pt.pays_rent
        FROM tenant t
        JOIN account a ON t.account_id = a.id
        JOIN property_tenant pt ON t.id = pt.tenant_id
