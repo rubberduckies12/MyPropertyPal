@@ -22,6 +22,7 @@ const chatRoute = require('./endpoints/chat');
 const tenantsRouter = require('./endpoints/tenants');
 const propertiesRouter = require('./endpoints/properties');
 const financesRouter = require('./endpoints/finances');
+const documentsRouter = require('./endpoints/documents');
 
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001'],
@@ -78,6 +79,7 @@ app.use(
 );
 
 app.use('/api/finances', financesRouter);
+app.use('/api/documents', documentsRouter);
 
 // Serve static files from the "exports" directory
 app.use("/exports", express.static(path.join(__dirname, "../exports")));

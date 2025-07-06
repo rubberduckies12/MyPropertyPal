@@ -235,4 +235,30 @@ router.get("/tax-report", authenticate, async (req, res) => {
   }
 });
 
+// Delete an expense
+router.delete("/expense/:id", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  const { id } = req.params;
+  try {
+    await pool.query("DELETE FROM expense WHERE id = $1", [id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error deleting expense:", err);
+    res.status(500).json({ error: "Failed to delete expense" });
+  }
+});
+
+// Delete a rent payment
+router.delete("/rent/:id", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  const { id } = req.params;
+  try {
+    await pool.query("DELETE FROM rent_payment WHERE id = $1", [id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error deleting rent payment:", err);
+    res.status(500).json({ error: "Failed to delete rent payment" });
+  }
+});
+
 module.exports = router;

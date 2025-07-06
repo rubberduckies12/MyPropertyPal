@@ -7,14 +7,52 @@ const initialDocs = [
   // Example: { id: 1, name: "invoice-may.pdf", type: "Invoice", date: "2025-06-01", amount: 120, status: "Processed" }
 ];
 
+const BACKEND_URL = "http://localhost:5001"; // <-- Hardcoded backend URL
+
 export default function Documents() {
   const [documents, setDocuments] = useState(initialDocs);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const fileInputRef = useRef();
 
+  // Example upload handler
+  const handleUpload = async (file) => {
+    setUploading(true);
+    setError("");
+    const formData = new FormData();
+    formData.append("file", file);
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/documents/upload`, {
+        method: "POST",
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      setDocuments((docs) => [
+        ...docs,
+        {
+          id: docs.length + 1,
+          name: file.name,
+          type: file.name.toLowerCase().includes("invoice")
+            ? "Invoice"
+            : file.name.toLowerCase().includes("receipt")
+            ? "Receipt"
+            : "Other",
+          date: new Date().toISOString().slice(0, 10),
+          amount: data.amount || "N/A",
+          status: data.amount ? "Processed" : "No amount found",
+        },
+      ]);
+    } catch (err) {
+      setError(err.message || "Upload failed");
+    }
+    setUploading(false);
+  };
+
   // Simulate Google Vision OCR and outgoing extraction
-  const handleUpload = async (e) => {
+  const handleFileChange = async (e) => {
     setError("");
     setUploading(true);
     const file = e.target.files[0];
@@ -22,6 +60,7 @@ export default function Documents() {
       setUploading(false);
       return;
     }
+    handleUpload(file);
     // Simulate OCR and extraction delay
     setTimeout(() => {
       // Mock: extract amount and type from filename for demo
@@ -55,7 +94,10 @@ export default function Documents() {
               accept="application/pdf,image/*"
               style={{ display: "none" }}
               ref={fileInputRef}
-              onChange={handleUpload}
+              onChange={e => {
+                const file = e.target.files[0];
+                if (file) handleUpload(file);
+              }}
               disabled={uploading}
             />
             <button

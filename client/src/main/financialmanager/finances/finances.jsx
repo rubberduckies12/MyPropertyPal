@@ -218,6 +218,26 @@ export default function Finances() {
     return `${day}/${month}/${year}`;
   }
 
+  // Delete rent payment handler
+  const deleteRentPayment = async (rentId) => {
+    const token = localStorage.getItem("token");
+    await fetch(`${API_BASE}/rent/${rentId}`, {
+      method: "DELETE",
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    });
+    setRentPayments(rentPayments => rentPayments.filter(r => r.id !== rentId));
+  };
+
+  // Update deleteExpense to update state
+  const deleteExpense = async (expenseId) => {
+    const token = localStorage.getItem("token");
+    await fetch(`${API_BASE}/expense/${expenseId}`, {
+      method: "DELETE",
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    });
+    setExpenses(expenses => expenses.filter(e => e.id !== expenseId));
+  };
+
   return (
     <div className="dashboard-container">
       <Sidebar />
@@ -274,6 +294,7 @@ export default function Finances() {
                     <th>Tenant</th>
                     <th>Amount</th>
                     <th>Status</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -285,6 +306,19 @@ export default function Finances() {
                       <td>£{payment.amount}</td>
                       <td className={payment.status === "Received" ? "finances-status-received" : "finances-status-pending"}>
                         {payment.status}
+                      </td>
+                      <td>
+                        <div className="finances-actions-dropdown">
+                          <button className="finances-actions-btn">Actions ▼</button>
+                          <div className="finances-actions-menu">
+                            <button
+                              className="finances-actions-menu-item"
+                              onClick={() => deleteRentPayment(payment.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -301,6 +335,7 @@ export default function Finances() {
                     <th>Category</th>
                     <th>Description</th>
                     <th>Amount</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -310,6 +345,19 @@ export default function Finances() {
                       <td>{expense.category}</td>
                       <td>{expense.description}</td>
                       <td>£{expense.amount}</td>
+                      <td>
+                        <div className="finances-actions-dropdown">
+                          <button className="finances-actions-btn">Actions ▼</button>
+                          <div className="finances-actions-menu">
+                            <button
+                              className="finances-actions-menu-item"
+                              onClick={() => deleteExpense(expense.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

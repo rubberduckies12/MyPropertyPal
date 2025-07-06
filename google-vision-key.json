@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "propertyapp-465111",
+  "private_key_id": "633bc1702241c42cbc5150f8a9e2e5d131d3ea7f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDp5zqYv16ZTugC\nowOYWfYWicDaZTSKEHoTmbo5DQ4rWrQWFURO0PbC3kDB8qAJmX5cSklqmBiAg/JR\nGvDY7zPh/l16lel+fjqjBpP4u0Xo5ERrZh+pAqS4TOpiEWsdyIHLl8B+hUy3AkrN\n5yvEu7TBywlIt5YRQzrwztfnmOOoJYwlHHB8urtOTSHUmw+lkCBzhuJo2l8J/Jbw\nGv8molEB9ZKhXFiCiIOJRnGN2s8wbxhATsjLSIPgDS/byom1ykgPuiFXGnMIZtsN\nEo3IpFajbGcMoVFeAGy0b3SmdkYPIWANwq6mWYWIH2i7XXV7JfS12ViFGEgWxCAb\nbzp5mUolAgMBAAECggEAXHSi69fRG8Zd3RT0idcdd+ExkuIoN1618mN0gbKQZECx\nKH11h7X/pB1X+ZHfAoxirzZJ+NFv9fSx5q9Afm9m0bDK4Ha7Wd2pbeFewhW8V4dL\nKCyw3QyHcbYte2ApOBeWfpRYaWplXX2Rdfwnh9cuZt/LpquyrNYnSSJpo0kCy+Zy\nIAZZyROTDTTliAFClEwxLdmT6pDXBVtF7I/cYipAGydsOiA6ZRlJvZKtTVZ1qo8j\nuvoO6BWtrfJzdH49/VwU0MICDF2u2hcNtZEsyoQ2KuGEufTfxuPthQFZxGKCAroC\nCCnFpmFx+jUU+Ok5yTHJHi6k2jVIcZmlFzP4ZG8JjQKBgQD1v4Jka6LbkB5cASdq\nCpUQQ1cn76U1/nuy3JNKma0IsJAlx7EDCf3nGxL2+Zm+CZ+NKudUNKO5idmXeRRD\nEOR9CojYNy0T1VHKxNQZauCtHnjgHiTKlWiQRYIz34f9uupwvyf5DVPbNRxHeHBY\n64gg4M4q1AGZc9gsSax5jq8uGwKBgQDzqTirULEjAPUpaRdNH73Ey8j5lw3znA7t\nB//nXW2WIwN1ZJwAV4IYGTWiZ4yWUyT7g1EVSFItT7AWiIE5I5ZoOBFyaLuGCgCt\nsMyoIfJrFRFBvb29/4MI+7Nsng4W8ephGX++FcjlUJ7BBy0VGwop4yNcK2PgPxwm\nuXMlZX/svwKBgAFeYK6Ifu60HccrZnnLt0rQ5TJevk/PrAax/cwDkRgkS5k6RH0c\n2CIqX2+qsjWBvja+D23DoUnOP7z9OqSo+mzL2zlBDWo33O3BLOE7XCb6rXeqE1Bh\nhqSPDouVah96pAWeuu1DKr1kzVSEkjOclDSCrANHDP86yvBsNJ60sbsTAoGAKyC4\ntxoBQIDa5AmF5lDH9h1b5VGnVoc43RudYAZZb0mjQxQbyLO0gy9zHtvVNoZg9WO4\n5lt2sC56rIJc3RA/fxLtg6KmDoOWuyegEeJwViPUeh5rh0XCm8RxbbhMJiOLqMQq\nqCqS9IPglan/gMzYb7GUgKvtcbO59+C7UNM2YWECgYEAqcfa1HKclm1Ivps6JR2C\n8WgwvQeWAUdegwBqNywCAmZ2kdUZwRhoVOydoiTd7cFLepoCDKUKbcVON02Yt2iZ\nBHK2weV89W9ph2lLh26lqTiGAXO8sYE5XhvArzOpaJMk8yegpzCDeJZNVArJxeNx\ngL7/P5E426ZA3dle5DZ1UnE=\n-----END PRIVATE KEY-----\n",
+  "client_email": "proppal@propertyapp-465111.iam.gserviceaccount.com",
+  "client_id": "105488025895463778914",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/proppal%40propertyapp-465111.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

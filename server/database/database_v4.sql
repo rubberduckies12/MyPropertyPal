@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS rent_payment (
 CREATE TABLE IF NOT EXISTS expense (
     id SERIAL PRIMARY KEY,
     landlord_id INT NOT NULL REFERENCES landlord(id) ON DELETE CASCADE,
-    property_id INT NOT NULL REFERENCES property(id) ON DELETE CASCADE,
+    property_id INT REFERENCES property(id) ON DELETE CASCADE, -- removed NOT NULL
     amount DECIMAL(10, 2) NOT NULL,
     category VARCHAR(50) NOT NULL,
     description TEXT,
