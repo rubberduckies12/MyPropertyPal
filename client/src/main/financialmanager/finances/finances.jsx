@@ -195,12 +195,13 @@ export default function Finances() {
     try {
       const year = new Date().getFullYear(); // Always use this year
       const token = localStorage.getItem("token");
+      // Hardcoded backend URL for tax report PDF
       const res = await fetch(`http://localhost:5001/api/finances/tax-report?year=${year}`, {
         headers: { Authorization: token ? `Bearer ${token}` : "" }
       });
       const data = await res.json();
       if (data.url) {
-        window.open(data.url, "_blank");
+        window.open(`http://localhost:5001${data.url}`, "_blank");
       } else {
         alert("Failed to generate tax report.");
       }

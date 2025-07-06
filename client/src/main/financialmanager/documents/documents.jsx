@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import "./documents.css";
 
@@ -10,10 +10,37 @@ const initialDocs = [
 const BACKEND_URL = "http://localhost:5001"; // <-- Hardcoded backend URL
 
 export default function Documents() {
-  const [documents, setDocuments] = useState(initialDocs);
+  const [documents, setDocuments] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const fileInputRef = useRef();
+
+  useEffect(() => {
+    const fetchDocs = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/documents`, {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setDocuments(
+            data.map((doc, idx) => ({
+              id: doc.id,
+              name: doc.description || `Document ${idx + 1}`,
+              type: doc.category || "Other",
+              date: doc.incurred_on,
+              amount: doc.amount || "N/A",
+              status: doc.amount ? "Processed" : "No amount found",
+            }))
+          );
+        }
+      } catch (err) {
+        // Optionally handle error
+      }
+    };
+    fetchDocs();
+  }, []);
 
   // Example upload handler
   const handleUpload = async (file) => {

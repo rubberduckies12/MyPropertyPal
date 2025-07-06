@@ -162,7 +162,8 @@ router.get("/tax-report", authenticate, async (req, res) => {
 
     // Generate PDF
     const doc = new PDFDocument({ margin: 40, size: "A4" });
-    const fileName = `tax-report-${landlordId}-${year}.pdf`;
+    const uniqueSuffix = Date.now(); // or use: require('crypto').randomBytes(4).toString('hex')
+    const fileName = `tax-report-${landlordId}-${year}-${uniqueSuffix}.pdf`;
     const exportDir = path.join(__dirname, "../../exports");
     if (!fs.existsSync(exportDir)) fs.mkdirSync(exportDir);
     const filePath = path.join(exportDir, fileName);
@@ -170,54 +171,91 @@ router.get("/tax-report", authenticate, async (req, res) => {
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    // --- Write PDF content BEFORE doc.end() ---
-    doc.fontSize(20).text("HMRC Tax Return Report", { align: "center" });
+    // --- Cover Page ---
+    doc.fontSize(24).font("Helvetica-Bold").text("Micro-Entity Accounts", { align: "center" });
+    doc.moveDown(2);
+    doc.fontSize(16).font("Helvetica").text(`For the year ended 31 December ${year}`, { align: "center" });
+    doc.moveDown(2);
+    doc.fontSize(14).text(`Company/Landlord: ${landlord.first_name} ${landlord.last_name}`);
+    doc.text(`Email: ${landlord.email}`);
+    doc.text(`Report generated: ${new Date().toLocaleString()}`);
+    doc.addPage();
+
+    // --- Profit and Loss Account ---
+    doc.fontSize(18).font("Helvetica-Bold").text("Profit and Loss Account", { align: "center" });
     doc.moveDown();
-    doc.fontSize(12).text(`Landlord: ${landlord.first_name} ${landlord.last_name} (${landlord.email})`);
-    doc.text(`Tax Year: ${year}`);
-    doc.text(`Generated: ${new Date().toLocaleString()}`);
+    doc.fontSize(12).font("Helvetica").text(`Period: 1 January ${year} to 31 December ${year}`);
     doc.moveDown();
 
-    doc.fontSize(14).text("Summary", { underline: true });
-    doc.fontSize(12).text(`Total Rental Income: £${totalIncome.toLocaleString()}`);
-    doc.text(`Total Allowable Expenses: £${totalExpenses.toLocaleString()}`);
-    doc.text(`Net Profit/Loss: £${netProfit.toLocaleString()}`);
+    doc.fontSize(12).font("Helvetica-Bold").text("Turnover (Rental Income):", { continued: true }).font("Helvetica").text(` £${totalIncome.toLocaleString()}`);
+    doc.fontSize(12).font("Helvetica-Bold").text("Cost of Sales (Allowable Expenses):", { continued: true }).font("Helvetica").text(` £${totalExpenses.toLocaleString()}`);
+    doc.fontSize(12).font("Helvetica-Bold").text("Gross Profit:", { continued: true }).font("Helvetica").text(` £${(totalIncome - totalExpenses).toLocaleString()}`);
     doc.moveDown();
 
-    doc.fontSize(14).text("Expenses by Category", { underline: true });
-    Object.entries(expensesByCategory).forEach(([cat, amt]) =>
-      doc.fontSize(12).text(`${cat}: £${amt.toLocaleString()}`)
-    );
-    doc.moveDown();
+    doc.fontSize(12).font("Helvetica-Bold").text("Expenses Breakdown:");
+    doc.moveDown(0.5);
 
-    doc.fontSize(14).text("Detailed Expense Breakdown", { underline: true });
-    doc.fontSize(12).text("Date        Category           Description           Amount");
+    // Table header
+    doc.font("Helvetica-Bold").text("Category", 60, doc.y, { continued: true });
+    doc.text("Amount (£)", 300, doc.y);
+    doc.font("Helvetica");
+    Object.entries(expensesByCategory).forEach(([cat, amt]) => {
+      doc.text(cat, 60, doc.y, { continued: true });
+      doc.text(amt.toLocaleString(), 300, doc.y);
+    });
+    doc.moveDown(2);
+
+    // --- Balance Sheet (Simple) ---
+    doc.fontSize(18).font("Helvetica-Bold").text("Balance Sheet", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(12).font("Helvetica-Bold").text("Current Assets:", { continued: true }).font("Helvetica").text(" £0");
+    doc.fontSize(12).font("Helvetica-Bold").text("Cash at Bank and in Hand:", { continued: true }).font("Helvetica").text(" £0");
+    doc.fontSize(12).font("Helvetica-Bold").text("Creditors: Amounts falling due within one year:", { continued: true }).font("Helvetica").text(" £0");
+    doc.fontSize(12).font("Helvetica-Bold").text("Net Current Assets:", { continued: true }).font("Helvetica").text(" £0");
+    doc.fontSize(12).font("Helvetica-Bold").text("Total Net Assets:", { continued: true }).font("Helvetica").text(` £${(totalIncome - totalExpenses).toLocaleString()}`);
+    doc.moveDown(2);
+
+    // --- Detailed Expense Table ---
+    doc.fontSize(16).font("Helvetica-Bold").text("Detailed Expense Breakdown", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(12).font("Helvetica-Bold").text("Date", 60, doc.y, { continued: true });
+    doc.text("Category", 120, doc.y, { continued: true });
+    doc.text("Description", 240, doc.y, { continued: true });
+    doc.text("Amount (£)", 400, doc.y);
+    doc.font("Helvetica");
     expenses.forEach(item => {
-      const dateStr = item.incurred_on
-        ? String(item.incurred_on).slice(0, 10)
-        : "";
-      doc.text(
-        `${dateStr}  ${item.category?.padEnd(18) ?? ""}  ${item.description?.padEnd(20) ?? ""}  £${item.amount?.toLocaleString() ?? ""}`
-      );
+      const dateStr = item.incurred_on ? String(item.incurred_on).slice(0, 10) : "";
+      doc.text(dateStr, 60, doc.y, { continued: true });
+      doc.text(item.category ?? "", 120, doc.y, { continued: true });
+      doc.text(item.description ?? "", 240, doc.y, { continued: true });
+      doc.text(item.amount?.toLocaleString() ?? "", 400, doc.y);
     });
-    doc.moveDown();
+    doc.moveDown(2);
 
-    doc.fontSize(14).text("Rental Income Breakdown", { underline: true });
-    doc.fontSize(12).text("Date        Property           Amount");
+    // --- Rental Income Table ---
+    doc.fontSize(16).font("Helvetica-Bold").text("Rental Income Breakdown", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(12).font("Helvetica-Bold").text("Date", 60, doc.y, { continued: true });
+    doc.text("Property", 150, doc.y, { continued: true });
+    doc.text("Amount (£)", 350, doc.y);
+    doc.font("Helvetica");
     rentPayments.forEach(item => {
-      const dateStr = item.paid_on
-        ? String(item.paid_on).slice(0, 10)
-        : "";
-      doc.text(
-        `${dateStr}  ${item.property?.padEnd(18) ?? ""}  £${item.amount?.toLocaleString() ?? ""}`
-      );
+      const dateStr = item.paid_on ? String(item.paid_on).slice(0, 10) : "";
+      doc.text(dateStr, 60, doc.y, { continued: true });
+      doc.text(item.property ?? "", 150, doc.y, { continued: true });
+      doc.text(item.amount?.toLocaleString() ?? "", 350, doc.y);
     });
+    doc.moveDown(2);
 
-    doc.moveDown();
-    doc.fontSize(10).text("This report was generated by MyPropertyPal. For reference only.", { align: "center" });
-    doc.text(`Page 1`, { align: "right" });
+    // --- Declaration Section ---
+    doc.fontSize(12).font("Helvetica-Bold").text("Director's/Owner's Declaration");
+    doc.font("Helvetica").text(
+      "I acknowledge my responsibility for preparing accounts that give a true and fair view of the state of affairs of the company/landlord at the end of the financial year and of its profit or loss for the financial year in accordance with the requirements of the Companies Act 2006."
+    );
+    doc.moveDown(2);
+    doc.text("Signed: _____________________________", { continued: true });
+    doc.text("    Date: ___________________", doc.y);
 
-    // --- End the PDF after writing content ---
     doc.end();
 
     // Only respond after the PDF is fully written

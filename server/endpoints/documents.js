@@ -124,4 +124,24 @@ router.post("/upload", authenticate, upload.single("file"), async (req, res) => 
   }
 });
 
+// Get all documents (expenses) for the logged-in user
+router.get("/", authenticate, async (req, res) => {
+  try {
+    const pool = req.app.get("pool");
+    const landlordId = await getLandlordId(pool, req.user.id);
+    const result = await pool.query(
+      `SELECT id, amount, category, description, incurred_on
+       FROM expense
+       WHERE landlord_id = $1
+       ORDER BY incurred_on DESC`,
+      [landlordId]
+    );
+    // You can adjust fields as needed
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Failed to fetch documents:", err);
+    res.status(500).json({ error: "Failed to fetch documents" });
+  }
+});
+
 module.exports = router;
