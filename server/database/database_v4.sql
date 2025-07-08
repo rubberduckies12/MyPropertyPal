@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS account (
 -- ===== Tenants =====
 CREATE TABLE IF NOT EXISTS tenant (
     id SERIAL PRIMARY KEY,
-    account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE
+    account_id INT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+    is_pending BOOLEAN DEFAULT TRUE,
+    invite_token VARCHAR(255)
 );
 
 -- ===== Payment Plans =====

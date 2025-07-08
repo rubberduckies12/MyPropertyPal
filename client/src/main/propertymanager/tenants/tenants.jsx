@@ -196,15 +196,8 @@ export default function Tenants() {
                                                 : ""}
                                         </td>
                                         <td>
-                                            <span
-                                                className={
-                                                    "tenant-status " +
-                                                    (tenant.pays_rent
-                                                        ? "status-paid"
-                                                        : "status-overdue")
-                                                }
-                                            >
-                                                {tenant.pays_rent ? "Paid" : "Overdue"}
+                                            <span className={"tenant-status " + (tenant.is_pending ? "status-pending" : (tenant.pays_rent ? "status-paid" : "status-overdue"))}>
+                                                {tenant.is_pending ? "Pending" : (tenant.pays_rent ? "Paid" : "Overdue")}
                                             </span>
                                         </td>
                                         <td>

@@ -13,7 +13,43 @@ async function generateUniqueSixDigitId(pool) {
 }
 
 module.exports = async function register(req, res, pool) {
-    const { email, password, role, landlordId, firstName, lastName } = req.body || {};
+    console.log("REGISTER BODY:", req.body);
+    const { email, password, role, propertyId, firstName, lastName, invite } = req.body || {};
+
+    if (invite) {
+        // Invite-based registration (tenant)
+        try {
+            // Find tenant by invite token
+            const tenantResult = await pool.query(
+                `SELECT t.id, t.account_id FROM tenant t WHERE t.invite_token = $1 AND t.is_pending = TRUE`,
+                [invite]
+            );
+            if (tenantResult.rows.length === 0) {
+                return res.status(400).json({ error: "Invalid or expired invite." });
+            }
+            const { account_id } = tenantResult.rows[0];
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Update account password, mark as not pending, clear invite_token
+            await pool.query(
+                `UPDATE account SET password = $1 WHERE id = $2`,
+                [hashedPassword, account_id]
+            );
+            await pool.query(
+                `UPDATE tenant SET is_pending = FALSE, invite_token = NULL WHERE id = $1`,
+                [tenantResult.rows[0].id]
+            );
+            return res.status(200).json({ message: "Tenant registration complete." });
+        } catch (err) {
+            console.error('Error during invite registration:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+
+    // Only landlords can self-register
+    if (role !== "landlord") {
+        return res.status(400).json({ error: "Tenants must register using an invite link." });
+    }
 
     if (!email || !password || !role || !firstName || !lastName) {
         return res.status(400).json({ error: 'Email, password, role, first name, and last name are required.' });

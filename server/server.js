@@ -68,20 +68,29 @@ app.get('/api/properties', authenticate, (req, res) => getProperties(req, res, p
 app.post('/api/properties', authenticate, (req, res) => addProperty(req, res, pool));
 app.delete('/api/properties/:id', authenticate, (req, res) => deleteProperty(req, res, pool));
 
-// Mount the tenants API with authentication and pool
-app.use(
-  '/api/tenants',
-  authenticate,
-  (req, res, next) => {
-    req.app.set("pool", pool);
-    next();
-  },
-  tenantsRouter
-);
+// --- PUBLIC TENANT INVITE ENDPOINT (no auth) ---
+app.get('/api/tenants/invite/:token', async (req, res) => {
+  const pool = req.app.get("pool");
+  const { token } = req.params;
+  const result = await pool.query(
+    `SELECT a.first_name, a.last_name, a.email, 'tenant' AS role
+     FROM tenant t
+     JOIN account a ON t.account_id = a.id
+     WHERE t.invite_token = $1 AND t.is_pending = TRUE`,
+    [token]
+  );
+  if (result.rows.length === 0) {
+    return res.status(404).json({ error: "Invalid or expired invite." });
+  }
+  res.json(result.rows[0]);
+});
 
+// --- PROTECTED ROUTES ---
+app.use(authenticate);
+app.use("/api/tenants", tenantsRouter);
 app.use('/api/finances', financesRouter);
 app.use('/api/documents', documentsRouter);
-app.use('/api/compliance', complianceRouter); // <-- Add this line
+app.use('/api/compliance', complianceRouter);
 
 // Serve static files from the "exports" directory
 app.use("/exports", express.static(path.join(__dirname, "../exports")));
