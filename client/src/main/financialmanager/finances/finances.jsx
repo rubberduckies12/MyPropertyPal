@@ -63,6 +63,8 @@ export default function Finances() {
     method: "",
     reference: "",
   });
+  const [editExpenseModal, setEditExpenseModal] = useState(null); // {expense} or null
+  const [editRentModal, setEditRentModal] = useState(null); // {rent} or null
 
   // Optionally, fetch properties/tenants for dropdowns
   const [properties, setProperties] = useState([]);
@@ -191,6 +193,64 @@ export default function Finances() {
     }
   }
 
+  // Edit Expense Handler
+  async function handleEditExpense(e) {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const { id, property_id, amount, category, description, incurred_on } = editExpenseModal;
+      const res = await fetch(`${API_BASE}/expense/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ property_id, amount, category, description, incurred_on }),
+      });
+      if (!res.ok) throw new Error("Failed to update expense");
+      setEditExpenseModal(null);
+      // Refresh data
+      const refreshed = await fetch(API_BASE, {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      });
+      const data = await refreshed.json();
+      setExpenses(data.expenses || []);
+      setTotalExpenses(data.totalExpenses || 0);
+      setTaxableProfit(data.taxableProfit || 0);
+    } catch (err) {
+      alert(err.message || "Failed to update expense");
+    }
+  }
+
+  // Edit Rent Payment Handler
+  async function handleEditRent(e) {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const { id, property_id, tenant_id, amount, paid_on, method, reference } = editRentModal;
+      const res = await fetch(`${API_BASE}/rent/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({ property_id, tenant_id, amount, paid_on, method, reference }),
+      });
+      if (!res.ok) throw new Error("Failed to update rent payment");
+      setEditRentModal(null);
+      // Refresh data
+      const refreshed = await fetch(API_BASE, {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      });
+      const data = await refreshed.json();
+      setRentPayments(data.rentPayments || []);
+      setTotalIncome(data.totalIncome || 0);
+      setTaxableProfit(data.taxableProfit || 0);
+    } catch (err) {
+      alert(err.message || "Failed to update rent payment");
+    }
+  }
+
   async function handleExportTaxReport() {
     try {
       const year = new Date().getFullYear(); // Always use this year
@@ -314,6 +374,12 @@ export default function Finances() {
                           <div className="finances-actions-menu">
                             <button
                               className="finances-actions-menu-item"
+                              onClick={() => setEditRentModal(payment)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="finances-actions-menu-item"
                               onClick={() => deleteRentPayment(payment.id)}
                             >
                               Delete
@@ -350,6 +416,12 @@ export default function Finances() {
                         <div className="finances-actions-dropdown">
                           <button className="finances-actions-btn">Actions ▼</button>
                           <div className="finances-actions-menu">
+                            <button
+                              className="finances-actions-menu-item"
+                              onClick={() => setEditExpenseModal(expense)}
+                            >
+                              Edit
+                            </button>
                             <button
                               className="finances-actions-menu-item"
                               onClick={() => deleteExpense(expense.id)}
@@ -511,6 +583,143 @@ export default function Finances() {
                 </label>
                 <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
                   Mark as Received
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Expense Modal */}
+        {editExpenseModal && (
+          <div className="finances-modal-backdrop" onClick={() => setEditExpenseModal(null)}>
+            <div className="finances-modal" onClick={e => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setEditExpenseModal(null)}>&times;</button>
+              <h3>Edit Expense</h3>
+              <form onSubmit={handleEditExpense}>
+                <label>
+                  Property
+                  <select
+                    required
+                    value={editExpenseModal.property_id}
+                    onChange={e => setEditExpenseModal(f => ({ ...f, property_id: e.target.value }))}
+                  >
+                    <option value="">Select property</option>
+                    {properties.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Amount (£)
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={editExpenseModal.amount}
+                    onChange={e => setEditExpenseModal(f => ({ ...f, amount: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Category
+                  <input
+                    required
+                    value={editExpenseModal.category}
+                    onChange={e => setEditExpenseModal(f => ({ ...f, category: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Description
+                  <input
+                    required
+                    value={editExpenseModal.description}
+                    onChange={e => setEditExpenseModal(f => ({ ...f, description: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Date
+                  <input
+                    type="date"
+                    required
+                    value={editExpenseModal.incurred_on}
+                    onChange={e => setEditExpenseModal(f => ({ ...f, incurred_on: e.target.value }))}
+                  />
+                </label>
+                <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
+                  Save Changes
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Rent Payment Modal */}
+        {editRentModal && (
+          <div className="finances-modal-backdrop" onClick={() => setEditRentModal(null)}>
+            <div className="finances-modal" onClick={e => e.stopPropagation()}>
+              <button className="modal-close" onClick={() => setEditRentModal(null)}>&times;</button>
+              <h3>Edit Rent Payment</h3>
+              <form onSubmit={handleEditRent}>
+                <label>
+                  Tenant
+                  <select
+                    required
+                    value={editRentModal.tenant_id}
+                    onChange={e => {
+                      const tenantId = e.target.value;
+                      const selectedTenant = tenants.find(t => String(t.id) === tenantId);
+                      setEditRentModal(f => ({
+                        ...f,
+                        tenant_id: tenantId,
+                        property_id: selectedTenant ? selectedTenant.property_id : "",
+                        amount: selectedTenant && selectedTenant.rent_amount ? selectedTenant.rent_amount : ""
+                      }));
+                    }}
+                  >
+                    <option value="">Select tenant</option>
+                    {tenants.map(t => (
+                      <option key={t.id} value={t.id}>
+                        {t.first_name} {t.last_name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Amount (£)
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={editRentModal.amount}
+                    onChange={e => setEditRentModal(f => ({ ...f, amount: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Date
+                  <input
+                    type="date"
+                    required
+                    value={editRentModal.paid_on}
+                    onChange={e => setEditRentModal(f => ({ ...f, paid_on: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  Method
+                  <input
+                    value={editRentModal.method}
+                    onChange={e => setEditRentModal(f => ({ ...f, method: e.target.value }))}
+                    placeholder="e.g. Bank Transfer"
+                  />
+                </label>
+                <label>
+                  Reference
+                  <input
+                    value={editRentModal.reference}
+                    onChange={e => setEditRentModal(f => ({ ...f, reference: e.target.value }))}
+                    placeholder="Reference (optional)"
+                  />
+                </label>
+                <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
+                  Save Changes
                 </button>
               </form>
             </div>

@@ -213,6 +213,38 @@ CREATE TABLE IF NOT EXISTS audit_log (
     details TEXT
 );
 
+-- ===== General Tasks (not just compliance) =====
+CREATE TABLE IF NOT EXISTS task (
+    id SERIAL PRIMARY KEY,
+    property_id INT REFERENCES property(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    due_date DATE,                        -- Optional
+    date_completed DATE                   -- Can be NULL if not completed
+);
+
+-- ===== Task Status =====
+CREATE TABLE IF NOT EXISTS task_status (
+    id SERIAL PRIMARY KEY,
+    status VARCHAR(20) NOT NULL UNIQUE
+);
+
+INSERT INTO task_status (status) VALUES
+    ('Not Started'), ('In Progress'), ('Complete')
+ON CONFLICT DO NOTHING;
+
+ALTER TABLE task
+  ADD COLUMN status_id INT REFERENCES task_status(id);
+
+-- ===== Compliance Events (EPC, Gas Safety, Insurance, etc.) =====
+CREATE TABLE IF NOT EXISTS compliance_event (
+    id SERIAL PRIMARY KEY,
+    property_id INT NOT NULL REFERENCES property(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,           -- e.g. "EPC", "Gas Safety", "Insurance", "Mortgage"
+    description TEXT,
+    due_date DATE NOT NULL
+);
+
 -- ===== Views =====
 CREATE OR REPLACE VIEW v_property_info AS
 SELECT

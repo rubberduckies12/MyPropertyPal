@@ -45,7 +45,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.18s;
-  margin-bottom: 10px;
+  margin-right: 10px; /* Add spacing between buttons */
 }
 
 .compliance-upload-btn:disabled {
@@ -54,7 +54,9 @@
 }
 
 .compliance-upload-btn:hover,
-.compliance-upload-btn:focus {
+.compliance-upload-btn:focus,
+.compliance-add-event-btn:hover,
+.compliance-add-event-btn:focus {
   background: #1746a2;
 }
 
@@ -282,6 +284,62 @@
   background: #1746a2;
 }
 
+/* Add styles for the manual add compliance event form */
+.compliance-add-event-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.compliance-add-event-input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  font-size: 1rem;
+  min-width: 160px;
+  background: #f7f8fa;
+  color: #1f2937;
+}
+
+.compliance-add-event-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.compliance-add-event-btn:hover,
+.compliance-add-event-btn:focus {
+  background: #1746a2;
+}
+
+.success {
+  color: #166534;
+  background: #dcfce7;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-top: 10px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.error {
+  color: #b91c1c;
+  background: #fee2e2;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-top: 10px;
+  font-weight: 600;
+  display: inline-block;
+}
+
 .compliance-modal-overlay {
   position: fixed;
   top: 0;
@@ -368,6 +426,50 @@
 .compliance-modal-close-btn:hover,
 .compliance-modal-close-btn:focus {
   background: #e0e7ff;
+}
+
+.compliance-top-card {
+  display: flex;
+  gap: 18px; /* Add spacing between buttons */
+  align-items: center;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(37,99,235,0.06);
+  border: 1.5px solid #e5e7eb;
+  padding: 28px 20px 18px 20px;
+  margin-bottom: 32px;
+}
+
+/* Ensure both buttons look the same and have spacing */
+.compliance-upload-btn,
+.compliance-add-event-btn {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+  margin-right: 10px; /* Add spacing between buttons */
+}
+
+.compliance-upload-btn:last-child,
+.compliance-add-event-btn:last-child {
+  margin-right: 0;
+}
+
+.compliance-upload-btn:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+}
+
+.compliance-upload-btn:hover,
+.compliance-upload-btn:focus,
+.compliance-add-event-btn:hover,
+.compliance-add-event-btn:focus {
+  background: #1746a2;
 }
 
 @media (max-width: 900px) {

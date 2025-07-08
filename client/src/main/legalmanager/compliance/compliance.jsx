@@ -1,47 +1,63 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import "./compliance.css";
 
-// Mock data for demo
-const mockDeadlines = [
-  { id: 1, type: "Gas Safety", property: "Flat 1A", due: "2025-07-10", status: "Upcoming" },
-  { id: 2, type: "EPC Renewal", property: "Flat 2B", due: "2025-06-25", status: "Urgent" },
-  { id: 3, type: "Insurance Expiry", property: "Flat 1A", due: "2025-06-22", status: "Overdue" },
-];
-
-const mockDocuments = [
-  { id: 1, name: "Gas Safety Certificate.pdf", type: "Gas Safety", property: "Flat 1A", expiry: "2025-07-10", status: "Valid" },
-  { id: 2, name: "EPC.pdf", type: "EPC", property: "Flat 2B", expiry: "2025-06-25", status: "Expiring Soon" },
-  { id: 3, name: "Insurance.pdf", type: "Insurance", property: "Flat 1A", expiry: "2025-06-22", status: "Expired" },
-];
-
-const mockTasks = [
-  { id: 1, task: "Upload new Gas Safety Certificate", property: "Flat 1A", assigned: "You", status: "Pending" },
-  { id: 2, task: "Schedule EPC inspection", property: "Flat 2B", assigned: "You", status: "Complete" },
-];
-
-const statusOptions = ["Valid", "Expiring Soon", "Expired"];
-const taskStatusOptions = ["Pending", "Complete"];
-const deadlineStatusOptions = ["Upcoming", "Urgent", "Overdue"];
+const BACKEND_URL = "http://localhost:5001";
 
 export default function Compliance() {
-  const [documents, setDocuments] = useState(mockDocuments);
-  const [deadlines, setDeadlines] = useState(mockDeadlines);
-  const [tasks, setTasks] = useState(mockTasks);
+  const [documents, setDocuments] = useState([]);
+  const [deadlines, setDeadlines] = useState([]);
+  const [properties, setProperties] = useState([]); // <-- NEW
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
-  const [newTask, setNewTask] = useState({
-    task: "",
-    property: "",
-    assigned: "",
-    status: "Pending",
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    property_id: "",
+    name: "",
+    description: "",
+    due_date: "",
   });
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [eventSuccess, setEventSuccess] = useState("");
   const fileInputRef = useRef();
 
-  // Simulate scan/upload with OCR
-  const handleUpload = (e) => {
+  // Fetch compliance events, documents, and properties from backend
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const landlordId = localStorage.getItem("landlord_id");
+
+    if (!landlordId) {
+      setError("No landlord ID found. Please log in again.");
+      return;
+    }
+
+    fetch(`${BACKEND_URL}/api/compliance/events?landlord_id=${landlordId}`, {
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    })
+      .then(res => res.json())
+      .then(data => setDeadlines(data))
+      .catch(() => setError("Failed to load deadlines"));
+
+    fetch(`${BACKEND_URL}/api/compliance/documents?landlord_id=${landlordId}`, {
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    })
+      .then(res => res.json())
+      .then(data => setDocuments(data))
+      .catch(() => setError("Failed to load documents"));
+
+    // Fetch properties for dropdown
+    fetch(`${BACKEND_URL}/api/properties`, {
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch properties");
+        return res.json();
+      })
+      .then(data => setProperties(data.properties || []))
+      .catch(() => setError("Failed to load properties"));
+  }, []);
+
+  // Upload & scan compliance document
+  const handleUpload = async (e) => {
     setError("");
     setUploading(true);
     const file = e.target.files[0];
@@ -49,86 +65,59 @@ export default function Compliance() {
       setUploading(false);
       return;
     }
-    // Simulate scan/ocr delay
-    setTimeout(() => {
-      // Mock: extract type from filename for demo
-      let docType = "Other";
-      if (/gas/i.test(file.name)) docType = "Gas Safety";
-      else if (/epc/i.test(file.name)) docType = "EPC";
-      else if (/insurance/i.test(file.name)) docType = "Insurance";
-      const expiry = new Date();
-      expiry.setMonth(expiry.getMonth() + 12);
-      setDocuments((docs) => [
-        ...docs,
-        {
-          id: docs.length + 1,
-          name: file.name,
-          type: docType,
-          property: "Unassigned",
-          expiry: expiry.toISOString().slice(0, 10),
-          status: "Valid",
-        },
-      ]);
-      setUploading(false);
-    }, 1500);
-  };
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("file", file);
 
-  // Update document status
-  const handleDocStatusChange = (id, newStatus) => {
-    setDocuments(docs =>
-      docs.map(doc =>
-        doc.id === id ? { ...doc, status: newStatus } : doc
-      )
-    );
-  };
-
-  // Update task status
-  const handleTaskStatusChange = (id, newStatus) => {
-    setTasks(tsks =>
-      tsks.map(task =>
-        task.id === id ? { ...task, status: newStatus } : task
-      )
-    );
-  };
-
-  // Update deadline status
-  const handleDeadlineStatusChange = (id, newStatus) => {
-    setDeadlines(dls =>
-      dls.map(dl =>
-        dl.id === id ? { ...dl, status: newStatus } : dl
-      )
-    );
-  };
-
-  // Add new task handler
-  const handleAddTask = (e) => {
-    e.preventDefault();
-    if (!newTask.task.trim() || !newTask.property.trim() || !newTask.assigned.trim()) {
-      setError("Please fill in all fields to add a new task.");
-      return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/compliance/documents/upload`, {
+        method: "POST",
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.location.reload();
+      } else {
+        setError(data.error || "Upload failed");
+      }
+    } catch {
+      setError("Upload failed");
     }
-    setTasks(tsks => [
-      ...tsks,
-      {
-        id: tsks.length + 1,
-        ...newTask,
-      },
-    ]);
-    setNewTask({ task: "", property: "", assigned: "", status: "Pending" });
+    setUploading(false);
+  };
+
+  const handleAddEvent = async (e) => {
+    e.preventDefault();
+    setEventSuccess("");
     setError("");
-  };
-
-  // Show task modal
-  const handleTaskClick = (task) => {
-    setSelectedTask(task);
-    setShowTaskModal(true);
-  };
-
-  // Delete task handler
-  const handleDeleteTask = (id) => {
-    setTasks(tsks => tsks.filter(task => task.id !== id));
-    setShowTaskModal(false);
-    setSelectedTask(null);
+    const token = localStorage.getItem("token");
+    const landlordId = localStorage.getItem("landlord_id");
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/compliance/events`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify(newEvent),
+      });
+      if (res.ok) {
+        setEventSuccess("Compliance event added!");
+        setNewEvent({ property_id: "", name: "", description: "", due_date: "" });
+        setShowEventForm(false);
+        // Re-fetch events
+        fetch(`${BACKEND_URL}/api/compliance/events?landlord_id=${landlordId}`, {
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        })
+          .then(res => res.json())
+          .then(data => setDeadlines(data));
+      } else {
+        setError("Failed to add event");
+      }
+    } catch {
+      setError("Failed to add event");
+    }
   };
 
   return (
@@ -137,32 +126,92 @@ export default function Compliance() {
       <main className="dashboard-main compliance-main">
         <h1 className="compliance-title">Compliance Manager</h1>
 
-        {/* Upload & Scan Compliance Document */}
-        <section className="compliance-section">
-          <h2>Scan & Upload Compliance Document</h2>
-          <label className="compliance-upload-label">
-            <input
-              type="file"
-              accept="application/pdf,image/*"
-              style={{ display: "none" }}
-              ref={fileInputRef}
-              onChange={handleUpload}
-              disabled={uploading}
-            />
-            <button
-              className="compliance-upload-btn"
-              onClick={() => fileInputRef.current.click()}
-              disabled={uploading}
-              type="button"
-            >
-              {uploading ? "Uploading..." : "Upload or Scan Document"}
-            </button>
-          </label>
-          <div className="compliance-upload-desc">
-            Upload or scan your Gas Safety, EPC, Insurance, or other compliance documents. We'll scan and track expiry dates for you.
-          </div>
-          {error && <div className="compliance-error">{error}</div>}
+        {/* Top Card: Upload/Scan and Add Event */}
+        <section className="compliance-top-card">
+          <button
+            className="compliance-upload-btn"
+            onClick={() => fileInputRef.current.click()}
+            disabled={uploading}
+            type="button"
+          >
+            {uploading ? "Uploading..." : "Upload or Scan Document"}
+          </button>
+          <input
+            type="file"
+            accept="application/pdf,image/*"
+            style={{ display: "none" }}
+            ref={fileInputRef}
+            onChange={handleUpload}
+            disabled={uploading}
+          />
+          <button
+            className="compliance-add-event-btn"
+            type="button"
+            onClick={() => setShowEventForm(true)}
+          >
+            Add Compliance Event
+          </button>
         </section>
+
+        {/* Modal for Add Compliance Event */}
+        {showEventForm && (
+          <div className="compliance-modal-overlay" onClick={() => setShowEventForm(false)}>
+            <div className="compliance-modal-card" onClick={e => e.stopPropagation()}>
+              <h2 className="compliance-modal-title">Add Compliance Event</h2>
+              <form className="compliance-add-event-form" onSubmit={handleAddEvent}>
+                <select
+                  className="compliance-add-event-input"
+                  value={newEvent.property_id}
+                  onChange={e => setNewEvent(ev => ({ ...ev, property_id: e.target.value }))}
+                  required
+                >
+                  <option value="">Select Property</option>
+                  {properties.map((prop) => (
+                    <option key={prop.id} value={prop.id}>
+                      {prop.name} {prop.address ? `- ${prop.address}` : ""}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  className="compliance-add-event-input"
+                  type="text"
+                  placeholder="Name (e.g. Gas Safety)"
+                  value={newEvent.name}
+                  onChange={e => setNewEvent(ev => ({ ...ev, name: e.target.value }))}
+                  required
+                />
+                <input
+                  className="compliance-add-event-input"
+                  type="text"
+                  placeholder="Description"
+                  value={newEvent.description}
+                  onChange={e => setNewEvent(ev => ({ ...ev, description: e.target.value }))}
+                />
+                <input
+                  className="compliance-add-event-input"
+                  type="date"
+                  value={newEvent.due_date}
+                  onChange={e => setNewEvent(ev => ({ ...ev, due_date: e.target.value }))}
+                  required
+                />
+                <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
+                  <button className="compliance-add-event-btn" type="submit">
+                    Add Event
+                  </button>
+                  <button
+                    className="compliance-modal-close-btn"
+                    type="button"
+                    onClick={() => setShowEventForm(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+              {eventSuccess && <div className="success">{eventSuccess}</div>}
+              {error && <div className="error">{error}</div>}
+            </div>
+          </div>
+        )}
 
         {/* Deadlines & Urgent Reminders */}
         <section className="compliance-section">
@@ -170,31 +219,19 @@ export default function Compliance() {
           <table className="compliance-table">
             <thead>
               <tr>
-                <th>Type</th>
+                <th>Name</th>
                 <th>Property</th>
                 <th>Due Date</th>
-                <th>Status</th>
+                <th>Description</th>
               </tr>
             </thead>
             <tbody>
               {deadlines.map(item => (
-                <tr key={item.id} className={`compliance-status-${item.status.toLowerCase()}`}>
-                  <td>{item.type}</td>
-                  <td>{item.property}</td>
-                  <td>{item.due}</td>
-                  <td>
-                    <span className={`status-bubble status-${item.status.replace(/\s/g, '').toLowerCase()}`}>
-                      <select
-                        value={item.status}
-                        onChange={e => handleDeadlineStatusChange(item.id, e.target.value)}
-                        className="compliance-status-select"
-                      >
-                        {deadlineStatusOptions.map(opt => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                    </span>
-                  </td>
+                <tr key={item.id}>
+                  <td>{item.name}</td>
+                  <td>{item.property_name}</td>
+                  <td>{item.due_date}</td>
+                  <td>{item.description}</td>
                 </tr>
               ))}
             </tbody>
@@ -208,141 +245,22 @@ export default function Compliance() {
             <thead>
               <tr>
                 <th>Document</th>
-                <th>Type</th>
                 <th>Property</th>
-                <th>Expiry</th>
-                <th>Status</th>
+                <th>Uploaded</th>
+                {/* Add expiry if your backend provides it */}
               </tr>
             </thead>
             <tbody>
               {documents.map(doc => (
-                <tr key={doc.id} className={`compliance-doc-status-${doc.status.replace(/\s/g, '').toLowerCase()}`}>
-                  <td>{doc.name}</td>
-                  <td>{doc.type}</td>
-                  <td>{doc.property}</td>
-                  <td>{doc.expiry}</td>
-                  <td>
-                    <span className={`status-bubble status-${doc.status.replace(/\s/g, '').toLowerCase()}`}>
-                      <select
-                        value={doc.status}
-                        onChange={e => handleDocStatusChange(doc.id, e.target.value)}
-                        className="compliance-status-select"
-                      >
-                        {statusOptions.map(opt => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                    </span>
-                  </td>
+                <tr key={doc.id}>
+                  <td>{doc.document_path}</td>
+                  <td>{doc.property_name}</td>
+                  <td>{doc.uploaded_at ? doc.uploaded_at.slice(0, 10) : ""}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </section>
-
-        {/* Compliance Workflow Tracker */}
-        <section className="compliance-section">
-          <h2>Compliance Workflow Tracker</h2>
-          <form className="compliance-add-task-form" onSubmit={handleAddTask}>
-            <input
-              type="text"
-              placeholder="Task"
-              value={newTask.task}
-              onChange={e => setNewTask({ ...newTask, task: e.target.value })}
-              className="compliance-add-task-input"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Property"
-              value={newTask.property}
-              onChange={e => setNewTask({ ...newTask, property: e.target.value })}
-              className="compliance-add-task-input"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Assigned To"
-              value={newTask.assigned}
-              onChange={e => setNewTask({ ...newTask, assigned: e.target.value })}
-              className="compliance-add-task-input"
-              required
-            />
-            <button type="submit" className="compliance-add-task-btn">Add Task</button>
-          </form>
-          {error && <div className="compliance-error">{error}</div>}
-          <table className="compliance-table">
-            <thead>
-              <tr>
-                <th>Task</th>
-                <th>Property</th>
-                <th>Assigned</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tasks.map(task => (
-                <tr
-                  key={task.id}
-                  className={`compliance-task-status-${task.status.toLowerCase()}`}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => handleTaskClick(task)}
-                >
-                  <td>{task.task}</td>
-                  <td>{task.property}</td>
-                  <td>{task.assigned}</td>
-                  <td>
-                    <span className={`status-bubble status-${task.status.replace(/\s/g, '').toLowerCase()}`}>
-                      <select
-                        value={task.status}
-                        onClick={e => e.stopPropagation()}
-                        onChange={e => handleTaskStatusChange(task.id, e.target.value)}
-                        className="compliance-status-select"
-                      >
-                        {taskStatusOptions.map(opt => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-
-        {/* Task Modal Popup */}
-        {showTaskModal && selectedTask && (
-          <div className="compliance-modal-overlay" onClick={() => setShowTaskModal(false)}>
-            <div className="compliance-modal-card" onClick={e => e.stopPropagation()}>
-              <h3 className="compliance-modal-title">{selectedTask.task}</h3>
-              <div className="compliance-modal-info">
-                <div><strong>Property:</strong> {selectedTask.property}</div>
-                <div><strong>Assigned To:</strong> {selectedTask.assigned}</div>
-                <div>
-                  <strong>Status:</strong>{" "}
-                  <span className={`status-bubble status-${selectedTask.status.replace(/\s/g, '').toLowerCase()}`}>
-                    {selectedTask.status}
-                  </span>
-                </div>
-              </div>
-              <div className="compliance-modal-actions">
-                <button
-                  className="compliance-modal-delete-btn"
-                  onClick={() => handleDeleteTask(selectedTask.id)}
-                >
-                  Delete Task
-                </button>
-                <button
-                  className="compliance-modal-close-btn"
-                  onClick={() => setShowTaskModal(false)}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Resource Hub */}
         <section className="compliance-section">

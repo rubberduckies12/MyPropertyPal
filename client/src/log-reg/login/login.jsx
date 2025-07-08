@@ -17,7 +17,16 @@ function Login({ onRegisterClick }) {
     try {
       const user = await login(email, password);
       setMessage("Login successful!");
-      navigate("/dashboard"); // Redirect to dashboard
+      // Save token, landlord_id, etc. to localStorage if needed
+      // localStorage.setItem("token", user.token);
+      // localStorage.setItem("landlord_id", user.landlord_id);
+
+      // Redirect based on user role/type
+      if (user.role === "tenant" || user.type === "tenant") {
+        navigate("/tenant-home");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       setMessage("Invalid email or password.");
     }

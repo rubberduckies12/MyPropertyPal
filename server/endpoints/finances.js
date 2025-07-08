@@ -299,4 +299,36 @@ router.delete("/rent/:id", authenticate, async (req, res) => {
   }
 });
 
+// Edit an expense
+router.put("/expense/:id", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  const { id } = req.params;
+  const { property_id, amount, category, description, incurred_on } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE expense SET property_id=$1, amount=$2, category=$3, description=$4, incurred_on=$5 WHERE id=$6 RETURNING *`,
+      [property_id, amount, category, description, incurred_on, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update expense" });
+  }
+});
+
+// Edit a rent payment
+router.put("/rent/:id", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  const { id } = req.params;
+  const { property_id, tenant_id, amount, paid_on, method, reference } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE rent_payment SET property_id=$1, tenant_id=$2, amount=$3, paid_on=$4, method=$5, reference=$6 WHERE id=$7 RETURNING *`,
+      [property_id, tenant_id, amount, paid_on, method, reference, id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update rent payment" });
+  }
+});
+
 module.exports = router;

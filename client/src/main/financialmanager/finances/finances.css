@@ -309,16 +309,25 @@
 .finances-actions-menu-item {
   background: none;
   border: none;
-  color: #d9534f;
   padding: 10px 16px;
   width: 100%;
   text-align: left;
   cursor: pointer;
   font-size: 1em;
+  color: #1f2937; /* Default: black for all */
 }
 
 .finances-actions-menu-item:hover {
   background: #f3f6fc;
+}
+
+/* Only delete button is red */
+.finances-actions-menu-item.delete {
+  color: #d9534f;
+}
+
+.finances-actions-menu-item.delete:hover {
+  background: #fee2e2;
 }
 
 /* Responsive adjustments */
