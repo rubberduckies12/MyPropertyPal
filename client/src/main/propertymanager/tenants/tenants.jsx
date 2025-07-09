@@ -2,19 +2,90 @@ import React, { useState, useEffect } from "react";
 import "./tenants.css";
 import Sidebar from "../../sidebar/sidebar.jsx";
 
-// Utility: Calculate days until next rent due day (integer 1-31)
-function daysLeft(rentDueDay) {
-    if (!rentDueDay) return "";
+// Utility: Calculate days until next rent due date
+function daysLeft(tenant) {
+    if (!tenant || !tenant.rent_schedule_type) return "";
     const today = new Date();
-    const currentDay = today.getDate();
-    let nextDue = new Date(today);
-    nextDue.setDate(rentDueDay);
+    today.setHours(0,0,0,0);
 
-    if (currentDay > rentDueDay) nextDue.setMonth(nextDue.getMonth() + 1);
-    if (nextDue.getDate() !== rentDueDay) nextDue.setMonth(nextDue.getMonth() + 1, rentDueDay);
+    if (tenant.rent_due_date) {
+        const dueDate = new Date(tenant.rent_due_date);
+        dueDate.setHours(0,0,0,0);
+        return Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+    }
 
-    const diffTime = nextDue - today;
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return "";
+}
+
+// Utility: Get the last Friday of a given month/year
+function getLastFriday(year, month) {
+    let d = new Date(year, month + 1, 0); // Last day of month
+    while (d.getDay() !== 5) { // 5 = Friday
+        d.setDate(d.getDate() - 1);
+    }
+    return d;
+}
+
+// Utility: Get the next due date as a string for the table
+function getNextDueDate(tenant) {
+    if (!tenant || !tenant.rent_schedule_type) return "";
+    if (tenant.rent_schedule_type === "last_friday") {
+        // Always calculate, don't trust rent_due_date for display
+        const today = new Date();
+        let nextDue = getLastFriday(today.getFullYear(), today.getMonth());
+        if (today > nextDue) {
+            nextDue = getLastFriday(today.getFullYear(), today.getMonth() + 1);
+        }
+        return nextDue.toLocaleDateString();
+    }
+    if (tenant.rent_due_date) {
+        const dueDate = new Date(tenant.rent_due_date);
+        return dueDate.toLocaleDateString();
+    }
+    // Fallback logic if rent_due_date is not set
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    if (tenant.rent_schedule_type === "monthly") {
+        const dueDay = Number(tenant.rent_schedule_value);
+        if (!dueDay) return "";
+        let nextDue = new Date(today);
+        nextDue.setDate(dueDay);
+        if (today.getDate() > dueDay) nextDue.setMonth(nextDue.getMonth() + 1);
+        if (nextDue.getDate() !== dueDay) nextDue.setMonth(nextDue.getMonth() + 1, dueDay);
+        return nextDue.toLocaleDateString();
+    }
+
+    if (tenant.rent_schedule_type === "weekly") {
+        const dueWeekday = Number(tenant.rent_schedule_value);
+        const todayWeekday = today.getDay();
+        let days = (dueWeekday - todayWeekday + 7) % 7;
+        if (days === 0) days = 7;
+        let nextDue = new Date(today);
+        nextDue.setDate(today.getDate() + days);
+        return nextDue.toLocaleDateString();
+    }
+
+    if (tenant.rent_schedule_type === "biweekly") {
+        const dueWeekday = Number(tenant.rent_schedule_value);
+        const baseDate = new Date(2024, 0, 1); // Jan 1, 2024
+        baseDate.setHours(0,0,0,0);
+        let firstDue = new Date(baseDate);
+        firstDue.setDate(baseDate.getDate() + ((dueWeekday - baseDate.getDay() + 7) % 7));
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        let diff = Math.floor((today - firstDue) / (1000 * 60 * 60 * 24));
+        let periods = Math.ceil(diff / 14);
+        if (diff < 0) periods = 0;
+        let nextDue = new Date(firstDue);
+        nextDue.setDate(firstDue.getDate() + periods * 14);
+        if (nextDue < today) {
+            nextDue.setDate(nextDue.getDate() + 14);
+        }
+        return nextDue.toLocaleDateString();
+    }
+
+    return "";
 }
 
 export default function Tenants() {
@@ -27,13 +98,17 @@ export default function Tenants() {
         last_name: "",
         email: "",
         property_id: "",
-        rent_due: "",
+        rent_due_date: "",
         rent_amount: "",
+        rent_schedule_type: "monthly",
+        rent_schedule_value: "",
     });
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [addError, setAddError] = useState("");
+    const [editTenant, setEditTenant] = useState(null);
+    const [editForm, setEditForm] = useState({});
 
     // Fetch tenants
     useEffect(() => {
@@ -81,16 +156,6 @@ export default function Tenants() {
         }
     };
 
-    const getSelectedPropertyRent = () => {
-        const prop = properties.find((p) => p.id === Number(addForm.property_id));
-        return prop ? prop.rent_amount : "";
-    };
-
-    const calculateTotalEarned = () => {
-        const rent = Number(getSelectedPropertyRent());
-        return rent ? rent : 0;
-    };
-
     const handleAddTenant = async (e) => {
         e.preventDefault();
         setAddError("");
@@ -107,8 +172,10 @@ export default function Tenants() {
                     last_name: addForm.last_name,
                     email: addForm.email,
                     property_id: addForm.property_id,
-                    rent_due_date: Number(addForm.rent_due),
+                    rent_due_date: addForm.rent_schedule_type === "monthly" && addForm.rent_due_date ? addForm.rent_due_date : null,
                     rent_amount: addForm.rent_amount,
+                    rent_schedule_type: addForm.rent_schedule_type,
+                    rent_schedule_value: addForm.rent_schedule_value !== "" ? addForm.rent_schedule_value : null,
                 }),
             });
             if (!res.ok) {
@@ -127,13 +194,78 @@ export default function Tenants() {
                 last_name: "",
                 email: "",
                 property_id: "",
-                rent_due: "",
+                rent_due_date: "",
                 rent_amount: "",
+                rent_schedule_type: "monthly",
+                rent_schedule_value: "",
             });
         } catch (err) {
             setAddError(err.message);
         }
     };
+
+    // Open edit modal
+    const handleEditTenant = (tenant) => {
+        setEditTenant(tenant);
+        setEditForm({
+            first_name: tenant.first_name,
+            last_name: tenant.last_name,
+            email: tenant.email,
+            property_id: tenant.property_id,
+            rent_amount: tenant.rent_amount,
+            rent_schedule_type: tenant.rent_schedule_type,
+            rent_schedule_value: tenant.rent_schedule_value,
+            rent_due_date: tenant.rent_due_date ? tenant.rent_due_date.split("T")[0] : "",
+        });
+    };
+
+    // Submit edit
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
+        try {
+            const res = await fetch(`http://localhost:5001/api/tenants/${editTenant.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token ? `Bearer ${token}` : "",
+                },
+                body: JSON.stringify({
+                    ...editForm,
+                    rent_due_date: editForm.rent_schedule_type === "monthly" && editForm.rent_due_date ? editForm.rent_due_date : null,
+                    rent_schedule_value: editForm.rent_schedule_value !== "" ? editForm.rent_schedule_value : null,
+                }),
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to update tenant");
+            }
+            // Refresh tenants list
+            const tenantsRes = await fetch("http://localhost:5001/api/tenants", {
+                headers: { Authorization: token ? `Bearer ${token}` : "" },
+            });
+            const tenantsData = await tenantsRes.json();
+            setTenants(tenantsData.tenants || []);
+            setEditTenant(null);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    function formatSchedule(tenant) {
+        switch (tenant.rent_schedule_type) {
+            case "monthly":
+                return `Day ${tenant.rent_schedule_value} of each month`;
+            case "weekly":
+                return `Every week on ${["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][tenant.rent_schedule_value]}`;
+            case "biweekly":
+                return `Every two weeks on ${["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][tenant.rent_schedule_value]}`;
+            case "last_friday":
+                return "Last Friday of each month";
+            default:
+                return "";
+        }
+    }
 
     // Render
     return (
@@ -175,6 +307,7 @@ export default function Tenants() {
                                     <th>Rent Due</th>
                                     <th>Status</th>
                                     <th>Days Left</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -196,11 +329,7 @@ export default function Tenants() {
                                                 : tenant.rent_amount.toLocaleString()}
                                             /{showYearly ? "yr" : "mo"}
                                         </td>
-                                        <td>
-                                            {tenant.rent_due_date
-                                                ? `Day ${tenant.rent_due_date} of each month`
-                                                : ""}
-                                        </td>
+                                        <td>{getNextDueDate(tenant)}</td>
                                         <td>
                                             <span className={
                                                 "tenant-status " +
@@ -215,8 +344,14 @@ export default function Tenants() {
                                         </td>
                                         <td>
                                             <span className="countdown">
-                                                {daysLeft(tenant.rent_due_date)} days
+                                                {daysLeft(tenant)}
+                                                {" days"}
                                             </span>
+                                        </td>
+                                        <td>
+                                            <button onClick={e => { e.stopPropagation(); handleEditTenant(tenant); }}>
+                                                Edit
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -247,9 +382,7 @@ export default function Tenants() {
                             </p>
                             <p>
                                 <b>Rent Due:</b>{" "}
-                                {selectedTenant.rent_due_date
-                                    ? `Day ${selectedTenant.rent_due_date} of each month`
-                                    : ""}
+                                {getNextDueDate(selectedTenant)}
                             </p>
                             <p>
                                 <b>Status:</b>{" "}
@@ -265,7 +398,7 @@ export default function Tenants() {
                                 </span>
                             </p>
                             <p>
-                                <b>Days Left:</b> {daysLeft(selectedTenant.rent_due_date)} days
+                                <b>Days Left:</b> {daysLeft(selectedTenant)} days
                             </p>
                             <button
                                 className="remove-tenant-btn"
@@ -345,20 +478,193 @@ export default function Tenants() {
                                     />
                                 </label>
                                 <label>
-                                    Rent Due Day (1-31)
-                                    <input
-                                        type="number"
+                                    Rent Schedule
+                                    <select
+                                        value={addForm.rent_schedule_type || "monthly"}
+                                        onChange={e => {
+                                            const type = e.target.value;
+                                            setAddForm(f => ({
+                                                ...f,
+                                                rent_schedule_type: type,
+                                                rent_schedule_value: (type === "last_friday") ? null : ""
+                                            }));
+                                        }}
                                         required
-                                        min="1"
-                                        max="31"
-                                        value={addForm.rent_due}
-                                        onChange={e => setAddForm(f => ({ ...f, rent_due: e.target.value }))}
-                                        placeholder="Day of month"
-                                    />
+                                    >
+                                        <option value="monthly">Specific day of month</option>
+                                        <option value="weekly">Weekly (choose weekday)</option>
+                                        <option value="biweekly">Every two weeks (choose weekday)</option>
+                                        <option value="last_friday">Last Friday of the month</option>
+                                    </select>
                                 </label>
+                                {addForm.rent_schedule_type === "monthly" && (
+                                    <label>
+                                        Rent Due Date
+                                        <input
+                                            type="date"
+                                            value={addForm.rent_due_date || ""}
+                                            onChange={e => setAddForm(f => ({ ...f, rent_due_date: e.target.value }))}
+                                            required
+                                        />
+                                    </label>
+                                )}
+                                {["weekly", "biweekly"].includes(addForm.rent_schedule_type) && (
+                                    <label>
+                                        Weekday
+                                        <select
+                                            value={addForm.rent_schedule_value || ""}
+                                            onChange={e => setAddForm(f => ({ ...f, rent_schedule_value: e.target.value }))}
+                                            required
+                                        >
+                                            <option value="">Select weekday</option>
+                                            <option value="1">Monday</option>
+                                            <option value="2">Tuesday</option>
+                                            <option value="3">Wednesday</option>
+                                            <option value="4">Thursday</option>
+                                            <option value="5">Friday</option>
+                                            <option value="6">Saturday</option>
+                                            <option value="0">Sunday</option>
+                                        </select>
+                                    </label>
+                                )}
+                                {addForm.rent_schedule_type === "last_friday" && (() => {
+                                    const today = new Date();
+                                    const lastFriday = getLastFriday(today.getFullYear(), today.getMonth());
+                                    return (
+                                        <div style={{ margin: "8px 0", fontWeight: 500 }}>
+                                            Next rent due date: {lastFriday.toLocaleDateString()}
+                                        </div>
+                                    );
+                                })()}
                                 {addError && <div style={{ color: "red" }}>{addError}</div>}
                                 <button type="submit" className="add-tenant-btn" style={{ marginTop: 12 }}>
                                     Add Tenant
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                )}
+
+                {/* Edit Tenant Modal */}
+                {editTenant && (
+                    <div className="tenant-modal-backdrop" onClick={() => setEditTenant(null)}>
+                        <div className="tenant-modal" onClick={e => e.stopPropagation()}>
+                            <button className="modal-close" onClick={() => setEditTenant(null)}>
+                                &times;
+                            </button>
+                            <h3>Edit Tenant</h3>
+                            <form onSubmit={handleEditSubmit} className="add-tenant-form">
+                                <label>
+                                    First Name
+                                    <input
+                                        required
+                                        value={editForm.first_name}
+                                        onChange={e => setEditForm(f => ({ ...f, first_name: e.target.value }))}
+                                    />
+                                </label>
+                                <label>
+                                    Last Name
+                                    <input
+                                        required
+                                        value={editForm.last_name}
+                                        onChange={e => setEditForm(f => ({ ...f, last_name: e.target.value }))}
+                                    />
+                                </label>
+                                <label>
+                                    Email
+                                    <input
+                                        type="email"
+                                        required
+                                        value={editForm.email}
+                                        onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
+                                    />
+                                </label>
+                                <label>
+                                    Property Address
+                                    <select
+                                        required
+                                        value={editForm.property_id}
+                                        onChange={e => setEditForm(f => ({ ...f, property_id: e.target.value }))}
+                                    >
+                                        <option value="">Select property</option>
+                                        {properties.map((p) => (
+                                            <option key={p.id} value={p.id}>
+                                                {p.address}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                                <label>
+                                    Rent Amount (£)
+                                    <input
+                                        type="number"
+                                        required
+                                        min="0"
+                                        value={editForm.rent_amount || ""}
+                                        onChange={e => setEditForm(f => ({ ...f, rent_amount: e.target.value }))}
+                                    />
+                                </label>
+                                <label>
+                                    Rent Schedule
+                                    <select
+                                        value={editForm.rent_schedule_type || "monthly"}
+                                        onChange={e => {
+                                            const type = e.target.value;
+                                            setEditForm(f => ({
+                                                ...f,
+                                                rent_schedule_type: type,
+                                                rent_schedule_value: (type === "last_friday") ? null : ""
+                                            }));
+                                        }}
+                                        required
+                                    >
+                                        <option value="monthly">Specific day of month</option>
+                                        <option value="weekly">Weekly (choose weekday)</option>
+                                        <option value="biweekly">Every two weeks (choose weekday)</option>
+                                        <option value="last_friday">Last Friday of the month</option>
+                                    </select>
+                                </label>
+                                {editForm.rent_schedule_type === "monthly" && (
+                                    <label>
+                                        Rent Due Date
+                                        <input
+                                            type="date"
+                                            value={editForm.rent_due_date || ""}
+                                            onChange={e => setEditForm(f => ({ ...f, rent_due_date: e.target.value }))}
+                                            required
+                                        />
+                                    </label>
+                                )}
+                                {["weekly", "biweekly"].includes(editForm.rent_schedule_type) && (
+                                    <label>
+                                        Weekday
+                                        <select
+                                            value={editForm.rent_schedule_value || ""}
+                                            onChange={e => setEditForm(f => ({ ...f, rent_schedule_value: e.target.value }))}
+                                            required
+                                        >
+                                            <option value="">Select weekday</option>
+                                            <option value="1">Monday</option>
+                                            <option value="2">Tuesday</option>
+                                            <option value="3">Wednesday</option>
+                                            <option value="4">Thursday</option>
+                                            <option value="5">Friday</option>
+                                            <option value="6">Saturday</option>
+                                            <option value="0">Sunday</option>
+                                        </select>
+                                    </label>
+                                )}
+                                {editForm.rent_schedule_type === "last_friday" && (() => {
+                                    const today = new Date();
+                                    const lastFriday = getLastFriday(today.getFullYear(), today.getMonth());
+                                    return (
+                                        <div style={{ margin: "8px 0", fontWeight: 500 }}>
+                                            Next rent due date: {lastFriday.toLocaleDateString()}
+                                        </div>
+                                    );
+                                })()}
+                                <button type="submit" className="add-tenant-btn" style={{ marginTop: 12 }}>
+                                    Save Changes
                                 </button>
                             </form>
                         </div>

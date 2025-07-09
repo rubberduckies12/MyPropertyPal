@@ -21,7 +21,8 @@ router.get("/", async (req, res) => {
 
     // Get tenants linked to this landlord's properties
     const tenantsResult = await pool.query(
-      `SELECT t.id, a.first_name, a.last_name, a.email, pt.property_id, p.address, pt.rent_amount, pt.rent_due_date, pt.pays_rent, t.is_pending
+      `SELECT t.id, a.first_name, a.last_name, a.email, pt.property_id, p.address, pt.rent_amount, pt.rent_due_date, pt.pays_rent, t.is_pending,
+              pt.rent_schedule_type, pt.rent_schedule_value
        FROM tenant t
        JOIN account a ON t.account_id = a.id
        JOIN property_tenant pt ON t.id = pt.tenant_id
@@ -29,6 +30,30 @@ router.get("/", async (req, res) => {
        WHERE p.landlord_id = $1`,
       [landlordId]
     );
+
+    // Check and update rent_due_date if needed
+    for (const tenant of tenantsResult.rows) {
+      if (tenant.rent_due_date && tenant.rent_schedule_type) {
+        const dueDate = new Date(tenant.rent_due_date);
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        if (dueDate < today) {
+          const nextDue = getNextDueDate(
+            dueDate,
+            tenant.rent_schedule_type,
+            tenant.rent_schedule_value
+          );
+          // Update in DB
+          await pool.query(
+            "UPDATE property_tenant SET rent_due_date = $1 WHERE property_id = $2 AND tenant_id = $3",
+            [nextDue, tenant.property_id, tenant.id]
+          );
+          // Update in returned object
+          tenant.rent_due_date = nextDue;
+        }
+      }
+    }
+
     res.json({ tenants: tenantsResult.rows });
   } catch (err) {
     console.error("Error fetching tenants:", err);
@@ -46,7 +71,9 @@ router.post("/", async (req, res) => {
     password,
     property_id,
     rent_due_date,
-    rent_amount, // <-- must come from frontend
+    rent_amount,
+    rent_schedule_type = "monthly",
+    rent_schedule_value = null,
   } = req.body;
 
   try {
@@ -89,23 +116,25 @@ router.post("/", async (req, res) => {
     );
     const tenantId = tenantResult.rows[0].id;
 
-    // 4. Link tenant to property with rent_amount from frontend (rent_due_date as integer day of month)
-    try {
-      // Defensive: ensure rent_due_date is a valid integer
-      const rentDueDay = Number(rent_due_date);
-      if (!Number.isInteger(rentDueDay) || rentDueDay < 1 || rentDueDay > 31) {
-        throw new Error("Invalid rent_due_date: must be integer 1-31");
+    // 4. Link tenant to property with rent_amount from frontend (rent_due_date as DATE)
+    let rentDueDate = null;
+    if (rent_schedule_type === "monthly" && rent_due_date) {
+      rentDueDate = rent_due_date;
+    } else if (rent_schedule_type === "last_friday") {
+      // Always calculate last Friday for initial due date
+      const today = new Date();
+      let lf = getLastFriday(today.getFullYear(), today.getMonth());
+      if (today >= lf) {
+        lf = getLastFriday(today.getFullYear(), today.getMonth() + 1);
       }
-      await pool.query(
-        `INSERT INTO property_tenant (property_id, tenant_id, rent_amount, rent_due_date)
-         VALUES ($1, $2, $3, $4)`,
-        [property_id, tenantId, rent_amount, rentDueDay]
-      );
-      console.log("Inserted property_tenant row for tenant", tenantId);
-    } catch (err) {
-      console.error("Error inserting into property_tenant:", err);
-      throw err;
+      rentDueDate = lf.toISOString().split("T")[0];
     }
+    await pool.query(
+      `INSERT INTO property_tenant (property_id, tenant_id, rent_amount, rent_due_date, rent_schedule_type, rent_schedule_value)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [property_id, tenantId, rent_amount, rentDueDate, rent_schedule_type, rent_schedule_value]
+    );
+    console.log("Inserted property_tenant row for tenant", tenantId);
 
     // 5. Set property status to "Occupied"
     await pool.query(
@@ -141,10 +170,11 @@ router.delete("/:tenantId", async (req, res) => {
     // Remove from tenant (cascades to all related tables)
     await pool.query("DELETE FROM tenant WHERE id = $1", [tenantId]);
 
-    // Only delete account if not used as landlord
+    // Only delete account if not used as landlord or as another tenant
     if (accountId) {
       const landlordRes = await pool.query("SELECT id FROM landlord WHERE account_id = $1", [accountId]);
-      if (landlordRes.rows.length === 0) {
+      const tenantRes = await pool.query("SELECT id FROM tenant WHERE account_id = $1", [accountId]);
+      if (landlordRes.rows.length === 0 && tenantRes.rows.length === 0) {
         await pool.query("DELETE FROM account WHERE id = $1", [accountId]);
       }
     }
@@ -206,5 +236,139 @@ router.get("/invite/:token", async (req, res) => {
   }
   res.json(result.rows[0]);
 });
+
+// Update tenant info and rent schedule
+router.put("/:tenantId", async (req, res) => {
+  const pool = req.app.get("pool");
+  const tenantId = req.params.tenantId;
+  const {
+    first_name,
+    last_name,
+    email,
+    property_id,
+    rent_amount,
+    rent_schedule_type,
+    rent_schedule_value,
+    rent_due_date
+  } = req.body;
+
+  try {
+    // Get account_id and property_tenant row
+    const tenantRes = await pool.query(
+      `SELECT t.account_id, pt.id as property_tenant_id
+       FROM tenant t
+       JOIN property_tenant pt ON pt.tenant_id = t.id
+       WHERE t.id = $1`,
+      [tenantId]
+    );
+    if (tenantRes.rows.length === 0) {
+      return res.status(404).json({ error: "Tenant not found" });
+    }
+    const { account_id, property_tenant_id } = tenantRes.rows[0];
+
+    // Update account info
+    await pool.query(
+      `UPDATE account SET first_name = $1, last_name = $2, email = $3 WHERE id = $4`,
+      [first_name, last_name, email, account_id]
+    );
+
+    // Update property_tenant info
+    let rentDueDate = null;
+    if (rent_schedule_type === "monthly" && rent_due_date) {
+      rentDueDate = rent_due_date;
+    } else if (rent_schedule_type === "last_friday") {
+      const today = new Date();
+      let lf = getLastFriday(today.getFullYear(), today.getMonth());
+      if (today >= lf) {
+        lf = getLastFriday(today.getFullYear(), today.getMonth() + 1);
+      }
+      rentDueDate = lf.toISOString().split("T")[0];
+    }
+    await pool.query(
+      `UPDATE property_tenant
+       SET property_id = $1,
+           rent_amount = $2,
+           rent_schedule_type = $3,
+           rent_schedule_value = $4,
+           rent_due_date = $5
+       WHERE id = $6`,
+      [property_id, rent_amount, rent_schedule_type, rent_schedule_value, rentDueDate, property_tenant_id]
+    );
+
+    res.json({ message: "Tenant updated" });
+  } catch (err) {
+    console.error("Error updating tenant:", err);
+    res.status(500).json({ error: err.message || "Internal server error" });
+  }
+});
+
+// Calculate next due date based on schedule
+function getNextDueDate(currentDueDate, scheduleType, scheduleValue) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  let nextDue = new Date(currentDueDate);
+  nextDue.setHours(0,0,0,0);
+
+  if (scheduleType === "monthly") {
+    // scheduleValue is day of month (1-31)
+    let dueDay = Number(scheduleValue);
+    if (!dueDay) dueDay = 1;
+    // If current due date is in the past, move to next month
+    while (nextDue <= today) {
+      nextDue.setMonth(nextDue.getMonth() + 1);
+      nextDue.setDate(dueDay);
+    }
+    return nextDue;
+  }
+
+  if (scheduleType === "weekly") {
+    // scheduleValue is weekday (0=Sun, 6=Sat)
+    const dueWeekday = Number(scheduleValue);
+    while (nextDue <= today) {
+      nextDue.setDate(nextDue.getDate() + 1);
+      if (nextDue.getDay() === dueWeekday && nextDue > today) break;
+    }
+    return nextDue;
+  }
+
+  if (scheduleType === "biweekly") {
+    // scheduleValue is weekday (0=Sun, 6=Sat)
+    const dueWeekday = Number(scheduleValue);
+    // Use a fixed base date for the cycle (e.g., Jan 1, 2024)
+    const baseDate = new Date(2024, 0, 1);
+    baseDate.setHours(0,0,0,0);
+    let firstDue = new Date(baseDate);
+    firstDue.setDate(baseDate.getDate() + ((dueWeekday - baseDate.getDay() + 7) % 7));
+    let nextBi = new Date(firstDue);
+    while (nextBi <= today) {
+      nextBi.setDate(nextBi.getDate() + 14);
+    }
+    return nextBi;
+  }
+
+  if (scheduleType === "last_friday") {
+    function getLastFriday(year, month) {
+      let d = new Date(year, month + 1, 0);
+      while (d.getDay() !== 5) d.setDate(d.getDate() - 1);
+      return d;
+    }
+    let lf = getLastFriday(today.getFullYear(), today.getMonth());
+    if (today >= lf) {
+      lf = getLastFriday(today.getFullYear(), today.getMonth() + 1);
+    }
+    return lf;
+  }
+
+  // Default: just return the current due date
+  return nextDue;
+}
+
+// Utility for backend
+function getLastFriday(year, month) {
+  let d = new Date(year, month + 1, 0);
+  while (d.getDay() !== 5) d.setDate(d.getDate() - 1);
+  return d;
+}
 
 module.exports = router;

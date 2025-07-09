@@ -452,6 +452,12 @@
   box-shadow: 0 4px 16px rgba(37,99,235,0.13);
 }
 
+.compliance-form-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
 @media (max-width: 900px) {
   .compliance-main {
     padding: 18px 4px;

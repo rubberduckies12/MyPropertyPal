@@ -16,6 +16,7 @@ export default function Compliance() {
     name: "",
     description: "",
     due_date: "",
+    reminder_days: [90], // default
   });
   const [eventSuccess, setEventSuccess] = useState("");
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -34,14 +35,14 @@ export default function Compliance() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
-      .then(data => setDeadlines(data))
+      .then(data => setDeadlines(Array.isArray(data) ? data : []))
       .catch(() => setError("Failed to load deadlines"));
 
     fetch(`${BACKEND_URL}/api/compliance/documents`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => res.json())
-      .then(data => setDocuments(data))
+      .then(data => setDocuments(Array.isArray(data) ? data : []))
       .catch(() => setError("Failed to load documents"));
 
     fetch(`${BACKEND_URL}/api/properties`, {
@@ -81,7 +82,7 @@ export default function Compliance() {
           headers: { Authorization: `Bearer ${token}` },
         })
           .then(res => res.json())
-          .then(data => setDocuments(data));
+          .then(data => setDocuments(Array.isArray(data) ? data : []));
       } else {
         setError(data.error || "Upload failed");
       }
@@ -108,14 +109,14 @@ export default function Compliance() {
       });
       if (res.ok) {
         setEventSuccess("Compliance event added!");
-        setNewEvent({ property_id: "", name: "", description: "", due_date: "" });
+        setNewEvent({ property_id: "", name: "", description: "", due_date: "", reminder_days: [90] });
         setShowEventForm(false);
         // Re-fetch events
         fetch(`${BACKEND_URL}/api/compliance/events`, {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         })
           .then(res => res.json())
-          .then(data => setDeadlines(data));
+          .then(data => setDeadlines(Array.isArray(data) ? data : []));
       } else {
         setError("Failed to add event");
       }
@@ -124,7 +125,7 @@ export default function Compliance() {
     }
   };
 
-  // Edit event handler
+  // Edit event handler (used for both Edit and Renew)
   const handleEditEvent = async (e) => {
     e.preventDefault();
     setError("");
@@ -147,7 +148,7 @@ export default function Compliance() {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         })
           .then(res => res.json())
-          .then(data => setDeadlines(data));
+          .then(data => setDeadlines(Array.isArray(data) ? data : []));
       } else {
         setError("Failed to update event");
       }
@@ -173,7 +174,7 @@ export default function Compliance() {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         })
           .then(res => res.json())
-          .then(data => setDeadlines(data));
+          .then(data => setDeadlines(Array.isArray(data) ? data : []));
       } else {
         setError("Failed to delete event");
       }
@@ -192,14 +193,17 @@ export default function Compliance() {
     return `${day}/${month}/${year}`;
   }
 
-  function getDueStatus(dueDateStr) {
+  function getDueStatus(dueDateStr, reminderDaysArr) {
     if (!dueDateStr) return "status-upcoming";
     const dueDate = new Date(dueDateStr);
     const now = new Date();
     const diffDays = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+    const reminders = (reminderDaysArr && reminderDaysArr.length > 0) ? reminderDaysArr : [90];
+    const soonest = Math.min(...reminders);
+
     if (diffDays < 0) return "status-overdue"; // Overdue
-    if (diffDays <= 90) return "status-expiringsoon"; // Due inside 90 days
-    return "status-valid"; // Not due for over 90 days
+    if (diffDays <= soonest) return "status-expiringsoon"; // Due inside soonest reminder
+    return "status-valid"; // Not due for over soonest reminder
   }
 
   return (
@@ -242,41 +246,71 @@ export default function Compliance() {
             <div className="compliance-modal-card" onClick={e => e.stopPropagation()}>
               <h2 className="compliance-modal-title">Add Compliance Event</h2>
               <form className="compliance-add-event-form" onSubmit={handleAddEvent}>
-                <select
-                  className="compliance-add-event-input"
-                  value={newEvent.property_id}
-                  onChange={e => setNewEvent(ev => ({ ...ev, property_id: e.target.value }))}
-                  required
-                >
-                  <option value="">Select Property</option>
-                  {properties.map((prop) => (
-                    <option key={prop.id} value={prop.id}>
-                      {prop.name} {prop.address ? `- ${prop.address}` : ""}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  className="compliance-add-event-input"
-                  type="text"
-                  placeholder="Name (e.g. Gas Safety)"
-                  value={newEvent.name}
-                  onChange={e => setNewEvent(ev => ({ ...ev, name: e.target.value }))}
-                  required
-                />
-                <input
-                  className="compliance-add-event-input"
-                  type="text"
-                  placeholder="Description"
-                  value={newEvent.description}
-                  onChange={e => setNewEvent(ev => ({ ...ev, description: e.target.value }))}
-                />
-                <input
-                  className="compliance-add-event-input"
-                  type="date"
-                  value={newEvent.due_date}
-                  onChange={e => setNewEvent(ev => ({ ...ev, due_date: e.target.value }))}
-                  required
-                />
+                <label>
+                  <span className="compliance-form-label">Property</span>
+                  <select
+                    className="compliance-add-event-input"
+                    value={newEvent.property_id}
+                    onChange={e => setNewEvent(ev => ({ ...ev, property_id: e.target.value }))}
+                    required
+                  >
+                    <option value="">Select Property</option>
+                    {properties.map((prop) => (
+                      <option key={prop.id} value={prop.id}>
+                        {prop.name} {prop.address ? `- ${prop.address}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span className="compliance-form-label">Name</span>
+                  <input
+                    className="compliance-add-event-input"
+                    type="text"
+                    placeholder="Name (e.g. Gas Safety)"
+                    value={newEvent.name}
+                    onChange={e => setNewEvent(ev => ({ ...ev, name: e.target.value }))}
+                    required
+                  />
+                </label>
+                <label>
+                  <span className="compliance-form-label">Description</span>
+                  <input
+                    className="compliance-add-event-input"
+                    type="text"
+                    placeholder="Description"
+                    value={newEvent.description}
+                    onChange={e => setNewEvent(ev => ({ ...ev, description: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  <span className="compliance-form-label">Due Date</span>
+                  <input
+                    className="compliance-add-event-input"
+                    type="date"
+                    value={newEvent.due_date}
+                    onChange={e => setNewEvent(ev => ({ ...ev, due_date: e.target.value }))}
+                    required
+                  />
+                </label>
+                <label>
+                  <span className="compliance-form-label">Reminder days</span>
+                  <input
+                    className="compliance-add-event-input"
+                    type="text"
+                    placeholder="Reminder days (e.g. 90,30,7)"
+                    value={newEvent.reminder_days ? newEvent.reminder_days.join(",") : ""}
+                    onChange={e =>
+                      setNewEvent(ev => ({
+                        ...ev,
+                        reminder_days: e.target.value
+                          .split(",")
+                          .map(s => parseInt(s.trim()))
+                          .filter(n => !isNaN(n))
+                      }))
+                    }
+                  />
+                </label>
                 <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
                   <button className="compliance-add-event-btn" type="submit">
                     Add Event
@@ -290,8 +324,6 @@ export default function Compliance() {
                   </button>
                 </div>
               </form>
-              {eventSuccess && <div className="success">{eventSuccess}</div>}
-              {error && <div className="error">{error}</div>}
             </div>
           </div>
         )}
@@ -300,7 +332,9 @@ export default function Compliance() {
         {selectedEvent && (
           <div className="compliance-modal-overlay" onClick={() => { setSelectedEvent(null); setEditEvent(null); }}>
             <div className="compliance-modal-card" onClick={e => e.stopPropagation()}>
-              <h2 className="compliance-modal-title">Compliance Event Details</h2>
+              <h2 className="compliance-modal-title">
+                {editEvent && editEvent.onlyRenew ? "Renew Compliance" : "Compliance Event Details"}
+              </h2>
               {!editEvent ? (
                 <>
                   <div className="compliance-modal-info">
@@ -317,6 +351,12 @@ export default function Compliance() {
                       Edit
                     </button>
                     <button
+                      className="compliance-add-event-btn"
+                      onClick={() => setEditEvent({ ...selectedEvent, onlyRenew: true })}
+                    >
+                      Renew
+                    </button>
+                    <button
                       className="compliance-modal-delete-btn"
                       onClick={() => handleDeleteEvent(selectedEvent.id)}
                     >
@@ -329,46 +369,80 @@ export default function Compliance() {
                       Close
                     </button>
                   </div>
-                  {eventSuccess && <div className="success">{eventSuccess}</div>}
-                  {error && <div className="error">{error}</div>}
                 </>
               ) : (
                 <form className="compliance-add-event-form" onSubmit={handleEditEvent}>
-                  <select
-                    className="compliance-add-event-input"
-                    value={editEvent.property_id}
-                    onChange={e => setEditEvent(ev => ({ ...ev, property_id: e.target.value }))}
-                    required
-                  >
-                    <option value="">Select Property</option>
-                    {properties.map((prop) => (
-                      <option key={prop.id} value={prop.id}>
-                        {prop.name} {prop.address ? `- ${prop.address}` : ""}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    className="compliance-add-event-input"
-                    type="text"
-                    placeholder="Name"
-                    value={editEvent.name}
-                    onChange={e => setEditEvent(ev => ({ ...ev, name: e.target.value }))}
-                    required
-                  />
-                  <input
-                    className="compliance-add-event-input"
-                    type="text"
-                    placeholder="Description"
-                    value={editEvent.description}
-                    onChange={e => setEditEvent(ev => ({ ...ev, description: e.target.value }))}
-                  />
-                  <input
-                    className="compliance-add-event-input"
-                    type="date"
-                    value={editEvent.due_date ? editEvent.due_date.slice(0,10) : ""}
-                    onChange={e => setEditEvent(ev => ({ ...ev, due_date: e.target.value }))}
-                    required
-                  />
+                  <label>
+                    <span className="compliance-form-label">Property</span>
+                    <select
+                      className="compliance-add-event-input"
+                      value={editEvent.property_id}
+                      onChange={e => setEditEvent(ev => ({ ...ev, property_id: e.target.value }))}
+                      required
+                      disabled={editEvent.onlyRenew}
+                    >
+                      <option value="">Select Property</option>
+                      {properties.map((prop) => (
+                        <option key={prop.id} value={prop.id}>
+                          {prop.name} {prop.address ? `- ${prop.address}` : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    <span className="compliance-form-label">Name</span>
+                    <input
+                      className="compliance-add-event-input"
+                      type="text"
+                      placeholder="Name"
+                      value={editEvent.name}
+                      onChange={e => setEditEvent(ev => ({ ...ev, name: e.target.value }))}
+                      required
+                      disabled={editEvent.onlyRenew}
+                    />
+                  </label>
+                  <label>
+                    <span className="compliance-form-label">Description</span>
+                    <input
+                      className="compliance-add-event-input"
+                      type="text"
+                      placeholder="Description"
+                      value={editEvent.description}
+                      onChange={e => setEditEvent(ev => ({ ...ev, description: e.target.value }))}
+                      disabled={editEvent.onlyRenew}
+                    />
+                  </label>
+                  <label>
+                    <span className="compliance-form-label">
+                      {editEvent.onlyRenew ? "New Due Date" : "Due Date"}
+                    </span>
+                    <input
+                      className="compliance-add-event-input"
+                      type="date"
+                      value={editEvent.due_date ? editEvent.due_date.slice(0,10) : ""}
+                      onChange={e => setEditEvent(ev => ({ ...ev, due_date: e.target.value }))}
+                      required
+                    />
+                  </label>
+                  <label>
+                    <span className="compliance-form-label">Reminder days</span>
+                    <input
+                      className="compliance-add-event-input"
+                      type="text"
+                      placeholder="Reminder days (e.g. 90,30,7)"
+                      value={editEvent.reminder_days ? editEvent.reminder_days.join(",") : ""}
+                      onChange={e =>
+                        setEditEvent(ev => ({
+                          ...ev,
+                          reminder_days: e.target.value
+                            .split(",")
+                            .map(s => parseInt(s.trim()))
+                            .filter(n => !isNaN(n))
+                        }))
+                      }
+                      disabled={editEvent.onlyRenew}
+                    />
+                  </label>
                   <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
                     <button className="compliance-add-event-btn" type="submit">
                       Save
@@ -388,9 +462,9 @@ export default function Compliance() {
           </div>
         )}
 
-        {/* Deadlines & Urgent Reminders */}
+        {/* Compliance Tracker */}
         <section className="compliance-section">
-          <h2>Upcoming Deadlines & Urgent Reminders</h2>
+          <h2>Compliance Tracker</h2>
           <table className="compliance-table">
             <thead>
               <tr>
@@ -401,13 +475,13 @@ export default function Compliance() {
               </tr>
             </thead>
             <tbody>
-              {deadlines.map(item => (
+              {(Array.isArray(deadlines) ? deadlines : []).map(item => (
                 <tr key={item.id} onClick={() => { setSelectedEvent(item); setEventSuccess(""); setError(""); }}>
                   <td>{item.name}</td>
                   <td>{item.property_name}</td>
                   <td>{item.description}</td>
                   <td>
-                    <span className={`status-bubble ${getDueStatus(item.due_date)}`}>
+                    <span className={`status-bubble ${getDueStatus(item.due_date, item.reminder_days)}`}>
                       {formatDate(item.due_date)}
                     </span>
                   </td>
@@ -417,33 +491,9 @@ export default function Compliance() {
           </table>
         </section>
 
-        {/* Document Expiry Tracker */}
-        <section className="compliance-section">
-          <h2>Document Expiry Tracker</h2>
-          <table className="compliance-table">
-            <thead>
-              <tr>
-                <th>Document</th>
-                <th>Property</th>
-                <th>Uploaded</th>
-                {/* Add expiry if your backend provides it */}
-              </tr>
-            </thead>
-            <tbody>
-              {documents.map(doc => (
-                <tr key={doc.id}>
-                  <td>{doc.document_path}</td>
-                  <td>{doc.property_name}</td>
-                  <td>{formatDate(doc.uploaded_at)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-
         {/* Resource Hub */}
         <section className="compliance-section">
-          <h2>Regulation Resource Hub</h2>
+          <h2>Regulation Resources</h2>
           <div className="compliance-resource-grid">
             <a
               className="compliance-resource-card"
