@@ -217,6 +217,7 @@
   border-top-right-radius: 18px;
 }
 
+/* Tenant status styles */
 .tenant-status {
   padding: 5px 14px;
   border-radius: 12px;
@@ -225,19 +226,19 @@
   letter-spacing: 0.02em;
 }
 
-.status-paid {
+.status-active {
   background: var(--status-paid);
   color: #166534;
+}
+
+.status-pending {
+  background: var(--status-other);
+  color: #92400e;
 }
 
 .status-overdue {
   background: var(--status-overdue);
   color: #b91c1c;
-}
-
-.status-other {
-  background: var(--status-other);
-  color: #92400e;
 }
 
 .countdown {

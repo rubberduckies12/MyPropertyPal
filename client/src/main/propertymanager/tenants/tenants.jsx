@@ -151,6 +151,13 @@ export default function Tenants() {
                             checked={showYearly}
                             onChange={() => setShowYearly((v) => !v)}
                         />
+                        <button
+                            className="add-property-btn"
+                            style={{ marginLeft: 18 }}
+                            onClick={() => setShowAddModal(true)}
+                        >
+                            + Add Tenant
+                        </button>
                     </div>
                 </div>
                 {loading ? (
@@ -168,7 +175,6 @@ export default function Tenants() {
                                     <th>Rent Due</th>
                                     <th>Status</th>
                                     <th>Days Left</th>
-                                    {/* Removed Total Earned column */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -196,8 +202,15 @@ export default function Tenants() {
                                                 : ""}
                                         </td>
                                         <td>
-                                            <span className={"tenant-status " + (tenant.is_pending ? "status-pending" : (tenant.pays_rent ? "status-paid" : "status-overdue"))}>
-                                                {tenant.is_pending ? "Pending" : (tenant.pays_rent ? "Paid" : "Overdue")}
+                                            <span className={
+                                                "tenant-status " +
+                                                (tenant.is_pending
+                                                    ? "status-pending"
+                                                    : (tenant.pays_rent ? "status-active" : "status-overdue"))
+                                            }>
+                                                {tenant.is_pending
+                                                    ? "Pending"
+                                                    : (tenant.pays_rent ? "Active" : "Overdue")}
                                             </span>
                                         </td>
                                         <td>
@@ -205,7 +218,6 @@ export default function Tenants() {
                                                 {daysLeft(tenant.rent_due_date)} days
                                             </span>
                                         </td>
-                                        {/* Removed Total Earned cell */}
                                     </tr>
                                 ))}
                             </tbody>
@@ -245,17 +257,16 @@ export default function Tenants() {
                                     className={
                                         "tenant-status " +
                                         (selectedTenant.pays_rent
-                                            ? "status-paid"
+                                            ? "status-active"
                                             : "status-overdue")
                                     }
                                 >
-                                    {selectedTenant.pays_rent ? "Paid" : "Overdue"}
+                                    {selectedTenant.pays_rent ? "Active" : "Overdue"}
                                 </span>
                             </p>
                             <p>
                                 <b>Days Left:</b> {daysLeft(selectedTenant.rent_due_date)} days
                             </p>
-                            {/* Removed Total Earned from modal */}
                             <button
                                 className="remove-tenant-btn"
                                 style={{ marginTop: 16, background: "#d9534f", color: "#fff" }}
@@ -345,7 +356,6 @@ export default function Tenants() {
                                         placeholder="Day of month"
                                     />
                                 </label>
-                                {/* Removed Total Earned from add tenant modal */}
                                 {addError && <div style={{ color: "red" }}>{addError}</div>}
                                 <button type="submit" className="add-tenant-btn" style={{ marginTop: 12 }}>
                                     Add Tenant
@@ -354,10 +364,6 @@ export default function Tenants() {
                         </div>
                     </div>
                 )}
-
-                <button className="add-tenant-btn" onClick={() => setShowAddModal(true)}>
-                    + Add Tenant
-                </button>
             </main>
         </div>
     );

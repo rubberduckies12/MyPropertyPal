@@ -12,12 +12,15 @@ async function login(req, res, pool) {
         const query = {
             text: `
                 SELECT
-                    id,
-                    password
+                    a.id,
+                    a.password,
+                    r.role
                 FROM
-                    account
+                    account a
+                JOIN
+                    account_role r ON a.role_id = r.id
                 WHERE
-                    email = $1
+                    a.email = $1
             `,
             values: [email],
         };
@@ -38,13 +41,12 @@ async function login(req, res, pool) {
 
         const token = await generateAuthToken(user.id);
 
-        return res.status(200).json({ token: token });
+        // Return both token and role
+        return res.status(200).json({ token: token, role: user.role });
     } catch (err) {
         console.error('Error in login:', err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }
-
-
 
 module.exports = login;

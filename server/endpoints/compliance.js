@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs");
 const vision = require("@google-cloud/vision");
+const authenticate = require("../middleware/authenticate"); // <-- ADD THIS LINE
 
 // Google Vision setup
 const visionClient = new vision.ImageAnnotatorClient({
@@ -23,10 +24,21 @@ const upload = multer({ storage });
 // ========== COMPLIANCE EVENTS ==========
 
 // Get all compliance events for a landlord
-router.get("/events", async (req, res) => {
+router.get("/events", authenticate, async (req, res) => {
   try {
     const pool = req.app.get("pool");
-    const landlordId = req.query.landlord_id;
+    let landlordId = req.user.landlord_id;
+    if (!landlordId) {
+      // Fallback: look up landlord_id from account_id (req.user.id)
+      const landlordRes = await pool.query(
+        "SELECT id FROM landlord WHERE account_id = $1",
+        [req.user.id]
+      );
+      landlordId = landlordRes.rows[0]?.id;
+      if (!landlordId) {
+        return res.json([]); // No landlord found for this account
+      }
+    }
     const result = await pool.query(
       `SELECT ce.*, p.name AS property_name
        FROM compliance_event ce
@@ -112,10 +124,10 @@ router.post("/documents/upload", upload.single("file"), async (req, res) => {
 // ========== DOCUMENTS CRUD ==========
 
 // Get all compliance documents for a landlord
-router.get("/documents", async (req, res) => {
+router.get("/documents", authenticate, async (req, res) => {
   try {
     const pool = req.app.get("pool");
-    const landlordId = req.query.landlord_id;
+    const landlordId = req.user.landlord_id; // Get landlord_id from JWT
     const result = await pool.query(
       `SELECT d.*, p.name AS property_name
        FROM document d

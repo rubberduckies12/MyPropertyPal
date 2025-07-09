@@ -7,7 +7,11 @@ const API_BASE = "http://localhost:5001";
 
 // --- API Calls ---
 async function fetchUser() {
-  const res = await fetch(`${API_BASE}/api/dashboard/user`);
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_BASE}/api/dashboard/user`, {
+    headers: { Authorization: token ? `Bearer ${token}` : "" }
+  });
+  if (!res.ok) throw new Error("Failed to fetch user");
   return res.json();
 }
 
@@ -35,7 +39,11 @@ async function fetchIncidents() {
 }
 
 async function fetchProperties() {
-  const res = await fetch(`${API_BASE}/api/dashboard/properties`);
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_BASE}/api/dashboard/properties`, {
+    headers: { Authorization: token ? `Bearer ${token}` : "" }
+  });
+  if (!res.ok) throw new Error("Failed to fetch properties");
   return res.json();
 }
 

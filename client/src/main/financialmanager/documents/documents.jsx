@@ -2,12 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import "./documents.css";
 
-// Mock for uploaded documents
-const initialDocs = [
-  // Example: { id: 1, name: "invoice-may.pdf", type: "Invoice", date: "2025-06-01", amount: 120, status: "Processed" }
-];
-
-const BACKEND_URL = "http://localhost:5001"; // <-- Hardcoded backend URL
+const BACKEND_URL = "http://localhost:5001";
 
 export default function Documents() {
   const [documents, setDocuments] = useState([]);
@@ -35,14 +30,11 @@ export default function Documents() {
             }))
           );
         }
-      } catch (err) {
-        // Optionally handle error
-      }
+      } catch (err) {}
     };
     fetchDocs();
   }, []);
 
-  // Example upload handler
   const handleUpload = async (file) => {
     setUploading(true);
     setError("");
@@ -78,44 +70,13 @@ export default function Documents() {
     setUploading(false);
   };
 
-  // Simulate Google Vision OCR and outgoing extraction
-  const handleFileChange = async (e) => {
-    setError("");
-    setUploading(true);
-    const file = e.target.files[0];
-    if (!file) {
-      setUploading(false);
-      return;
-    }
-    handleUpload(file);
-    // Simulate OCR and extraction delay
-    setTimeout(() => {
-      // Mock: extract amount and type from filename for demo
-      const isInvoice = file.name.toLowerCase().includes("invoice");
-      const isReceipt = file.name.toLowerCase().includes("receipt");
-      const amount = Math.floor(Math.random() * 200) + 20;
-      setDocuments((docs) => [
-        ...docs,
-        {
-          id: docs.length + 1,
-          name: file.name,
-          type: isInvoice ? "Invoice" : isReceipt ? "Receipt" : "Other",
-          date: new Date().toISOString().slice(0, 10),
-          amount,
-          status: "Processed",
-        },
-      ]);
-      setUploading(false);
-    }, 1800);
-  };
-
   return (
-    <div className="dashboard-container">
+    <div className="properties-page">
       <Sidebar />
-      <main className="dashboard-main documents-main">
-        <h1 className="documents-title">Documents & Uploads</h1>
-        <div className="documents-upload-section">
-          <label className="documents-upload-label">
+      <main className="properties-main">
+        <div className="properties-header">
+          <h1 className="properties-title">Documents & Uploads</h1>
+          <div>
             <input
               type="file"
               accept="application/pdf,image/*"
@@ -128,19 +89,16 @@ export default function Documents() {
               disabled={uploading}
             />
             <button
-              className="documents-upload-btn"
+              className="add-property-btn"
               onClick={() => fileInputRef.current.click()}
               disabled={uploading}
               type="button"
             >
               {uploading ? "Uploading..." : "Upload Invoice or Receipt"}
             </button>
-          </label>
-          <div className="documents-upload-desc">
-            Upload your invoices, receipts, and bills. We’ll scan them with Google Vision and automatically extract outgoings for your records.
           </div>
-          {error && <div className="documents-error">{error}</div>}
         </div>
+        {error && <div className="documents-error">{error}</div>}
         <section className="documents-list-section">
           <h2>Uploaded Documents</h2>
           <table className="documents-table">

@@ -17,9 +17,8 @@ function Login({ onRegisterClick }) {
     try {
       const user = await login(email, password);
       setMessage("Login successful!");
-      // Save token, landlord_id, etc. to localStorage if needed
-      // localStorage.setItem("token", user.token);
-      // localStorage.setItem("landlord_id", user.landlord_id);
+      localStorage.setItem("token", user.token);
+      localStorage.setItem("role", user.role); // Save the role
 
       // Redirect based on user role/type
       if (user.role === "tenant" || user.type === "tenant") {

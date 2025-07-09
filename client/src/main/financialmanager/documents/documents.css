@@ -12,17 +12,23 @@
   letter-spacing: -1px;
 }
 
-.documents-upload-section {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 8px 32px rgba(37,99,235,0.06);
-  border: 1.5px solid #e5e7eb;
-  padding: 28px 20px 18px 20px;
+.properties-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 32px;
-  text-align: center;
+  gap: 1.5rem;
 }
 
-.documents-upload-btn {
+.properties-title {
+  font-size: 2rem;
+  color: #2563eb;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin: 0;
+}
+
+.add-property-btn {
   background: #2563eb;
   color: #fff;
   border: none;
@@ -32,29 +38,21 @@
   font-weight: 600;
   cursor: pointer;
   transition: background 0.18s;
-  margin-bottom: 10px;
 }
 
-.documents-upload-btn:disabled {
+.add-property-btn:disabled {
   background: #a5b4fc;
   cursor: not-allowed;
 }
 
-.documents-upload-btn:hover,
-.documents-upload-btn:focus {
+.add-property-btn:hover,
+.add-property-btn:focus {
   background: #1746a2;
 }
 
-.documents-upload-desc {
-  color: #64748b;
-  font-size: 1.02rem;
-  margin-top: 8px;
-}
-
-.documents-error {
-  color: #d32f2f;
-  margin-top: 10px;
-  font-size: 0.98rem;
+/* Remove upload card styling */
+.documents-upload-section {
+  display: none;
 }
 
 .documents-list-section {

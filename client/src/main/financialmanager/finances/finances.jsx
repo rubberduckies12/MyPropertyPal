@@ -300,10 +300,24 @@ export default function Finances() {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="properties-page">
       <Sidebar />
-      <main className="dashboard-main finances-main">
-        <h1 className="finances-title">Financial Manager</h1>
+      <main className="properties-main">
+        <div className="properties-header">
+          <h1 className="properties-title">Financial Manager</h1>
+          <div>
+            <button className="add-property-btn" onClick={() => setShowExpenseModal(true)}>
+              + Add Expense
+            </button>
+            <button
+              className="add-property-btn"
+              style={{ marginLeft: 12 }}
+              onClick={() => setShowRentModal(true)}
+            >
+              + Mark Rent Received
+            </button>
+          </div>
+        </div>
         <div className="finances-period-toggle">
           {PERIODS.map(opt => (
             <button
@@ -315,14 +329,6 @@ export default function Finances() {
               {opt.label}
             </button>
           ))}
-        </div>
-        <div style={{ marginBottom: 24 }}>
-          <button className="finances-add-btn" onClick={() => setShowExpenseModal(true)}>
-            + Add Expense
-          </button>
-          <button className="finances-add-btn" onClick={() => setShowRentModal(true)} style={{ marginLeft: 12 }}>
-            + Mark Rent Received
-          </button>
         </div>
         {loading ? (
           <div>Loading...</div>
@@ -438,13 +444,13 @@ export default function Finances() {
             </section>
 
             <section className="finances-section">
-              <h2>HMRC Tax Summary</h2>
+              <h2>Summary</h2>
               <div className="finances-tax-summary">
                 <div><strong>Total Income:</strong> £{totalIncome.toLocaleString()}</div>
                 <div><strong>Total Expenses:</strong> £{totalExpenses.toLocaleString()}</div>
                 <div><strong>Taxable Profit:</strong> £{taxableProfit.toLocaleString()}</div>
                 <button className="finances-export-btn" onClick={handleExportTaxReport}>
-                  Export HMRC Tax Report
+                  Export Summary
                 </button>
               </div>
             </section>
