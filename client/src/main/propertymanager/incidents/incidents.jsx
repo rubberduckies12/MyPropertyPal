@@ -1,41 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./incidents.css";
 import Sidebar from "../../sidebar/sidebar.jsx";
-
-const sampleIncidents = [
-  {
-    id: 1,
-    title: "Broken Door",
-    property: { address: "123 Main St, London, E1 2AB" },
-    tenant: { first_name: "Alice", last_name: "Smith" },
-    date_posted: "2024-06-10",
-    severity: "red",
-    progress: "Not Started",
-    description:
-      "The front door lock is broken and cannot be secured. Needs urgent repair.",
-  },
-  {
-    id: 2,
-    title: "Leaking Tap",
-    property: { address: "456 Oak Rd, London, E2 3CD" },
-    tenant: { first_name: "Bob", last_name: "Jones" },
-    date_posted: "2024-06-12",
-    severity: "yellow",
-    progress: "In Progress",
-    description:
-      "The kitchen tap is leaking and causing water to pool on the counter.",
-  },
-  {
-    id: 3,
-    title: "Heating Not Working",
-    property: { address: "789 Willow Ave, London, E3 4GH" },
-    tenant: { first_name: "Charlie", last_name: "Brown" },
-    date_posted: "2024-06-13",
-    severity: "green",
-    progress: "Solved",
-    description: "The central heating was not working but has now been fixed.",
-  },
-];
 
 const progressOptions = [
   { value: "Not Started", color: "red" },
@@ -43,30 +8,76 @@ const progressOptions = [
   { value: "Solved", color: "green" },
 ];
 
+function getProgressColor(progress) {
+  if (progress === "Not Started") return "red";
+  if (progress === "In Progress") return "yellow";
+  if (progress === "Solved") return "green";
+  return "gray";
+}
+
 export default function Incidents() {
-  const [incidents, setIncidents] = useState(sampleIncidents);
+  const [incidents, setIncidents] = useState([]);
   const [selectedIncident, setSelectedIncident] = useState(null);
 
-  const handleProgressChange = (id, newProgress) => {
-    setIncidents((prev) =>
-      prev.map((inc) =>
-        inc.id === id ? { ...inc, progress: newProgress } : inc
-      )
-    );
+  // Fetch all maintenance requests for landlord
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:5001/api/maintenance/landlord", {
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    })
+      .then((res) => res.json())
+      .then((data) => setIncidents(data.incidents || []));
+  }, []);
+
+  // Update progress in backend
+  const handleProgressChange = async (id, newProgress) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+        `http://localhost:5001/api/maintenance/landlord/${id}/progress`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+          body: JSON.stringify({ progress: newProgress }),
+        }
+      );
+      if (!res.ok) throw new Error("Failed to update progress");
+      // Refresh incidents after update
+      const updated = await res.json();
+      setIncidents((prev) =>
+        prev.map((inc) =>
+          inc.id === id ? { ...inc, progress: updated.incident.progress } : inc
+        )
+      );
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
-  const handleRowClick = (incident) => {
-    setSelectedIncident(incident);
+  const handleDeleteIncident = async (id) => {
+    const token = localStorage.getItem("token");
+    if (!window.confirm("Are you sure you want to delete this request?")) return;
+    try {
+      const res = await fetch(
+        `http://localhost:5001/api/maintenance/${id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: token ? `Bearer ${token}` : "" },
+        }
+      );
+      if (!res.ok) throw new Error("Failed to delete request");
+      setIncidents((prev) => prev.filter((inc) => inc.id !== id));
+      setSelectedIncident(null);
+    } catch (err) {
+      alert(err.message);
+    }
   };
 
-  const handleCloseModal = () => {
-    setSelectedIncident(null);
-  };
-
-  const handleDeleteIncident = (id) => {
-    setIncidents((prev) => prev.filter((inc) => inc.id !== id));
-    setSelectedIncident(null);
-  };
+  const handleRowClick = (incident) => setSelectedIncident(incident);
+  const handleCloseModal = () => setSelectedIncident(null);
 
   return (
     <div className="properties-page">
@@ -95,35 +106,29 @@ export default function Incidents() {
                   onClick={() => handleRowClick(incident)}
                 >
                   <td>{incident.title}</td>
-                  <td>{incident.property.address}</td>
+                  <td>{incident.property_address}</td>
                   <td>
-                    {incident.tenant.first_name} {incident.tenant.last_name}
+                    {incident.tenant_first_name || ""}{" "}
+                    {incident.tenant_last_name || ""}
                   </td>
                   <td>
-                    {new Date(incident.date_posted).toLocaleDateString("en-GB")}
+                    {new Date(incident.created_at).toLocaleDateString("en-GB")}
                   </td>
                   <td>
                     <span
                       className={
-                        "incident-severity severity-" + incident.severity
+                        "incident-severity severity-" +
+                        getProgressColor(incident.severity)
                       }
                     >
-                      {incident.severity === "red"
-                        ? "High"
-                        : incident.severity === "yellow"
-                        ? "Medium"
-                        : "Low"}
+                      {incident.severity}
                     </span>
                   </td>
-                  <td
-                    onClick={(e) => e.stopPropagation()}
-                  >
+                  <td onClick={(e) => e.stopPropagation()}>
                     <select
                       className={
                         "incident-progress progress-" +
-                        progressOptions.find(
-                          (opt) => opt.value === incident.progress
-                        )?.color
+                        getProgressColor(incident.progress)
                       }
                       value={incident.progress}
                       onChange={(e) =>
@@ -155,52 +160,39 @@ export default function Incidents() {
               </button>
               <h3>{selectedIncident.title}</h3>
               <div className="incident-modal-section">
-                <span className="incident-severity severity-"
-                  style={{
-                    background:
-                      selectedIncident.severity === "red"
-                        ? "#fee2e2"
-                        : selectedIncident.severity === "yellow"
-                        ? "#fef9c3"
-                        : "#dcfce7",
-                    color:
-                      selectedIncident.severity === "red"
-                        ? "#b91c1c"
-                        : selectedIncident.severity === "yellow"
-                        ? "#92400e"
-                        : "#166534",
-                  }}
+                <span
+                  className={
+                    "incident-severity severity-" +
+                    getProgressColor(selectedIncident.severity)
+                  }
                 >
-                  {selectedIncident.severity === "red"
-                    ? "High"
-                    : selectedIncident.severity === "yellow"
-                    ? "Medium"
-                    : "Low"}
+                  {selectedIncident.severity}
                 </span>
                 <span style={{ marginLeft: 16 }}>
                   <b>Progress:</b> {selectedIncident.progress}
                 </span>
               </div>
               <div className="incident-modal-section">
-                <b>Property:</b> {selectedIncident.property.address}
+                <b>Property:</b> {selectedIncident.property_address}
               </div>
               <div className="incident-modal-section">
-                <b>Tenant:</b> {selectedIncident.tenant.first_name}{" "}
-                {selectedIncident.tenant.last_name}
+                <b>Tenant:</b> {selectedIncident.tenant_first_name || ""}{" "}
+                {selectedIncident.tenant_last_name || ""}
               </div>
               <div className="incident-modal-section">
                 <b>Date Posted:</b>{" "}
-                {new Date(selectedIncident.date_posted).toLocaleDateString("en-GB")}
+                {new Date(selectedIncident.created_at).toLocaleDateString("en-GB")}
               </div>
               <div className="incident-modal-description">
                 <b>Description:</b>
                 <div style={{ marginTop: 6 }}>{selectedIncident.description}</div>
               </div>
               <button
-                className="delete-incident-btn"
+                className="add-tenant-btn"
+                style={{ background: "#d9534f", color: "#fff", marginTop: 18 }}
                 onClick={() => handleDeleteIncident(selectedIncident.id)}
               >
-                Delete Incident
+                Delete Request
               </button>
             </div>
           </div>

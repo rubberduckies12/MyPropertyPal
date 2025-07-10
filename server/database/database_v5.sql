@@ -148,7 +148,9 @@ CREATE TABLE IF NOT EXISTS incident (
     title VARCHAR(50) NOT NULL,
     description VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    closed BOOLEAN NOT NULL DEFAULT FALSE
+    closed BOOLEAN NOT NULL DEFAULT FALSE,
+    tenant_id INT REFERENCES tenant(id) ON DELETE SET NULL,
+    progress VARCHAR(20) NOT NULL DEFAULT 'Not Started'
 );
 
 -- ===== Calendar Event Status =====

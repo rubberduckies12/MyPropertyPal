@@ -38,6 +38,11 @@ function Sidebar() {
           <NavLink to="/dashboard" className="dashboard-nav-link">Dashboard</NavLink>
         </div>
 
+        {/* Messages */}
+        <div className="sidebar-section">
+          <NavLink to="/messages" className="dashboard-nav-link">Messages</NavLink>
+        </div>
+
         {/* Property Manager */}
         <div className="sidebar-section">
           <button
@@ -53,7 +58,7 @@ function Sidebar() {
               <NavLink to="/properties" className="dashboard-nav-link">Properties</NavLink>
               <NavLink to="/tenants" className="dashboard-nav-link">Tenants</NavLink>
               <NavLink to="/incidents" className="dashboard-nav-link">Maintenance</NavLink>
-              <NavLink to="/contractors" className="dashboard-nav-link">Contractors</NavLink> {/* <-- This links to contractors.jsx */}
+              <NavLink to="/contractors" className="dashboard-nav-link">Contractors</NavLink>
             </div>
           )}
         </div>

@@ -3,6 +3,69 @@ const router = express.Router();
 const crypto = require("crypto");
 const { sendTenantInviteEmail } = require("../utils/mailer");
 
+// Utility: Calculate next due date based on schedule
+function getNextDueDate(currentDueDate, scheduleType, scheduleValue) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let nextDue = currentDueDate ? new Date(currentDueDate) : new Date(today);
+  nextDue.setHours(0, 0, 0, 0);
+
+  if (scheduleType === "monthly") {
+    let dueDay = Number(scheduleValue);
+    if (!dueDay) dueDay = 1;
+    nextDue.setDate(dueDay);
+    if (nextDue < today) {
+      nextDue.setMonth(nextDue.getMonth() + 1);
+      nextDue.setDate(dueDay);
+    }
+    nextDue.setHours(12, 0, 0, 0); // Fix: set to noon to avoid UTC bug
+    return nextDue.toISOString().split("T")[0];
+  }
+
+  if (scheduleType === "weekly") {
+    const dueWeekday = Number(scheduleValue);
+    let daysToAdd = (dueWeekday - today.getDay() + 7) % 7;
+    if (daysToAdd === 0 && nextDue < today) daysToAdd = 7;
+    nextDue = new Date(today);
+    nextDue.setDate(today.getDate() + daysToAdd);
+    nextDue.setHours(12, 0, 0, 0); // Fix: set to noon
+    return nextDue.toISOString().split("T")[0];
+  }
+
+  if (scheduleType === "biweekly") {
+    const dueWeekday = Number(scheduleValue);
+    const baseDate = new Date(2024, 0, 1);
+    baseDate.setHours(0, 0, 0, 0);
+    let firstDue = new Date(baseDate);
+    firstDue.setDate(baseDate.getDate() + ((dueWeekday - baseDate.getDay() + 7) % 7));
+    let nextDue = new Date(firstDue);
+    while (nextDue < today) {
+      nextDue.setDate(nextDue.getDate() + 14);
+    }
+    nextDue.setHours(12, 0, 0, 0); // Fix: set to noon
+    return nextDue.toISOString().split("T")[0];
+  }
+
+  if (scheduleType === "last_friday") {
+    function getLastFriday(year, month) {
+      let d = new Date(year, month + 1, 0);
+      while (d.getDay() !== 5) d.setDate(d.getDate() - 1);
+      d.setHours(12, 0, 0, 0); // Fix: set to noon to avoid UTC bug
+      return d;
+    }
+    let lf = getLastFriday(today.getFullYear(), today.getMonth());
+    if (today > lf) {
+      lf = getLastFriday(today.getFullYear(), today.getMonth() + 1);
+    }
+    return lf.toISOString().split("T")[0];
+  }
+
+  // fallback
+  nextDue.setHours(12, 0, 0, 0); // Fix: set to noon
+  return nextDue.toISOString().split("T")[0];
+}
+
 // Get all tenants for the logged-in landlord
 router.get("/", async (req, res) => {
   const pool = req.app.get("pool");
@@ -33,11 +96,11 @@ router.get("/", async (req, res) => {
 
     // Check and update rent_due_date if needed
     for (const tenant of tenantsResult.rows) {
-      if (tenant.rent_due_date && tenant.rent_schedule_type) {
-        const dueDate = new Date(tenant.rent_due_date);
+      if (tenant.rent_schedule_type) {
         const today = new Date();
-        today.setHours(0,0,0,0);
-        if (dueDate < today) {
+        today.setHours(0, 0, 0, 0);
+        const dueDate = tenant.rent_due_date ? new Date(tenant.rent_due_date) : null;
+        if (!dueDate || dueDate < today) {
           const nextDue = getNextDueDate(
             dueDate,
             tenant.rent_schedule_type,
@@ -116,19 +179,8 @@ router.post("/", async (req, res) => {
     );
     const tenantId = tenantResult.rows[0].id;
 
-    // 4. Link tenant to property with rent_amount from frontend (rent_due_date as DATE)
-    let rentDueDate = null;
-    if (rent_schedule_type === "monthly" && rent_due_date) {
-      rentDueDate = rent_due_date;
-    } else if (rent_schedule_type === "last_friday") {
-      // Always calculate last Friday for initial due date
-      const today = new Date();
-      let lf = getLastFriday(today.getFullYear(), today.getMonth());
-      if (today >= lf) {
-        lf = getLastFriday(today.getFullYear(), today.getMonth() + 1);
-      }
-      rentDueDate = lf.toISOString().split("T")[0];
-    }
+    // 4. Link tenant to property with rent_amount and calculated rent_due_date
+    let rentDueDate = getNextDueDate(null, rent_schedule_type, rent_schedule_value);
     await pool.query(
       `INSERT INTO property_tenant (property_id, tenant_id, rent_amount, rent_due_date, rent_schedule_type, rent_schedule_value)
        VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -272,18 +324,9 @@ router.put("/:tenantId", async (req, res) => {
       [first_name, last_name, email, account_id]
     );
 
-    // Update property_tenant info
-    let rentDueDate = null;
-    if (rent_schedule_type === "monthly" && rent_due_date) {
-      rentDueDate = rent_due_date;
-    } else if (rent_schedule_type === "last_friday") {
-      const today = new Date();
-      let lf = getLastFriday(today.getFullYear(), today.getMonth());
-      if (today >= lf) {
-        lf = getLastFriday(today.getFullYear(), today.getMonth() + 1);
-      }
-      rentDueDate = lf.toISOString().split("T")[0];
-    }
+    // Always recalculate rent_due_date for all schedule types
+    let rentDueDate = getNextDueDate(null, rent_schedule_type, rent_schedule_value);
+
     await pool.query(
       `UPDATE property_tenant
        SET property_id = $1,
@@ -301,74 +344,5 @@ router.put("/:tenantId", async (req, res) => {
     res.status(500).json({ error: err.message || "Internal server error" });
   }
 });
-
-// Calculate next due date based on schedule
-function getNextDueDate(currentDueDate, scheduleType, scheduleValue) {
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
-  let nextDue = new Date(currentDueDate);
-  nextDue.setHours(0,0,0,0);
-
-  if (scheduleType === "monthly") {
-    // scheduleValue is day of month (1-31)
-    let dueDay = Number(scheduleValue);
-    if (!dueDay) dueDay = 1;
-    // If current due date is in the past, move to next month
-    while (nextDue <= today) {
-      nextDue.setMonth(nextDue.getMonth() + 1);
-      nextDue.setDate(dueDay);
-    }
-    return nextDue;
-  }
-
-  if (scheduleType === "weekly") {
-    // scheduleValue is weekday (0=Sun, 6=Sat)
-    const dueWeekday = Number(scheduleValue);
-    while (nextDue <= today) {
-      nextDue.setDate(nextDue.getDate() + 1);
-      if (nextDue.getDay() === dueWeekday && nextDue > today) break;
-    }
-    return nextDue;
-  }
-
-  if (scheduleType === "biweekly") {
-    // scheduleValue is weekday (0=Sun, 6=Sat)
-    const dueWeekday = Number(scheduleValue);
-    // Use a fixed base date for the cycle (e.g., Jan 1, 2024)
-    const baseDate = new Date(2024, 0, 1);
-    baseDate.setHours(0,0,0,0);
-    let firstDue = new Date(baseDate);
-    firstDue.setDate(baseDate.getDate() + ((dueWeekday - baseDate.getDay() + 7) % 7));
-    let nextBi = new Date(firstDue);
-    while (nextBi <= today) {
-      nextBi.setDate(nextBi.getDate() + 14);
-    }
-    return nextBi;
-  }
-
-  if (scheduleType === "last_friday") {
-    function getLastFriday(year, month) {
-      let d = new Date(year, month + 1, 0);
-      while (d.getDay() !== 5) d.setDate(d.getDate() - 1);
-      return d;
-    }
-    let lf = getLastFriday(today.getFullYear(), today.getMonth());
-    if (today >= lf) {
-      lf = getLastFriday(today.getFullYear(), today.getMonth() + 1);
-    }
-    return lf;
-  }
-
-  // Default: just return the current due date
-  return nextDue;
-}
-
-// Utility for backend
-function getLastFriday(year, month) {
-  let d = new Date(year, month + 1, 0);
-  while (d.getDay() !== 5) d.setDate(d.getDate() - 1);
-  return d;
-}
 
 module.exports = router;

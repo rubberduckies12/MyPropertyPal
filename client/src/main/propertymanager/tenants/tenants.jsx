@@ -4,17 +4,12 @@ import Sidebar from "../../sidebar/sidebar.jsx";
 
 // Utility: Calculate days until next rent due date
 function daysLeft(tenant) {
-    if (!tenant || !tenant.rent_schedule_type) return "";
+    if (!tenant || !tenant.rent_due_date) return "";
     const today = new Date();
-    today.setHours(0,0,0,0);
-
-    if (tenant.rent_due_date) {
-        const dueDate = new Date(tenant.rent_due_date);
-        dueDate.setHours(0,0,0,0);
-        return Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-    }
-
-    return "";
+    today.setHours(0, 0, 0, 0);
+    const dueDate = new Date(tenant.rent_due_date);
+    dueDate.setHours(0, 0, 0, 0);
+    return Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
 }
 
 // Utility: Get the last Friday of a given month/year
@@ -26,66 +21,11 @@ function getLastFriday(year, month) {
     return d;
 }
 
-// Utility: Get the next due date as a string for the table
+// Utility: Get the next due date as a string for the table (always use stored value)
 function getNextDueDate(tenant) {
-    if (!tenant || !tenant.rent_schedule_type) return "";
-    if (tenant.rent_schedule_type === "last_friday") {
-        // Always calculate, don't trust rent_due_date for display
-        const today = new Date();
-        let nextDue = getLastFriday(today.getFullYear(), today.getMonth());
-        if (today > nextDue) {
-            nextDue = getLastFriday(today.getFullYear(), today.getMonth() + 1);
-        }
-        return nextDue.toLocaleDateString();
-    }
-    if (tenant.rent_due_date) {
-        const dueDate = new Date(tenant.rent_due_date);
-        return dueDate.toLocaleDateString();
-    }
-    // Fallback logic if rent_due_date is not set
-    const today = new Date();
-    today.setHours(0,0,0,0);
-
-    if (tenant.rent_schedule_type === "monthly") {
-        const dueDay = Number(tenant.rent_schedule_value);
-        if (!dueDay) return "";
-        let nextDue = new Date(today);
-        nextDue.setDate(dueDay);
-        if (today.getDate() > dueDay) nextDue.setMonth(nextDue.getMonth() + 1);
-        if (nextDue.getDate() !== dueDay) nextDue.setMonth(nextDue.getMonth() + 1, dueDay);
-        return nextDue.toLocaleDateString();
-    }
-
-    if (tenant.rent_schedule_type === "weekly") {
-        const dueWeekday = Number(tenant.rent_schedule_value);
-        const todayWeekday = today.getDay();
-        let days = (dueWeekday - todayWeekday + 7) % 7;
-        if (days === 0) days = 7;
-        let nextDue = new Date(today);
-        nextDue.setDate(today.getDate() + days);
-        return nextDue.toLocaleDateString();
-    }
-
-    if (tenant.rent_schedule_type === "biweekly") {
-        const dueWeekday = Number(tenant.rent_schedule_value);
-        const baseDate = new Date(2024, 0, 1); // Jan 1, 2024
-        baseDate.setHours(0,0,0,0);
-        let firstDue = new Date(baseDate);
-        firstDue.setDate(baseDate.getDate() + ((dueWeekday - baseDate.getDay() + 7) % 7));
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        let diff = Math.floor((today - firstDue) / (1000 * 60 * 60 * 24));
-        let periods = Math.ceil(diff / 14);
-        if (diff < 0) periods = 0;
-        let nextDue = new Date(firstDue);
-        nextDue.setDate(firstDue.getDate() + periods * 14);
-        if (nextDue < today) {
-            nextDue.setDate(nextDue.getDate() + 14);
-        }
-        return nextDue.toLocaleDateString();
-    }
-
-    return "";
+    if (!tenant || !tenant.rent_due_date) return "";
+    const dueDate = new Date(tenant.rent_due_date);
+    return dueDate.toLocaleDateString();
 }
 
 export default function Tenants() {
@@ -176,8 +116,8 @@ export default function Tenants() {
                     rent_amount: addForm.rent_amount,
                     rent_schedule_type: addForm.rent_schedule_type,
                     rent_schedule_value: addForm.rent_schedule_value !== "" ? addForm.rent_schedule_value : null,
-                }),
-            });
+                })
+});
             if (!res.ok) {
                 const data = await res.json();
                 throw new Error(data.error || "Failed to add tenant");

@@ -17,7 +17,10 @@ import Finances from './main/financialmanager/finances/finances.jsx';
 import Documents from './main/financialmanager/documents/documents.jsx';
 import Compliance from './main/legalmanager/compliance/compliance.jsx';
 import TenantHome from './main/tenant_portal/home/home.jsx';
+import MaintenanceRequestsTenant from './main/tenant_portal/maintenanceRequestsTenant/mrt.jsx';
 import ProtectedRoute from './ProtectedRoute';
+import Messages from './main/messages/messages.jsx';
+import Tmessages from './main/tenant_portal/home/tenantMessages/Tmessages.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -36,7 +39,7 @@ root.render(
           </ProtectedRoute>
         } />
         <Route path="/chatbot" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
+          <ProtectedRoute allowedRoles={["landlord", "tenant"]}>
             <Chatbot />
           </ProtectedRoute>
         } />
@@ -80,11 +83,26 @@ root.render(
             <Compliance />
           </ProtectedRoute>
         } />
+        <Route path="/messages" element={
+          <ProtectedRoute allowedRoles={["landlord"]}>
+            <Messages />
+          </ProtectedRoute>
+        } />
 
-        {/* Tenant App page (protected) */}
+        {/* Tenant App pages (protected) */}
         <Route path="/tenant-home" element={
           <ProtectedRoute allowedRoles={["tenant"]}>
             <TenantHome />
+          </ProtectedRoute>
+        } />
+        <Route path="/tenant-maintenance" element={
+          <ProtectedRoute allowedRoles={["tenant"]}>
+            <MaintenanceRequestsTenant />
+          </ProtectedRoute>
+        } />
+        <Route path="/tenant-messages" element={
+          <ProtectedRoute allowedRoles={["tenant"]}>
+            <Tmessages />
           </ProtectedRoute>
         } />
       </Routes>

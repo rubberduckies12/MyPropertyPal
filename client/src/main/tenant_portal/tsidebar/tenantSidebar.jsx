@@ -49,7 +49,7 @@ function TenantSidebar() {
         </div>
         {/* AI Chatbot */}
         <div className="sidebar-section">
-          <NavLink to="/tenant-chatbot" className="dashboard-nav-link">AI Chatbot</NavLink>
+          <NavLink to="/Chatbot" className="dashboard-nav-link">AI Chatbot</NavLink>
         </div>
       </nav>
       <span
