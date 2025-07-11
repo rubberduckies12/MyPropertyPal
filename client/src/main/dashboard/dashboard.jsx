@@ -196,7 +196,12 @@ function Dashboard() {
             <h3>Tenants</h3>
             <div className="dashboard-card-main">{tenantCount}</div>
             <div className="dashboard-card-label">Current Tenants</div>
-            <button className="dashboard-btn">View Tenants</button>
+            <button
+              className="dashboard-btn"
+              onClick={() => navigate('/tenants')}
+            >
+              View Tenants
+            </button>
           </div>
 
           {/* Income Card */}
