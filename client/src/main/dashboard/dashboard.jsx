@@ -3,12 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import './dashboard.css';
 import Sidebar from '../sidebar/sidebar.jsx';
 
+// Hardcoded backend URLs
 const API_BASE = "http://localhost:5001";
+const MAINTENANCE_URL = "http://localhost:5001/api/maintenance";
+const MESSAGES_CONTACTS_URL = "http://localhost:5001/api/messages/contacts";
+const TENANTS_COUNT_URL = "http://localhost:5001/api/tenants/count";
+const DASHBOARD_USER_URL = "http://localhost:5001/api/dashboard/user";
+const DASHBOARD_PROPERTIES_URL = "http://localhost:5001/api/dashboard/properties";
+const DASHBOARD_MESSAGES_URL = "http://localhost:5001/api/dashboard/messages";
+const TENANTS_URL = "http://localhost:5001/api/tenants";
 
 // --- API Calls ---
 async function fetchUser() {
   const token = localStorage.getItem('token');
-  const res = await fetch(`${API_BASE}/api/dashboard/user`, {
+  const res = await fetch(DASHBOARD_USER_URL, {
     headers: { Authorization: token ? `Bearer ${token}` : "" }
   });
   if (!res.ok) throw new Error("Failed to fetch user");
@@ -17,30 +25,47 @@ async function fetchUser() {
 
 async function fetchTenantCount() {
   const token = localStorage.getItem('token');
-  const res = await fetch(`${API_BASE}/api/tenants/count`, {
+  const res = await fetch(TENANTS_COUNT_URL, {
     headers: { Authorization: token ? `Bearer ${token}` : "" }
   });
   const data = await res.json();
   return data.count;
 }
 
-async function fetchMessages() {
+// Fetch contacts for mini contacts list in messages card
+async function fetchContacts() {
   const token = localStorage.getItem('token');
-  const res = await fetch(`${API_BASE}/api/dashboard/messages`, {
+  const res = await fetch(MESSAGES_CONTACTS_URL, {
+    headers: { Authorization: token ? `Bearer ${token}` : "" }
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.contacts || [];
+}
+
+// Fetch unread messages for each contact
+async function fetchUnreadMessages() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(DASHBOARD_MESSAGES_URL, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  if (!res.ok) throw new Error("Failed to fetch messages");
+  if (!res.ok) return [];
   return res.json();
 }
 
 async function fetchIncidents() {
-  const res = await fetch(`${API_BASE}/api/dashboard/incidents`);
-  return res.json();
+  const token = localStorage.getItem('token');
+  const res = await fetch(MAINTENANCE_URL, {
+    headers: { Authorization: token ? `Bearer ${token}` : "" }
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.incidents || [];
 }
 
 async function fetchProperties() {
   const token = localStorage.getItem('token');
-  const res = await fetch(`${API_BASE}/api/dashboard/properties`, {
+  const res = await fetch(DASHBOARD_PROPERTIES_URL, {
     headers: { Authorization: token ? `Bearer ${token}` : "" }
   });
   if (!res.ok) throw new Error("Failed to fetch properties");
@@ -49,7 +74,7 @@ async function fetchProperties() {
 
 async function fetchTenants() {
   const token = localStorage.getItem('token');
-  const res = await fetch(`${API_BASE}/api/tenants`, {
+  const res = await fetch(TENANTS_URL, {
     headers: { Authorization: token ? `Bearer ${token}` : "" }
   });
   const data = await res.json();
@@ -68,16 +93,29 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// Utility to get compliance events that are due soon (within 30 days)
+function getUpcomingComplianceEvents(deadlines) {
+  const today = new Date();
+  return (Array.isArray(deadlines) ? deadlines : []).filter(event => {
+    if (!event.due_date) return false;
+    const dueDate = new Date(event.due_date);
+    const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 && diffDays <= 30;
+  });
+}
+
 // --- Main Dashboard Component ---
 function Dashboard() {
   const [showYearly, setShowYearly] = useState(false);
   const [user, setUser] = useState(null);
   const [tenantCount, setTenantCount] = useState(0);
   const [tenants, setTenants] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [messages, setMessages] = useState([]);
   const [incidents, setIncidents] = useState([]);
   const [properties, setProperties] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [deadlines, setDeadlines] = useState([]);
 
   const navigate = useNavigate();
 
@@ -86,10 +124,19 @@ function Dashboard() {
       setUser(await fetchUser());
       setTenantCount(await fetchTenantCount());
       setTenants(await fetchTenants());
-      setMessages(await fetchMessages());
+      setContacts(await fetchContacts());
+      setMessages(await fetchUnreadMessages());
       setIncidents(await fetchIncidents());
       setProperties(await fetchProperties());
       // setUpcomingEvents(await fetchEvents()); // Uncomment when backend is ready
+
+      // Fetch compliance deadlines
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_BASE}/api/compliance/events`, {
+        headers: { Authorization: token ? `Bearer ${token}` : "" }
+      });
+      const data = await res.json();
+      setDeadlines(Array.isArray(data) ? data : []);
     }
     loadData();
   }, []);
@@ -119,9 +166,12 @@ function Dashboard() {
 
   // Recent incidents (show 2 most recent)
   const sortedIncidents = [...incidents].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
   const recentIncidents = sortedIncidents.slice(0, 2);
+
+  // Get upcoming compliance events (due in next 30 days)
+  const upcomingCompliance = getUpcomingComplianceEvents(deadlines);
 
   return (
     <div className="dashboard-container">
@@ -175,17 +225,32 @@ function Dashboard() {
           {/* Messages Card */}
           <div className="dashboard-card dashboard-card-tall">
             <h3>Messages</h3>
-            <div className="dashboard-card-main">{messages.length}</div>
+            <div className="dashboard-card-main">
+              {contacts.reduce((sum, c) => sum + (Number(c.unread_count) || 0), 0)}
+            </div>
             <div className="dashboard-card-label">New Messages</div>
             <div className="dashboard-messages-list">
-              {messages.slice(0, 3).map((msg, index) => (
-                <div key={index} className="dashboard-message-item">
-                  <strong>{msg.fromName || msg.fromUserId}</strong>
-                  <p>{msg.content}</p>
-                </div>
-              ))}
+              {contacts.length === 0 ? (
+                <div className="dashboard-message-empty">No new messages.</div>
+              ) : (
+                contacts.slice(0, 3).map((c, idx) => (
+                  <div key={idx} className="dashboard-message-item">
+                    <strong>{c.display_name}</strong>
+                    <span className="dashboard-message-property">
+                      {c.property_address ? `(${c.property_address})` : ""}
+                    </span>
+                    {Number(c.unread_count) > 0 && (
+                      <span className="dashboard-message-unread">
+                        {Number(c.unread_count)} new
+                      </span>
+                    )}
+                  </div>
+                ))
+              )}
             </div>
-            <button className="dashboard-btn">View All Messages</button>
+            <button className="dashboard-btn" onClick={() => navigate('/messages')}>
+              View All Messages
+            </button>
           </div>
 
           {/* Properties Card */}
@@ -201,55 +266,78 @@ function Dashboard() {
             </button>
           </div>
 
-          {/* Upcoming Events Card */}
+          {/* Upcoming Events Card (now shows compliance deadlines) */}
           <div className="dashboard-card">
-            <h3>Upcoming Events</h3>
+            <h3>Upcoming Compliance Deadlines</h3>
             <div>
-              {(!Array.isArray(upcomingEvents) || upcomingEvents.length === 0) ? (
-                <div className="dashboard-message-empty">No upcoming events.</div>
+              {upcomingCompliance.length === 0 ? (
+                <div className="dashboard-message-empty">
+                  You're all caught up!
+                </div>
               ) : (
-                upcomingEvents.slice(0, 3).map(event => (
-                  <div key={event.id || event.title} className="dashboard-event">
-                    <div className="dashboard-event-title">{event.title}</div>
-                    <div className="dashboard-event-date">{event.date}</div>
-                    <div className="dashboard-event-desc">{event.description}</div>
+                upcomingCompliance.slice(0, 3).map(event => (
+                  <div key={event.id || event.name} className="dashboard-event">
+                    <div className="dashboard-event-title">{event.name}</div>
+                    <div className="dashboard-event-date">
+                      Due: {new Date(event.due_date).toLocaleDateString("en-GB")}
+                    </div>
+                    <div className="dashboard-event-desc">
+                      {event.description}
+                    </div>
+                    <div className="dashboard-event-property">
+                      Property: {event.property_name}
+                    </div>
                   </div>
                 ))
               )}
             </div>
-            <button className="dashboard-btn">View Calender</button>
+            <button className="dashboard-btn" onClick={() => navigate('/compliance')}>
+              View All Compliance
+            </button>
           </div>
 
-          {/* Recent Incidents (Wide Card) */}
+          {/* Maintenance Requests (Wide Card) */}
           <div className="dashboard-card dashboard-card-wide">
             <h3>Maintenance Requests</h3>
-            <div className="dashboard-activity-list">
+            <div className="dashboard-activity-table">
               {recentIncidents.length === 0 ? (
                 <div className="dashboard-activity-empty">
                   No recent incidents to display.
                 </div>
               ) : (
-                recentIncidents.map(incident => (
-                  <div key={incident.incidentId} className="dashboard-incident">
-                    <div className="dashboard-incident-row">
-                      <span className={`dashboard-severity ${severityColors[incident.severity] || ''}`}>
-                        {incident.severity ? capitalize(incident.severity) : '-'}
-                      </span>
-                      <span className="dashboard-status">
-                        {incident.status ? capitalize(incident.status) : '-'}
-                      </span>
-                    </div>
-                    <div className="dashboard-incident-prop">
-                      {getPropertyLabel(incident.propertyId)}
-                    </div>
-                    <div className="dashboard-incident-desc">
-                      {incident.description}
-                    </div>
-                  </div>
-                ))
+                <table className="maintenance-table">
+                  <thead>
+                    <tr>
+                      <th>Property</th>
+                      <th>Description</th>
+                      <th>Severity</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentIncidents.map(incident => (
+                      <tr key={incident.id || incident.incidentId}>
+                        <td>{incident.property_address || getPropertyLabel(incident.propertyId)}</td>
+                        <td>{incident.description}</td>
+                        <td>
+                          <span className={`dashboard-severity ${severityColors[incident.severity] || ''}`}>
+                            {incident.severity ? capitalize(incident.severity) : '-'}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="dashboard-status">
+                            {incident.progress ? capitalize(incident.progress) : '-'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
             </div>
-            <button className="dashboard-btn">View All Incidents</button>
+            <button className="dashboard-btn" onClick={() => navigate('/incidents')}>
+              View All Maintenance Requests
+            </button>
           </div>
         </div>
       </main>

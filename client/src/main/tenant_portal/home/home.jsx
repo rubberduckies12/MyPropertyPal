@@ -14,13 +14,14 @@ async function fetchTenantRent() {
   return res.json();
 }
 
-async function fetchTenantMessages() {
+async function fetchContacts() {
   const token = localStorage.getItem("token");
-  const res = await fetch(`${API_BASE}/api/tenant/messages`, {
+  const res = await fetch(`${API_BASE}/api/messages/contacts`, {
     headers: { Authorization: token ? `Bearer ${token}` : "" }
   });
   if (!res.ok) return [];
-  return res.json();
+  const data = await res.json();
+  return data.contacts || [];
 }
 
 async function fetchTenantIncidents() {
@@ -43,7 +44,7 @@ async function fetchTenantUser() {
 
 export default function TenantHome() {
   const [rent, setRent] = useState({ rent_amount: 0, rent_due_date: null });
-  const [messages, setMessages] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [incidents, setIncidents] = useState([]);
   const [user, setUser] = useState(null);
 
@@ -51,7 +52,7 @@ export default function TenantHome() {
     async function loadData() {
       const rentData = await fetchTenantRent();
       setRent(rentData);
-      setMessages(await fetchTenantMessages());
+      setContacts(await fetchContacts());
       setIncidents(await fetchTenantIncidents());
       setUser(await fetchTenantUser());
     }
@@ -96,7 +97,7 @@ export default function TenantHome() {
                 <div key={idx} className="tenant-dashboard-list-item">
                   <strong>{incident.title || "Request"}</strong>
                   <span>
-                    {incident.status ? incident.status : "Open"}
+                    {incident.progress ? incident.progress : "Open"}
                   </span>
                 </div>
               ))}
@@ -110,20 +111,32 @@ export default function TenantHome() {
           {/* Messages Card */}
           <div className="tenant-dashboard-card">
             <h3>Messages</h3>
-            <div className="tenant-dashboard-card-main">{messages.length}</div>
-            <div className="tenant-dashboard-card-label">Recent Messages</div>
+            <div className="tenant-dashboard-card-main">
+              {contacts.reduce((sum, c) => sum + (Number(c.unread_count) || 0), 0)}
+            </div>
+            <div className="tenant-dashboard-card-label">New Messages</div>
             <div className="tenant-dashboard-list">
-              {messages.slice(0, 3).map((msg, idx) => (
-                <div key={idx} className="tenant-dashboard-list-item">
-                  <strong>{msg.fromName || "Landlord"}</strong>
-                  <span>{msg.content}</span>
-                </div>
-              ))}
-              {messages.length === 0 && (
-                <div className="tenant-dashboard-list-empty">No messages.</div>
+              {contacts.length === 0 ? (
+                <div className="tenant-dashboard-list-empty">No new messages.</div>
+              ) : (
+                contacts.slice(0, 3).map((c, idx) => (
+                  <div key={idx} className="tenant-dashboard-list-item">
+                    <strong>{c.display_name}</strong>
+                    <span className="tenant-dashboard-message-property">
+                      {c.property_address ? `(${c.property_address})` : ""}
+                    </span>
+                    {Number(c.unread_count) > 0 && (
+                      <span className="tenant-dashboard-message-unread">
+                        {Number(c.unread_count)} new
+                      </span>
+                    )}
+                  </div>
+                ))
               )}
             </div>
-            <button className="tenant-dashboard-btn">View All Messages</button>
+            <button className="tenant-dashboard-btn" onClick={() => window.location.href = '/tenant-messages'}>
+              View All Messages
+            </button>
           </div>
         </div>
       </main>

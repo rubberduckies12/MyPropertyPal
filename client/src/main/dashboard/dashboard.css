@@ -201,23 +201,36 @@
    Messages Section
 ================================================== */
 .dashboard-messages-list {
-  margin-top: 8px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .dashboard-message-item {
-  margin-bottom: 8px;
+  background: #f7f8fa;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
-.dashboard-message-item strong {
-  display: block;
-  font-size: 1rem;
-  color: var(--primary-dark);
+.dashboard-message-property {
+  font-size: 0.9em;
+  color: #2563eb;
+  margin-left: 6px;
 }
 
-.dashboard-message-item p {
-  font-size: 0.95rem;
-  color: var(--text);
-  margin: 0;
+.dashboard-message-unread {
+  background: #2563eb;
+  color: #fff;
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 0.85em;
+  position: absolute;
+  top: 8px;
+  right: 12px;
 }
 
 /* ==================================================
@@ -260,7 +273,7 @@
 }
 
 .dashboard-status {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #374151;
 }
 
@@ -293,33 +306,52 @@
   font-size: 1rem;
 }
 
-/* ==================================================
-   Responsive Adjustments
-================================================== */
-@media (max-width: 1024px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .dashboard-card-tall {
-    grid-column: auto;
-    grid-row: auto;
-  }
-  .dashboard-card-wide {
-    grid-column: 1 / span 2;
-  }
+
+.dashboard-activity-table {
+  width: 100%;
+  margin-bottom: 16px;
+  overflow-x: auto;
 }
 
-@media (max-width: 768px) {
-  .dashboard-container {
-    flex-direction: column;
-  }
-  .dashboard-main {
-    margin-left: 0;
-  }
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .dashboard-card-wide {
-    grid-column: 1;
-  }
+.maintenance-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f7f8fa;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.maintenance-table th,
+.maintenance-table td {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 0.98rem;
+  border-bottom: 1px solid var(--border);
+  border-right: none;
+}
+
+.maintenance-table th {
+  background: #e5e7eb;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.maintenance-table tr:last-child td {
+  border-bottom: none;
+}
+
+.maintenance-table td {
+  vertical-align: middle;
+}
+
+/* Minimal Compliance Card Styles */
+.dashboard-card .dashboard-event {
+  background: #f7f8fa;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }

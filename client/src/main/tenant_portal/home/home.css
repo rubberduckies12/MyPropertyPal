@@ -82,28 +82,36 @@
 }
 
 .tenant-dashboard-list {
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .tenant-dashboard-list-item {
+  background: #f7f8fa;
+  border-radius: 10px;
+  padding: 8px 12px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.98rem;
-  margin-bottom: 7px;
-  color: var(--tenant-text);
+  flex-direction: column;
+  position: relative;
 }
 
-.tenant-dashboard-list-item strong {
-  color: var(--tenant-blue);
-  font-weight: 600;
+.tenant-dashboard-message-property {
+  font-size: 0.9em;
+  color: #2563eb;
+  margin-left: 6px;
 }
 
-.tenant-dashboard-list-empty {
-  color: #9ca3af;
-  font-size: 0.98rem;
-  margin-top: 8px;
+.tenant-dashboard-message-unread {
+  background: #2563eb;
+  color: #fff;
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 0.85em;
+  position: absolute;
+  top: 8px;
+  right: 12px;
 }
 
 .tenant-dashboard-btn {

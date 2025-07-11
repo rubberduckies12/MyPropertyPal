@@ -2,24 +2,28 @@ import React, { useState, useEffect } from "react";
 import "./incidents.css";
 import Sidebar from "../../sidebar/sidebar.jsx";
 
-const progressOptions = [
-  { value: "Not Started", color: "red" },
-  { value: "In Progress", color: "yellow" },
-  { value: "Solved", color: "green" },
-];
+function getSeverityColor(severity) {
+  if (!severity) return "";
+  const s = severity.toLowerCase();
+  if (s === "high" || s === "red") return "severity-red";
+  if (s === "medium" || s === "yellow") return "severity-yellow";
+  if (s === "low" || s === "green") return "severity-green";
+  return "";
+}
 
 function getProgressColor(progress) {
-  if (progress === "Not Started") return "red";
-  if (progress === "In Progress") return "yellow";
-  if (progress === "Solved") return "green";
-  return "gray";
+  if (!progress) return "";
+  const p = progress.toLowerCase();
+  if (p === "not started" || p === "red") return "progress-red";
+  if (p === "in progress" || p === "yellow") return "progress-yellow";
+  if (p === "solved" || p === "green") return "progress-green";
+  return "";
 }
 
 export default function Incidents() {
   const [incidents, setIncidents] = useState([]);
   const [selectedIncident, setSelectedIncident] = useState(null);
 
-  // Fetch all maintenance requests for landlord
   useEffect(() => {
     const token = localStorage.getItem("token");
     fetch("http://localhost:5001/api/maintenance/landlord", {
@@ -29,7 +33,6 @@ export default function Incidents() {
       .then((data) => setIncidents(data.incidents || []));
   }, []);
 
-  // Update progress in backend
   const handleProgressChange = async (id, newProgress) => {
     const token = localStorage.getItem("token");
     try {
@@ -45,7 +48,6 @@ export default function Incidents() {
         }
       );
       if (!res.ok) throw new Error("Failed to update progress");
-      // Refresh incidents after update
       const updated = await res.json();
       setIncidents((prev) =>
         prev.map((inc) =>
@@ -105,41 +107,43 @@ export default function Incidents() {
                   style={{ cursor: "pointer" }}
                   onClick={() => handleRowClick(incident)}
                 >
-                  <td>{incident.title}</td>
-                  <td>{incident.property_address}</td>
                   <td>
-                    {incident.tenant_first_name || ""}{" "}
-                    {incident.tenant_last_name || ""}
+                    <div className="incident-title-cell">
+                      <span className="incident-title">{incident.title}</span>
+                      <span className="incident-id">#{incident.id}</span>
+                    </div>
                   </td>
                   <td>
-                    {new Date(incident.created_at).toLocaleDateString("en-GB")}
+                    <span className="incident-property">{incident.property_address}</span>
+                  </td>
+                  <td>
+                    <span className="incident-tenant">
+                      {incident.tenant_first_name || ""} {incident.tenant_last_name || ""}
+                    </span>
+                  </td>
+                  <td>
+                    <span className="incident-date">
+                      {new Date(incident.created_at).toLocaleDateString("en-GB")}
+                    </span>
                   </td>
                   <td>
                     <span
-                      className={
-                        "incident-severity severity-" +
-                        getProgressColor(incident.severity)
-                      }
+                      className={`incident-severity bubble ${getSeverityColor(incident.severity)}`}
                     >
                       {incident.severity}
                     </span>
                   </td>
                   <td onClick={(e) => e.stopPropagation()}>
                     <select
-                      className={
-                        "incident-progress progress-" +
-                        getProgressColor(incident.progress)
-                      }
+                      className={`incident-progress-select bubble ${getProgressColor(incident.progress)}`}
                       value={incident.progress}
                       onChange={(e) =>
                         handleProgressChange(incident.id, e.target.value)
                       }
                     >
-                      {progressOptions.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.value}
-                        </option>
-                      ))}
+                      <option value="Not Started">Not Started</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Solved">Solved</option>
                     </select>
                   </td>
                 </tr>
@@ -148,7 +152,6 @@ export default function Incidents() {
           </table>
         </div>
 
-        {/* Modal */}
         {selectedIncident && (
           <div className="incident-modal-backdrop" onClick={handleCloseModal}>
             <div
@@ -158,38 +161,36 @@ export default function Incidents() {
               <button className="modal-close" onClick={handleCloseModal}>
                 &times;
               </button>
-              <h3>{selectedIncident.title}</h3>
+              <h3 className="incident-modal-title">{selectedIncident.title}</h3>
               <div className="incident-modal-section">
                 <span
-                  className={
-                    "incident-severity severity-" +
-                    getProgressColor(selectedIncident.severity)
-                  }
+                  className={`incident-severity bubble ${getSeverityColor(selectedIncident.severity)}`}
                 >
                   {selectedIncident.severity}
                 </span>
                 <span style={{ marginLeft: 16 }}>
-                  <b>Progress:</b> {selectedIncident.progress}
+                  <b>Progress:</b>{" "}
+                  <span className={`incident-progress bubble ${getProgressColor(selectedIncident.progress)}`}>
+                    {selectedIncident.progress}
+                  </span>
                 </span>
               </div>
               <div className="incident-modal-section">
-                <b>Property:</b> {selectedIncident.property_address}
+                <b>Property:</b> <span className="incident-property">{selectedIncident.property_address}</span>
               </div>
               <div className="incident-modal-section">
-                <b>Tenant:</b> {selectedIncident.tenant_first_name || ""}{" "}
-                {selectedIncident.tenant_last_name || ""}
+                <b>Tenant:</b> <span className="incident-tenant">{selectedIncident.tenant_first_name || ""} {selectedIncident.tenant_last_name || ""}</span>
               </div>
               <div className="incident-modal-section">
                 <b>Date Posted:</b>{" "}
-                {new Date(selectedIncident.created_at).toLocaleDateString("en-GB")}
+                <span className="incident-date">{new Date(selectedIncident.created_at).toLocaleDateString("en-GB")}</span>
               </div>
               <div className="incident-modal-description">
                 <b>Description:</b>
                 <div style={{ marginTop: 6 }}>{selectedIncident.description}</div>
               </div>
               <button
-                className="add-tenant-btn"
-                style={{ background: "#d9534f", color: "#fff", marginTop: 18 }}
+                className="delete-incident-btn"
                 onClick={() => handleDeleteIncident(selectedIncident.id)}
               >
                 Delete Request

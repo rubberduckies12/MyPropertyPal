@@ -21,6 +21,7 @@ import MaintenanceRequestsTenant from './main/tenant_portal/maintenanceRequestsT
 import ProtectedRoute from './ProtectedRoute';
 import Messages from './main/messages/messages.jsx';
 import Tmessages from './main/tenant_portal/home/tenantMessages/Tmessages.jsx';
+import Tai from './main/tenant_portal/TenantAi/Tai.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -103,6 +104,11 @@ root.render(
         <Route path="/tenant-messages" element={
           <ProtectedRoute allowedRoles={["tenant"]}>
             <Tmessages />
+          </ProtectedRoute>
+        } />
+        <Route path="/tenant-ai" element={
+          <ProtectedRoute allowedRoles={["tenant"]}>
+            <Tai />
           </ProtectedRoute>
         } />
       </Routes>
