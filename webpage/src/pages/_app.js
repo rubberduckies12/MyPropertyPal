@@ -9,6 +9,7 @@ import "../styles/privacy/privacy.css";
 import "../styles/header/header.css";
 import "../styles/footer/footer.css";
 import "../styles/tos/tos.css";
+import "../styles/landing/landing.css";
 
 export default function MyApp({ Component, pageProps }) {
   return (
