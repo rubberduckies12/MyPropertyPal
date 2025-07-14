@@ -65,7 +65,7 @@ function FeatureCarousel() {
 			<div className={styles["features-carousel-track"]}>
 				{getVisible().map((feature, idx) => (
 					<div
-						className={`${styles["feature-card"]} ${styles["carousel-card"]} ${
+						className={`${styles["carousel-card"]} ${
 							idx === 1 ? styles["active"] : styles["faded"]
 						}`}
 						key={feature.title}
@@ -167,7 +167,7 @@ const Landing = () => {
 					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
 				>
 					<h2 className={styles["landing-card-title"]}>Why Choose MyPropertyPal?</h2>
-					<p className={styles["landing-card-content"]}>
+					<p className={styles["why-paragraph"]}>
 						Managing rental properties in the UK can be stressful, time-consuming,
 						and overwhelming. From chasing late rent payments and dealing with
 						unreliable contractors to keeping on top of complex tax rules and
@@ -187,7 +187,7 @@ const Landing = () => {
 					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
 				>
 					<h2 className={styles["landing-card-title"]}>How It Works</h2>
-					<ol className={styles["landing-card-list"]}>
+					<ol className="how-it-works-list">
 						<li>
 							<div className={styles["landing-card-step-title"]}>
 								<strong>Sign Up</strong>
@@ -271,9 +271,7 @@ const Landing = () => {
 				</section>
 
 				{/* Our Values Section */}
-				<section
-					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
-				>
+				<section className={styles["landing-values"]}>
 					<h2 className={styles["landing-features-title"]}>Our Values</h2>
 					<p className={styles["landing-hero-sub"]}>
 						We believe in simplifying property management for landlords and tenants
@@ -282,9 +280,7 @@ const Landing = () => {
 				</section>
 
 				{/* Our Mission Section */}
-				<section
-					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
-				>
+				<section className={styles["landing-mission"]}>
 					<h2 className={styles["landing-features-title"]}>Our Mission</h2>
 					<p className={styles["landing-hero-sub"]}>
 						To provide a seamless and stress-free rental experience for everyone
