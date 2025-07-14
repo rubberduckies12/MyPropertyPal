@@ -6,7 +6,6 @@ import "../styles/contact/contact.css";
 import "../styles/mtd/mtd.css";
 import "../styles/features/features.css";
 import "../styles/privacy/privacy.css";
-import "../styles/landing/landing.css";
 import "../styles/header/header.css";
 import "../styles/footer/footer.css";
 import "../styles/tos/tos.css";
@@ -19,4 +18,3 @@ export default function MyApp({ Component, pageProps }) {
     </>
   );
 }
-//globals css change
