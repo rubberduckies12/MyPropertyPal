@@ -22,6 +22,13 @@ router.get("/", authenticate, async (req, res) => {
     const accountId = req.user.id;
     const landlordId = await getLandlordId(pool, accountId);
 
+    // Fetch user info
+    const userResult = await pool.query(
+      "SELECT id, email, first_name, last_name FROM account WHERE id = $1",
+      [accountId]
+    );
+    const user = userResult.rows[0];
+
     // Rent payments (with property and tenant info)
     const rentPaymentsResult = await pool.query(`
       SELECT
@@ -60,6 +67,7 @@ router.get("/", authenticate, async (req, res) => {
     const taxableProfit = totalIncome - totalExpenses;
 
     res.json({
+      user,
       rentPayments,
       expenses,
       totalIncome,

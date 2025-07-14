@@ -63,12 +63,11 @@ export default function Finances() {
     method: "",
     reference: "",
   });
-  const [editExpenseModal, setEditExpenseModal] = useState(null); // {expense} or null
-  const [editRentModal, setEditRentModal] = useState(null); // {rent} or null
-
-  // Optionally, fetch properties/tenants for dropdowns
+  const [editExpenseModal, setEditExpenseModal] = useState(null);
+  const [editRentModal, setEditRentModal] = useState(null);
   const [properties, setProperties] = useState([]);
   const [tenants, setTenants] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     async function fetchFinances() {
@@ -86,6 +85,7 @@ export default function Finances() {
         setTotalIncome(data.totalIncome || 0);
         setTotalExpenses(data.totalExpenses || 0);
         setTaxableProfit(data.taxableProfit || 0);
+        setUser(data.user || null);
       } catch (err) {
         setError(err.message || "Error loading finances");
       } finally {
@@ -95,7 +95,6 @@ export default function Finances() {
     fetchFinances();
   }, []);
 
-  // Fetch properties and tenants for dropdowns (optional, for better UX)
   useEffect(() => {
     async function fetchDropdowns() {
       const token = localStorage.getItem("token");
@@ -122,7 +121,6 @@ export default function Finances() {
   const filteredRent = filterByPeriod(rentPayments, period);
   const filteredExpenses = filterByPeriod(expenses, period);
 
-  // Add Expense Handler
   async function handleAddExpense(e) {
     e.preventDefault();
     try {
@@ -144,7 +142,6 @@ export default function Finances() {
         description: "",
         incurred_on: "",
       });
-      // Refresh data
       const refreshed = await fetch(API_BASE, {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
       });
@@ -157,7 +154,6 @@ export default function Finances() {
     }
   }
 
-  // Add Rent Payment Handler
   async function handleAddRent(e) {
     e.preventDefault();
     try {
@@ -180,7 +176,6 @@ export default function Finances() {
         method: "",
         reference: "",
       });
-      // Refresh data
       const refreshed = await fetch(API_BASE, {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
       });
@@ -193,7 +188,6 @@ export default function Finances() {
     }
   }
 
-  // Edit Expense Handler
   async function handleEditExpense(e) {
     e.preventDefault();
     try {
@@ -209,7 +203,6 @@ export default function Finances() {
       });
       if (!res.ok) throw new Error("Failed to update expense");
       setEditExpenseModal(null);
-      // Refresh data
       const refreshed = await fetch(API_BASE, {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
       });
@@ -222,7 +215,6 @@ export default function Finances() {
     }
   }
 
-  // Edit Rent Payment Handler
   async function handleEditRent(e) {
     e.preventDefault();
     try {
@@ -238,7 +230,6 @@ export default function Finances() {
       });
       if (!res.ok) throw new Error("Failed to update rent payment");
       setEditRentModal(null);
-      // Refresh data
       const refreshed = await fetch(API_BASE, {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
       });
@@ -253,9 +244,8 @@ export default function Finances() {
 
   async function handleExportTaxReport() {
     try {
-      const year = new Date().getFullYear(); // Always use this year
+      const year = new Date().getFullYear();
       const token = localStorage.getItem("token");
-      // Hardcoded backend URL for tax report PDF
       const res = await fetch(`http://localhost:5001/api/finances/tax-report?year=${year}`, {
         headers: { Authorization: token ? `Bearer ${token}` : "" }
       });
@@ -279,7 +269,6 @@ export default function Finances() {
     return `${day}/${month}/${year}`;
   }
 
-  // Delete rent payment handler
   const deleteRentPayment = async (rentId) => {
     const token = localStorage.getItem("token");
     await fetch(`${API_BASE}/rent/${rentId}`, {
@@ -289,7 +278,6 @@ export default function Finances() {
     setRentPayments(rentPayments => rentPayments.filter(r => r.id !== rentId));
   };
 
-  // Update deleteExpense to update state
   const deleteExpense = async (expenseId) => {
     const token = localStorage.getItem("token");
     await fetch(`${API_BASE}/expense/${expenseId}`, {

@@ -118,14 +118,14 @@ export default function WebpageHeader() {
               )}
             </div>
           </nav>
-          <button
+          {/* <button
             className="webpage-login-btn-modern"
             onClick={() => window.location.href = "http://localhost:3001/"}
             type="button"
             aria-label="Log in to your account"
           >
             <span className="login-text">Log In</span>
-          </button>
+          </button> */}
         </div>
       </div>
     </header>

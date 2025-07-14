@@ -45,14 +45,11 @@ function Footer() {
           <div>
             <h3>Product</h3>
             <Link href="/features/features">Features</Link>
-            <Link href="/pricing">Pricing</Link>
             <Link href="/about/about">About Us</Link>
           </div>
           <div>
             <h3>Resources</h3>
             <Link href="/blog/blog">Blog</Link>
-            <Link href="/help">Help Center</Link>
-            <Link href="/contact/contact">Contact</Link>
           </div>
           <div>
             <h3>Legal</h3>

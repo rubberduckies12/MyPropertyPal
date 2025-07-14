@@ -101,13 +101,14 @@ const Landing = () => {
           <p className="landing-hero-sub">
             Streamline your rental business with powerful tools, built for landlords and loved by tenants.
             Save time, reduce stress, and focus on what matters most. <br />
-            <Link
+            {/* Commenting out Explore Your Free Demo Now button */}
+            {/* <Link
               href="/register"
               className="landing-cta-btn"
               style={{ margin: "2rem auto", display: "block" }}
             >
               Explore Your Free Demo Now
-            </Link>
+            </Link> */}
             Time is money, and with MyPropertyPal, you can save both.
           </p>
         </section>
@@ -146,8 +147,8 @@ const Landing = () => {
           </Link>
         </section>
 
-        {/* Pricing Section */}
-        <section className="landing-section landing-pricing">
+        {/* Commenting out the entire pricing section */}
+        {/* <section className="landing-section landing-pricing">
           <h2 className="landing-features-title">Simple, Transparent Pricing</h2>
           <div className="pricing-toggle-wrap">
             <div className="pricing-toggle-row">
@@ -166,7 +167,8 @@ const Landing = () => {
             {yearly && <span className="toggle-save">Get 2 Months Free!</span>}
           </div>
           
-          <div className="pricing-cards">
+          {/* Commenting out the entire pricing section */}
+          {/* <div className="pricing-cards">
             <div className="pricing-card">
               <div className="pricing-title">Starter</div>
               <div className="pricing-price">
@@ -210,11 +212,11 @@ const Landing = () => {
                 Contact Us
               </Link>
             </div>
-          </div>
+          </div> }
           <div className="pricing-note">
             <strong>One price, all features.</strong> No hidden fees. Cancel anytime.
           </div>
-        </section>
+        </section> */}
 
         {/* How it works Section */}
         <section className="landing-section landing-mission landing-how-it-works">
@@ -237,18 +239,19 @@ const Landing = () => {
               <div>As your portfolio grows, MyPropertyPal grows with you. All features, one price, any scale.</div>
             </li>
           </ol>
-          <Link
+          {/* Commenting out the Get Started button */}
+          {/* <Link
             href="/register"
             className="landing-cta-btn"
             style={{ margin: "2.5rem auto 0 auto", display: "block" }}
           >
             Get Started
-          </Link>
+          </Link> */}
         </section>
 
         {/* Mobile App Section */}
         <section className="landing-section landing-mobile-app">
-          <h2 className="landing-features-title">Currently In Development</h2>
+          <h2 className="landing-features-title">The Entire Platform is Currently In Development</h2>
           <div
             className="landing-mobile-app-subtitle"
             style={{
@@ -259,31 +262,31 @@ const Landing = () => {
               textAlign: "center"
             }}
           >
-            The MyPropertyPal Mobile App for Landlords & Tenants
+            MyPropertyPal is actively being developed to bring landlords and tenants the ultimate property management experience.
           </div>
           <div className="mobile-app-content">
             <div className="mobile-app-text" style={{ margin: "0 auto", textAlign: "center" }}>
               <p>
-                <strong>Your Portfolio in Your Pocket — Because Landlords Deserve Freedom, Too.</strong>
+                <strong>We're Building Something Amazing — Stay Tuned!</strong>
                 <br /><br/>
-                Property management made easy—track rent, handle repairs, store documents, and talk to tenants, anytime, anywhere.
+                Our platform is designed to simplify property management for landlords and tenants alike. From tracking rent payments and managing maintenance requests to organizing financial records and enabling secure communication, MyPropertyPal will be your all-in-one solution.
               </p>
               <div className="mobile-app-features-list">
                 <div className="mobile-app-feature-card">
-                  <span className="mobile-app-feature-title"><strong>Instant rent notifications</strong></span>
-                  <div>Get notified the moment rent is paid or overdue.</div>
+                  <span className="mobile-app-feature-title"><strong>Comprehensive Rent Management</strong></span>
+                  <div>Track payments, send reminders, and stay on top of your rental income.</div>
                 </div>
                 <div className="mobile-app-feature-card">
-                  <span className="mobile-app-feature-title"><strong>Easy maintenance logging</strong></span>
-                  <div>Log and track repairs from anywhere, anytime.</div>
+                  <span className="mobile-app-feature-title"><strong>Streamlined Maintenance Handling</strong></span>
+                  <div>Log issues, assign contractors, and resolve repairs efficiently.</div>
                 </div>
                 <div className="mobile-app-feature-card">
-                  <span className="mobile-app-feature-title"><strong>Secure messaging with tenants</strong></span>
-                  <div>Communicate safely and keep all conversations in one place.</div>
+                  <span className="mobile-app-feature-title"><strong>Secure Communication</strong></span>
+                  <div>Keep all tenant conversations organized and accessible in one place.</div>
                 </div>
                 <div className="mobile-app-feature-card">
-                  <span className="mobile-app-feature-title"><strong>Real-time financial tracking</strong></span>
-                  <div>See your property income and expenses at a glance.</div>
+                  <span className="mobile-app-feature-title"><strong>Financial Insights</strong></span>
+                  <div>Monitor your cash flow, track expenses, and generate tax reports effortlessly.</div>
                 </div>
               </div>
             </div>

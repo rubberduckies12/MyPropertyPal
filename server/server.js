@@ -26,6 +26,7 @@ const documentsRouter = require('./endpoints/documents');
 const complianceRouter = require('./endpoints/compliance');
 const maintenanceRouter = require('./endpoints/maintenance');
 const messagesRouter = require('./endpoints/messages.js'); // <-- Add this line
+const stripeRouter = require('./endpoints/stripe');
 
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001'],
@@ -96,7 +97,8 @@ app.use('/api/compliance', complianceRouter);
 const tenantRentRouter = require('./endpoints/tenants/tenantRent');
 app.use('/api/tenant/rent', authenticate, tenantRentRouter);
 app.use('/api/maintenance', maintenanceRouter);
-app.use('/api/messages', messagesRouter); // <-- Add this line
+app.use('/api/messages', messagesRouter);
+app.use('/api/stripe', stripeRouter); // <-- Add this line
 
 // Serve static files from the "exports" directory
 app.use("/exports", express.static(path.join(__dirname, "../exports")));

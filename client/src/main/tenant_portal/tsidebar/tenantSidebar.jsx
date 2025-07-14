@@ -39,14 +39,6 @@ function TenantSidebar() {
         <div className="sidebar-section">
           <NavLink to="/tenant-messages" className="dashboard-nav-link">Messages</NavLink>
         </div>
-        {/* Calendar */}
-        <div className="sidebar-section">
-          <NavLink to="/tenant-calendar" className="dashboard-nav-link">Calendar</NavLink>
-        </div>
-        {/* Rent */}
-        <div className="sidebar-section">
-          <NavLink to="/tenant-rent" className="dashboard-nav-link">Rent</NavLink>
-        </div>
         {/* AI Chatbot */}
         <div className="sidebar-section">
           <NavLink to="/tenant-ai" className="dashboard-nav-link">AI Chatbot</NavLink>
