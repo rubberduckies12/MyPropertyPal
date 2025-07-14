@@ -120,10 +120,7 @@ const Landing = () => {
 				<WebpageHeader />
 
 				{/* Hero Section */}
-				<section
-					id="hero-section"
-					className={`${styles["landing-hero"]} ${styles["landing-card"]}`}
-				>
+				<section className={styles["landing-hero"]}>
 					<h1 className={styles["landing-card-title"]}>
 						<span className={styles["landing-hero-main"]}>MyPropertyPal</span>
 						<br />
@@ -137,10 +134,8 @@ const Landing = () => {
 				</section>
 
 				{/* Value Props */}
-				<section
-					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
-				>
-					<p className={styles["landing-card-content"]}>
+				<section className={styles["landing-values"]}>
+					<p className={styles["landing-hero-sub"]}>
 						Streamline your rental business with powerful tools, built for
 						landlords and loved by tenants. Save time, reduce stress, and focus on
 						what matters most. <br />
@@ -149,10 +144,8 @@ const Landing = () => {
 				</section>
 
 				{/* Features Carousel Section */}
-				<section
-					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
-				>
-					<h2 className={styles["landing-card-title"]}>How We Make it Easy</h2>
+				<section className={styles["landing-features"]}>
+					<h2 className={styles["landing-features-title"]}>How We Make it Easy</h2>
 					<FeatureCarousel />
 					<Link
 						href="/features"
@@ -163,10 +156,8 @@ const Landing = () => {
 				</section>
 
 				{/* Why Choose MyPropertyPal Section */}
-				<section
-					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
-				>
-					<h2 className={styles["landing-card-title"]}>Why Choose MyPropertyPal?</h2>
+				<section className={styles["landing-why"]}>
+					<h2 className={styles["landing-features-title"]}>Why Choose MyPropertyPal?</h2>
 					<p className={styles["why-paragraph"]}>
 						Managing rental properties in the UK can be stressful, time-consuming,
 						and overwhelming. From chasing late rent payments and dealing with
@@ -183,11 +174,9 @@ const Landing = () => {
 				</section>
 
 				{/* How it works Section */}
-				<section
-					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
-				>
-					<h2 className={styles["landing-card-title"]}>How It Works</h2>
-					<ol className="how-it-works-list">
+				<section className={styles["landing-how-it-works"]}>
+					<h2 className={styles["landing-features-title"]}>How It Works</h2>
+					<ol className={styles["how-it-works-list"]}>
 						<li>
 							<div className={styles["landing-card-step-title"]}>
 								<strong>Sign Up</strong>
@@ -222,9 +211,7 @@ const Landing = () => {
 				</section>
 
 				{/* Mobile App Section */}
-				<section
-					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
-				>
+				<section className={styles["landing-mobile-app"]}>
 					<h2 className={styles["landing-card-title"]}>
 						The Entire Platform is Currently In Development
 					</h2>
@@ -270,23 +257,7 @@ const Landing = () => {
 					</div>
 				</section>
 
-				{/* Our Values Section */}
-				<section className={styles["landing-values"]}>
-					<h2 className={styles["landing-features-title"]}>Our Values</h2>
-					<p className={styles["landing-hero-sub"]}>
-						We believe in simplifying property management for landlords and tenants
-						alike.
-					</p>
-				</section>
-
-				{/* Our Mission Section */}
-				<section className={styles["landing-mission"]}>
-					<h2 className={styles["landing-features-title"]}>Our Mission</h2>
-					<p className={styles["landing-hero-sub"]}>
-						To provide a seamless and stress-free rental experience for everyone
-						involved.
-					</p>
-				</section>
+				
 			</div>
 		</>
 	);
