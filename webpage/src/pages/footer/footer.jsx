@@ -1,5 +1,4 @@
 import React from "react";
-import "../../styles/footer/footer.css";
 import { FaTwitter, FaFacebookF, FaLinkedinIn } from "react-icons/fa";
 import Link from "next/link";
 

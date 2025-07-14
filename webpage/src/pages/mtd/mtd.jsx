@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
 import Link from "next/link.js";
-import "../../styles/mtd/mtd.css";
 
 function Accordion({ items }) {
   const [openIndex, setOpenIndex] = useState(null);
@@ -225,9 +224,10 @@ const MTD = () => {
             <p>
               MTD is coming—don’t get caught unprepared. Join our early access program and stay ahead of HMRC’s digital tax requirements with MyPropertyPal.
             </p>
-            <Link href="/register" className="mtd-cta-button">
+            {/* Commenting out the Start Preparing Today button */}
+            {/* <Link href="/register" className="mtd-cta-button">
               Start Preparing Today!
-            </Link>
+            </Link> */}
           </div>
         </section>
       </div>

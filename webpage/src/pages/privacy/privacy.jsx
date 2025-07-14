@@ -1,7 +1,6 @@
 import React from "react";
 import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
-import "../../styles/privacy/privacy.css";
 
 const Privacy = () => (
   <>
@@ -26,12 +25,10 @@ const Privacy = () => (
       <p>
         This Privacy Policy explains how MyPropertyPal ("we", "us", "our") collects, uses, discloses, and protects your personal information when you use our property management and tax assistant SaaS application ("Services"). We are committed to full compliance with the UK General Data Protection Regulation (UK GDPR), the Data Protection Act 2018, and all other applicable UK laws and regulations, including HMRC requirements for Making Tax Digital (MTD) software providers.
       </p>
-
       <h2>1. Data Controller Information</h2>
       <p>
         MyPropertyPal is the data controller for the purposes of the UK GDPR and the Data Protection Act 2018. If you have any questions about this Privacy Policy or how we process your data, please contact us at <a href="mailto:support@mypropertypal.com">support@mypropertypal.com</a>.
       </p>
-
       <h2>2. Information We Collect</h2>
       <h3>2.1 Information You Provide Directly</h3>
       <ul>
@@ -42,7 +39,6 @@ const Privacy = () => (
         <li>Tax-related financial data</li>
         <li>Any other data you provide while using our Services</li>
       </ul>
-
       <h3>2.2 Information Collected Automatically</h3>
       <ul>
         <li>IP address</li>
@@ -50,12 +46,10 @@ const Privacy = () => (
         <li>Usage statistics and interaction data</li>
         <li>Cookies and similar tracking technologies</li>
       </ul>
-
       <h3>2.3 Information from Third Parties</h3>
       <p>
         We may receive additional information from HMRC, payment providers, identity verification services, and other third parties necessary to provide our services.
       </p>
-
       <h2>3. Legal Basis for Processing</h2>
       <p>We process your personal data under the following lawful bases:</p>
       <ul>
@@ -64,7 +58,6 @@ const Privacy = () => (
         <li>Legal Obligation: To comply with tax laws, MTD regulations, and HMRC requirements.</li>
         <li>Legitimate Interests: For internal operations, security, service improvements, and fraud prevention, provided these interests do not override your rights.</li>
       </ul>
-
       <h2>4. How We Use Your Information</h2>
       <ul>
         <li>To provide, manage, and improve our property management and tax assistant services</li>
@@ -75,7 +68,6 @@ const Privacy = () => (
         <li>To ensure platform security and prevent fraud</li>
         <li>To send marketing communications (only where legally permitted and with your consent)</li>
       </ul>
-
       <h2>5. Data Sharing and Disclosure</h2>
       <ul>
         <li>HMRC: We may share data necessary for Making Tax Digital submissions.</li>
@@ -83,22 +75,18 @@ const Privacy = () => (
         <li>Legal Compliance: We may disclose your information when required by law, regulation, or legal process.</li>
         <li>Business Transfers: In the event of a merger, acquisition, or asset sale, we may transfer your data, subject to appropriate safeguards.</li>
       </ul>
-
       <h2>6. International Data Transfers</h2>
       <p>
         Where we transfer data outside the UK, we ensure appropriate safeguards are in place, such as UK International Data Transfer Agreements (IDTAs) or Standard Contractual Clauses approved for international data transfers.
       </p>
-
       <h2>7. Data Security</h2>
       <p>
         We implement strict security measures including encryption, secure servers, regular security audits, and role-based access controls to protect your data. However, no online system is entirely secure, and we encourage you to use strong passwords and practice good security hygiene.
       </p>
-
       <h2>8. Data Retention</h2>
       <p>
         We retain your personal data for as long as necessary to fulfill the purposes for which it was collected, including compliance with legal, tax, and regulatory obligations. Generally, we will retain tax and financial records for a minimum of 6 years in line with HMRC requirements.
       </p>
-
       <h2>9. Your Rights Under UK GDPR</h2>
       <p>You have the following rights regarding your personal data:</p>
       <ul>
@@ -111,42 +99,34 @@ const Privacy = () => (
         <li>Right to Withdraw Consent – Where processing is based on consent, you can withdraw it at any time.</li>
         <li>Right to Lodge a Complaint – You can contact the Information Commissioner’s Office (ICO) if you believe your rights have been infringed: <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer">https://ico.org.uk</a></li>
       </ul>
-
       <h2>10. Cookies and Tracking Technologies</h2>
       <p>
         We use cookies and similar technologies to improve user experience, analyze site usage, and deliver tailored content. You can manage your cookie preferences through your browser settings. For detailed information, please see our <a href="/cookie-policy">Cookie Policy</a>.
       </p>
-
       <h2>11. Third-Party Links</h2>
       <p>
         Our platform may contain links to external websites and services. We are not responsible for the privacy practices or content of these third-party sites. Please review their privacy policies before providing personal information.
       </p>
-
       <h2>12. Children’s Privacy</h2>
       <p>
         Our services are not intended for children under the age of 16. We do not knowingly collect personal information from children. If you believe we have collected information from a child, please contact us immediately and we will take appropriate action.
       </p>
-
       <h2>13. Data Processing Agreements</h2>
       <p>
         All third-party service providers that process personal data on our behalf are bound by written data processing agreements that comply with the UK GDPR, ensuring appropriate security measures, limited processing purposes, and strict confidentiality.
       </p>
-
       <h2>14. Automated Decision-Making</h2>
       <p>
         We do not use your personal information for automated decision-making or profiling that produces legal or similarly significant effects without human involvement.
       </p>
-
       <h2>15. Changes to This Privacy Policy</h2>
       <p>
         We may update this Privacy Policy from time to time to reflect changes in our practices, legal requirements, or HMRC guidance. We will notify you of significant updates via email or through the platform. The latest version will always be available on this page.
       </p>
-
       <h2>16. Contact Us</h2>
       <p>
         If you have any questions, concerns, or requests related to this Privacy Policy or your personal data, please contact us at: <a href="mailto:support@mypropertypal.com">support@mypropertypal.com</a>
       </p>
-
       <p className="tos-footer">
         Last Updated: 25/06/2025 <br />
         &copy; {new Date().getFullYear()} MyPropertyPal. All rights reserved.

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import WebpageHeader from "../header/header.jsx";
-import "../../styles/contact/contact.css";
 
 function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });

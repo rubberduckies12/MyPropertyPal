@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import "../../styles/header/header.css";
 
 export default function WebpageHeader() {
   const router = useRouter();
@@ -118,6 +117,7 @@ export default function WebpageHeader() {
               )}
             </div>
           </nav>
+          {/* Commenting out the login button */}
           {/* <button
             className="webpage-login-btn-modern"
             onClick={() => window.location.href = "http://localhost:3001/"}

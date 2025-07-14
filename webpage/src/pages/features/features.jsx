@@ -1,7 +1,6 @@
 import React from "react";
 import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
-import "../../styles/features/features.css";
 
 const FEATURES_SECTIONS = [
     {

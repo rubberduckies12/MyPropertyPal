@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Link from "next/link.js";
 import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
-import "../../styles/landing/landing.css"; // updated import path
 
 const FEATURES = [
   { title: "Automate Rent Collection", desc: "Collect rent automatically, securely, and on time—every month, without the hassle." },
