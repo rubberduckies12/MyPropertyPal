@@ -120,79 +120,47 @@ const Landing = () => {
 				<WebpageHeader />
 
 				{/* Hero Section */}
-				<section id="hero-section" className={styles["landing-hero"]}>
-					<h1>
+				<section id="hero-section" className={`${styles["landing-hero"]} ${styles["landing-card"]}`}>
+					<h1 className={styles["landing-card-title"]}>
 						<span className={styles["landing-hero-main"]}>MyPropertyPal</span>
 						<br />
-						<span className={styles["landing-hero-highlight"]}>
-							Automate your rental business
-						</span>
+						<span className={styles["landing-hero-highlight"]}>Automate your rental business</span>
 					</h1>
-					<div
-						style={{
-							marginTop: "2.2rem",
-							fontSize: "1.15rem",
-							color: "#e0e7ff",
-							fontWeight: 500,
-						}}
-					>
+					<div className={styles["landing-card-content"]}>
 						<strong>30-Day Money-Back Guarantee - No Questions Asked</strong>
 					</div>
 				</section>
 
 				{/* Value Props */}
-				<section className={styles["landing-section"]}>
-					<p className={styles["landing-hero-sub"]}>
-						Streamline your rental business with powerful tools, built for
-						landlords and loved by tenants. Save time, reduce stress, and focus on
-						what matters most. <br />
-						{/* Commenting out Explore Your Free Demo Now button */}
-						{/* <Link
-              href="/register"
-              className="landing-cta-btn"
-              style={{ margin: "2rem auto", display: "block" }}
-            >
-              Explore Your Free Demo Now
-            </Link> */}
+				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
+					<p className={styles["landing-card-content"]}>
+						Streamline your rental business with powerful tools, built for landlords and loved by tenants. Save time, reduce stress, and focus on what matters most. <br />
 						Time is money, and with MyPropertyPal, you can save both.
 					</p>
 				</section>
 
 				{/* Features Carousel Section */}
-				<section className={styles["landing-section"]}>
-					<h2 className={styles["landing-features-title"]}>How We Make it Easy</h2>
+				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
+					<h2 className={styles["landing-card-title"]}>How We Make it Easy</h2>
 					<FeatureCarousel />
 					<Link
 						href="/features"
-						className="landing-cta-btn"
-						style={{
-							margin: "2.5rem auto 0 auto",
-							display: "block",
-						}}
+						className={styles["landing-card-link"]}
 					>
 						See All Features
 					</Link>
 				</section>
 
 				{/* Why Choose MyPropertyPal Section */}
-				<section className={styles["landing-section"]}>
-					<h2 className={styles["landing-features-title"]}>Why Choose MyPropertyPal?</h2>
-					<p className={styles["why-paragraph"]}>
-						Managing rental properties in the UK can be stressful,
-						time-consuming, and overwhelming. From chasing late
-						rent payments and dealing with unreliable contractors
-						to keeping on top of complex tax rules and endless paperwork,
-						landlords face constant challenges. <br /><br />
-
+				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
+					<h2 className={styles["landing-card-title"]}>Why Choose MyPropertyPal?</h2>
+					<p className={styles["landing-card-content"]}>
+						Managing rental properties in the UK can be stressful, time-consuming, and overwhelming. From chasing late rent payments and dealing with unreliable contractors to keeping on top of complex tax rules and endless paperwork, landlords face constant challenges. <br /><br />
 						<strong>That’s where MyPropertyPal comes in!</strong>
 					</p>
 					<Link
 						href="/about"
-						className="landing-cta-btn"
-						style={{
-							margin: "2.5rem auto 0 auto",
-							display: "block",
-						}}
+						className={styles["landing-card-link"]}
 					>
 						About Us
 					</Link>
@@ -270,119 +238,66 @@ const Landing = () => {
         </section> */}
 
 				{/* How it works Section */}
-				<section className={styles["landing-section"]}>
-					<h2 className={styles["landing-features-title"]}>How It Works</h2>
-					<ol className={styles["how-it-works-list"]}>
+				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
+					<h2 className={styles["landing-card-title"]}>How It Works</h2>
+					<ol className={styles["landing-card-list"]}>
 						<li>
-							<div className={styles["how-step-title"]}>
+							<div className={styles["landing-card-step-title"]}>
 								<strong>Sign Up</strong>
 							</div>
 							<div>Create your landlord account in minutes.</div>
 						</li>
 						<li>
-							<div className={styles["how-step-title"]}>
+							<div className={styles["landing-card-step-title"]}>
 								<strong>Add Your Properties</strong>
 							</div>
 							<div>Enter your properties and invite your tenants.</div>
 						</li>
 						<li>
-							<div className={styles["how-step-title"]}>
+							<div className={styles["landing-card-step-title"]}>
 								<strong>Automate Everything</strong>
 							</div>
-							<div>
-								Collection rent, manage maintenance, and track finances—all from one
-								app.
-							</div>
+							<div>Collection rent, manage maintenance, and track finances—all from one app.</div>
 						</li>
 						<li>
-							<div className={styles["how-step-title"]}>
+							<div className={styles["landing-card-step-title"]}>
 								<strong>Grow With Us</strong>
 							</div>
-							<div>
-								As your portfolio grows, MyPropertyPal grows with you. All features,
-								one price, any scale.
-							</div>
+							<div>As your portfolio grows, MyPropertyPal grows with you. All features, one price, any scale.</div>
 						</li>
 					</ol>
-					{/* Commenting out the Get Started button */}
-					{/* <Link
-            href="/register"
-            className="landing-cta-btn"
-            style={{ margin: "2.5rem auto 0 auto", display: "block" }}
-          >
-            Get Started
-          </Link> */}
 				</section>
 
 				{/* Mobile App Section */}
-				<section className={styles["landing-section"]}>
-					<h2 className={styles["landing-features-title"]}>
-						The Entire Platform is Currently In Development
-					</h2>
-					<div
-						className={styles["landing-mobile-app-subtitle"]}
-						style={{
-							color: "#64748b",
-							fontSize: "1.18rem",
-							marginTop: "0.5rem",
-							marginBottom: "1.7rem",
-							textAlign: "center",
-						}}
-					>
-						MyPropertyPal is actively being developed to bring landlords and tenants
-						the ultimate property management experience.
+				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
+					<h2 className={styles["landing-card-title"]}>The Entire Platform is Currently In Development</h2>
+					<div className={styles["landing-card-content"]}>
+						MyPropertyPal is actively being developed to bring landlords and tenants the ultimate property management experience.
 					</div>
-					<div className={styles["mobile-app-content"]}>
-						<div
-							className={styles["mobile-app-text"]}
-							style={{ margin: "0 auto", textAlign: "center" }}
-						>
-							<p>
-								<strong>We're Building Something Amazing — Stay Tuned!</strong>
-								<br />
-								<br />
-								Our platform is designed to simplify property management for landlords
-								and tenants alike. From tracking rent payments and managing
-								maintenance requests to organizing financial records and enabling
-								secure communication, MyPropertyPal will be your all-in-one solution.
-							</p>
-							<div className={styles["mobile-app-features-list"]}>
-								<div className={styles["mobile-app-feature-card"]}>
-									<span className={styles["mobile-app-feature-title"]}>
-										<strong>Comprehensive Rent Management</strong>
-									</span>
-									<div>
-										Track payments, send reminders, and stay on top of your rental
-										income.
-									</div>
-								</div>
-								<div className={styles["mobile-app-feature-card"]}>
-									<span className={styles["mobile-app-feature-title"]}>
-										<strong>Streamlined Maintenance Handling</strong>
-									</span>
-									<div>
-										Log issues, assign contractors, and resolve repairs efficiently.
-									</div>
-								</div>
-								<div className={styles["mobile-app-feature-card"]}>
-									<span className={styles["mobile-app-feature-title"]}>
-										<strong>Secure Communication</strong>
-									</span>
-									<div>
-										Keep all tenant conversations organized and accessible in one
-										place.
-									</div>
-								</div>
-								<div className={styles["mobile-app-feature-card"]}>
-									<span className={styles["mobile-app-feature-title"]}>
-										<strong>Financial Insights</strong>
-									</span>
-									<div>
-										Monitor your cash flow, track expenses, and generate tax reports
-										effortlessly.
-									</div>
-								</div>
-							</div>
+					<div className={styles["landing-card-features"]}>
+						<div className={styles["landing-card-feature"]}>
+							<span className={styles["landing-card-feature-title"]}>
+								<strong>Comprehensive Rent Management</strong>
+							</span>
+							<div>Track payments, send reminders, and stay on top of your rental income.</div>
+						</div>
+						<div className={styles["landing-card-feature"]}>
+							<span className={styles["landing-card-feature-title"]}>
+								<strong>Streamlined Maintenance Handling</strong>
+							</span>
+							<div>Log issues, assign contractors, and resolve repairs efficiently.</div>
+						</div>
+						<div className={styles["landing-card-feature"]}>
+							<span className={styles["landing-card-feature-title"]}>
+								<strong>Secure Communication</strong>
+							</span>
+							<div>Keep all tenant conversations organized and accessible in one place.</div>
+						</div>
+						<div className={styles["landing-card-feature"]}>
+							<span className={styles["landing-card-feature-title"]}>
+								<strong>Financial Insights</strong>
+							</span>
+							<div>Monitor your cash flow, track expenses, and generate tax reports effortlessly.</div>
 						</div>
 					</div>
 				</section>
