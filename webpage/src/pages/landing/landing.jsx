@@ -386,6 +386,22 @@ const Landing = () => {
 						</div>
 					</div>
 				</section>
+
+				{/* Our Values Section */}
+				<section className={styles["landing-values"]}>
+					<h2 className={styles["landing-features-title"]}>Our Values</h2>
+					<p className={styles["landing-hero-sub"]}>
+						We believe in simplifying property management for landlords and tenants alike.
+					</p>
+				</section>
+
+				{/* Our Mission Section */}
+				<section className={styles["landing-mission"]}>
+					<h2 className={styles["landing-features-title"]}>Our Mission</h2>
+					<p className={styles["landing-hero-sub"]}>
+						To provide a seamless and stress-free rental experience for everyone involved.
+					</p>
+				</section>
 			</div>
 		</>
 	);
