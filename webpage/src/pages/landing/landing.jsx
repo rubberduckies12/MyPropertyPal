@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link.js";
 import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
-import styles from "../../styles/landing/landing.css";
+import styles from "../../styles/landing/landing.module.css";
 
 const FEATURES = [
 	{
