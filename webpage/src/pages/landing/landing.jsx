@@ -148,7 +148,7 @@ const Landing = () => {
 					<h2 className={styles["landing-features-title"]}>How We Make it Easy</h2>
 					<FeatureCarousel />
 					<Link
-						href="/features"
+						href="/features/features"
 						className={styles["landing-cta-btn"]}
 					>
 						See All Features
@@ -166,7 +166,7 @@ const Landing = () => {
 						<strong>That’s where MyPropertyPal comes in!</strong>
 					</p>
 					<Link
-						href="/about"
+						href="/about/about"
 						className={styles["landing-cta-btn"]}
 					>
 						About Us
