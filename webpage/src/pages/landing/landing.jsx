@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Link from "next/link.js";
+import Link from "next/link";
 import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
 import styles from "../../styles/landing/landing.module.css";
@@ -149,7 +149,7 @@ const Landing = () => {
 					<FeatureCarousel />
 					<Link
 						href="/features"
-						className={styles["landing-card-link"]}
+						className={styles["landing-cta-btn"]}
 					>
 						See All Features
 					</Link>
@@ -167,7 +167,7 @@ const Landing = () => {
 					</p>
 					<Link
 						href="/about"
-						className={styles["landing-card-link"]}
+						className={styles["landing-cta-btn"]}
 					>
 						About Us
 					</Link>
