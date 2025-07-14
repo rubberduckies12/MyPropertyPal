@@ -6,10 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "export": "next export",
-    "deploy": "gh-pages -d out",
-    "postbuild": "cp .nojekyll out/.nojekyll"
+    "lint": "next lint"
   },
   "dependencies": {
     "gsap": "^3.13.0",
