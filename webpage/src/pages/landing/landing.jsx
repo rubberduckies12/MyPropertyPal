@@ -120,11 +120,16 @@ const Landing = () => {
 				<WebpageHeader />
 
 				{/* Hero Section */}
-				<section id="hero-section" className={`${styles["landing-hero"]} ${styles["landing-card"]}`}>
+				<section
+					id="hero-section"
+					className={`${styles["landing-hero"]} ${styles["landing-card"]}`}
+				>
 					<h1 className={styles["landing-card-title"]}>
 						<span className={styles["landing-hero-main"]}>MyPropertyPal</span>
 						<br />
-						<span className={styles["landing-hero-highlight"]}>Automate your rental business</span>
+						<span className={styles["landing-hero-highlight"]}>
+							Automate your rental business
+						</span>
 					</h1>
 					<div className={styles["landing-card-content"]}>
 						<strong>30-Day Money-Back Guarantee - No Questions Asked</strong>
@@ -132,15 +137,21 @@ const Landing = () => {
 				</section>
 
 				{/* Value Props */}
-				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
+				<section
+					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
+				>
 					<p className={styles["landing-card-content"]}>
-						Streamline your rental business with powerful tools, built for landlords and loved by tenants. Save time, reduce stress, and focus on what matters most. <br />
+						Streamline your rental business with powerful tools, built for
+						landlords and loved by tenants. Save time, reduce stress, and focus on
+						what matters most. <br />
 						Time is money, and with MyPropertyPal, you can save both.
 					</p>
 				</section>
 
 				{/* Features Carousel Section */}
-				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
+				<section
+					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
+				>
 					<h2 className={styles["landing-card-title"]}>How We Make it Easy</h2>
 					<FeatureCarousel />
 					<Link
@@ -152,10 +163,15 @@ const Landing = () => {
 				</section>
 
 				{/* Why Choose MyPropertyPal Section */}
-				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
+				<section
+					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
+				>
 					<h2 className={styles["landing-card-title"]}>Why Choose MyPropertyPal?</h2>
 					<p className={styles["landing-card-content"]}>
-						Managing rental properties in the UK can be stressful, time-consuming, and overwhelming. From chasing late rent payments and dealing with unreliable contractors to keeping on top of complex tax rules and endless paperwork, landlords face constant challenges. <br /><br />
+						Managing rental properties in the UK can be stressful, time-consuming,
+						and overwhelming. From chasing late rent payments and dealing with
+						unreliable contractors to keeping on top of complex tax rules and
+						endless paperwork, landlords face constant challenges. <br /><br />
 						<strong>That’s where MyPropertyPal comes in!</strong>
 					</p>
 					<Link
@@ -166,79 +182,10 @@ const Landing = () => {
 					</Link>
 				</section>
 
-				{/* Commenting out the entire pricing section */}
-				{/* <section className="landing-section landing-pricing">
-          <h2 className="landing-features-title">Simple, Transparent Pricing</h2>
-          <div className="pricing-toggle-wrap">
-            <div className="pricing-toggle-row">
-              <span className={!yearly ? "toggle-label active" : "toggle-label"}>Monthly</span>
-              <label className="pricing-toggle">
-                <span className="visually-hidden">Toggle yearly pricing</span>
-                <input
-                  type="checkbox"
-                  checked={yearly}
-                  onChange={() => setYearly(!yearly)}
-                />
-                <span className="slider"></span>
-              </label>
-              <span className={yearly ? "toggle-label active" : "toggle-label"}>Yearly</span>
-            </div>
-            {yearly && <span className="toggle-save">Get 2 Months Free!</span>}
-          </div>
-          
-          {/* Commenting out the entire pricing section */}
-          {/* <div className="pricing-cards">
-            <div className="pricing-card">
-              <div className="pricing-title">Starter</div>
-              <div className="pricing-price">
-                {pricing.starter}
-                <span>{pricing.starterLabel}</span>
-              </div>
-              <ul className="pricing-features">
-                <li>Manage up to 5 properties</li>
-                <li>All features included</li>
-                <li>Email support</li>
-              </ul>
-              <Link href="/register" className="landing-cta-btn">
-                Get Started
-              </Link>
-            </div>
-            <div className="pricing-card pricing-card-popular">
-              <div className="pricing-popular">Most Popular</div>
-              <div className="pricing-title">Pro</div>
-              <div className="pricing-price">
-                {pricing.pro}
-                <span>{pricing.proLabel}</span>
-              </div>
-              <ul className="pricing-features">
-                <li>Up to 10 properties</li>
-                <li>All features included</li>
-                <li>Priority support</li>
-              </ul>
-              <Link href="/register" className="landing-cta-btn">
-                Go Pro
-              </Link>
-            </div>
-            <div className="pricing-card">
-              <div className="pricing-title">Portfolio</div>
-              <div className="pricing-price">Custom</div>
-              <ul className="pricing-features">
-                <li>11+ properties</li>
-                <li>All features included</li>
-                <li>Dedicated account manager</li>
-              </ul>
-              <Link href="/contact" className="landing-cta-btn">
-                Contact Us
-              </Link>
-            </div>
-          </div> }
-          <div className="pricing-note">
-            <strong>One price, all features.</strong> No hidden fees. Cancel anytime.
-          </div>
-        </section> */}
-
 				{/* How it works Section */}
-				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
+				<section
+					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
+				>
 					<h2 className={styles["landing-card-title"]}>How It Works</h2>
 					<ol className={styles["landing-card-list"]}>
 						<li>
@@ -257,64 +204,91 @@ const Landing = () => {
 							<div className={styles["landing-card-step-title"]}>
 								<strong>Automate Everything</strong>
 							</div>
-							<div>Collection rent, manage maintenance, and track finances—all from one app.</div>
+							<div>
+								Collection rent, manage maintenance, and track finances—all from one
+								app.
+							</div>
 						</li>
 						<li>
 							<div className={styles["landing-card-step-title"]}>
 								<strong>Grow With Us</strong>
 							</div>
-							<div>As your portfolio grows, MyPropertyPal grows with you. All features, one price, any scale.</div>
+							<div>
+								As your portfolio grows, MyPropertyPal grows with you. All features,
+								one price, any scale.
+							</div>
 						</li>
 					</ol>
 				</section>
 
 				{/* Mobile App Section */}
-				<section className={`${styles["landing-section"]} ${styles["landing-card"]}`}>
-					<h2 className={styles["landing-card-title"]}>The Entire Platform is Currently In Development</h2>
+				<section
+					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
+				>
+					<h2 className={styles["landing-card-title"]}>
+						The Entire Platform is Currently In Development
+					</h2>
 					<div className={styles["landing-card-content"]}>
-						MyPropertyPal is actively being developed to bring landlords and tenants the ultimate property management experience.
+						MyPropertyPal is actively being developed to bring landlords and tenants
+						the ultimate property management experience.
 					</div>
 					<div className={styles["landing-card-features"]}>
 						<div className={styles["landing-card-feature"]}>
 							<span className={styles["landing-card-feature-title"]}>
 								<strong>Comprehensive Rent Management</strong>
 							</span>
-							<div>Track payments, send reminders, and stay on top of your rental income.</div>
+							<div>
+								Track payments, send reminders, and stay on top of your rental
+								income.
+							</div>
 						</div>
 						<div className={styles["landing-card-feature"]}>
 							<span className={styles["landing-card-feature-title"]}>
 								<strong>Streamlined Maintenance Handling</strong>
 							</span>
-							<div>Log issues, assign contractors, and resolve repairs efficiently.</div>
+							<div>
+								Log issues, assign contractors, and resolve repairs efficiently.
+							</div>
 						</div>
 						<div className={styles["landing-card-feature"]}>
 							<span className={styles["landing-card-feature-title"]}>
 								<strong>Secure Communication</strong>
 							</span>
-							<div>Keep all tenant conversations organized and accessible in one place.</div>
+							<div>
+								Keep all tenant conversations organized and accessible in one place.
+							</div>
 						</div>
 						<div className={styles["landing-card-feature"]}>
 							<span className={styles["landing-card-feature-title"]}>
 								<strong>Financial Insights</strong>
 							</span>
-							<div>Monitor your cash flow, track expenses, and generate tax reports effortlessly.</div>
+							<div>
+								Monitor your cash flow, track expenses, and generate tax reports
+								effortlessly.
+							</div>
 						</div>
 					</div>
 				</section>
 
 				{/* Our Values Section */}
-				<section className={styles["landing-values"]}>
+				<section
+					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
+				>
 					<h2 className={styles["landing-features-title"]}>Our Values</h2>
 					<p className={styles["landing-hero-sub"]}>
-						We believe in simplifying property management for landlords and tenants alike.
+						We believe in simplifying property management for landlords and tenants
+						alike.
 					</p>
 				</section>
 
 				{/* Our Mission Section */}
-				<section className={styles["landing-mission"]}>
+				<section
+					className={`${styles["landing-section"]} ${styles["landing-card"]}`}
+				>
 					<h2 className={styles["landing-features-title"]}>Our Mission</h2>
 					<p className={styles["landing-hero-sub"]}>
-						To provide a seamless and stress-free rental experience for everyone involved.
+						To provide a seamless and stress-free rental experience for everyone
+						involved.
 					</p>
 				</section>
 			</div>
