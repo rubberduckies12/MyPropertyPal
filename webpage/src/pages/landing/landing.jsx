@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link.js";
 import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
-import "../../styles/landing/landing.css";
+import styles from "../../styles/landing/landing.module.css";
 
 const FEATURES = [
 	{
@@ -52,9 +52,9 @@ function FeatureCarousel() {
 	};
 
 	return (
-		<div className="features-carousel">
+		<div className={styles.featuresCarousel}>
 			<button
-				className="carousel-arrow left"
+				className={styles.carouselArrowLeft}
 				onClick={prev}
 				aria-label="Previous feature"
 			>
@@ -62,11 +62,11 @@ function FeatureCarousel() {
 					arrow_back
 				</span>
 			</button>
-			<div className="features-carousel-track">
+			<div className={styles.featuresCarouselTrack}>
 				{getVisible().map((feature, idx) => (
 					<div
-						className={`feature-card carousel-card${
-							idx === 1 ? " active" : " faded"
+						className={`${styles.featureCard} ${styles.carouselCard} ${
+							idx === 1 ? styles.active : styles.faded
 						}`}
 						key={feature.title}
 					>
@@ -76,7 +76,7 @@ function FeatureCarousel() {
 				))}
 			</div>
 			<button
-				className="carousel-arrow right"
+				className={styles.carouselArrowRight}
 				onClick={next}
 				aria-label="Next feature"
 			>
@@ -116,15 +116,15 @@ const Landing = () => {
 				/>
 				<meta property="og:type" content="website" />
 			</Head>
-			<div className="landing-root">
+			<div className={styles.landingRoot}>
 				<WebpageHeader />
 
 				{/* Hero Section */}
-				<section id="hero-section" className="landing-hero">
+				<section id="hero-section" className={styles.landingHero}>
 					<h1>
-						<span className="landing-hero-main">MyPropertyPal</span>
+						<span className={styles.landingHeroMain}>MyPropertyPal</span>
 						<br />
-						<span className="landing-hero-highlight">
+						<span className={styles.landingHeroHighlight}>
 							Automate your rental business
 						</span>
 					</h1>
@@ -141,8 +141,8 @@ const Landing = () => {
 				</section>
 
 				{/* Value Props */}
-				<section className="landing-section landing-values">
-					<p className="landing-hero-sub">
+				<section className={styles.landingSection}>
+					<p className={styles.landingHeroSub}>
 						Streamline your rental business with powerful tools, built for
 						landlords and loved by tenants. Save time, reduce stress, and focus on
 						what matters most. <br />
@@ -159,8 +159,8 @@ const Landing = () => {
 				</section>
 
 				{/* Features Carousel Section */}
-				<section className="landing-section landing-features">
-					<h2 className="landing-features-title">How We Make it Easy</h2>
+				<section className={styles.landingSection}>
+					<h2 className={styles.landingFeaturesTitle}>How We Make it Easy</h2>
 					<FeatureCarousel />
 					<Link
 						href="/features"
@@ -175,9 +175,9 @@ const Landing = () => {
 				</section>
 
 				{/* Why Choose MyPropertyPal Section */}
-				<section className="landing-section landing-why">
-					<h2 className="landing-features-title">Why Choose MyPropertyPal?</h2>
-					<p className="why-paragraph">
+				<section className={styles.landingSection}>
+					<h2 className={styles.landingFeaturesTitle}>Why Choose MyPropertyPal?</h2>
+					<p className={styles.whyParagraph}>
 						Managing rental properties in the UK can be stressful,
 						time-consuming, and overwhelming. From chasing late
 						rent payments and dealing with unreliable contractors
@@ -270,23 +270,23 @@ const Landing = () => {
         </section> */}
 
 				{/* How it works Section */}
-				<section className="landing-section landing-mission landing-how-it-works">
-					<h2 className="landing-features-title">How It Works</h2>
-					<ol className="how-it-works-list">
+				<section className={styles.landingSection}>
+					<h2 className={styles.landingFeaturesTitle}>How It Works</h2>
+					<ol className={styles.howItWorksList}>
 						<li>
-							<div className="how-step-title">
+							<div className={styles.howStepTitle}>
 								<strong>Sign Up</strong>
 							</div>
 							<div>Create your landlord account in minutes.</div>
 						</li>
 						<li>
-							<div className="how-step-title">
+							<div className={styles.howStepTitle}>
 								<strong>Add Your Properties</strong>
 							</div>
 							<div>Enter your properties and invite your tenants.</div>
 						</li>
 						<li>
-							<div className="how-step-title">
+							<div className={styles.howStepTitle}>
 								<strong>Automate Everything</strong>
 							</div>
 							<div>
@@ -295,7 +295,7 @@ const Landing = () => {
 							</div>
 						</li>
 						<li>
-							<div className="how-step-title">
+							<div className={styles.howStepTitle}>
 								<strong>Grow With Us</strong>
 							</div>
 							<div>
@@ -315,12 +315,12 @@ const Landing = () => {
 				</section>
 
 				{/* Mobile App Section */}
-				<section className="landing-section landing-mobile-app">
-					<h2 className="landing-features-title">
+				<section className={styles.landingSection}>
+					<h2 className={styles.landingFeaturesTitle}>
 						The Entire Platform is Currently In Development
 					</h2>
 					<div
-						className="landing-mobile-app-subtitle"
+						className={styles.landingMobileAppSubtitle}
 						style={{
 							color: "#64748b",
 							fontSize: "1.18rem",
@@ -332,9 +332,9 @@ const Landing = () => {
 						MyPropertyPal is actively being developed to bring landlords and tenants
 						the ultimate property management experience.
 					</div>
-					<div className="mobile-app-content">
+					<div className={styles.mobileAppContent}>
 						<div
-							className="mobile-app-text"
+							className={styles.mobileAppText}
 							style={{ margin: "0 auto", textAlign: "center" }}
 						>
 							<p>
@@ -346,9 +346,9 @@ const Landing = () => {
 								maintenance requests to organizing financial records and enabling
 								secure communication, MyPropertyPal will be your all-in-one solution.
 							</p>
-							<div className="mobile-app-features-list">
-								<div className="mobile-app-feature-card">
-									<span className="mobile-app-feature-title">
+							<div className={styles.mobileAppFeaturesList}>
+								<div className={styles.mobileAppFeatureCard}>
+									<span className={styles.mobileAppFeatureTitle}>
 										<strong>Comprehensive Rent Management</strong>
 									</span>
 									<div>
@@ -356,16 +356,16 @@ const Landing = () => {
 										income.
 									</div>
 								</div>
-								<div className="mobile-app-feature-card">
-									<span className="mobile-app-feature-title">
+								<div className={styles.mobileAppFeatureCard}>
+									<span className={styles.mobileAppFeatureTitle}>
 										<strong>Streamlined Maintenance Handling</strong>
 									</span>
 									<div>
 										Log issues, assign contractors, and resolve repairs efficiently.
 									</div>
 								</div>
-								<div className="mobile-app-feature-card">
-									<span className="mobile-app-feature-title">
+								<div className={styles.mobileAppFeatureCard}>
+									<span className={styles.mobileAppFeatureTitle}>
 										<strong>Secure Communication</strong>
 									</span>
 									<div>
@@ -373,8 +373,8 @@ const Landing = () => {
 										place.
 									</div>
 								</div>
-								<div className="mobile-app-feature-card">
-									<span className="mobile-app-feature-title">
+								<div className={styles.mobileAppFeatureCard}>
+									<span className={styles.mobileAppFeatureTitle}>
 										<strong>Financial Insights</strong>
 									</span>
 									<div>
