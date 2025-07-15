@@ -7,35 +7,37 @@ router.get("/", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   try {
     const role = req.user.role;
-    let result;
-
     if (role === "tenant") {
-      // Look up tenant_id using account_id
+      // 1. Get tenant id from account id
       const tenantRes = await pool.query(
         "SELECT id FROM tenant WHERE account_id = $1",
         [req.user.id]
       );
       const tenantId = tenantRes.rows[0]?.id;
-      if (!tenantId) {
-        return res.json({ incidents: [] });
-      }
-      // Fetch incidents for properties assigned to this tenant
-      result = await pool.query(
+      if (!tenantId) return res.json({ incidents: [] });
+
+      // 2. Get all property ids assigned to this tenant
+      const propertyRes = await pool.query(
+        "SELECT property_id FROM property_tenant WHERE tenant_id = $1",
+        [tenantId]
+      );
+      const propertyIds = propertyRes.rows.map((row) => row.property_id);
+      if (propertyIds.length === 0) return res.json({ incidents: [] });
+
+      // 3. Fetch incidents for these properties and this tenant
+      const result = await pool.query(
         `SELECT i.*, p.address AS property_address, s.severity
          FROM incident i
          JOIN property p ON i.property_id = p.id
          JOIN incident_severity s ON i.severity_id = s.id
-         JOIN property_tenant pt ON pt.property_id = p.id
-         WHERE pt.tenant_id = $1 AND i.tenant_id = $1
+         WHERE i.tenant_id = $1 AND i.property_id = ANY($2::int[])
          ORDER BY i.created_at DESC`,
-        [tenantId]
+        [tenantId, propertyIds]
       );
       return res.json({ incidents: result.rows });
     } else if (role === "landlord") {
-      // Redirect landlords to the /landlord endpoint for their incidents
       return res.redirect("/api/maintenance/landlord");
     } else {
-      // Other roles: return empty
       return res.json({ incidents: [] });
     }
   } catch (err) {
