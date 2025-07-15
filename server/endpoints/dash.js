@@ -30,8 +30,16 @@ module.exports = function(app, pool) {
   });
 
   app.get('/api/dashboard/properties', authenticate, async (req, res) => {
-    // Only return properties for the logged-in landlord
-    const result = await pool.query('SELECT * FROM property WHERE landlord_id = $1', [req.user.id]);
+    // Look up landlord id for this account
+    const landlordResult = await pool.query(
+      'SELECT id FROM landlord WHERE account_id = $1',
+      [req.user.id]
+    );
+    if (landlordResult.rows.length === 0) {
+      return res.json([]); // No properties if not a landlord
+    }
+    const landlordId = landlordResult.rows[0].id;
+    const result = await pool.query('SELECT * FROM property WHERE landlord_id = $1', [landlordId]);
     res.json(result.rows);
   });
 };
