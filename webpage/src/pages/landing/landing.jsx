@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Head from "next/head.js";
 import WebpageHeader from "../header/header.jsx";
@@ -35,10 +35,22 @@ const FEATURES = [
 	},
 ];
 
+function useIsMobile() {
+	const [isMobile, setIsMobile] = useState(false);
+	useEffect(() => {
+		const check = () => setIsMobile(window.innerWidth <= 600);
+		check();
+		window.addEventListener("resize", check);
+		return () => window.removeEventListener("resize", check);
+	}, []);
+	return isMobile;
+}
+
 function FeatureCarousel() {
+	const isMobile = useIsMobile();
 	const [current, setCurrent] = useState(0);
 	const total = FEATURES.length;
-	const visibleCount = 3;
+	const visibleCount = isMobile ? 1 : 3;
 
 	const prev = () => setCurrent((c) => (c - 1 + total) % total);
 	const next = () => setCurrent((c) => (c + 1) % total);
@@ -66,7 +78,9 @@ function FeatureCarousel() {
 				{getVisible().map((feature, idx) => (
 					<div
 						className={`${styles["carousel-card"]} ${
-							idx === 1 ? styles["active"] : styles["faded"]
+							idx === Math.floor(visibleCount / 2)
+								? styles["active"]
+								: styles["faded"]
 						}`}
 						key={feature.title}
 					>
@@ -256,8 +270,6 @@ const Landing = () => {
 						</div>
 					</div>
 				</section>
-
-				
 			</div>
 		</>
 	);

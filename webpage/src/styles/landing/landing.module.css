@@ -97,11 +97,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2rem;
+  gap: 0.5rem;
   width: 100%;
   min-height: 200px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  position: relative;
+  overflow: visible;
   padding-bottom: 1rem;
 }
 
@@ -110,6 +110,8 @@
   gap: 1.2rem;
   align-items: center;
   justify-content: center;
+  flex: 1;
+  overflow: visible;
 }
 
 .carousel-arrow {
@@ -214,6 +216,36 @@
   transform: translateY(-2px) scale(1.04);
   box-shadow: 0 8px 32px rgba(37,99,235,0.18);
   outline: none;
+}
+
+/* --- Center buttons everywhere --- */
+.landing-cta-btn {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+/* --- Carousel arrows always visible, not scrollable --- */
+.features-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 200px;
+  position: relative;
+  overflow: visible;
+  padding-bottom: 1rem;
+}
+
+.features-carousel-track {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  overflow: visible;
 }
 
 /* ===== How It Works Section ===== */
