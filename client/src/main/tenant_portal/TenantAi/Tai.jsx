@@ -4,18 +4,6 @@ import '../../chatbot/chatbot.css';
 import { fetchChatbotReply } from '../../chatbot/chatbot.js';
 import ReactMarkdown from 'react-markdown';
 
-const API_URL = "https://mypropertypal-3.onrender.com/api/chatbot";
-
-export async function fetchChatbotReply(chatHistory) {
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ history: chatHistory }),
-  });
-  const data = await response.json();
-  return data.reply;
-}
-
 function Tai() {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
