@@ -8,7 +8,7 @@ const authenticate = require("../middleware/authenticate");
 // Google Vision setup
 const vision = require("@google-cloud/vision");
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: "/Users/tommyrowe/Documents/MyPropertyPal/server/google-vision-key.json"
+  keyFilename: "/etc/secrets/google-vision-key.json" // Use the Render secret file path
 });
 
 // Multer setup for file uploads
