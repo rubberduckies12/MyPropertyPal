@@ -29,7 +29,11 @@ const messagesRouter = require('./endpoints/messages.js'); // <-- Add this line
 const stripeRouter = require('./endpoints/stripe');
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://my-property-pal-front.vercel.app'
+  ],
 }));
 app.use(express.json());
 app.use('/api/chat', chatRoute);
