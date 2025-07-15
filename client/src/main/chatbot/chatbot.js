@@ -1,12 +1,11 @@
-export async function fetchChatbotReply(messages) {
-  const response = await fetch('http://localhost:5001/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages }),
+const API_URL = "https://mypropertypal-3.onrender.com/api/chatbot"; // or your actual endpoint
+
+export async function fetchChatbotReply(chatHistory) {
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ history: chatHistory }),
   });
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
   const data = await response.json();
   return data.reply;
 }

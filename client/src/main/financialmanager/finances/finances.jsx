@@ -35,7 +35,7 @@ function filterByPeriod(items, period) {
   });
 }
 
-const API_BASE = "http://localhost:5001/api/finances";
+const API_BASE = "https://mypropertypal-3.onrender.com/api/finances";
 
 export default function Finances() {
   const [period, setPeriod] = useState("month");
@@ -99,14 +99,14 @@ export default function Finances() {
     async function fetchDropdowns() {
       const token = localStorage.getItem("token");
       try {
-        const propRes = await fetch("http://localhost:5001/api/properties", {
+        const propRes = await fetch("https://mypropertypal-3.onrender.com/api/properties", {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         });
         if (propRes.ok) {
           const data = await propRes.json();
           setProperties(data.properties || []);
         }
-        const tenantRes = await fetch("http://localhost:5001/api/tenants", {
+        const tenantRes = await fetch("https://mypropertypal-3.onrender.com/api/tenants", {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         });
         if (tenantRes.ok) {
@@ -246,12 +246,12 @@ export default function Finances() {
     try {
       const year = new Date().getFullYear();
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5001/api/finances/tax-report?year=${year}`, {
+      const res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/tax-report?year=${year}`, {
         headers: { Authorization: token ? `Bearer ${token}` : "" }
       });
       const data = await res.json();
       if (data.url) {
-        window.open(`http://localhost:5001${data.url}`, "_blank");
+        window.open(`https://mypropertypal-3.onrender.com${data.url}`, "_blank");
       } else {
         alert("Failed to generate tax report.");
       }

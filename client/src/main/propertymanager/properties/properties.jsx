@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import "./properties.css";
 
-const API_BASE = "http://localhost:5001";
+const API_BASE = "https://mypropertypal-3.onrender.com";
 
 export default function Properties() {
   // State

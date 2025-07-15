@@ -6,8 +6,8 @@
  */
 async function fetchContractors(location, keyword = "contractor") {
   const params = new URLSearchParams({ location, keyword });
-  // Hardcode the backend URL (adjust port if needed)
-  const backendUrl = "http://localhost:5001/api/contractors";
+  // Use the Render backend URL for production
+  const backendUrl = "https://mypropertypal-3.onrender.com/api/contractors";
   try {
     const response = await fetch(`${backendUrl}?${params.toString()}`);
     if (!response.ok) throw new Error("Network response was not ok");
@@ -18,8 +18,5 @@ async function fetchContractors(location, keyword = "contractor") {
     return [];
   }
 }
-
-// Example usage (for testing, remove in production):
-// fetchContractors("London, UK", "plumber").then(console.log);
 
 export default fetchContractors;

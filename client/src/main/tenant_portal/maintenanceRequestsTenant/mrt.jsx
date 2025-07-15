@@ -17,6 +17,8 @@ function mapSeverityToColor(severity) {
   return "gray";
 }
 
+const BACKEND_URL = "https://mypropertypal-3.onrender.com";
+
 export default function MaintenanceRequestsTenant() {
   const [incidents, setIncidents] = useState([]);
   const [selectedIncident, setSelectedIncident] = useState(null);
@@ -32,7 +34,7 @@ export default function MaintenanceRequestsTenant() {
   // Helper to fetch incidents
   const fetchIncidents = () => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5001/api/maintenance", {
+    fetch(`${BACKEND_URL}/api/maintenance`, {
       headers: { Authorization: token ? `Bearer ${token}` : "" },
     })
       .then((res) => res.json())
@@ -47,7 +49,7 @@ export default function MaintenanceRequestsTenant() {
   // Fetch properties assigned to tenant
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5001/api/maintenance/my-properties", {
+    fetch(`${BACKEND_URL}/api/maintenance/my-properties`, {
       headers: { Authorization: token ? `Bearer ${token}` : "" },
     })
       .then((res) => res.json())
@@ -65,7 +67,7 @@ export default function MaintenanceRequestsTenant() {
     const token = localStorage.getItem("token");
     const severityMap = { red: 4, yellow: 2, green: 1 }; // Adjust to match your incident_severity table
     try {
-      const res = await fetch("http://localhost:5001/api/maintenance", {
+      const res = await fetch(`${BACKEND_URL}/api/maintenance`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +94,7 @@ export default function MaintenanceRequestsTenant() {
     const token = localStorage.getItem("token");
     if (!window.confirm("Are you sure you want to delete this request?")) return;
     try {
-      const res = await fetch(`http://localhost:5001/api/maintenance/${id}`, {
+      const res = await fetch(`${BACKEND_URL}/api/maintenance/${id}`, {
         method: "DELETE",
         headers: { Authorization: token ? `Bearer ${token}` : "" },
       });

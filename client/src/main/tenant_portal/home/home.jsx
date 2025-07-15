@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import TenantSidebar from "../tsidebar/tenantSidebar.jsx";
 import "./home.css";
 
-const API_BASE = "http://localhost:5001";
+const API_BASE = "https://mypropertypal-3.onrender.com";
 
 // --- API Calls ---
 async function fetchTenantRent() {

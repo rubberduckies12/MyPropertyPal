@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import "./compliance.css";
 
-const BACKEND_URL = "http://localhost:5001";
+const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
 export default function Compliance() {
   const [documents, setDocuments] = useState([]);

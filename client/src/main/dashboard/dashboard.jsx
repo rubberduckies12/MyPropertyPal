@@ -4,14 +4,14 @@ import './dashboard.css';
 import Sidebar from '../sidebar/sidebar.jsx';
 
 // Hardcoded backend URLs
-const API_BASE = "http://localhost:5001";
-const MAINTENANCE_URL = "http://localhost:5001/api/maintenance";
-const MESSAGES_CONTACTS_URL = "http://localhost:5001/api/messages/contacts";
-const TENANTS_COUNT_URL = "http://localhost:5001/api/tenants/count";
-const DASHBOARD_USER_URL = "http://localhost:5001/api/dashboard/user";
-const DASHBOARD_PROPERTIES_URL = "http://localhost:5001/api/dashboard/properties";
-const DASHBOARD_MESSAGES_URL = "http://localhost:5001/api/dashboard/messages";
-const TENANTS_URL = "http://localhost:5001/api/tenants";
+const API_BASE = "https://mypropertypal-3.onrender.com";
+const MAINTENANCE_URL = `${API_BASE}/api/maintenance`;
+const MESSAGES_CONTACTS_URL = `${API_BASE}/api/messages/contacts`;
+const TENANTS_COUNT_URL = `${API_BASE}/api/tenants/count`;
+const DASHBOARD_USER_URL = `${API_BASE}/api/dashboard/user`;
+const DASHBOARD_PROPERTIES_URL = `${API_BASE}/api/dashboard/properties`;
+const DASHBOARD_MESSAGES_URL = `${API_BASE}/api/dashboard/messages`;
+const TENANTS_URL = `${API_BASE}/api/tenants`;
 
 // --- API Calls ---
 async function fetchUser() {

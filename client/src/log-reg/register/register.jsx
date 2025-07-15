@@ -11,9 +11,9 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-// Move register function here
+// Update register function to use Render backend
 async function register(data) {
-  const res = await fetch('http://localhost:5001/register', { // <-- full URL
+  const res = await fetch('https://mypropertypal-3.onrender.com/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -42,7 +42,7 @@ export default function Register() {
     if (invite) {
       setInviteMode(true);
       setInviteToken(invite);
-      fetch(`http://localhost:5001/api/tenants/invite/${invite}`)
+      fetch(`https://mypropertypal-3.onrender.com/api/tenants/invite/${invite}`)
         .then(res => res.ok ? res.json() : Promise.reject())
         .then(data => {
           setFirstName(data.first_name);

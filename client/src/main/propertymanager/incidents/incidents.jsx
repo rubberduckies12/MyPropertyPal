@@ -20,13 +20,15 @@ function getProgressColor(progress) {
   return "";
 }
 
+const BACKEND_URL = "https://mypropertypal-3.onrender.com";
+
 export default function Incidents() {
   const [incidents, setIncidents] = useState([]);
   const [selectedIncident, setSelectedIncident] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5001/api/maintenance/landlord", {
+    fetch(`${BACKEND_URL}/api/maintenance/landlord`, {
       headers: { Authorization: token ? `Bearer ${token}` : "" },
     })
       .then((res) => res.json())
@@ -37,7 +39,7 @@ export default function Incidents() {
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(
-        `http://localhost:5001/api/maintenance/landlord/${id}/progress`,
+        `${BACKEND_URL}/api/maintenance/landlord/${id}/progress`,
         {
           method: "PUT",
           headers: {
@@ -64,7 +66,7 @@ export default function Incidents() {
     if (!window.confirm("Are you sure you want to delete this request?")) return;
     try {
       const res = await fetch(
-        `http://localhost:5001/api/maintenance/${id}`,
+        `${BACKEND_URL}/api/maintenance/${id}`,
         {
           method: "DELETE",
           headers: { Authorization: token ? `Bearer ${token}` : "" },

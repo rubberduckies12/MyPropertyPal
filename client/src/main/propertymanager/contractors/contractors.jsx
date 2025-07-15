@@ -3,7 +3,7 @@ import "./contractors.css";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import ReactStars from "react-rating-stars-component";
 
-const API_BASE = "http://localhost:5001";
+const API_BASE = "https://mypropertypal-3.onrender.com";
 
 const RECOMMENDED_KEYWORDS = [
   "plumber",

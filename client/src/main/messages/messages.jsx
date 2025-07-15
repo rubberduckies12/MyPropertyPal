@@ -6,6 +6,8 @@ function formatTimestamp(ts) {
   return new Date(ts).toLocaleString();
 }
 
+const BACKEND_URL = "https://mypropertypal-3.onrender.com";
+
 export default function Messages() {
   const [contacts, setContacts] = useState([]);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -16,7 +18,7 @@ export default function Messages() {
   // Fetch contacts (tenants for landlord, landlord for tenant)
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5001/api/messages/contacts", {
+    fetch(`${BACKEND_URL}/api/messages/contacts`, {
       headers: { Authorization: token ? `Bearer ${token}` : "" },
     })
       .then((res) => res.json())
@@ -28,7 +30,7 @@ export default function Messages() {
     if (!selectedContact) return;
     setLoading(true);
     const token = localStorage.getItem("token");
-    fetch(`http://localhost:5001/api/messages/${selectedContact.property_id}`, {
+    fetch(`${BACKEND_URL}/api/messages/${selectedContact.property_id}`, {
       headers: { Authorization: token ? `Bearer ${token}` : "" },
     })
       .then((res) => res.json())
@@ -40,7 +42,7 @@ export default function Messages() {
           .filter(m => !m.is_read && m.sender_id !== getAccountId())
           .map(m => m.id);
         if (unreadIds.length) {
-          fetch("http://localhost:5001/api/messages/read", {
+          fetch(`${BACKEND_URL}/api/messages/read`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -69,7 +71,7 @@ export default function Messages() {
     e.preventDefault();
     if (!newMsg.trim() || !selectedContact) return;
     const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:5001/api/messages", {
+    const res = await fetch(`${BACKEND_URL}/api/messages`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +85,7 @@ export default function Messages() {
     if (res.ok) {
       setNewMsg("");
       // Refresh messages
-      fetch(`http://localhost:5001/api/messages/${selectedContact.property_id}`, {
+      fetch(`${BACKEND_URL}/api/messages/${selectedContact.property_id}`, {
         headers: { Authorization: token ? `Bearer ${token}` : "" },
       })
         .then((res) => res.json())

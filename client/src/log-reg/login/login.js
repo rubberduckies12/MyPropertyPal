@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5001";
+const API_BASE = "https://mypropertypal-3.onrender.com";
 
 export async function login(email, password) {
   try {

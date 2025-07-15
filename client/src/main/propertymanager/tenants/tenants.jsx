@@ -28,6 +28,8 @@ function getNextDueDate(tenant) {
     return dueDate.toLocaleDateString();
 }
 
+const API_BASE = "https://mypropertypal-3.onrender.com";
+
 export default function Tenants() {
     const [tenants, setTenants] = useState([]);
     const [showYearly, setShowYearly] = useState(false);
@@ -54,7 +56,7 @@ export default function Tenants() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         setLoading(true);
-        fetch("http://localhost:5001/api/tenants", {
+        fetch(`${API_BASE}/api/tenants`, {
             headers: { Authorization: token ? `Bearer ${token}` : "" },
         })
             .then((res) => res.json())
@@ -71,7 +73,7 @@ export default function Tenants() {
     // Fetch properties for dropdown
     useEffect(() => {
         const token = localStorage.getItem("token");
-        fetch("http://localhost:5001/api/properties", {
+        fetch(`${API_BASE}/api/properties`, {
             headers: { Authorization: token ? `Bearer ${token}` : "" },
         })
             .then((res) => res.json())
@@ -85,7 +87,7 @@ export default function Tenants() {
     const handleRemoveTenant = async (id) => {
         const token = localStorage.getItem("token");
         try {
-            await fetch(`http://localhost:5001/api/tenants/${id}`, {
+            await fetch(`${API_BASE}/api/tenants/${id}`, {
                 method: "DELETE",
                 headers: { Authorization: token ? `Bearer ${token}` : "" },
             });
@@ -101,7 +103,7 @@ export default function Tenants() {
         setAddError("");
         const token = localStorage.getItem("token");
         try {
-            const res = await fetch("http://localhost:5001/api/tenants", {
+            const res = await fetch(`${API_BASE}/api/tenants`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -123,7 +125,7 @@ export default function Tenants() {
                 throw new Error(data.error || "Failed to add tenant");
             }
             // Refresh tenants list
-            const tenantsRes = await fetch("http://localhost:5001/api/tenants", {
+            const tenantsRes = await fetch(`${API_BASE}/api/tenants`, {
                 headers: { Authorization: token ? `Bearer ${token}` : "" },
             });
             const tenantsData = await tenantsRes.json();
@@ -164,7 +166,7 @@ export default function Tenants() {
         e.preventDefault();
         const token = localStorage.getItem("token");
         try {
-            const res = await fetch(`http://localhost:5001/api/tenants/${editTenant.id}`, {
+            const res = await fetch(`${API_BASE}/api/tenants/${editTenant.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -181,7 +183,7 @@ export default function Tenants() {
                 throw new Error(data.error || "Failed to update tenant");
             }
             // Refresh tenants list
-            const tenantsRes = await fetch("http://localhost:5001/api/tenants", {
+            const tenantsRes = await fetch(`${API_BASE}/api/tenants`, {
                 headers: { Authorization: token ? `Bearer ${token}` : "" },
             });
             const tenantsData = await tenantsRes.json();
