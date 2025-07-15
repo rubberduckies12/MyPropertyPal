@@ -11,7 +11,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.9.0",
+    "@google-cloud/vision": "^5.3.0",
+    "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
@@ -25,6 +26,8 @@
     "openai": "^5.1.1",
     "path": "^0.12.7",
     "pdfkit": "^0.17.1",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "stripe": "^18.3.0",
+    "uuid": "^11.1.0"
   }
 }
