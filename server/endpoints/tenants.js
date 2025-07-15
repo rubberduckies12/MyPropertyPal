@@ -199,7 +199,7 @@ router.post("/", async (req, res) => {
     );
 
     // ...send invite email...
-    const inviteUrl = `http://localhost:3001/register?invite=${inviteToken}`;
+    const inviteUrl = `https://my-property-pal-front.vercel.app/register?invite=${inviteToken}`;
     await sendTenantInviteEmail(email, inviteUrl);
 
     res.status(201).json({ message: "Tenant added", tenant_id: tenantId });
