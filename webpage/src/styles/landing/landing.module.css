@@ -174,12 +174,6 @@
 
 /* ===== CTA Button ===== */
 .landing-cta-btn {
-  display: block;
-  margin: 2rem auto 0 auto;
-  text-align: center;
-}
-
-.landing-cta-btn {
   background: linear-gradient(90deg, #2563eb 60%, #3b82f6 100%);
   color: #fff;
   border: none;
@@ -188,12 +182,12 @@
   font-size: 1.22rem;
   font-weight: 800;
   cursor: pointer;
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin: 2rem auto 1.5rem auto;
   box-shadow: 0 4px 24px rgba(37,99,235,0.13);
   transition: background 0.18s, transform 0.13s, box-shadow 0.18s;
   display: block;
   width: fit-content;
+  text-align: center;
 }
 
 .landing-cta-btn:hover,
@@ -425,102 +419,6 @@
   border: 0;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 1100px) {
-  .landing-values,
-  .landing-mission,
-  .landing-why,
-  .landing-features,
-  .landing-how-it-works,
-  .landing-mobile-app {
-    max-width: 98vw;
-  }
-}
-@media (max-width: 900px) {
-  /* --- Perfect mobile card and button layout --- */
-  .landing-values,
-  .landing-mission,
-  .landing-why,
-  .landing-features,
-  .landing-how-it-works,
-  .landing-mobile-app {
-    max-width: 99vw;
-    padding: 1.1rem 2vw;
-    border-radius: 1rem !important;
-    margin: 1.2rem auto 1.2rem auto;
-    box-sizing: border-box;
-  }
-  .landing-features-title {
-    font-size: 1.1rem;
-    margin-bottom: 0.5em;
-  }
-  .features-carousel {
-    flex-direction: column;
-    gap: 1rem;
-    min-height: unset;
-    width: 100%;
-  }
-  .features-carousel-track {
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-  }
-  .carousel-card {
-    min-width: 0;
-    max-width: 95vw;
-    width: 100%;
-    padding: 1rem 0.5rem;
-    font-size: 1rem;
-    margin: 0 auto;
-    height: auto;
-    box-sizing: border-box;
-  }
-  .carousel-card h3 {
-    font-size: 1rem;
-  }
-  .landing-cta-btn {
-    display: block;
-    margin: 1.5rem auto 0 auto;
-    text-align: center;
-    width: 90vw;
-    max-width: 320px;
-    font-size: 1.05rem;
-    padding: 0.9em 1.2em;
-  }
-}
-
-@media (max-width: 600px) {
-  .landing-hero-main,
-  .landing-hero-highlight {
-    font-size: 1.1rem;
-    padding: 0 0.1em;
-  }
-  .landing-features-title {
-    font-size: 0.98rem;
-  }
-  .landing-hero-sub,
-  .why-paragraph {
-    font-size: 0.98rem;
-    line-height: 1.5;
-    padding: 0 0.5em;
-  }
-  .carousel-card {
-    font-size: 0.95rem;
-    padding: 0.7rem 0.2rem;
-    border-radius: 0.7rem;
-  }
-  .landing-cta-btn {
-    font-size: 0.98rem;
-    padding: 0.7em 0.8em;
-    max-width: 98vw;
-    width: 98vw;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
 /* ===== Mobile App Section ===== */
 .mobile-app-content {
   display: flex;
@@ -683,7 +581,66 @@
   display: block;
 }
 
+/* ===== Responsive ===== */
+@media (max-width: 1100px) {
+  .landing-values,
+  .landing-mission,
+  .landing-why,
+  .landing-features,
+  .landing-how-it-works,
+  .landing-mobile-app {
+    max-width: 98vw;
+  }
+}
+
 @media (max-width: 900px) {
+  /* --- Mobile card and button layout --- */
+  .landing-values,
+  .landing-mission,
+  .landing-why,
+  .landing-features,
+  .landing-how-it-works,
+  .landing-mobile-app {
+    max-width: 99vw;
+    padding: 1.1rem 2vw;
+    border-radius: 1rem !important;
+    margin: 1.2rem auto 1.2rem auto;
+    box-sizing: border-box;
+  }
+  .landing-values {
+    margin-top: -32px !important;
+  }
+  .landing-features-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.5em;
+  }
+  .features-carousel,
+  .features-carousel-track {
+    flex-direction: row !important;
+    gap: 1rem;
+    width: 100%;
+    min-height: unset;
+    align-items: center;
+    justify-content: center;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  .carousel-card {
+    min-width: 220px;
+    max-width: 80vw;
+    width: 80vw;
+    margin: 0 0.5rem;
+    scroll-snap-align: center;
+    font-size: 1rem;
+    height: auto;
+    box-sizing: border-box;
+  }
+  .landing-hero-main {
+    font-size: 2.2rem !important;
+  }
+  .landing-hero-highlight {
+    font-size: 1.6rem !important;
+  }
   .hero-with-cards {
     flex-direction: column;
     gap: 24px;
@@ -695,5 +652,39 @@
     min-height: 0;
     width: 100%;
     justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .landing-values {
+    margin-top: -24px !important;
+  }
+  .landing-hero-main {
+    font-size: 1.6rem !important;
+  }
+  .landing-hero-highlight {
+    font-size: 1.2rem !important;
+  }
+  .landing-features-title {
+    font-size: 0.98rem;
+  }
+  .landing-hero-sub,
+  .why-paragraph {
+    font-size: 0.98rem;
+    line-height: 1.5;
+    padding: 0 0.5em;
+  }
+  .carousel-card {
+    font-size: 0.95rem;
+    padding: 0.7rem 0.2rem;
+    border-radius: 0.7rem;
+  }
+  .landing-cta-btn {
+    font-size: 0.98rem;
+    padding: 0.7em 0.8em;
+    max-width: 98vw;
+    width: 98vw;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
