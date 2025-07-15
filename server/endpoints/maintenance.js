@@ -6,10 +6,12 @@ const authenticate = require("../middleware/authenticate");
 router.get("/", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   try {
+    // Ensure role is set on req.user (from your auth middleware/JWT)
     const role = req.user.role;
     let result;
+
     if (role === "tenant") {
-      // Always look up tenant_id using account_id for reliability
+      // Look up tenant_id using account_id
       const tenantRes = await pool.query(
         "SELECT id FROM tenant WHERE account_id = $1",
         [req.user.id]
@@ -18,6 +20,7 @@ router.get("/", authenticate, async (req, res) => {
       if (!tenantId) {
         return res.json({ incidents: [] });
       }
+      // Only fetch incidents submitted by this tenant
       result = await pool.query(
         `SELECT i.*, p.address AS property_address, s.severity
          FROM incident i
@@ -27,16 +30,14 @@ router.get("/", authenticate, async (req, res) => {
          ORDER BY i.created_at DESC`,
         [tenantId]
       );
+    } else if (role === "landlord") {
+      // Redirect landlords to the /landlord endpoint for their incidents
+      return res.redirect("/api/maintenance/landlord");
     } else {
-      // Landlord: handled by /landlord endpoint
-      result = await pool.query(
-        `SELECT i.*, p.address AS property_address, s.severity
-         FROM incident i
-         JOIN property p ON i.property_id = p.id
-         JOIN incident_severity s ON i.severity_id = s.id
-         ORDER BY i.created_at DESC`
-      );
+      // Other roles: return empty
+      return res.json({ incidents: [] });
     }
+
     res.json({ incidents: result.rows });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch maintenance requests." });
