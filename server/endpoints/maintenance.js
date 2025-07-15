@@ -2,13 +2,22 @@ const express = require("express");
 const router = express.Router();
 const authenticate = require("../middleware/authenticate");
 
-// GET: Fetch all maintenance requests for a tenant (or all if landlord)
+// GET: Fetch maintenance requests for the logged-in tenant or landlord
 router.get("/", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   try {
     const role = req.user.role;
     let result;
     if (role === "tenant") {
+      // Always look up tenant_id using account_id for reliability
+      const tenantRes = await pool.query(
+        "SELECT id FROM tenant WHERE account_id = $1",
+        [req.user.id]
+      );
+      const tenantId = tenantRes.rows[0]?.id;
+      if (!tenantId) {
+        return res.json({ incidents: [] });
+      }
       result = await pool.query(
         `SELECT i.*, p.address AS property_address, s.severity
          FROM incident i
@@ -16,9 +25,10 @@ router.get("/", authenticate, async (req, res) => {
          JOIN incident_severity s ON i.severity_id = s.id
          WHERE i.tenant_id = $1
          ORDER BY i.created_at DESC`,
-        [req.user.tenant_id]
+        [tenantId]
       );
     } else {
+      // Landlord: handled by /landlord endpoint
       result = await pool.query(
         `SELECT i.*, p.address AS property_address, s.severity
          FROM incident i
@@ -38,17 +48,14 @@ router.post("/", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   try {
     const { property_id, severity_id, title, description } = req.body;
-    let tenant_id = req.user.tenant_id;
+    let tenant_id;
 
-    // If tenant_id is not in token, look it up using account_id
-    if (!tenant_id) {
-      const accountId = req.user.id;
-      const tenantRes = await pool.query(
-        "SELECT id FROM tenant WHERE account_id = $1",
-        [accountId]
-      );
-      tenant_id = tenantRes.rows[0]?.id;
-    }
+    // Always look up tenant_id using account_id for reliability
+    const tenantRes = await pool.query(
+      "SELECT id FROM tenant WHERE account_id = $1",
+      [req.user.id]
+    );
+    tenant_id = tenantRes.rows[0]?.id;
 
     if (!tenant_id) {
       return res.status(400).json({ error: "Tenant not found for this account." });
@@ -162,7 +169,7 @@ router.get("/landlord", authenticate, async (req, res) => {
     );
     res.json({ incidents: result.rows });
   } catch (err) {
-    console.error("Landlord maintenance error:", err); // Add this line
+    console.error("Landlord maintenance error:", err);
     res.status(500).json({ error: "Failed to fetch landlord maintenance requests." });
   }
 });
