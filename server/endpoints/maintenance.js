@@ -6,7 +6,6 @@ const authenticate = require("../middleware/authenticate");
 router.get("/", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   try {
-    // Ensure role is set on req.user (from your auth middleware/JWT)
     const role = req.user.role;
     let result;
 
@@ -20,16 +19,18 @@ router.get("/", authenticate, async (req, res) => {
       if (!tenantId) {
         return res.json({ incidents: [] });
       }
-      // Only fetch incidents submitted by this tenant
+      // Fetch incidents for properties assigned to this tenant
       result = await pool.query(
         `SELECT i.*, p.address AS property_address, s.severity
          FROM incident i
          JOIN property p ON i.property_id = p.id
          JOIN incident_severity s ON i.severity_id = s.id
-         WHERE i.tenant_id = $1
+         JOIN property_tenant pt ON pt.property_id = p.id
+         WHERE pt.tenant_id = $1 AND i.tenant_id = $1
          ORDER BY i.created_at DESC`,
         [tenantId]
       );
+      return res.json({ incidents: result.rows });
     } else if (role === "landlord") {
       // Redirect landlords to the /landlord endpoint for their incidents
       return res.redirect("/api/maintenance/landlord");
@@ -37,8 +38,6 @@ router.get("/", authenticate, async (req, res) => {
       // Other roles: return empty
       return res.json({ incidents: [] });
     }
-
-    res.json({ incidents: result.rows });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch maintenance requests." });
   }
@@ -49,17 +48,25 @@ router.post("/", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   try {
     const { property_id, severity_id, title, description } = req.body;
-    let tenant_id;
 
-    // Always look up tenant_id using account_id for reliability
+    // Look up tenant_id using account_id
     const tenantRes = await pool.query(
       "SELECT id FROM tenant WHERE account_id = $1",
       [req.user.id]
     );
-    tenant_id = tenantRes.rows[0]?.id;
+    const tenant_id = tenantRes.rows[0]?.id;
 
     if (!tenant_id) {
       return res.status(400).json({ error: "Tenant not found for this account." });
+    }
+
+    // Ensure tenant is assigned to the property
+    const propertyTenantRes = await pool.query(
+      "SELECT 1 FROM property_tenant WHERE tenant_id = $1 AND property_id = $2",
+      [tenant_id, property_id]
+    );
+    if (propertyTenantRes.rows.length === 0) {
+      return res.status(403).json({ error: "You are not assigned to this property." });
     }
 
     const result = await pool.query(
