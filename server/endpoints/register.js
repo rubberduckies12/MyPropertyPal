@@ -98,7 +98,13 @@ module.exports = async function register(req, res, pool) {
             );
         }
 
-        // If landlord, you can add extra logic here later if needed
+        // If landlord, insert into landlord table with default payment_plan_id
+        if (role === 'landlord') {
+            await pool.query(
+                `INSERT INTO landlord (account_id, payment_plan_id) VALUES ($1, $2)`,
+                [accountId, 1] // Replace 1 with your actual default payment_plan_id
+            );
+        }
 
         return res.status(201).json(accountResult.rows[0]);
     } catch (err) {
