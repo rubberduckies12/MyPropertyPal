@@ -124,16 +124,17 @@ CREATE TABLE IF NOT EXISTS incident_severity (
 );
 
 -- ===== Incidents =====
-CREATE TABLE IF NOT EXISTS incident (
+CREATE TABLE IF NOT EXISTS public.incident (
     id SERIAL PRIMARY KEY,
-    property_id INT NOT NULL REFERENCES property(id) ON DELETE CASCADE,
-    severity_id INT NOT NULL REFERENCES incident_severity(id) ON DELETE CASCADE,
+    property_id INT NOT NULL REFERENCES public.property(id) ON DELETE CASCADE,
+    severity_id INT NOT NULL REFERENCES public.incident_severity(id) ON DELETE CASCADE,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    closed BOOLEAN NOT NULL DEFAULT FALSE,
-    tenant_id INT REFERENCES tenant(id) ON DELETE SET NULL,
-    progress VARCHAR(20) NOT NULL DEFAULT 'Not Started'
+    closed BOOLEAN NOT NULL DEFAULT false,
+    tenant_id INT REFERENCES public.tenant(id) ON DELETE SET NULL,
+    progress VARCHAR(20) NOT NULL DEFAULT 'Not Started',
+    updated_at TIMESTAMP
 );
 
 -- ===== Calendar Event Status =====
@@ -233,21 +234,21 @@ CREATE TABLE IF NOT EXISTS compliance_reminder_sent (
 -- Already included above in landlord, tenant, property_tenant, rent_payment
 
 -- ===== Views =====
-CREATE OR REPLACE VIEW v_property_info AS
+CREATE OR REPLACE VIEW public.v_property_info AS
 SELECT
-    p.id AS propertyId,
-    p.name AS propertyName,
-    p.number AS propertyNumber,
-    p.address AS propertyAddress,
-    p.city AS propertyCity,
-    p.county AS propertyCounty,
-    p.postcode AS propertyPostcode,
-    p.landlord_id AS landlordId,
-    ps.status AS propertyStatus
+    p.id AS propertyid,
+    p.name AS propertyname,
+    p.number AS propertynumber,
+    p.address AS propertyaddress,
+    p.city AS propertycity,
+    p.county AS propertycounty,
+    p.postcode AS propertypostcode,
+    p.landlord_id AS landlordid,
+    ps.status AS propertystatus
 FROM
-    property p
+    public.property p
 JOIN
-    property_status ps ON p.property_status_id = ps.id;
+    public.property_status ps ON p.property_status_id = ps.id;
 
 CREATE OR REPLACE VIEW v_tenant_info AS 
 SELECT
