@@ -309,29 +309,97 @@
   }
 }
 @media (max-width: 600px) {
-  .about-hero-main,
-  .about-hero-highlight {
-    font-size: 1.5rem;
-    padding: 0 0.3em;
+  /* ===== Mobile Optimized Styles ===== */
+  .about-root {
+    padding-bottom: 32px;
   }
   .about-hero {
-    padding: 28px 2vw 18px 2vw;
+    padding: 32px 2vw 18px 2vw;
     border-radius: 0 0 0.7rem 0.7rem;
   }
-  .about-values-list {
-    gap: 1.2rem 1.2rem;
+  .about-hero-main,
+  .about-hero-highlight {
+    font-size: 1.2rem;
+    padding: 0 0.2em;
   }
-  .about-team-card {
-    padding: 1.1rem 0.5rem;
-  }
-  .about-mission,
-  .about-locations {
-    padding: 1rem 0.5vw;
+  .about-hero-sub {
+    font-size: 1rem;
+    margin-top: 1.2rem;
+    max-width: 98vw;
+    padding: 0.7em 0.3em;
+    line-height: 1.5;
   }
   .about-values,
   .about-team-card,
   .about-mission,
   .about-locations {
     border-radius: 0.7rem !important;
+    padding: 1rem 0.5vw;
+    margin: 1.2rem auto 1.2rem auto;
+    max-width: 99vw;
+  }
+  .about-values-list {
+    flex-direction: column;
+    gap: 0.7rem 0;
+    align-items: stretch;
+  }
+  .about-value {
+    font-size: 1rem;
+    padding: 0.7em 0.7em;
+    min-width: 0;
+    border-radius: 0.7rem;
+  }
+  .about-team-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+  }
+  .about-team-desc-wrapper {
+    max-width: 98vw;
+    padding: 0 0.5em;
+  }
+  .about-team-desc {
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+  .about-team-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    max-width: 99vw;
+  }
+  .about-team-card {
+    padding: 1rem 0.3rem;
+    min-height: 0;
+    max-width: 99vw;
+    font-size: 0.98rem;
+  }
+  .about-team-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .about-team-avatar-initials {
+    font-size: 1.2rem;
+  }
+  .about-team-name {
+    font-size: 1.05rem;
+  }
+  .about-team-role {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+  .about-team-bio {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .about-mission h2,
+  .about-locations h2 {
+    font-size: 1.08rem;
+    margin-bottom: 0.7rem;
+  }
+  .about-mission p,
+  .about-locations p {
+    font-size: 0.98rem;
+    line-height: 1.5;
   }
 }

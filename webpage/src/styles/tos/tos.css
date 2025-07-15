@@ -58,6 +58,46 @@
   letter-spacing: 0.2px;
 }
 
+/* --- Mobile Optimized TOS Page --- */
+@media (max-width: 600px) {
+  .tos-container {
+    margin: 64px 2vw 24px 2vw;
+    padding: 1rem 0.5vw 1rem 0.5vw;
+    border-radius: 0.7rem;
+    box-shadow: 0 2px 10px rgba(37,99,235,0.08);
+    gap: 0.3rem;
+    max-width: 99vw;
+  }
+  .tos-title {
+    font-size: 1.08rem;
+    margin-bottom: 1rem;
+    padding: 0 0.2em;
+  }
+  .tos-container h2 {
+    font-size: 1rem;
+    margin-top: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  .tos-container p,
+  .tos-container ul {
+    font-size: 0.97rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+  }
+  .tos-container ul {
+    padding-left: 1em;
+    margin-bottom: 0.8rem;
+  }
+  .tos-container li {
+    margin-bottom: 0.3em;
+  }
+  .tos-footer {
+    font-size: 0.93rem;
+    margin-top: 1.2rem;
+    padding-top: 0.7rem;
+  }
+}
+
 @media (max-width: 800px) {
   .tos-container {
     margin: 100px 8px 32px 8px;

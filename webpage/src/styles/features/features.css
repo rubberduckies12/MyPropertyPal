@@ -1,6 +1,6 @@
 /* ===== Root Layout ===== */
 .features-root {
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   background: linear-gradient(180deg, #f6f8fa 0%, #eaf1fb 100%);
   min-height: 100vh;
   padding-bottom: 64px;
@@ -15,6 +15,8 @@
   border-radius: 0 0 2.5rem 2.5rem;
   margin-bottom: 0;
   box-shadow: 0 8px 32px rgba(37,99,235,0.10);
+  position: relative;
+  overflow: hidden;
 }
 .features-hero-main {
   font-size: 3.5rem;
@@ -23,6 +25,7 @@
   margin-bottom: 0.2em;
   display: block;
   line-height: 1.1;
+  text-shadow: 0 2px 16px rgba(37,99,235,0.10);
 }
 .features-hero-highlight {
   font-size: 3rem;
@@ -78,29 +81,6 @@
   color: #2563eb;
   font-weight: 800;
   margin-bottom: 0.7em;
-}
-
-/* ===== Features List (Legacy, if used elsewhere) ===== */
-.features-list {
-  list-style: none;
-  padding: 0;
-  margin: 1.2em 0 1.5em 0;
-  color: #475569;
-  font-size: 1.08rem;
-  line-height: 1.7;
-  text-align: left;
-}
-.features-list li {
-  margin-bottom: 0.5em;
-  padding-left: 1.2em;
-  position: relative;
-}
-.features-list li:before {
-  content: "✓";
-  color: #2563eb;
-  font-weight: bold;
-  position: absolute;
-  left: 0;
 }
 
 /* ===== Features Cards List ===== */
@@ -207,13 +187,15 @@
     font-size: 1rem;
     max-width: 98vw;
     gap: 0.7rem;
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 @media (max-width: 600px) {
   .features-hero-main,
   .features-hero-highlight {
-    font-size: 1.5rem;
-    padding: 0 0.3em;
+    font-size: 1.2rem;
+    padding: 0 0.2em;
   }
   .features-hero {
     padding: 28px 2vw 18px 2vw;
@@ -223,5 +205,37 @@
   .features-section-card {
     padding: 1rem 0.5vw;
     border-radius: 0.7rem !important;
+    margin: 1.2rem auto 1.2rem auto;
+  }
+  .features-section-title {
+    font-size: 1.08rem;
+    margin-bottom: 0.5em;
+  }
+  .features-cards-list {
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .feature-inner-card {
+    min-width: 0;
+    max-width: 98vw;
+    padding: 0.7em 0.3em;
+    font-size: 0.98rem;
+    border-radius: 0.7rem;
+  }
+  .feature-inner-card.modern-feature-card {
+    padding: 0.7em 0.3em;
+    font-size: 0.98rem;
+    max-width: 98vw;
+    gap: 0.5rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .feature-inner-card-title {
+    font-size: 1.02rem;
+    margin-bottom: 0.1em;
+  }
+  .feature-inner-card-desc {
+    font-size: 0.95rem;
+    line-height: 1.5;
   }
 }

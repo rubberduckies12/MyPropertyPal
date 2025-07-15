@@ -82,13 +82,42 @@
   font-size: 1rem;
 }
 
-/* Responsive */
+/* --- Mobile Optimized Contact Form --- */
 @media (max-width: 600px) {
   .contact-form-container {
-    padding: 18px 6px 16px 6px;
-    max-width: 98vw;
+    margin: 72px auto 0 auto;
+    padding: 16px 4vw 20px 4vw;
+    max-width: 99vw;
+    border-radius: 0.7rem;
+    box-shadow: 0 2px 10px rgba(37,99,235,0.10);
   }
-  .contact-form h2 {
-    font-size: 1.3rem;
+  .contact-form-container h2 {
+    font-size: 1.15rem;
+    margin-bottom: 12px;
+  }
+  .contact-form label {
+    font-size: 0.98rem;
+    gap: 4px;
+  }
+  .contact-form input,
+  .contact-form textarea {
+    font-size: 0.98rem;
+    padding: 8px 10px;
+    border-radius: 0.5rem;
+  }
+  .contact-form button[type="submit"] {
+    font-size: 0.98rem;
+    padding: 10px 0;
+    border-radius: 0.5rem;
+    margin-top: 6px;
+    width: 100%;
+    max-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+  .form-status {
+    font-size: 0.95rem;
+    min-height: 18px;
   }
 }
