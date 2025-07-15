@@ -194,48 +194,36 @@
 @media (max-width: 600px) {
   .features-hero-main,
   .features-hero-highlight {
-    font-size: 1.2rem;
-    padding: 0 0.2em;
+    font-size: 1rem;
+    padding: 0 0.1em;
   }
-  .features-hero {
-    padding: 28px 2vw 18px 2vw;
-    border-radius: 0 0 0.7rem 0.7rem;
-  }
-  .features-sub-hero,
-  .features-section-card {
-    padding: 1rem 0.5vw;
-    border-radius: 0.7rem !important;
-    margin: 1.2rem auto 1.2rem auto;
+  .features-hero-sub {
+    font-size: 0.92rem;
+    padding: 0.5em 0.2em;
+    line-height: 1.4;
+    max-width: 98vw;
   }
   .features-section-title {
-    font-size: 1.08rem;
-    margin-bottom: 0.5em;
-  }
-  .features-cards-list {
-    gap: 0.5rem;
-    margin-top: 1rem;
+    font-size: 0.98rem;
+    margin-bottom: 0.4em;
   }
   .feature-inner-card {
-    min-width: 0;
-    max-width: 98vw;
-    padding: 0.7em 0.3em;
-    font-size: 0.98rem;
-    border-radius: 0.7rem;
+    font-size: 0.92rem;
+    padding: 0.5em 0.2em;
+    border-radius: 0.6rem;
   }
   .feature-inner-card.modern-feature-card {
-    padding: 0.7em 0.3em;
-    font-size: 0.98rem;
-    max-width: 98vw;
-    gap: 0.5rem;
-    flex-direction: column;
-    align-items: stretch;
+    font-size: 0.92rem;
+    padding: 0.5em 0.2em;
+    gap: 0.3rem;
+    border-radius: 0.6rem;
   }
   .feature-inner-card-title {
-    font-size: 1.02rem;
-    margin-bottom: 0.1em;
+    font-size: 0.97rem;
+    margin-bottom: 0.08em;
   }
   .feature-inner-card-desc {
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: 0.92rem;
+    line-height: 1.4;
   }
 }
