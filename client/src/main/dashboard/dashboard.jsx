@@ -5,7 +5,7 @@ import Sidebar from '../sidebar/sidebar.jsx';
 
 // Hardcoded backend URLs
 const API_BASE = "https://mypropertypal-3.onrender.com";
-const MAINTENANCE_URL = `${API_BASE}/api/maintenance`;
+const MAINTENANCE_URL = `${API_BASE}/api/maintenance/landlord`; // Use landlord endpoint
 const MESSAGES_CONTACTS_URL = `${API_BASE}/api/messages/contacts`;
 const TENANTS_COUNT_URL = `${API_BASE}/api/tenants/count`;
 const DASHBOARD_USER_URL = `${API_BASE}/api/dashboard/user`;
