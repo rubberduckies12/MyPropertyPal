@@ -11,6 +11,9 @@ const client = new vision.ImageAnnotatorClient({
   keyFilename: "/etc/secrets/google-vision-key.json" // Use the Render secret file path
 });
 
+// Log to check if the key file exists
+console.log("Key file exists:", fs.existsSync("/etc/secrets/google-vision-key.json"));
+
 // Multer setup for file uploads
 const upload = multer({
   dest: path.join(__dirname, "../../uploads"),
