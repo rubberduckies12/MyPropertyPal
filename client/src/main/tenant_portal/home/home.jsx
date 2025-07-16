@@ -30,7 +30,8 @@ async function fetchTenantIncidents() {
     headers: { Authorization: token ? `Bearer ${token}` : "" }
   });
   if (!res.ok) return [];
-  return res.json();
+  const data = await res.json();
+  return data.incidents || [];
 }
 
 async function fetchTenantUser() {
