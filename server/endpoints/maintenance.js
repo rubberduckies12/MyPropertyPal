@@ -6,7 +6,16 @@ const authenticate = require("../middleware/authenticate");
 router.get("/", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   try {
-    const role = req.user.role;
+    // Fetch role from DB using account id
+    const roleRes = await pool.query(
+      `SELECT r.role
+         FROM account a
+         JOIN account_role r ON a.role_id = r.id
+        WHERE a.id = $1`,
+      [req.user.id]
+    );
+    const role = roleRes.rows[0]?.role;
+
     if (role === "tenant") {
       // 1. Get tenant id from account id
       const tenantRes = await pool.query(
