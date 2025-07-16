@@ -26,7 +26,7 @@ async function fetchContacts() {
 
 async function fetchTenantIncidents() {
   const token = localStorage.getItem("token");
-  const res = await fetch(`${API_BASE}/api/tenant/incidents`, {
+  const res = await fetch(`${API_BASE}/api/maintenance`, {
     headers: { Authorization: token ? `Bearer ${token}` : "" }
   });
   if (!res.ok) return [];
