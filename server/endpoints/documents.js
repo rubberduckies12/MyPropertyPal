@@ -5,9 +5,11 @@ const path = require("path");
 const fs = require("fs");
 const authenticate = require("../middleware/authenticate");
 
-// Google Vision setup
+// Google Vision setup (hardcoded credentials path)
 const vision = require("@google-cloud/vision");
-const client = new vision.ImageAnnotatorClient();
+const client = new vision.ImageAnnotatorClient({
+  keyFilename: "/etc/secrets/google-vision-key" // <-- hardcoded path
+});
 
 
 
