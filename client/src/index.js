@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from "framer-motion";
 import './index.css';
 
 // Path imports
@@ -23,101 +24,213 @@ import Messages from './main/messages/messages.jsx';
 import Tmessages from './main/tenant_portal/home/tenantMessages/Tmessages.jsx';
 import Tai from './main/tenant_portal/TenantAi/Tai.jsx';
 import Settings from './main/settings/settings.jsx';
+import Sidebar from './main/sidebar/sidebar.jsx';
+import TenantSidebar from './main/tenant_portal/tsidebar/tenantSidebar.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  in: { opacity: 1, y: 0 },
+  out: { opacity: 0, y: -20 }
+};
+
+function AnimatedRoute({ children }) {
+  return (
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="in"
+      exit="out"
+      transition={{ duration: 0.4 }}
+      style={{ height: "100%" }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Layout component that chooses sidebar based on route
+function AppLayout({ children }) {
+  const location = useLocation();
+  // All tenant routes start with "/tenant-"
+  const isTenant = location.pathname.startsWith("/tenant-");
+  return (
+    <div style={{ display: "flex", height: "100vh" }}>
+      {isTenant ? <TenantSidebar /> : <Sidebar />}
+      <div style={{ flex: 1 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function AppRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Public pages (no sidebar) */}
+        <Route path="/" element={<AnimatedRoute><Login /></AnimatedRoute>} />
+        <Route path="/login" element={<AnimatedRoute><Login /></AnimatedRoute>} />
+        <Route path="/register" element={<AnimatedRoute><Register /></AnimatedRoute>} />
+
+        {/* Landlord App pages (with landlord sidebar) */}
+        <Route path="/dashboard" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Dashboard />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/chatbot" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord", "tenant"]}>
+                <Chatbot />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/admin" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Admin />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/properties" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Properties />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/tenants" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Tenants />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/incidents" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Incidents />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/contractors" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <ContractorsPage />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/finances" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Finances />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/documents" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Documents />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/compliance" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Compliance />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/messages" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Messages />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/settings" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <Settings />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+
+        {/* Tenant App pages (with tenant sidebar) */}
+        <Route path="/tenant-home" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["tenant"]}>
+                <TenantHome />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/tenant-maintenance" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["tenant"]}>
+                <MaintenanceRequestsTenant />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/tenant-messages" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["tenant"]}>
+                <Tmessages />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        <Route path="/tenant-ai" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["tenant"]}>
+                <Tai />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Routes>
-        {/* Public pages */}
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
-        {/* Landlord App pages (protected) */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Dashboard />
-          </ProtectedRoute>
-        } />
-        <Route path="/chatbot" element={
-          <ProtectedRoute allowedRoles={["landlord", "tenant"]}>
-            <Chatbot />
-          </ProtectedRoute>
-        } />
-        <Route path="/admin" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Admin />
-          </ProtectedRoute>
-        } />
-        <Route path="/properties" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Properties />
-          </ProtectedRoute>
-        } />
-        <Route path="/tenants" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Tenants />
-          </ProtectedRoute>
-        } />
-        <Route path="/incidents" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Incidents />
-          </ProtectedRoute>
-        } />
-        <Route path="/contractors" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <ContractorsPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/finances" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Finances />
-          </ProtectedRoute>
-        } />
-        <Route path="/documents" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Documents />
-          </ProtectedRoute>
-        } />
-        <Route path="/compliance" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Compliance />
-          </ProtectedRoute>
-        } />
-        <Route path="/messages" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Messages />
-          </ProtectedRoute>
-        } />
-        <Route path="/settings" element={
-          <ProtectedRoute allowedRoles={["landlord"]}>
-            <Settings />
-          </ProtectedRoute>
-        } />
-
-        {/* Tenant App pages (protected) */}
-        <Route path="/tenant-home" element={
-          <ProtectedRoute allowedRoles={["tenant"]}>
-            <TenantHome />
-          </ProtectedRoute>
-        } />
-        <Route path="/tenant-maintenance" element={
-          <ProtectedRoute allowedRoles={["tenant"]}>
-            <MaintenanceRequestsTenant />
-          </ProtectedRoute>
-        } />
-        <Route path="/tenant-messages" element={
-          <ProtectedRoute allowedRoles={["tenant"]}>
-            <Tmessages />
-          </ProtectedRoute>
-        } />
-        <Route path="/tenant-ai" element={
-          <ProtectedRoute allowedRoles={["tenant"]}>
-            <Tai />
-          </ProtectedRoute>
-        } />
-      </Routes>
+      <AppRoutes />
     </BrowserRouter>
   </React.StrictMode>
 );
