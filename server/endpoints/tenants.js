@@ -84,7 +84,8 @@ router.get("/", async (req, res) => {
 
     // Get tenants linked to this landlord's properties
     const tenantsResult = await pool.query(
-      `SELECT t.id, a.first_name, a.last_name, a.email, pt.property_id, p.address, pt.rent_amount, pt.rent_due_date, pt.pays_rent, t.is_pending,
+      `SELECT t.id, a.first_name, a.last_name, a.email, pt.property_id,
+              p.name AS property_name, p.address, pt.rent_amount, pt.rent_due_date, pt.pays_rent, t.is_pending,
               pt.rent_schedule_type, pt.rent_schedule_value
        FROM tenant t
        JOIN account a ON t.account_id = a.id
@@ -94,8 +95,12 @@ router.get("/", async (req, res) => {
       [landlordId]
     );
 
-    // Check and update rent_due_date if needed
+    // Combine property name and address for each tenant
     for (const tenant of tenantsResult.rows) {
+      tenant.address = tenant.property_name
+        ? `${tenant.property_name} ${tenant.address}`
+        : tenant.address;
+      // Check and update rent_due_date if needed
       if (tenant.rent_schedule_type) {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
