@@ -103,6 +103,11 @@ function Sidebar() {
         <div className="sidebar-section">
           <NavLink to="/chatbot" className="dashboard-nav-link">AI Chatbot</NavLink>
         </div>
+
+        {/* Settings */}
+        <div className="sidebar-section">
+          <NavLink to="/settings" className="dashboard-nav-link">Settings</NavLink>
+        </div>
       </nav>
       <span
         className="dashboard-nav-link dashboard-logout-link"
