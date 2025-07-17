@@ -116,7 +116,7 @@ export default function Incidents() {
                     </div>
                   </td>
                   <td>
-                    <span className="incident-property">{incident.property_address}</span>
+                    <span className="incident-property">{incident.property_display}</span>
                   </td>
                   <td>
                     <span className="incident-tenant">
@@ -178,7 +178,7 @@ export default function Incidents() {
                 </span>
               </div>
               <div className="incident-modal-section">
-                <b>Property:</b> <span className="incident-property">{selectedIncident.property_address}</span>
+                <b>Property:</b> <span className="incident-property">{selectedIncident.property_display}</span>
               </div>
               <div className="incident-modal-section">
                 <b>Tenant:</b> <span className="incident-tenant">{selectedIncident.tenant_first_name || ""} {selectedIncident.tenant_last_name || ""}</span>

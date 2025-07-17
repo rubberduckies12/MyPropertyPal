@@ -175,8 +175,12 @@ router.get("/landlord", authenticate, async (req, res) => {
     }
     // Get all incidents for properties owned by this landlord
     const result = await pool.query(
-      `SELECT i.*, p.address AS property_address, s.severity,
-              a.first_name AS tenant_first_name, a.last_name AS tenant_last_name
+      `SELECT i.*, 
+              p.name AS property_name, 
+              p.address AS property_address, 
+              s.severity,
+              a.first_name AS tenant_first_name, 
+              a.last_name AS tenant_last_name
          FROM incident i
          JOIN property p ON i.property_id = p.id
          JOIN incident_severity s ON i.severity_id = s.id
@@ -186,7 +190,16 @@ router.get("/landlord", authenticate, async (req, res) => {
          ORDER BY i.created_at DESC`,
       [landlordId]
     );
-    res.json({ incidents: result.rows });
+
+    // Combine property name and address
+    const incidents = result.rows.map(row => ({
+      ...row,
+      property_display: row.property_name
+        ? `${row.property_name} ${row.property_address}`
+        : row.property_address
+    }));
+
+    res.json({ incidents });
   } catch (err) {
     console.error("Landlord maintenance error:", err);
     res.status(500).json({ error: "Failed to fetch landlord maintenance requests." });
