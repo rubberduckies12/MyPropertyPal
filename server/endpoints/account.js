@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const authenticate = require("../middleware/authenticate");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 
 // Update account settings (name, email, password)
 router.put("/settings", authenticate, async (req, res) => {
@@ -74,6 +76,87 @@ router.get("/me", authenticate, async (req, res) => {
   } catch (err) {
     console.error("Fetch account info error:", err);
     res.status(500).json({ error: "Failed to fetch account info" });
+  }
+});
+
+// Forgot password: send reset email
+router.post("/forgot-password", async (req, res) => {
+  const pool = req.app.get("pool");
+  const { email } = req.body;
+
+  try {
+    // Find user by email
+    const result = await pool.query(
+      "SELECT id FROM account WHERE email = $1",
+      [email]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No account with that email." });
+    }
+    const accountId = result.rows[0].id;
+
+    // Generate reset token
+    const token = crypto.randomBytes(32).toString("hex");
+    const expires = new Date(Date.now() + 1000 * 60 * 30); // 30 min expiry
+
+    // Save token and expiry to DB (add columns if needed)
+    await pool.query(
+      "UPDATE account SET reset_token = $1, reset_token_expires = $2 WHERE id = $3",
+      [token, expires, accountId]
+    );
+
+    // Send email
+    const transporter = nodemailer.createTransport({
+      service: "gmail", // or your provider
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const resetUrl = `https://my-property-pal-front.vercel.app/reset-password?token=${token}`;
+    await transporter.sendMail({
+      to: email,
+      subject: "Password Reset Request",
+      html: `<p>Click <a href="${resetUrl}">here</a> to reset your password. This link expires in 30 minutes.</p>`,
+    });
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ error: "Failed to send reset email" });
+  }
+});
+
+// Reset password with token
+router.post("/reset-password", async (req, res) => {
+  const pool = req.app.get("pool");
+  const { token, password } = req.body;
+
+  try {
+    // Find account by token and check expiry
+    const result = await pool.query(
+      "SELECT id, reset_token_expires FROM account WHERE reset_token = $1",
+      [token]
+    );
+    if (
+      result.rows.length === 0 ||
+      new Date() > new Date(result.rows[0].reset_token_expires)
+    ) {
+      return res.status(400).json({ error: "Invalid or expired token." });
+    }
+    const accountId = result.rows[0].id;
+
+    // Update password and clear token
+    await pool.query(
+      "UPDATE account SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2",
+      [password, accountId]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Reset password error:", err);
+    res.status(500).json({ error: "Failed to reset password" });
   }
 });
 

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { login, requestPasswordReset } from "./login";
 import { useNavigate } from "react-router-dom";
 import "./login.css";
+
+const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
 function Login({ onRegisterClick }) {
   const [email, setEmail] = useState("");
@@ -12,15 +13,41 @@ function Login({ onRegisterClick }) {
   const [resetMsg, setResetMsg] = useState("");
   const navigate = useNavigate();
 
+  // Login function moved from login.js
+  const login = async (email, password) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Login failed');
+      }
+
+      const data = await response.json();
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      return data;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const user = await login(email, password);
       setMessage("Login successful!");
       localStorage.setItem("token", user.token);
-      localStorage.setItem("role", user.role); // Save the role
+      localStorage.setItem("role", user.role);
 
-      // Redirect based on user role/type
       if (user.role === "tenant" || user.type === "tenant") {
         navigate("/tenant-home");
       } else {
@@ -31,12 +58,22 @@ function Login({ onRegisterClick }) {
     }
   };
 
-  const handleResetSubmit = (e) => {
+  // Password reset function moved from login.js
+  const handleResetSubmit = async (e) => {
     e.preventDefault();
-    if (requestPasswordReset(resetEmail)) {
-      setResetMsg("If this email exists, a reset link has been sent.");
-    } else {
-      setResetMsg("Reset link feature is currently unavailable.");
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/account/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+      if (res.ok) {
+        setResetMsg("If this email exists, a reset link has been sent.");
+      } else {
+        setResetMsg("Unable to send reset link. Please try again.");
+      }
+    } catch {
+      setResetMsg("Unable to send reset link. Please try again.");
     }
   };
 
