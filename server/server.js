@@ -6,18 +6,12 @@ const axios = require('axios');
 const { Pool } = require("pg");
 
 const createDatabaseConnection = require('./assets/databaseConnect');
+const authenticate = require('./middleware/authenticate');
+
+// Endpoint routers
 const login = require('./endpoints/login');
 const register = require('./endpoints/register');
 const dashEndpoints = require('./endpoints/dash.js');
-const { getProperties, addProperty, deleteProperty } = require('./endpoints/properties.js');
-const authenticate = require('./middleware/authenticate');
-
-const app = express();
-const port = 5001;
-const pool = createDatabaseConnection();
-
-app.set("pool", pool);
-
 const chatRoute = require('./endpoints/chat');
 const tenantsRouter = require('./endpoints/tenants');
 const propertiesRouter = require('./endpoints/properties');
@@ -25,10 +19,18 @@ const financesRouter = require('./endpoints/finances');
 const documentsRouter = require('./endpoints/documents');
 const complianceRouter = require('./endpoints/compliance');
 const maintenanceRouter = require('./endpoints/maintenance');
-const messagesRouter = require('./endpoints/messages.js'); // <-- Add this line
+const messagesRouter = require('./endpoints/messages.js');
 const stripeRouter = require('./endpoints/stripe');
 const accountRouter = require('./endpoints/account.js');
+const tenantRentRouter = require('./endpoints/tenants/tenantRent');
+const { searchContractors } = require('./database/getcontractors');
 
+const app = express();
+const port = process.env.PORT || 5001;
+const pool = createDatabaseConnection();
+app.set("pool", pool);
+
+// --- Middleware ---
 app.use(cors({
   origin: [
     'http://localhost:3000',
@@ -37,9 +39,11 @@ app.use(cors({
   ],
 }));
 app.use(express.json());
+
+// --- Public Routes ---
 app.use('/api/chat', chatRoute);
 
-// Example: Using axios in a route
+// External API example
 app.get('/external-api', async (req, res) => {
   try {
     const response = await axios.get('https://api.example.com/data');
@@ -49,8 +53,7 @@ app.get('/external-api', async (req, res) => {
   }
 });
 
-// Contractors API
-const { searchContractors } = require('./database/getcontractors');
+// Contractors API (public)
 app.get('/api/contractors', async (req, res) => {
   const { location, keyword } = req.query;
   if (!location) {
@@ -71,12 +74,12 @@ app.post('/register', (req, res) => register(req, res, pool));
 // Dashboard endpoints
 dashEndpoints(app, pool);
 
-// Properties endpoint (JWT protected)
-app.get('/api/properties', authenticate, (req, res) => getProperties(req, res, pool));
-app.post('/api/properties', authenticate, (req, res) => addProperty(req, res, pool));
-app.delete('/api/properties/:id', authenticate, (req, res) => deleteProperty(req, res, pool));
+// Properties endpoints (JWT protected)
+app.get('/api/properties', authenticate, (req, res) => require('./endpoints/properties').getProperties(req, res, pool));
+app.post('/api/properties', authenticate, (req, res) => require('./endpoints/properties').addProperty(req, res, pool));
+app.delete('/api/properties/:id', authenticate, (req, res) => require('./endpoints/properties').deleteProperty(req, res, pool));
 
-// --- PUBLIC TENANT INVITE ENDPOINT (no auth) ---
+// --- Tenant Invite Endpoint (public, no auth) ---
 app.get('/api/tenants/invite/:token', async (req, res) => {
   const pool = req.app.get("pool");
   const { token } = req.params;
@@ -93,29 +96,28 @@ app.get('/api/tenants/invite/:token', async (req, res) => {
   res.json(result.rows[0]);
 });
 
-// --- PROTECTED ROUTES ---
+// --- Protected Routes ---
 app.use(authenticate);
 app.use("/api/tenants", tenantsRouter);
 app.use('/api/finances', financesRouter);
 app.use('/api/documents', documentsRouter);
 app.use('/api/compliance', complianceRouter);
-const tenantRentRouter = require('./endpoints/tenants/tenantRent');
-app.use('/api/tenant/rent', authenticate, tenantRentRouter);
+app.use('/api/tenant/rent', tenantRentRouter);
 app.use('/api/maintenance', maintenanceRouter);
 app.use('/api/messages', messagesRouter);
-app.use('/api/stripe', stripeRouter); // <-- Add this line
+app.use('/api/stripe', stripeRouter);
 app.use('/api/account', accountRouter);
 
-// Serve static files from the "exports" directory
+// --- Static Exports ---
 app.use("/exports", express.static(path.join(__dirname, "../exports")));
 
-// Client Endpoints (placeholders)
+// --- Client Endpoints (placeholders) ---
 app.get('/', (req, res) => res.send('Welcome to the Property Management API'));
 app.get('/login', (req, res) => res.send('Login page placeholder'));
 app.get('/register', (req, res) => res.send('Register page placeholder'));
 app.get('/landing-page', (req, res) => res.send('Landing page placeholder'));
 
-// Catch-all route
+// --- Catch-all route ---
 app.get('*', (req, res) => res.status(404).send('Not Found'));
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
