@@ -42,6 +42,7 @@ app.use(express.json());
 
 // --- Public Routes ---
 app.use('/api/chat', chatRoute);
+app.use('/api/account', accountRouter); // <-- Add this line here for public account routes
 
 // External API example
 app.get('/external-api', async (req, res) => {
@@ -106,7 +107,6 @@ app.use('/api/tenant/rent', tenantRentRouter);
 app.use('/api/maintenance', maintenanceRouter);
 app.use('/api/messages', messagesRouter);
 app.use('/api/stripe', stripeRouter);
-app.use('/api/account', accountRouter);
 
 // --- Static Exports ---
 app.use("/exports", express.static(path.join(__dirname, "../exports")));
