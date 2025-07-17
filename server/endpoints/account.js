@@ -3,6 +3,7 @@ const router = express.Router();
 const authenticate = require("../middleware/authenticate");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const bcrypt = require("bcrypt"); // Make sure this is at the top
 
 // Update account settings (name, email, password)
 router.put("/settings", authenticate, async (req, res) => {
@@ -11,18 +12,20 @@ router.put("/settings", authenticate, async (req, res) => {
   const accountId = req.user.id;
 
   try {
-    // Update name/email/password if provided
-    if (firstName || lastName || email || password) {
-      await pool.query(
-        `UPDATE account
+    let hashedPassword = null;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    await pool.query(
+      `UPDATE account
          SET first_name = COALESCE($1, first_name),
              last_name = COALESCE($2, last_name),
              email = COALESCE($3, email),
              password = COALESCE($4, password)
          WHERE id = $5`,
-        [firstName, lastName, email, password, accountId]
-      );
-    }
+      [firstName, lastName, email, hashedPassword, accountId]
+    );
 
     // Update plan if provided and user is a landlord
     if (plan) {
@@ -147,10 +150,13 @@ router.post("/reset-password", async (req, res) => {
     }
     const accountId = result.rows[0].id;
 
+    // Hash the new password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Update password and clear token
     await pool.query(
       "UPDATE account SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2",
-      [password, accountId]
+      [hashedPassword, accountId]
     );
 
     res.json({ success: true });
