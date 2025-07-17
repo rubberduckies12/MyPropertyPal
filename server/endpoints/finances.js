@@ -34,7 +34,8 @@ router.get("/", authenticate, async (req, res) => {
       SELECT
         rp.id,
         rp.paid_on AS date,
-        p.name AS property,
+        p.name AS property_name,
+        p.address AS property_address,
         a.first_name || ' ' || a.last_name AS tenant,
         rp.amount,
         'Received' AS status
@@ -45,7 +46,11 @@ router.get("/", authenticate, async (req, res) => {
       WHERE p.landlord_id = $1
       ORDER BY rp.paid_on DESC
     `, [landlordId]);
-    const rentPayments = rentPaymentsResult.rows;
+
+    const rentPayments = rentPaymentsResult.rows.map(rp => ({
+      ...rp,
+      property: [rp.property_name, rp.property_address].filter(Boolean).join(" ")
+    }));
 
     // Expenses
     const expensesResult = await pool.query(`
