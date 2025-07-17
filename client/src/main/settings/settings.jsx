@@ -5,7 +5,9 @@ import "./settings.css";
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
 export default function Settings() {
-  const [user, setUser] = useState(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [editingEmail, setEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -21,13 +23,15 @@ export default function Settings() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setUser(data);
+        setFirstName(data.firstName || "");
+        setLastName(data.lastName || "");
+        setEmail(data.email || "");
         setPlan(data.plan || "basic");
         setNewEmail(data.email || "");
       });
   }, []);
 
-  if (!user) {
+  if (!email) {
     return (
       <div className="settings-page" style={{ display: "flex" }}>
         <Sidebar />
@@ -50,7 +54,7 @@ export default function Settings() {
       body: JSON.stringify({ email: newEmail })
     });
     if (res.ok) {
-      setUser((u) => ({ ...u, email: newEmail }));
+      setEmail(newEmail);
       setEditingEmail(false);
     } else {
       alert("Failed to update email");
@@ -99,7 +103,6 @@ export default function Settings() {
       body: JSON.stringify({ plan })
     });
     if (res.ok) {
-      setUser((u) => ({ ...u, plan }));
       alert("Plan updated!");
     } else {
       alert("Failed to update plan");
@@ -118,13 +121,13 @@ export default function Settings() {
             <div style={{ display: "flex", gap: "12px" }}>
               <input
                 type="text"
-                value={user.firstName || ""}
+                value={firstName}
                 readOnly
                 style={{ flex: 1 }}
               />
               <input
                 type="text"
-                value={user.lastName || ""}
+                value={lastName}
                 readOnly
                 style={{ flex: 1 }}
               />
@@ -154,7 +157,7 @@ export default function Settings() {
                 <>
                   <input
                     type="email"
-                    value={user.email || ""}
+                    value={email}
                     readOnly
                     style={{ flex: 1 }}
                   />
@@ -183,7 +186,7 @@ export default function Settings() {
           <label>
             Plan
             <div style={{ display: "flex", gap: "10px" }}>
-              <select name="plan" value={plan} onChange={(e) => setPlan(e.target.value)} style={{ flex: 1 }}>
+              <select name="plan" value={plan} onChange={handlePlanChange} style={{ flex: 1 }}>
                 <option value="basic">Basic</option>
                 <option value="premium">Premium</option>
                 <option value="enterprise">Enterprise</option>
