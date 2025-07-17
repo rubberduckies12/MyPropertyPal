@@ -177,7 +177,9 @@ router.get("/landlord", authenticate, async (req, res) => {
     const result = await pool.query(
       `SELECT i.*, 
               p.name AS property_name, 
+              p.number AS property_number,
               p.address AS property_address, 
+              p.city, p.county, p.postcode,
               s.severity,
               a.first_name AS tenant_first_name, 
               a.last_name AS tenant_last_name
@@ -191,12 +193,17 @@ router.get("/landlord", authenticate, async (req, res) => {
       [landlordId]
     );
 
-    // Combine property name and address
+    // Combine property name/number and address for display
     const incidents = result.rows.map(row => ({
       ...row,
-      property_display: row.property_name
-        ? `${row.property_name} ${row.property_address}`
-        : row.property_address
+      property_display: [
+        row.property_name,
+        row.property_number,
+        row.property_address,
+        row.city,
+        row.county,
+        row.postcode
+      ].filter(Boolean).join(" ")
     }));
 
     res.json({ incidents });
