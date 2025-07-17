@@ -1,31 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../sidebar/sidebar.jsx";
 import "./settings.css";
 
-const BACKEND_URL = "https://mypropertypal-3.onrender.com"; // <-- hardcoded backend URL
+const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
 export default function Settings() {
-  // Example user data (replace with real data from API)
-  const [user, setUser] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@email.com",
-    plan: "basic",
-  });
-
-  // State for editing email
+  const [user, setUser] = useState(null);
   const [editingEmail, setEditingEmail] = useState(false);
-  const [newEmail, setNewEmail] = useState(user.email);
-
-  // State for password reset modal
+  const [newEmail, setNewEmail] = useState("");
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwords, setPasswords] = useState({ password: "", confirm: "" });
+  const [plan, setPlan] = useState("");
 
-  // State for plan change
-  const [plan, setPlan] = useState(user.plan);
+  // Fetch user data from backend on mount
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/api/account/me`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setUser(data);
+        setPlan(data.plan || "basic");
+        setNewEmail(data.email || "");
+      });
+  }, []);
 
-  // Handlers
-  const handleEmailChange = (e) => setNewEmail(e.target.value);
+  if (!user) {
+    return (
+      <div className="settings-page" style={{ display: "flex" }}>
+        <Sidebar />
+        <main className="settings-main">
+          <h1 className="finances-title">Account Settings</h1>
+          <div style={{ textAlign: "center", marginTop: "48px" }}>Loading...</div>
+        </main>
+      </div>
+    );
+  }
 
   // Update email
   const handleSaveEmail = async () => {
@@ -106,13 +118,13 @@ export default function Settings() {
             <div style={{ display: "flex", gap: "12px" }}>
               <input
                 type="text"
-                value={user.firstName}
+                value={user.firstName || ""}
                 readOnly
                 style={{ flex: 1 }}
               />
               <input
                 type="text"
-                value={user.lastName}
+                value={user.lastName || ""}
                 readOnly
                 style={{ flex: 1 }}
               />
@@ -128,7 +140,7 @@ export default function Settings() {
                   <input
                     type="email"
                     value={newEmail}
-                    onChange={handleEmailChange}
+                    onChange={(e) => setNewEmail(e.target.value)}
                     style={{ flex: 1 }}
                   />
                   <button type="button" className="settings-save-btn" onClick={handleSaveEmail}>
@@ -142,7 +154,7 @@ export default function Settings() {
                 <>
                   <input
                     type="email"
-                    value={user.email}
+                    value={user.email || ""}
                     readOnly
                     style={{ flex: 1 }}
                   />
@@ -171,7 +183,7 @@ export default function Settings() {
           <label>
             Plan
             <div style={{ display: "flex", gap: "10px" }}>
-              <select name="plan" value={plan} onChange={handlePlanChange} style={{ flex: 1 }}>
+              <select name="plan" value={plan} onChange={(e) => setPlan(e.target.value)} style={{ flex: 1 }}>
                 <option value="basic">Basic</option>
                 <option value="premium">Premium</option>
                 <option value="enterprise">Enterprise</option>

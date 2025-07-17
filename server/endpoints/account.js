@@ -46,4 +46,35 @@ router.put("/settings", authenticate, async (req, res) => {
   }
 });
 
+// Get current user info
+router.get("/me", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  const accountId = req.user.id;
+
+  try {
+    const result = await pool.query(
+      "SELECT first_name AS firstName, last_name AS lastName, email FROM account WHERE id = $1",
+      [accountId]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // If landlord, get plan
+    const landlordRes = await pool.query(
+      `SELECT p.name AS plan
+       FROM landlord l
+       JOIN payment_plan p ON l.payment_plan_id = p.id
+       WHERE l.account_id = $1`,
+      [accountId]
+    );
+    const plan = landlordRes.rows[0]?.plan || "basic";
+
+    res.json({ ...result.rows[0], plan });
+  } catch (err) {
+    console.error("Fetch account info error:", err);
+    res.status(500).json({ error: "Failed to fetch account info" });
+  }
+});
+
 module.exports = router;
