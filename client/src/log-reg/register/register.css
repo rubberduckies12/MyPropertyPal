@@ -74,6 +74,78 @@
   color: #222;
 }
 
+.register-step-indicator {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  gap: 8px;
+}
+
+.register-step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d1d5db;
+  transition: background 0.2s;
+}
+
+.register-step-dot.active {
+  background: #2563eb;
+}
+
+.register-form .register-step-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.register-form .register-step-buttons button {
+  width: 48%;
+  margin-bottom: 0;
+}
+
+.register-form .register-radio-group {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+.register-form .register-radio-group label {
+  font-weight: 400;
+  color: #333;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.register-billing-toggle {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0 18px 0;
+  justify-content: center;
+}
+
+.register-billing-toggle button {
+  flex: 1;
+  padding: 10px 0;
+  border: 1.5px solid #2563eb;
+  background: #fff;
+  color: #2563eb;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.register-billing-toggle button.active,
+.register-billing-toggle button:focus {
+  background: #2563eb;
+  color: #fff;
+  outline: none;
+}
+
 @media (max-width: 500px) {
   .register-popup {
     padding: 24px 8px 24px 8px;

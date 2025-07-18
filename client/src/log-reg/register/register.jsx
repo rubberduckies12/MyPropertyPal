@@ -152,25 +152,21 @@ export default function Register() {
                   <option key={p.value} value={p.value}>{p.label}</option>
                 ))}
               </select>
-              <div>
-                <label>
-                  <input
-                    type="radio"
-                    name="billing"
-                    value="monthly"
-                    checked={billingCycle === "monthly"}
-                    onChange={() => setBillingCycle("monthly")}
-                  /> Monthly
-                </label>
-                <label style={{ marginLeft: 16 }}>
-                  <input
-                    type="radio"
-                    name="billing"
-                    value="yearly"
-                    checked={billingCycle === "yearly"}
-                    onChange={() => setBillingCycle("yearly")}
-                  /> Yearly
-                </label>
+              <div className="register-billing-toggle">
+                <button
+                  type="button"
+                  className={billingCycle === "monthly" ? "active" : ""}
+                  onClick={() => setBillingCycle("monthly")}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  className={billingCycle === "yearly" ? "active" : ""}
+                  onClick={() => setBillingCycle("yearly")}
+                >
+                  Yearly
+                </button>
               </div>
               <button type="button" onClick={handleBack}>Back</button>
               <button type="button" onClick={handleNext} disabled={!plan}>Next</button>
