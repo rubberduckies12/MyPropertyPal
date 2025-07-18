@@ -230,7 +230,7 @@ export default function Landing() {
                             src="/dashboard.png"
                             alt="Dashboard Preview"
                             width={600}
-                            height={300}
+                            height={600}
                             className="object-cover w-full h-full"
                             priority
                         />
@@ -412,7 +412,10 @@ export default function Landing() {
                                     </li>
                                 ))}
                             </ul>
-                            <button className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition">
+                            <button
+                                className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition"
+                                onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                            >
                                 Get Started
                             </button>
                         </div>

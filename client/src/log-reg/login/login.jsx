@@ -77,15 +77,31 @@ function Login({ onRegisterClick }) {
     }
   };
 
+  // Add this function for the main back button
+  const handleMainBack = () => {
+    window.location.href = "https://my-property-pal-ucto.vercel.app/";
+  };
+
   return (
     <div className="login-popup-container">
       <div className="login-popup">
         <button
-          className="login-back-btn"
-          style={{ marginBottom: 16 }}
-          onClick={() => navigate("/")}
+          type="button"
+          className="login-main-back"
+          style={{
+            position: "absolute",
+            left: 24,
+            top: 24,
+            background: "none",
+            border: "none",
+            color: "#2563eb",
+            fontWeight: 600,
+            fontSize: "1rem",
+            cursor: "pointer"
+          }}
+          onClick={handleMainBack}
         >
-          ← Back to Home
+          ← Back
         </button>
         <img src="/publicassets/LogoWB.png" alt="MyPropertyPal Logo" className="login-logo" />
         {message && <p className="login-error">{message}</p>}

@@ -104,9 +104,32 @@ export default function Register() {
     }
   };
 
+  // Add this function for the main back button
+  const handleMainBack = () => {
+    window.location.href = "https://my-property-pal-ucto.vercel.app/";
+  };
+
   return (
     <div className="register-root">
       <div className="register-popup">
+        <button
+          type="button"
+          className="register-main-back"
+          style={{
+            position: "absolute",
+            left: 24,
+            top: 24,
+            background: "none",
+            border: "none",
+            color: "#2563eb",
+            fontWeight: 600,
+            fontSize: "1rem",
+            cursor: "pointer"
+          }}
+          onClick={handleMainBack}
+        >
+          ← Back
+        </button>
         <h2>Register</h2>
         <form className="register-form" onSubmit={handleSubmit}>
           {step === 1 && (
