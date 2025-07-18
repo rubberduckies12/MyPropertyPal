@@ -7,6 +7,7 @@ const { Pool } = require("pg");
 
 const createDatabaseConnection = require('./assets/databaseConnect');
 const authenticate = require('./middleware/authenticate');
+const checkSubscriptionStatus = require('./middleware/checkSubscriptionStatus');
 
 // Endpoint routers
 const login = require('./endpoints/login');
@@ -99,6 +100,8 @@ app.get('/api/tenants/invite/:token', async (req, res) => {
 
 // --- Protected Routes ---
 app.use(authenticate);
+app.use(checkSubscriptionStatus); // <-- Add this line to wrap all protected routes below
+
 app.use("/api/tenants", tenantsRouter);
 app.use('/api/finances', financesRouter);
 app.use('/api/documents', documentsRouter);

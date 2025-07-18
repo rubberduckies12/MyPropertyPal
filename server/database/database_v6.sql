@@ -30,7 +30,10 @@ CREATE TABLE IF NOT EXISTS payment_plan (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description TEXT NOT NULL,
-    monthly_rate DECIMAL(10, 2) NOT NULL
+    monthly_rate DECIMAL(10, 2) NOT NULL,
+    yearly_rate DECIMAL(10, 2),         -- Add this line for yearly billing
+    max_properties INT,                 -- NULL = unlimited
+    max_tenants_per_property INT        -- NULL = unlimited
 );
 
 -- ===== Landlords =====
@@ -264,3 +267,21 @@ JOIN
     tenant t ON a.id = t.account_id
 JOIN
     property_tenant pt ON t.id = pt.tenant_id;
+
+-- ===== Subscriptions =====
+CREATE TABLE IF NOT EXISTS subscription (
+    id SERIAL PRIMARY KEY,
+    landlord_id INT NOT NULL REFERENCES landlord(id) ON DELETE CASCADE,
+    plan_id INT NOT NULL REFERENCES payment_plan(id),
+    stripe_subscription_id VARCHAR(64),
+    stripe_customer_id VARCHAR(64),
+    status VARCHAR(20) NOT NULL, -- e.g. 'active', 'past_due', 'paused'
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    billing_cycle_end TIMESTAMP,
+    last_payment_date TIMESTAMP,
+    next_payment_due TIMESTAMP,
+    paused_at TIMESTAMP,
+    deleted_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

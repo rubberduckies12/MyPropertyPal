@@ -14,7 +14,7 @@ async function generateUniqueSixDigitId(pool) {
 
 module.exports = async function register(req, res, pool) {
     console.log("REGISTER BODY:", req.body);
-    const { email, password, role, propertyId, firstName, lastName, invite } = req.body || {};
+    const { email, password, role, propertyId, firstName, lastName, invite, plan_name, billing_cycle } = req.body || {};
 
     if (invite) {
         // Invite-based registration (tenant)
@@ -51,8 +51,8 @@ module.exports = async function register(req, res, pool) {
         return res.status(400).json({ error: "Tenants must register using an invite link." });
     }
 
-    if (!email || !password || !role || !firstName || !lastName) {
-        return res.status(400).json({ error: 'Email, password, role, first name, and last name are required.' });
+    if (!email || !password || !role || !firstName || !lastName || !plan_name || !billing_cycle) {
+        return res.status(400).json({ error: 'Email, password, role, first name, last name, plan, and billing cycle are required.' });
     }
 
     try {
@@ -100,9 +100,34 @@ module.exports = async function register(req, res, pool) {
 
         // If landlord, insert into landlord table with default payment_plan_id
         if (role === 'landlord') {
+            // Get plan info
+            const planResult = await pool.query(
+                'SELECT id, name, monthly_rate, yearly_rate FROM payment_plan WHERE LOWER(name) = $1',
+                [plan_name.toLowerCase()]
+            );
+            if (planResult.rows.length === 0) {
+                return res.status(400).json({ error: 'Invalid plan selected.' });
+            }
+            const plan = planResult.rows[0];
+
+            // Validate billing_cycle
+            if (!['monthly', 'yearly'].includes(billing_cycle)) {
+                return res.status(400).json({ error: 'Invalid billing cycle.' });
+            }
+
+            // Insert landlord (no longer use payment_plan_id directly)
+            const landlordResult = await pool.query(
+                `INSERT INTO landlord (account_id) VALUES ($1) RETURNING id`,
+                [accountId]
+            );
+            const landlordId = landlordResult.rows[0].id;
+
+            // Insert subscription
             await pool.query(
-                `INSERT INTO landlord (account_id, payment_plan_id) VALUES ($1, $2)`,
-                [accountId, 1] // Replace 1 with your actual default payment_plan_id
+                `INSERT INTO subscription (
+                    landlord_id, plan_id, status, is_active, created_at, updated_at
+                ) VALUES ($1, $2, 'active', TRUE, NOW(), NOW())`,
+                [landlordId, plan.id]
             );
         }
 

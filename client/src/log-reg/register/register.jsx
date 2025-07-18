@@ -7,6 +7,12 @@ const ROLES = [
   { label: "Tenant", value: "tenant" },
 ];
 
+const PLANS = [
+  { label: "Basic (£30/mo or £306/yr)", value: "basic" },
+  { label: "Pro (£50/mo or £510/yr)", value: "pro" },
+  { label: "Organisation (£250/mo or £2550/yr)", value: "organisation" },
+];
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -23,6 +29,7 @@ async function register(data) {
 }
 
 export default function Register() {
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -34,6 +41,8 @@ export default function Register() {
   const [success, setSuccess] = useState("");
   const [inviteMode, setInviteMode] = useState(false);
   const [inviteToken, setInviteToken] = useState("");
+  const [plan, setPlan] = useState("");
+  const [billingCycle, setBillingCycle] = useState("monthly");
   const navigate = useNavigate();
   const query = useQuery();
 
@@ -53,6 +62,9 @@ export default function Register() {
         .catch(() => setError("Invalid or expired invite link."));
     }
   }, [query]);
+
+  const handleNext = () => setStep(step + 1);
+  const handleBack = () => setStep(step - 1);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,6 +93,8 @@ export default function Register() {
           lastName,
           password,
           role: "landlord",
+          plan_name: plan,
+          billing_cycle: billingCycle,
         });
       }
       setSuccess("Registration successful! Redirecting to login...");
@@ -95,54 +109,101 @@ export default function Register() {
       <div className="register-popup">
         <h2>Register</h2>
         <form className="register-form" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={e => setFirstName(e.target.value)}
-            required
-            disabled={inviteMode}
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={e => setLastName(e.target.value)}
-            required
-            disabled={inviteMode}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            disabled={inviteMode}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-            required
-          />
-          {/* Only show role selector if NOT invite mode, and only allow landlord */}
-          {!inviteMode && (
-            <label>
-              Role:
-              <select value={role} onChange={e => setRole(e.target.value)} disabled>
-                <option value="landlord">Landlord</option>
-              </select>
-            </label>
+          {step === 1 && (
+            <>
+              <label>Hi, what's your name?</label>
+              <input
+                type="text"
+                placeholder="First Name"
+                value={firstName}
+                onChange={e => setFirstName(e.target.value)}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={lastName}
+                onChange={e => setLastName(e.target.value)}
+                required
+              />
+              <button type="button" onClick={handleNext} disabled={!firstName || !lastName}>Next</button>
+            </>
           )}
-          <button type="submit">Register</button>
+          {step === 2 && (
+            <>
+              <label>Enter your email</label>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+              />
+              <button type="button" onClick={handleBack}>Back</button>
+              <button type="button" onClick={handleNext} disabled={!email}>Next</button>
+            </>
+          )}
+          {step === 3 && (
+            <>
+              <label>Select your plan</label>
+              <select value={plan} onChange={e => setPlan(e.target.value)} required>
+                <option value="">Select a plan</option>
+                {PLANS.map(p => (
+                  <option key={p.value} value={p.value}>{p.label}</option>
+                ))}
+              </select>
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    name="billing"
+                    value="monthly"
+                    checked={billingCycle === "monthly"}
+                    onChange={() => setBillingCycle("monthly")}
+                  /> Monthly
+                </label>
+                <label style={{ marginLeft: 16 }}>
+                  <input
+                    type="radio"
+                    name="billing"
+                    value="yearly"
+                    checked={billingCycle === "yearly"}
+                    onChange={() => setBillingCycle("yearly")}
+                  /> Yearly
+                </label>
+              </div>
+              <button type="button" onClick={handleBack}>Back</button>
+              <button type="button" onClick={handleNext} disabled={!plan}>Next</button>
+            </>
+          )}
+          {step === 4 && (
+            <>
+              <label>Set your password</label>
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+              <button type="button" onClick={handleBack}>Back</button>
+              <button type="button" onClick={handleNext} disabled={!password}>Next</button>
+            </>
+          )}
+          {step === 5 && (
+            <>
+              <label>Confirm your password</label>
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                required
+              />
+              <button type="button" onClick={handleBack}>Back</button>
+              <button type="submit" disabled={!confirmPassword}>Register</button>
+            </>
+          )}
         </form>
         {error && <div className="register-error">{error}</div>}
         {success && <div className="register-success">{success}</div>}
