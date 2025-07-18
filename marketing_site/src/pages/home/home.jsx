@@ -217,7 +217,10 @@ export default function Landing() {
                         30-Day Money Back Guarantee. No Questions Asked.
                     </p>
                     {/* Hide on mobile, show on md+ */}
-                    <button className="hidden md:inline-block bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto">
+                    <button
+                        className="hidden md:inline-block bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto"
+                        onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                    >
                         Get your Free Demo
                     </button>
                 </div>
@@ -247,7 +250,10 @@ export default function Landing() {
                         landlords and tenants. Stay organised, stay compliant, and reclaim
                         more time.
                     </p>
-                    <button className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center">
+                    <button
+                        className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
+                        onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                    >
                         Get Started
                     </button>
                 </div>
@@ -287,7 +293,10 @@ export default function Landing() {
                         All of your rental income and expenses tracked and categorised for you,
                         so you always know what’s important. One login, one simple app.
                     </p>
-                    <button className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center">
+                    <button
+                        className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
+                        onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                    >
                         Get Started
                     </button>
                 </div>
@@ -316,7 +325,10 @@ export default function Landing() {
                     Whether you’re managing a single property or a whole portfolio, we’re
                     here to support you every step. MyPropertyPal is always by your side.
                 </p>
-                <button className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center">
+                <button
+                    className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
+                    onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                >
                     Get Started
                 </button>
             </div> {/* <-- Add this line to close the div */}
