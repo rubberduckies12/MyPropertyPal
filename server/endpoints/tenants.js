@@ -204,7 +204,12 @@ router.post("/", async (req, res) => {
     const tenantId = tenantResult.rows[0].id;
 
     // 4. Link tenant to property with rent_amount and calculated rent_due_date
-    let rentDueDate = getNextDueDate(null, rent_schedule_type, rent_schedule_value);
+    let rentDueDate;
+    if (rent_schedule_type === "monthly" && rent_due_date) {
+      rentDueDate = rent_due_date;
+    } else {
+      rentDueDate = getNextDueDate(null, rent_schedule_type, rent_schedule_value);
+    }
     await pool.query(
       `INSERT INTO property_tenant (property_id, tenant_id, rent_amount, rent_due_date, rent_schedule_type, rent_schedule_value)
        VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -349,8 +354,12 @@ router.put("/:tenantId", async (req, res) => {
     );
 
     // Always recalculate rent_due_date for all schedule types
-    let rentDueDate = getNextDueDate(null, rent_schedule_type, rent_schedule_value);
-
+    let rentDueDate;
+    if (rent_schedule_type === "monthly" && rent_due_date) {
+      rentDueDate = rent_due_date;
+    } else {
+      rentDueDate = getNextDueDate(null, rent_schedule_type, rent_schedule_value);
+    }
     await pool.query(
       `UPDATE property_tenant
        SET property_id = $1,
