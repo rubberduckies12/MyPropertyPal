@@ -111,11 +111,50 @@ router.post("/rent", authenticate, async (req, res) => {
     const accountId = req.user.id;
     const landlordId = await getLandlordId(pool, accountId);
     const { property_id, tenant_id, amount, paid_on, method, reference } = req.body;
+
+    // 1. Insert rent payment
     const result = await pool.query(
       `INSERT INTO rent_payment (property_id, tenant_id, amount, paid_on, method, reference)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
       [property_id, tenant_id, amount, paid_on, method, reference]
     );
+
+    // 2. Get current rent schedule info
+    const ptRes = await pool.query(
+      `SELECT rent_due_date, rent_schedule_type, rent_schedule_value
+       FROM property_tenant
+       WHERE property_id = $1 AND tenant_id = $2`,
+      [property_id, tenant_id]
+    );
+    if (ptRes.rows.length) {
+      let { rent_due_date, rent_schedule_type, rent_schedule_value } = ptRes.rows[0];
+      let nextDue = new Date(rent_due_date);
+
+      // Advance due date based on schedule
+      if (rent_schedule_type === "monthly") {
+        nextDue.setMonth(nextDue.getMonth() + 1);
+      } else if (rent_schedule_type === "weekly") {
+        nextDue.setDate(nextDue.getDate() + 7);
+      } else if (rent_schedule_type === "biweekly") {
+        nextDue.setDate(nextDue.getDate() + 14);
+      } else if (rent_schedule_type === "last_friday") {
+        // Find last Friday of next month
+        let year = nextDue.getFullYear();
+        let month = nextDue.getMonth() + 1;
+        if (month > 11) { month = 0; year++; }
+        let d = new Date(year, month + 1, 0);
+        while (d.getDay() !== 5) d.setDate(d.getDate() - 1);
+        nextDue = d;
+      }
+      // Optionally, handle custom schedule_value logic here
+
+      // 3. Update next due date in property_tenant
+      await pool.query(
+        `UPDATE property_tenant SET rent_due_date = $1 WHERE property_id = $2 AND tenant_id = $3`,
+        [nextDue.toISOString().slice(0, 10), property_id, tenant_id]
+      );
+    }
+
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error("Error adding rent payment:", err);
