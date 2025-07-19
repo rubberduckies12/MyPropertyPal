@@ -272,9 +272,9 @@ function Dashboard() {
             </button>
           </div>
 
-          {/* Upcoming Events Card (now shows compliance deadlines) */}
+          {/* Urgent Compliance Deadlines Card (was "Upcoming Compliance Deadlines") */}
           <div className="dashboard-card">
-            <h3>Upcoming Compliance Deadlines</h3>
+            <h3>Urgent Compliance Deadlines</h3>
             <div>
               {upcomingCompliance.length === 0 ? (
                 <div className="dashboard-message-empty">
