@@ -59,7 +59,7 @@
 
 /* ===== Add Property Button ===== */
 .add-property-btn {
-  background: var(--primary-blue); /* Changed from var(--primary-dark) to brand blue */
+  background: #2563eb; /* Use the exact brand blue */
   color: var(--white);
   border: none;
   border-radius: 8px;
@@ -71,7 +71,7 @@
   box-shadow: 0 2px 8px rgba(37,99,235,0.07);
 }
 .add-property-btn:hover {
-  background: var(--primary-dark); /* On hover, use the darker blue */
+  background: var(--primary-blue); /* Slightly lighter blue on hover */
   box-shadow: 0 4px 16px rgba(37,99,235,0.13);
 }
 

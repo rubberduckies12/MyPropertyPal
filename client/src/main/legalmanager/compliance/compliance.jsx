@@ -213,26 +213,11 @@ export default function Compliance() {
         <div className="properties-header">
           <h1 className="properties-title">Compliance Manager</h1>
           <div>
-            <button
-              className="add-property-btn"
-              onClick={() => fileInputRef.current.click()}
-              disabled={uploading}
-              type="button"
-              style={{ marginRight: 12 }}
-            >
-              {uploading ? "Uploading..." : "Upload or Scan Document"}
-            </button>
-            <input
-              type="file"
-              accept="application/pdf,image/*"
-              style={{ display: "none" }}
-              ref={fileInputRef}
-              onChange={handleUpload}
-              disabled={uploading}
-            />
+            {/* Remove Upload/Scan Document button and file input */}
             <button
               className="add-property-btn"
               type="button"
+              style={{ background: "#2563eb", color: "#fff" }}
               onClick={() => setShowEventForm(true)}
             >
               Add Compliance Event

@@ -248,7 +248,7 @@ export default function Properties() {
                 </label>
                 {addError && <div style={{ color: "red" }}>{addError}</div>}
                 <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
-                  <button type="submit" className="add-note-btn" disabled={addLoading}>
+                  <button type="submit" className="add-property-btn" disabled={addLoading}>
                     {addLoading ? "Adding..." : "Add Property"}
                   </button>
                   <button

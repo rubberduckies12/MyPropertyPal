@@ -226,7 +226,7 @@ export default function Tenants() {
                             onChange={() => setShowYearly((v) => !v)}
                         />
                         <button
-                            className="add-property-btn"
+                            className="add-tenant-btn"
                             style={{ marginLeft: 18 }}
                             onClick={() => setShowAddModal(true)}
                         >
