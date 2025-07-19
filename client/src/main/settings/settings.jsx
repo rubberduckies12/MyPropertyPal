@@ -13,6 +13,7 @@ export default function Settings() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwords, setPasswords] = useState({ password: "", confirm: "" });
   const [plan, setPlan] = useState("");
+  const [billingCycle, setBillingCycle] = useState("monthly");
 
   // Fetch user data from backend on mount
   useEffect(() => {
@@ -92,20 +93,28 @@ export default function Settings() {
 
   const handlePlanChange = (e) => setPlan(e.target.value);
 
-  // Update plan
+  // Replace handleSavePlan with Stripe checkout logic
   const handleSavePlan = async () => {
-    const res = await fetch(`${BACKEND_URL}/api/account/settings`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      },
-      body: JSON.stringify({ plan })
-    });
-    if (res.ok) {
-      alert("Plan updated!");
-    } else {
-      alert("Failed to update plan");
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/stripe/create-checkout-session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          plan_name: plan,
+          billing_cycle: billingCycle,
+          email,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url; // Redirect to Stripe Checkout
+      } else {
+        alert(data.error || "Failed to start checkout");
+      }
+    } catch (err) {
+      alert("Failed to start checkout");
     }
   };
 
@@ -186,10 +195,14 @@ export default function Settings() {
           <label>
             Plan
             <div style={{ display: "flex", gap: "10px" }}>
-              <select name="plan" value={plan} onChange={handlePlanChange} style={{ flex: 1 }}>
+              <select name="plan" value={plan} onChange={e => setPlan(e.target.value)} style={{ flex: 1 }}>
                 <option value="basic">Basic</option>
-                <option value="premium">Premium</option>
-                <option value="enterprise">Enterprise</option>
+                <option value="pro">Pro</option>
+                <option value="organisation">Organisation</option>
+              </select>
+              <select name="billing" value={billingCycle} onChange={e => setBillingCycle(e.target.value)}>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
               </select>
               <button type="button" className="settings-save-btn" onClick={handleSavePlan}>
                 Change
