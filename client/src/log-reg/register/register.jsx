@@ -140,70 +140,8 @@ export default function Register() {
         </button>
         <h2>Register</h2>
         <form className="register-form" onSubmit={handleSubmit}>
-          {step === 1 && (
-            <>
-              <label>Hi, what's your name?</label>
-              <input
-                type="text"
-                placeholder="First Name"
-                value={firstName}
-                onChange={e => setFirstName(e.target.value)}
-                required
-              />
-              <input
-                type="text"
-                placeholder="Last Name"
-                value={lastName}
-                onChange={e => setLastName(e.target.value)}
-                required
-              />
-              <button type="button" onClick={handleNext} disabled={!firstName || !lastName}>Next</button>
-            </>
-          )}
-          {step === 2 && (
-            <>
-              <label>Enter your email</label>
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-              />
-              <button type="button" onClick={handleBack}>Back</button>
-              <button type="button" onClick={handleNext} disabled={!email}>Next</button>
-            </>
-          )}
-          {step === 3 && (
-            <>
-              <label>Select your plan</label>
-              <select value={plan} onChange={e => setPlan(e.target.value)} required>
-                <option value="">Select a plan</option>
-                {PLANS.map(p => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
-                ))}
-              </select>
-              <div className="register-billing-toggle">
-                <button
-                  type="button"
-                  className={billingCycle === "monthly" ? "active" : ""}
-                  onClick={() => setBillingCycle("monthly")}
-                >
-                  Monthly
-                </button>
-                <button
-                  type="button"
-                  className={billingCycle === "yearly" ? "active" : ""}
-                  onClick={() => setBillingCycle("yearly")}
-                >
-                  Yearly
-                </button>
-              </div>
-              <button type="button" onClick={handleBack}>Back</button>
-              <button type="button" onClick={handleNext} disabled={!plan}>Next</button>
-            </>
-          )}
-          {step === 4 && (
+          {inviteMode ? (
+            // TENANT INVITE FLOW: Only show password and confirm password
             <>
               <label>Set your password</label>
               <input
@@ -213,12 +151,6 @@ export default function Register() {
                 onChange={e => setPassword(e.target.value)}
                 required
               />
-              <button type="button" onClick={handleBack}>Back</button>
-              <button type="button" onClick={handleNext} disabled={!password}>Next</button>
-            </>
-          )}
-          {step === 5 && (
-            <>
               <label>Confirm your password</label>
               <input
                 type="password"
@@ -227,8 +159,102 @@ export default function Register() {
                 onChange={e => setConfirmPassword(e.target.value)}
                 required
               />
-              <button type="button" onClick={handleBack}>Back</button>
-              <button type="submit" disabled={!confirmPassword}>Register</button>
+              <button type="submit" disabled={!password || !confirmPassword}>Register</button>
+            </>
+          ) : (
+            // LANDLORD FLOW: keep your existing multi-step logic here
+            <>
+              {step === 1 && (
+                <>
+                  <label>Hi, what's your name?</label>
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    value={firstName}
+                    onChange={e => setFirstName(e.target.value)}
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChange={e => setLastName(e.target.value)}
+                    required
+                  />
+                  <button type="button" onClick={handleNext} disabled={!firstName || !lastName}>Next</button>
+                </>
+              )}
+              {step === 2 && (
+                <>
+                  <label>Enter your email</label>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                  />
+                  <button type="button" onClick={handleBack}>Back</button>
+                  <button type="button" onClick={handleNext} disabled={!email}>Next</button>
+                </>
+              )}
+              {step === 3 && (
+                <>
+                  <label>Select your plan</label>
+                  <select value={plan} onChange={e => setPlan(e.target.value)} required>
+                    <option value="">Select a plan</option>
+                    {PLANS.map(p => (
+                      <option key={p.value} value={p.value}>{p.label}</option>
+                    ))}
+                  </select>
+                  <div className="register-billing-toggle">
+                    <button
+                      type="button"
+                      className={billingCycle === "monthly" ? "active" : ""}
+                      onClick={() => setBillingCycle("monthly")}
+                    >
+                      Monthly
+                    </button>
+                    <button
+                      type="button"
+                      className={billingCycle === "yearly" ? "active" : ""}
+                      onClick={() => setBillingCycle("yearly")}
+                    >
+                      Yearly
+                    </button>
+                  </div>
+                  <button type="button" onClick={handleBack}>Back</button>
+                  <button type="button" onClick={handleNext} disabled={!plan}>Next</button>
+                </>
+              )}
+              {step === 4 && (
+                <>
+                  <label>Set your password</label>
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                  />
+                  <button type="button" onClick={handleBack}>Back</button>
+                  <button type="button" onClick={handleNext} disabled={!password}>Next</button>
+                </>
+              )}
+              {step === 5 && (
+                <>
+                  <label>Confirm your password</label>
+                  <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                  <button type="button" onClick={handleBack}>Back</button>
+                  <button type="submit" disabled={!confirmPassword}>Register</button>
+                </>
+              )}
             </>
           )}
         </form>
