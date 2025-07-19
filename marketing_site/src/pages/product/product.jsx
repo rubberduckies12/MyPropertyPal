@@ -41,17 +41,15 @@ export default function Product() {
       </section>
 
       {/* Dashboard */}
-      <section className="max-w-5xl mx-auto py-16 px-4 flex flex-col md:flex-row items-center gap-10 md:gap-20">
-        {/* Image Box */}
-        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+        <div className="flex justify-center">
+          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
             <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">1</span>
-            {/* Replace src with your dashboard image */}
             {/* <Image src="/dashboard.png" alt="Dashboard" fill className="object-contain rounded-2xl" /> */}
             <span className="text-gray-400">[Dashboard Image]</span>
           </div>
         </div>
-        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+        <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
           <div className="mb-4 rounded-full bg-blue-100 p-4">
             <MdOutlineManageAccounts size={40} color={brand} />
           </div>
@@ -63,16 +61,15 @@ export default function Product() {
       </section>
 
       {/* Property Manager */}
-      <section className="w-full py-16 px-4 bg-gradient-to-b from-white to-blue-50 flex flex-col md:flex-row items-center gap-10 md:gap-20">
-        {/* Image Box */}
-        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+        <div className="flex justify-center order-2 md:order-1">
+          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
             <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">2</span>
             {/* <Image src="/property-manager.png" alt="Property Manager" fill className="object-contain rounded-2xl" /> */}
             <span className="text-gray-400">[Property Manager Image]</span>
           </div>
         </div>
-        <div className="flex-1 grid md:grid-cols-2 gap-12 items-start">
+        <div className="order-1 md:order-2 grid md:grid-cols-2 gap-12 items-start w-full">
           <div>
             <div className="mb-4 rounded-full bg-blue-100 p-4 w-fit">
               <MdPeople size={32} color={brand} />
@@ -109,16 +106,15 @@ export default function Product() {
       </section>
 
       {/* Financial Manager */}
-      <section className="w-full py-16 px-4 flex flex-col md:flex-row items-center gap-10 md:gap-20">
-        {/* Image Box */}
-        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+        <div className="flex justify-center">
+          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
             <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">3</span>
             {/* <Image src="/financial-manager.png" alt="Financial Manager" fill className="object-contain rounded-2xl" /> */}
             <span className="text-gray-400">[Financial Manager Image]</span>
           </div>
         </div>
-        <div className="flex-1 grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-12 items-start w-full">
           <div>
             <div className="mb-4 rounded-full bg-blue-100 p-4 w-fit">
               <FaRegMoneyBillAlt size={32} color={brand} />
@@ -150,16 +146,15 @@ export default function Product() {
       </section>
 
       {/* Legal Manager */}
-      <section className="w-full py-16 px-4 bg-gradient-to-b from-blue-50 to-white flex flex-col md:flex-row items-center gap-10 md:gap-20">
-        {/* Image Box */}
-        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+        <div className="flex justify-center order-2 md:order-1">
+          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
             <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">4</span>
             {/* <Image src="/legal-manager.png" alt="Legal Manager" fill className="object-contain rounded-2xl" /> */}
             <span className="text-gray-400">[Legal Manager Image]</span>
           </div>
         </div>
-        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+        <div className="order-1 md:order-2 flex flex-col items-center md:items-start text-center md:text-left w-full">
           <div className="mb-4 rounded-full bg-blue-100 p-4">
             <MdGavel size={32} color={brand} />
           </div>
@@ -176,16 +171,15 @@ export default function Product() {
       </section>
 
       {/* Additional Features */}
-      <section className="w-full py-16 px-4 flex flex-col md:flex-row items-center gap-10 md:gap-20">
-        {/* Image Box */}
-        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+        <div className="flex justify-center">
+          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
             <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">5</span>
             {/* <Image src="/additional-features.png" alt="Additional Features" fill className="object-contain rounded-2xl" /> */}
             <span className="text-gray-400">[Additional Features Image]</span>
           </div>
         </div>
-        <div className="flex-1 grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-12 items-start w-full">
           <div>
             <div className="mb-4 rounded-full bg-blue-100 p-4 w-fit">
               <PiRobotLight size={32} color={brand} />
@@ -208,16 +202,15 @@ export default function Product() {
       </section>
 
       {/* Tenant Portal */}
-      <section className="w-full py-16 px-4 bg-gradient-to-b from-white to-blue-50 flex flex-col md:flex-row items-center gap-10 md:gap-20">
-        {/* Image Box */}
-        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
-          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20">
+        <div className="flex justify-center order-2 md:order-1">
+          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
             <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">6</span>
             {/* <Image src="/tenant-portal.png" alt="Tenant Portal" fill className="object-contain rounded-2xl" /> */}
             <span className="text-gray-400">[Tenant Portal Image]</span>
           </div>
         </div>
-        <div className="flex-1">
+        <div className="order-1 md:order-2 flex flex-col items-center md:items-start text-center md:text-left w-full">
           <h2 className="text-2xl font-bold text-[#2563eb] mb-2">Tenant Portal</h2>
           <ul className="space-y-4 text-gray-700 text-lg">
             <li>
