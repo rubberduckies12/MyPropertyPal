@@ -93,14 +93,15 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Utility to get compliance events that are due soon (within 30 days)
+// Utility to get compliance events that are due soon (within 30 days) OR overdue
 function getUpcomingComplianceEvents(deadlines) {
   const today = new Date();
   return (Array.isArray(deadlines) ? deadlines : []).filter(event => {
     if (!event.due_date) return false;
     const dueDate = new Date(event.due_date);
     const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-    return diffDays >= 0 && diffDays <= 30;
+    // Include overdue (diffDays < 0) and due soon (diffDays <= 30)
+    return diffDays <= 30;
   });
 }
 
