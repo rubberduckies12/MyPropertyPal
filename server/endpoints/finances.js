@@ -33,16 +33,23 @@ router.get("/", authenticate, async (req, res) => {
     const rentPaymentsResult = await pool.query(`
       SELECT
         rp.id,
-        rp.paid_on AS date,
+        rp.paid_on,
         p.name AS property_name,
         p.address AS property_address,
         a.first_name || ' ' || a.last_name AS tenant,
         rp.amount,
-        'Received' AS status
+        rp.method,
+        rp.reference,
+        pt.rent_due_date,
+        CASE
+          WHEN rp.paid_on > pt.rent_due_date THEN 'Late'
+          ELSE 'On Time'
+        END AS payment_status
       FROM rent_payment rp
       JOIN property p ON rp.property_id = p.id
       JOIN tenant t ON rp.tenant_id = t.id
       JOIN account a ON t.account_id = a.id
+      JOIN property_tenant pt ON pt.property_id = rp.property_id AND pt.tenant_id = rp.tenant_id
       WHERE p.landlord_id = $1
       ORDER BY rp.paid_on DESC
     `, [landlordId]);

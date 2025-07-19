@@ -330,6 +330,66 @@
   background: #fee2e2;
 }
 
+/* Rent Paid Actions Dropdown */
+.rent-paid-actions-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.rent-paid-actions-btn {
+  background: #f3f6fc;
+  border: 1px solid #e5e7eb;
+  color: #2563eb;
+  border-radius: 6px;
+  padding: 4px 14px;
+  font-size: 1em;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
+}
+
+.rent-paid-actions-menu {
+  display: none;
+  position: absolute;
+  background: #fff;
+  min-width: 120px;
+  box-shadow: 0 2px 8px rgba(37,99,235,0.10);
+  border-radius: 7px;
+  z-index: 10;
+  right: 0;
+  top: 110%;
+  border: 1px solid #e5e7eb;
+}
+
+.rent-paid-actions-dropdown:hover .rent-paid-actions-menu,
+.rent-paid-actions-dropdown:focus-within .rent-paid-actions-menu {
+  display: block;
+}
+
+.rent-paid-actions-menu-item {
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 1em;
+  color: #1f2937;
+  transition: background 0.15s;
+}
+
+.rent-paid-actions-menu-item:hover {
+  background: #f3f6fc;
+}
+
+.rent-paid-actions-menu-item.delete {
+  color: #d9534f;
+}
+
+.rent-paid-actions-menu-item.delete:hover {
+  background: #fee2e2;
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .finances-summary-cards {

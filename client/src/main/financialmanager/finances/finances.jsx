@@ -422,9 +422,11 @@ export default function Finances() {
                     <th>Property</th>
                     <th>Tenant</th>
                     <th>Amount</th>
+                    <th>Date Due</th>
                     <th>Date Paid</th>
                     <th>Method</th>
                     <th>Reference</th>
+                    <th>Status</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -434,22 +436,35 @@ export default function Finances() {
                       <td>{payment.property}</td>
                       <td>{payment.tenant}</td>
                       <td>£{payment.amount}</td>
+                      <td>{payment.rent_due_date ? new Date(payment.rent_due_date).toLocaleDateString() : ""}</td>
                       <td>{payment.paid_on ? new Date(payment.paid_on).toLocaleDateString() : ""}</td>
                       <td>{payment.method || ""}</td>
                       <td>{payment.reference || ""}</td>
                       <td>
-                        <button
-                          className="finances-actions-menu-item"
-                          onClick={() => setEditRentModal(payment)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="finances-actions-menu-item"
-                          onClick={() => deleteRentPayment(payment.id)}
-                        >
-                          Delete
-                        </button>
+                        {payment.payment_status === "Late" ? (
+                          <span style={{ color: "#d9534f" }}>Late</span>
+                        ) : (
+                          <span style={{ color: "#22c55e" }}>On Time</span>
+                        )}
+                      </td>
+                      <td>
+                        <div className="rent-paid-actions-dropdown">
+                          <button className="rent-paid-actions-btn">Actions ▼</button>
+                          <div className="rent-paid-actions-menu">
+                            <button
+                              className="rent-paid-actions-menu-item"
+                              onClick={() => setEditRentModal(payment)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="rent-paid-actions-menu-item delete"
+                              onClick={() => deleteRentPayment(payment.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   ))}
