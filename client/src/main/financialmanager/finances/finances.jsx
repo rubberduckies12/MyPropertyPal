@@ -306,7 +306,7 @@ export default function Finances() {
   };
 
   // Split expectedRent into paid and expected/overdue
-  const paidRent = expectedRent.filter(r => r.status === "Paid");
+  const paidRent = rentPayments;
   const expectedOrOverdueRent = expectedRent.filter(r => r.status !== "Paid");
 
   return (
@@ -422,18 +422,35 @@ export default function Finances() {
                     <th>Property</th>
                     <th>Tenant</th>
                     <th>Amount</th>
-                    <th>Date Due</th>
                     <th>Date Paid</th>
+                    <th>Method</th>
+                    <th>Reference</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paidRent.map(payment => (
-                    <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
+                    <tr key={payment.id}>
                       <td>{payment.property}</td>
                       <td>{payment.tenant}</td>
                       <td>£{payment.amount}</td>
-                      <td>{payment.due_date}</td>
                       <td>{payment.paid_on ? new Date(payment.paid_on).toLocaleDateString() : ""}</td>
+                      <td>{payment.method || ""}</td>
+                      <td>{payment.reference || ""}</td>
+                      <td>
+                        <button
+                          className="finances-actions-menu-item"
+                          onClick={() => setEditRentModal(payment)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="finances-actions-menu-item"
+                          onClick={() => deleteRentPayment(payment.id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
