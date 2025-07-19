@@ -51,6 +51,7 @@ export default function Tenants() {
     const [addError, setAddError] = useState("");
     const [editTenant, setEditTenant] = useState(null);
     const [editForm, setEditForm] = useState({});
+    const [inviteMessage, setInviteMessage] = useState(""); // Add this state
 
     // Fetch tenants
     useEffect(() => {
@@ -101,6 +102,7 @@ export default function Tenants() {
     const handleAddTenant = async (e) => {
         e.preventDefault();
         setAddError("");
+        setInviteMessage(""); // Reset message
         const token = localStorage.getItem("token");
         try {
             const res = await fetch(`${API_BASE}/api/tenants`, {
@@ -141,6 +143,7 @@ export default function Tenants() {
                 rent_schedule_type: "monthly",
                 rent_schedule_value: "",
             });
+            setInviteMessage("An invite email has been sent to your tenant."); // Set message
         } catch (err) {
             setAddError(err.message);
         }
@@ -618,6 +621,12 @@ export default function Tenants() {
                                 </button>
                             </form>
                         </div>
+                    </div>
+                )}
+
+                {inviteMessage && (
+                    <div style={{ color: "#22c55e", marginBottom: 16, fontWeight: 500 }}>
+                        {inviteMessage}
                     </div>
                 )}
             </main>
