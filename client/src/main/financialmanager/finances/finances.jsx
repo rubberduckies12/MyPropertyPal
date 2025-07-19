@@ -381,7 +381,7 @@ export default function Finances() {
                       <td>{payment.property}</td>
                       <td>{payment.tenant}</td>
                       <td>£{payment.amount}</td>
-                      <td>{payment.due_date}</td>
+                      <td>{payment.due_date ? formatDate(payment.due_date) : ""}</td>
                       <td className={
                         payment.status === "Overdue"
                           ? "finances-status-overdue"

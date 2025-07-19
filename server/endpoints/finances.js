@@ -40,16 +40,15 @@ router.get("/", authenticate, async (req, res) => {
         rp.amount,
         rp.method,
         rp.reference,
-        pt.rent_due_date,
+        rp.due_date,
         CASE
-          WHEN rp.paid_on > pt.rent_due_date THEN 'Late'
+          WHEN rp.paid_on > rp.due_date THEN 'Late'
           ELSE 'On Time'
         END AS payment_status
       FROM rent_payment rp
       JOIN property p ON rp.property_id = p.id
       JOIN tenant t ON rp.tenant_id = t.id
       JOIN account a ON t.account_id = a.id
-      JOIN property_tenant pt ON pt.property_id = rp.property_id AND pt.tenant_id = rp.tenant_id
       WHERE p.landlord_id = $1
       ORDER BY rp.paid_on DESC
     `, [landlordId]);
@@ -119,23 +118,18 @@ router.post("/rent", authenticate, async (req, res) => {
     const landlordId = await getLandlordId(pool, accountId);
     const { property_id, tenant_id, amount, paid_on, method, reference } = req.body;
 
-    // 1. Insert rent payment
-    const result = await pool.query(
-      `INSERT INTO rent_payment (property_id, tenant_id, amount, paid_on, method, reference)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [property_id, tenant_id, amount, paid_on, method, reference]
-    );
-
-    // 2. Get current rent schedule info
+    // Get current rent schedule info and due date
     const ptRes = await pool.query(
       `SELECT rent_due_date, rent_schedule_type, rent_schedule_value
        FROM property_tenant
        WHERE property_id = $1 AND tenant_id = $2`,
       [property_id, tenant_id]
     );
+    let due_date = null;
     if (ptRes.rows.length) {
-      let { rent_due_date, rent_schedule_type, rent_schedule_value } = ptRes.rows[0];
-      let nextDue = new Date(rent_due_date);
+      due_date = ptRes.rows[0].rent_due_date;
+      let { rent_schedule_type, rent_schedule_value } = ptRes.rows[0];
+      let nextDue = new Date(due_date);
 
       // Advance due date based on schedule
       if (rent_schedule_type === "monthly") {
@@ -155,12 +149,19 @@ router.post("/rent", authenticate, async (req, res) => {
       }
       // Optionally, handle custom schedule_value logic here
 
-      // 3. Update next due date in property_tenant
+      // Update next due date in property_tenant
       await pool.query(
         `UPDATE property_tenant SET rent_due_date = $1 WHERE property_id = $2 AND tenant_id = $3`,
         [nextDue.toISOString().slice(0, 10), property_id, tenant_id]
       );
     }
+
+    // Insert rent payment with due_date
+    const result = await pool.query(
+      `INSERT INTO rent_payment (property_id, tenant_id, amount, paid_on, method, reference, due_date)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [property_id, tenant_id, amount, paid_on, method, reference, due_date]
+    );
 
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -378,11 +379,11 @@ router.put("/expense/:id", authenticate, async (req, res) => {
 router.put("/rent/:id", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   const { id } = req.params;
-  const { property_id, tenant_id, amount, paid_on, method, reference } = req.body;
+  const { property_id, tenant_id, amount, paid_on, method, reference, due_date } = req.body;
   try {
     const result = await pool.query(
-      `UPDATE rent_payment SET property_id=$1, tenant_id=$2, amount=$3, paid_on=$4, method=$5, reference=$6 WHERE id=$7 RETURNING *`,
-      [property_id, tenant_id, amount, paid_on, method, reference, id]
+      `UPDATE rent_payment SET property_id=$1, tenant_id=$2, amount=$3, paid_on=$4, method=$5, reference=$6, due_date=$7 WHERE id=$8 RETURNING *`,
+      [property_id, tenant_id, amount, paid_on, method, reference, due_date, id]
     );
     res.json(result.rows[0]);
   } catch (err) {
