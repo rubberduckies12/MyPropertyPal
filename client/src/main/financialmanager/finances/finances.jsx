@@ -305,6 +305,10 @@ export default function Finances() {
     setExpenses(expenses => expenses.filter(e => e.id !== expenseId));
   };
 
+  // Split expectedRent into paid and expected/overdue
+  const paidRent = expectedRent.filter(r => r.status === "Paid");
+  const expectedOrOverdueRent = expectedRent.filter(r => r.status !== "Paid");
+
   return (
     <div className="properties-page">
       <Sidebar />
@@ -357,8 +361,9 @@ export default function Finances() {
               </div>
             </div>
 
+            {/* Expected/Overdue Rent Table */}
             <section className="finances-section">
-              <h2>Incoming Rent Payments</h2>
+              <h2>Expected & Overdue Rent Payments</h2>
               <table className="finances-table">
                 <thead>
                   <tr>
@@ -367,47 +372,68 @@ export default function Finances() {
                     <th>Amount</th>
                     <th>Date Due</th>
                     <th>Status</th>
-                    <th>Date Paid</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {expectedRent.map(payment => (
+                  {expectedOrOverdueRent.map(payment => (
                     <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
                       <td>{payment.property}</td>
                       <td>{payment.tenant}</td>
                       <td>£{payment.amount}</td>
                       <td>{payment.due_date}</td>
                       <td className={
-                        payment.status === "Paid"
-                          ? "finances-status-received"
-                          : payment.status === "Overdue"
+                        payment.status === "Overdue"
                           ? "finances-status-overdue"
                           : "finances-status-pending"
                       }>
                         {payment.status}
                       </td>
-                      <td>{payment.paid_on ? new Date(payment.paid_on).toLocaleDateString() : ""}</td>
                       <td>
-                        {payment.status !== "Paid" && (
-                          <button
-                            className="finances-add-btn"
-                            onClick={() => {
-                              setRentForm({
-                                property_id: payment.property_id,
-                                tenant_id: payment.tenant_id,
-                                amount: payment.amount,
-                                paid_on: payment.due_date,
-                                method: "",
-                                reference: "",
-                              });
-                              setShowRentModal(true);
-                            }}
-                          >
-                            Mark as Received
-                          </button>
-                        )}
+                        <button
+                          className="finances-add-btn"
+                          onClick={() => {
+                            setRentForm({
+                              property_id: payment.property_id,
+                              tenant_id: payment.tenant_id,
+                              amount: payment.amount,
+                              paid_on: payment.due_date,
+                              method: "",
+                              reference: "",
+                            });
+                            setShowRentModal(true);
+                          }}
+                        >
+                          Mark as Received
+                        </button>
                       </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </section>
+
+            {/* Paid Rent Table */}
+            <section className="finances-section">
+              <h2>Rent Paid</h2>
+              <table className="finances-table">
+                <thead>
+                  <tr>
+                    <th>Property</th>
+                    <th>Tenant</th>
+                    <th>Amount</th>
+                    <th>Date Due</th>
+                    <th>Date Paid</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paidRent.map(payment => (
+                    <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
+                      <td>{payment.property}</td>
+                      <td>{payment.tenant}</td>
+                      <td>£{payment.amount}</td>
+                      <td>{payment.due_date}</td>
+                      <td>{payment.paid_on ? new Date(payment.paid_on).toLocaleDateString() : ""}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -600,7 +626,7 @@ export default function Finances() {
                   />
                 </label>
                 <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
-                  Mark as Received
+                  Add Rent Payment
                 </button>
               </form>
             </div>
