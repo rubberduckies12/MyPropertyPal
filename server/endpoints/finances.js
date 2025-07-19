@@ -415,15 +415,16 @@ router.get("/expected-rent", authenticate, async (req, res) => {
     let dueDate = new Date(t.rent_due_date);
     dueDate.setHours(0,0,0,0);
 
-    // Find the last paid rent for this tenant/property
-    const lastPaidRes = await pool.query(
-      `SELECT due_date FROM rent_payment WHERE tenant_id = $1 AND property_id = $2 ORDER BY due_date DESC LIMIT 1`,
-      [t.tenant_id, t.property_id]
-    );
-    let startDue = new Date(t.rent_due_date); // always start from original due date
-    let currentDue = new Date(startDue);
+    let currentDue = new Date(dueDate);
 
-    while (currentDue <= today) {
+    // Calculate the last period to check (today or next scheduled period)
+    let lastPeriod = new Date(today);
+    if (t.rent_schedule_type === "monthly") lastPeriod.setMonth(lastPeriod.getMonth() + 1);
+    else if (t.rent_schedule_type === "weekly") lastPeriod.setDate(lastPeriod.getDate() + 7);
+    else if (t.rent_schedule_type === "biweekly") lastPeriod.setDate(lastPeriod.getDate() + 14);
+    // Optionally handle last_friday
+
+    while (currentDue <= lastPeriod) {
       // Check if this due date has been paid
       const rentPaymentRes = await pool.query(
         `SELECT * FROM rent_payment WHERE tenant_id = $1 AND property_id = $2 AND due_date = $3`,
