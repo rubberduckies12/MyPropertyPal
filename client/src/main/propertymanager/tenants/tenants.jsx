@@ -249,7 +249,6 @@ export default function Tenants() {
                                     <th>Rent Due</th>
                                     <th>Status</th>
                                     <th>Days Left</th>
-                                    <th>Outstanding</th> {/* Add this */}
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -290,9 +289,6 @@ export default function Tenants() {
                                                 {daysLeft(tenant)}
                                                 {" days"}
                                             </span>
-                                        </td>
-                                        <td>
-                                            £{tenant.outstanding_balance?.toLocaleString() ?? "0"}
                                         </td>
                                         <td>
                                             <button onClick={e => { e.stopPropagation(); handleEditTenant(tenant); }}>
