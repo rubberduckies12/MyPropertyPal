@@ -42,7 +42,7 @@ export default function Product() {
       </section>
 
       {/* Dashboard */}
-      <section className="max-w-5xl mx-auto py-12 px-4 flex flex-col md:flex-row items-center gap-10 md:gap-20">
+      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
           <h2 className="text-3xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
             <MdOutlineManageAccounts size={32} color={brand} /> Dashboard
@@ -54,126 +54,116 @@ export default function Product() {
       </section>
 
       {/* Property Manager */}
-      <section className="w-full bg-blue-50 py-16 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
-              <MdPeople size={28} color={brand} /> Property Manager
-            </h2>
-            <ul className="space-y-6">
-              <li>
-                <span className="font-semibold">Properties:</span> View all your rented properties, see key details, and manage your tenancy with ease.
-              </li>
-              <li>
-                <span className="font-semibold">Tenants:</span> Manage your household, see who’s on the tenancy, and keep everyone in the loop.
-              </li>
-              <li className="flex items-start gap-2">
-                <HiOutlineWrenchScrewdriver size={22} color={brand} className="mt-1" />
-                <span>
-                  <span className="font-semibold">Maintenance Requests:</span> Report issues and track progress in real time. No more chasing your landlord—get updates as things get fixed.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <MdHomeRepairService size={22} color={brand} className="mt-1" />
-                <span>
-                  <span className="font-semibold">Contractor Search Tool:</span> Find trusted local tradespeople for repairs and improvements, right from your portal.
-                </span>
-              </li>
-            </ul>
-          </div>
+      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
+            <MdPeople size={28} color={brand} /> Property Manager
+          </h2>
+          <ul className="space-y-6">
+            <li>
+              <span className="font-semibold">Properties:</span> View all your rented properties, see key details, and manage your tenancy with ease.
+            </li>
+            <li>
+              <span className="font-semibold">Tenants:</span> Manage your household, see who’s on the tenancy, and keep everyone in the loop.
+            </li>
+            <li className="flex items-start gap-2">
+              <HiOutlineWrenchScrewdriver size={22} color={brand} className="mt-1" />
+              <span>
+                <span className="font-semibold">Maintenance Requests:</span> Report issues and track progress in real time. No more chasing your landlord—get updates as things get fixed.
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <MdHomeRepairService size={22} color={brand} className="mt-1" />
+              <span>
+                <span className="font-semibold">Contractor Search Tool:</span> Find trusted local tradespeople for repairs and improvements, right from your portal.
+              </span>
+            </li>
+          </ul>
         </div>
       </section>
 
       {/* Financial Manager */}
-      <section className="w-full py-16 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
-              <FaRegMoneyBillAlt size={28} color={brand} /> Financial Manager
-            </h2>
-            <ul className="space-y-6">
-              <li>
-                <span className="font-semibold">Finances:</span> Track your rent payments, see upcoming due dates, and always know where you stand.
+      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
+            <FaRegMoneyBillAlt size={28} color={brand} /> Financial Manager
+          </h2>
+          <ul className="space-y-6">
+            <li>
+              <span className="font-semibold">Finances:</span> Track your rent payments, see upcoming due dates, and always know where you stand.
+              <div className="text-sm text-gray-600 mt-1">
+                <strong>Variable Rent Due Dates:</strong> Tenants can have rent due monthly, weekly, fortnightly, or every last Friday of the month. Stay flexible and never miss a payment.
+              </div>
+            </li>
+            <li className="flex items-start gap-2">
+              <HiOutlineDocument size={22} color={brand} className="mt-1" />
+              <span>
+                <span className="font-semibold">Documents:</span> Access all your important rental documents in one place. Upload, view, and download with ease.
                 <div className="text-sm text-gray-600 mt-1">
-                  <strong>Variable Rent Due Dates:</strong> Tenants can have rent due monthly, weekly, fortnightly, or every last Friday of the month. Stay flexible and never miss a payment.
+                  <strong>AI-powered Invoice/Receipt Scanning:</strong> Instantly scan and categorise receipts and invoices for your records.
                 </div>
-              </li>
-              <li className="flex items-start gap-2">
-                <HiOutlineDocument size={22} color={brand} className="mt-1" />
-                <span>
-                  <span className="font-semibold">Documents:</span> Access all your important rental documents in one place. Upload, view, and download with ease.
-                  <div className="text-sm text-gray-600 mt-1">
-                    <strong>AI-powered Invoice/Receipt Scanning:</strong> Instantly scan and categorise receipts and invoices for your records.
-                  </div>
-                </span>
-              </li>
-            </ul>
-          </div>
+              </span>
+            </li>
+          </ul>
         </div>
       </section>
 
       {/* Legal Manager */}
-      <section className="w-full bg-blue-50 py-16 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
-              <MdGavel size={28} color={brand} /> Legal Manager
-            </h2>
-            <ul className="space-y-6">
-              <li>
-                <span className="font-semibold">Compliance Tracking:</span> Stay compliant with automated reminders for gas safety, EPC, and other legal requirements. Never miss a deadline again.
-                <div className="text-sm text-gray-600 mt-1">
-                  <strong>Email Reminders:</strong> Get notified before compliance deadlines so you’re always covered.
-                </div>
-              </li>
-            </ul>
-          </div>
+      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
+            <MdGavel size={28} color={brand} /> Legal Manager
+          </h2>
+          <ul className="space-y-6">
+            <li>
+              <span className="font-semibold">Compliance Tracking:</span> Stay compliant with automated reminders for gas safety, EPC, and other legal requirements. Never miss a deadline again.
+              <div className="text-sm text-gray-600 mt-1">
+                <strong>Email Reminders:</strong> Get notified before compliance deadlines so you’re always covered.
+              </div>
+            </li>
+          </ul>
         </div>
       </section>
 
       {/* Additional Features */}
-      <section className="w-full py-16 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-[#2563eb] mb-4">Additional Features</h2>
-            <ul className="space-y-6">
-              <li className="flex items-center gap-2">
-                <PiRobotLight size={22} color={brand} />
-                <span>
-                  <span className="font-semibold">AI Chatbot:</span> Get instant answers to your questions, 24/7. Our AI assistant helps you with everything from rent queries to maintenance tips.
-                </span>
-              </li>
-              <li className="flex items-center gap-2">
-                <HiOutlineChatBubbleLeftRight size={22} color={brand} />
-                <span>
-                  <span className="font-semibold">Messages:</span> Communicate directly with your landlord and housemates. Keep all your rental conversations in one secure place.
-                </span>
-              </li>
-            </ul>
-          </div>
+      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-[#2563eb] mb-4">Additional Features</h2>
+          <ul className="space-y-6">
+            <li className="flex items-center gap-2">
+              <PiRobotLight size={22} color={brand} />
+              <span>
+                <span className="font-semibold">AI Chatbot:</span> Get instant answers to your questions, 24/7. Our AI assistant helps you with everything from rent queries to maintenance tips.
+              </span>
+            </li>
+            <li className="flex items-center gap-2">
+              <HiOutlineChatBubbleLeftRight size={22} color={brand} />
+              <span>
+                <span className="font-semibold">Messages:</span> Communicate directly with your landlord and housemates. Keep all your rental conversations in one secure place.
+              </span>
+            </li>
+          </ul>
         </div>
       </section>
 
       {/* Tenant Portal */}
-      <section className="w-full bg-blue-50 py-16 px-4">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-[#2563eb] mb-4">Tenant Portal</h2>
-            <ul className="space-y-6">
-              <li>
-                <span className="font-semibold">Maintenance Requests:</span> Submit and track maintenance issues easily. See updates as your landlord or contractor responds.
-              </li>
-              <li>
-                <span className="font-semibold">Landlord Messaging:</span> Message your landlord directly from the portal. No more lost emails or missed calls.
-              </li>
-              <li>
-                <span className="font-semibold">Document Viewing:</span> Instantly access your tenancy agreement, compliance certificates, and other key documents.
-              </li>
-              <li>
-                <span className="font-semibold">Rental Management:</span> Manage your rent, see your payment history, and stay organised with reminders and notifications.
-              </li>
-            </ul>
-          </div>
+      <section className="max-w-5xl mx-auto py-12 px-4">
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-[#2563eb] mb-4">Tenant Portal</h2>
+          <ul className="space-y-6">
+            <li>
+              <span className="font-semibold">Maintenance Requests:</span> Submit and track maintenance issues easily. See updates as your landlord or contractor responds.
+            </li>
+            <li>
+              <span className="font-semibold">Landlord Messaging:</span> Message your landlord directly from the portal. No more lost emails or missed calls.
+            </li>
+            <li>
+              <span className="font-semibold">Document Viewing:</span> Instantly access your tenancy agreement, compliance certificates, and other key documents.
+            </li>
+            <li>
+              <span className="font-semibold">Rental Management:</span> Manage your rent, see your payment history, and stay organised with reminders and notifications.
+            </li>
+          </ul>
         </div>
       </section>
 
