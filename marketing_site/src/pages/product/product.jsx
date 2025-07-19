@@ -16,14 +16,14 @@ export default function Product() {
     <div className="bg-white text-[#171717] font-sans min-h-screen">
       <Head>
         <title>The Product – Beta Release | MyPropertyPal</title>
-        <meta name="description" content="Explore all the features available to tenants in MyPropertyPal. Flexible rent schedules, maintenance requests, messaging, and more." />
+        <meta name="description" content="Explore all the features available in MyPropertyPal. Flexible rent schedules, maintenance requests, messaging, and more." />
         <meta property="og:title" content="The Product – Beta Release | MyPropertyPal" />
-        <meta property="og:description" content="Explore all the features available to tenants in MyPropertyPal. Flexible rent schedules, maintenance requests, messaging, and more." />
+        <meta property="og:description" content="Explore all the features available in MyPropertyPal. Flexible rent schedules, maintenance requests, messaging, and more." />
         <meta property="og:image" content="/LogoWB.png" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="The Product – Beta Release | MyPropertyPal" />
-        <meta name="twitter:description" content="Explore all the features available to tenants in MyPropertyPal. Flexible rent schedules, maintenance requests, messaging, and more." />
+        <meta name="twitter:description" content="Explore all the features available in MyPropertyPal. Flexible rent schedules, maintenance requests, messaging, and more." />
         <meta name="twitter:image" content="/LogoWB.png" />
         <link rel="icon" href="/LogoWB.png" />
       </Head>
@@ -36,7 +36,7 @@ export default function Product() {
 
       {/* Hero */}
       <section className="max-w-3xl mx-auto text-center py-16 px-4">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-[#2563eb] tracking-tight">Tenant Features – Beta Release</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-[#2563eb] tracking-tight">The Product – Beta Release</h1>
         <p className="text-lg text-gray-700 mb-2">The MyPropertyPal MVP</p>
         <p className="text-base text-gray-600">Everything you and your tenants need, in one place. Simple, secure, and built for real-world renting.</p>
       </section>
