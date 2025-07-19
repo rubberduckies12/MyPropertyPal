@@ -2,10 +2,9 @@ import Head from "next/head";
 import Header from "../../components/desktop/desktopHeader";
 import MobileHeader from "../../components/mobile/mobileHeader";
 import Footer from "../../components/desktop/desktopFooter";
-import { HiOutlineChatBubbleLeftRight, HiOutlineWrenchScrewdriver, HiOutlineBolt } from "react-icons/hi2";
+import { HiOutlineChatBubbleLeftRight, HiOutlineWrenchScrewdriver } from "react-icons/hi2";
 import { MdGavel, MdHomeRepairService, MdPeople, MdOutlineManageAccounts } from "react-icons/md";
 import { FaRegMoneyBillAlt } from "react-icons/fa";
-import { TbReportMoney } from "react-icons/tb";
 import { PiRobotLight } from "react-icons/pi";
 import { HiOutlineDocument } from "react-icons/hi2";
 
@@ -35,86 +34,137 @@ export default function Product() {
       </div>
 
       {/* Hero */}
-      <section className="max-w-3xl mx-auto text-center py-12 px-4">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-3 text-[#2563eb]">Tenant Features – Beta Release</h1>
+      <section className="max-w-3xl mx-auto text-center py-16 px-4">
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-[#2563eb] tracking-tight">Tenant Features – Beta Release</h1>
         <p className="text-lg text-gray-700 mb-2">Part of the MyPropertyPal MVP</p>
         <p className="text-base text-gray-600">Everything your tenants need, in one place. Simple, secure, and built for real-world renting.</p>
       </section>
 
       {/* Dashboard */}
-      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
+      <section className="max-w-5xl mx-auto py-16 px-4 flex flex-col md:flex-row items-center gap-10 md:gap-20">
+        {/* Image Box */}
+        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">1</span>
+            {/* Replace src with your dashboard image */}
+            {/* <Image src="/dashboard.png" alt="Dashboard" fill className="object-contain rounded-2xl" /> */}
+            <span className="text-gray-400">[Dashboard Image]</span>
+          </div>
+        </div>
         <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
-          <h2 className="text-3xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
-            <MdOutlineManageAccounts size={32} color={brand} /> Dashboard
-          </h2>
-          <p className="text-gray-700 mb-4">
+          <div className="mb-4 rounded-full bg-blue-100 p-4">
+            <MdOutlineManageAccounts size={40} color={brand} />
+          </div>
+          <h2 className="text-3xl font-bold text-[#2563eb] mb-2">Dashboard</h2>
+          <p className="text-gray-700 text-lg">
             See all your rental information at a glance. Stay on top of rent, maintenance, and important documents from one simple dashboard.
           </p>
         </div>
       </section>
 
       {/* Property Manager */}
-      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
-            <MdPeople size={28} color={brand} /> Property Manager
-          </h2>
-          <ul className="space-y-6">
-            <li>
-              <span className="font-semibold">Properties:</span> View all your rented properties, see key details, and manage your tenancy with ease.
-            </li>
-            <li>
-              <span className="font-semibold">Tenants:</span> Manage your household, see who’s on the tenancy, and keep everyone in the loop.
-            </li>
-            <li className="flex items-start gap-2">
-              <HiOutlineWrenchScrewdriver size={22} color={brand} className="mt-1" />
-              <span>
-                <span className="font-semibold">Maintenance Requests:</span> Report issues and track progress in real time. No more chasing your landlord—get updates as things get fixed.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <MdHomeRepairService size={22} color={brand} className="mt-1" />
-              <span>
-                <span className="font-semibold">Contractor Search Tool:</span> Find trusted local tradespeople for repairs and improvements, right from your portal.
-              </span>
-            </li>
-          </ul>
+      <section className="w-full py-16 px-4 bg-gradient-to-b from-white to-blue-50 flex flex-col md:flex-row items-center gap-10 md:gap-20">
+        {/* Image Box */}
+        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">2</span>
+            {/* <Image src="/property-manager.png" alt="Property Manager" fill className="object-contain rounded-2xl" /> */}
+            <span className="text-gray-400">[Property Manager Image]</span>
+          </div>
+        </div>
+        <div className="flex-1 grid md:grid-cols-2 gap-12 items-start">
+          <div>
+            <div className="mb-4 rounded-full bg-blue-100 p-4 w-fit">
+              <MdPeople size={32} color={brand} />
+            </div>
+            <h2 className="text-2xl font-bold text-[#2563eb] mb-2">Property Manager</h2>
+            <ul className="space-y-4 text-gray-700 text-lg">
+              <li>
+                <span className="font-semibold">Properties:</span> View all your rented properties, see key details, and manage your tenancy with ease.
+              </li>
+              <li>
+                <span className="font-semibold">Tenants:</span> Manage your household, see who’s on the tenancy, and keep everyone in the loop.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div className="mb-4 rounded-full bg-blue-100 p-4 w-fit">
+              <HiOutlineWrenchScrewdriver size={32} color={brand} />
+            </div>
+            <ul className="space-y-4 text-gray-700 text-lg mt-8 md:mt-0">
+              <li className="flex items-start gap-2">
+                <span>
+                  <span className="font-semibold">Maintenance Requests:</span> Report issues and track progress in real time. No more chasing your landlord—get updates as things get fixed.
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <MdHomeRepairService size={22} color={brand} className="mt-1" />
+                <span>
+                  <span className="font-semibold">Contractor Search Tool:</span> Find trusted local tradespeople for repairs and improvements, right from your portal.
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 
       {/* Financial Manager */}
-      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
-            <FaRegMoneyBillAlt size={28} color={brand} /> Financial Manager
-          </h2>
-          <ul className="space-y-6">
-            <li>
-              <span className="font-semibold">Finances:</span> Track your rent payments, see upcoming due dates, and always know where you stand.
-              <div className="text-sm text-gray-600 mt-1">
-                <strong>Variable Rent Due Dates:</strong> Tenants can have rent due monthly, weekly, fortnightly, or every last Friday of the month. Stay flexible and never miss a payment.
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <HiOutlineDocument size={22} color={brand} className="mt-1" />
-              <span>
+      <section className="w-full py-16 px-4 flex flex-col md:flex-row items-center gap-10 md:gap-20">
+        {/* Image Box */}
+        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">3</span>
+            {/* <Image src="/financial-manager.png" alt="Financial Manager" fill className="object-contain rounded-2xl" /> */}
+            <span className="text-gray-400">[Financial Manager Image]</span>
+          </div>
+        </div>
+        <div className="flex-1 grid md:grid-cols-2 gap-12 items-start">
+          <div>
+            <div className="mb-4 rounded-full bg-blue-100 p-4 w-fit">
+              <FaRegMoneyBillAlt size={32} color={brand} />
+            </div>
+            <h2 className="text-2xl font-bold text-[#2563eb] mb-2">Financial Manager</h2>
+            <ul className="space-y-4 text-gray-700 text-lg">
+              <li>
+                <span className="font-semibold">Finances:</span> Track your rent payments, see upcoming due dates, and always know where you stand.
+                <div className="text-sm text-gray-600 mt-1">
+                  <strong>Variable Rent Due Dates:</strong> Tenants can have rent due monthly, weekly, fortnightly, or every last Friday of the month. Stay flexible and never miss a payment.
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div className="mb-4 rounded-full bg-blue-100 p-4 w-fit">
+              <HiOutlineDocument size={32} color={brand} />
+            </div>
+            <ul className="space-y-4 text-gray-700 text-lg mt-8 md:mt-0">
+              <li>
                 <span className="font-semibold">Documents:</span> Access all your important rental documents in one place. Upload, view, and download with ease.
                 <div className="text-sm text-gray-600 mt-1">
                   <strong>AI-powered Invoice/Receipt Scanning:</strong> Instantly scan and categorise receipts and invoices for your records.
                 </div>
-              </span>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 
       {/* Legal Manager */}
-      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold text-[#2563eb] mb-4 flex items-center gap-2">
-            <MdGavel size={28} color={brand} /> Legal Manager
-          </h2>
-          <ul className="space-y-6">
+      <section className="w-full py-16 px-4 bg-gradient-to-b from-blue-50 to-white flex flex-col md:flex-row items-center gap-10 md:gap-20">
+        {/* Image Box */}
+        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">4</span>
+            {/* <Image src="/legal-manager.png" alt="Legal Manager" fill className="object-contain rounded-2xl" /> */}
+            <span className="text-gray-400">[Legal Manager Image]</span>
+          </div>
+        </div>
+        <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+          <div className="mb-4 rounded-full bg-blue-100 p-4">
+            <MdGavel size={32} color={brand} />
+          </div>
+          <h2 className="text-2xl font-bold text-[#2563eb] mb-2">Legal Manager</h2>
+          <ul className="space-y-4 text-gray-700 text-lg">
             <li>
               <span className="font-semibold">Compliance Tracking:</span> Stay compliant with automated reminders for gas safety, EPC, and other legal requirements. Never miss a deadline again.
               <div className="text-sm text-gray-600 mt-1">
@@ -126,31 +176,50 @@ export default function Product() {
       </section>
 
       {/* Additional Features */}
-      <section className="max-w-5xl mx-auto py-12 px-4 border-b border-gray-100">
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold text-[#2563eb] mb-4">Additional Features</h2>
-          <ul className="space-y-6">
-            <li className="flex items-center gap-2">
-              <PiRobotLight size={22} color={brand} />
-              <span>
-                <span className="font-semibold">AI Chatbot:</span> Get instant answers to your questions, 24/7. Our AI assistant helps you with everything from rent queries to maintenance tips.
-              </span>
-            </li>
-            <li className="flex items-center gap-2">
-              <HiOutlineChatBubbleLeftRight size={22} color={brand} />
-              <span>
-                <span className="font-semibold">Messages:</span> Communicate directly with your landlord and housemates. Keep all your rental conversations in one secure place.
-              </span>
-            </li>
-          </ul>
+      <section className="w-full py-16 px-4 flex flex-col md:flex-row items-center gap-10 md:gap-20">
+        {/* Image Box */}
+        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">5</span>
+            {/* <Image src="/additional-features.png" alt="Additional Features" fill className="object-contain rounded-2xl" /> */}
+            <span className="text-gray-400">[Additional Features Image]</span>
+          </div>
+        </div>
+        <div className="flex-1 grid md:grid-cols-2 gap-12 items-start">
+          <div>
+            <div className="mb-4 rounded-full bg-blue-100 p-4 w-fit">
+              <PiRobotLight size={32} color={brand} />
+            </div>
+            <h2 className="text-2xl font-bold text-[#2563eb] mb-2">AI Chatbot</h2>
+            <p className="text-gray-700 text-lg">
+              Get instant answers to your questions, 24/7. Our AI assistant helps you with everything from rent queries to maintenance tips.
+            </p>
+          </div>
+          <div>
+            <div className="mb-4 rounded-full bg-blue-100 p-4 w-fit">
+              <HiOutlineChatBubbleLeftRight size={32} color={brand} />
+            </div>
+            <h2 className="text-2xl font-bold text-[#2563eb] mb-2">Messages</h2>
+            <p className="text-gray-700 text-lg">
+              Communicate directly with your landlord and housemates. Keep all your rental conversations in one secure place.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Tenant Portal */}
-      <section className="max-w-5xl mx-auto py-12 px-4">
+      <section className="w-full py-16 px-4 bg-gradient-to-b from-white to-blue-50 flex flex-col md:flex-row items-center gap-10 md:gap-20">
+        {/* Image Box */}
+        <div className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0">
+          <div className="relative w-64 h-44 bg-blue-100 rounded-2xl flex items-center justify-center">
+            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">6</span>
+            {/* <Image src="/tenant-portal.png" alt="Tenant Portal" fill className="object-contain rounded-2xl" /> */}
+            <span className="text-gray-400">[Tenant Portal Image]</span>
+          </div>
+        </div>
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-[#2563eb] mb-4">Tenant Portal</h2>
-          <ul className="space-y-6">
+          <h2 className="text-2xl font-bold text-[#2563eb] mb-2">Tenant Portal</h2>
+          <ul className="space-y-4 text-gray-700 text-lg">
             <li>
               <span className="font-semibold">Maintenance Requests:</span> Submit and track maintenance issues easily. See updates as your landlord or contractor responds.
             </li>
