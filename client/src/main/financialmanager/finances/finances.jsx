@@ -376,39 +376,47 @@ export default function Finances() {
                   </tr>
                 </thead>
                 <tbody>
-                  {expectedOrOverdueRent.map(payment => (
-                    <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
-                      <td>{payment.property}</td>
-                      <td>{payment.tenant}</td>
-                      <td>£{payment.amount}</td>
-                      <td>{payment.due_date ? formatDate(payment.due_date) : ""}</td>
-                      <td className={
-                        payment.status === "Overdue"
-                          ? "finances-status-overdue"
-                          : "finances-status-pending"
-                      }>
-                        {payment.status}
-                      </td>
-                      <td>
-                        <button
-                          className="finances-add-btn"
-                          onClick={() => {
-                            setRentForm({
-                              property_id: payment.property_id,
-                              tenant_id: payment.tenant_id,
-                              amount: payment.amount,
-                              paid_on: payment.due_date,
-                              method: "",
-                              reference: "",
-                            });
-                            setShowRentModal(true);
-                          }}
-                        >
-                          Mark as Received
-                        </button>
+                  {expectedOrOverdueRent.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: "center", color: "#888" }}>
+                        No payments added yet
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    expectedOrOverdueRent.map(payment => (
+                      <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
+                        <td>{payment.property}</td>
+                        <td>{payment.tenant}</td>
+                        <td>£{payment.amount}</td>
+                        <td>{payment.due_date ? formatDate(payment.due_date) : ""}</td>
+                        <td className={
+                          payment.status === "Overdue"
+                            ? "finances-status-overdue"
+                            : "finances-status-pending"
+                        }>
+                          {payment.status}
+                        </td>
+                        <td>
+                          <button
+                            className="finances-add-btn"
+                            onClick={() => {
+                              setRentForm({
+                                property_id: payment.property_id,
+                                tenant_id: payment.tenant_id,
+                                amount: payment.amount,
+                                paid_on: payment.due_date,
+                                method: "",
+                                reference: "",
+                              });
+                              setShowRentModal(true);
+                            }}
+                          >
+                            Mark as Received
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </section>
@@ -431,48 +439,56 @@ export default function Finances() {
                   </tr>
                 </thead>
                 <tbody>
-                  {paidRent.map(payment => (
-                    <tr key={payment.id}>
-                      <td>{payment.property}</td>
-                      <td>{payment.tenant}</td>
-                      <td>£{payment.amount}</td>
-                      {/* FIX: Use payment.due_date instead of payment.rent_due_date */}
-                      <td>{payment.due_date ? formatDate(payment.due_date) : ""}</td>
-                      <td>{payment.paid_on ? formatDate(payment.paid_on) : ""}</td>
-                      <td>{payment.method || ""}</td>
-                      <td>{payment.reference || ""}</td>
-                      <td>
-                        {payment.payment_status === "Late" ? (
-                          <span style={{ color: "#d9534f" }}>Late</span>
-                        ) : (
-                          <span style={{ color: "#22c55e" }}>On Time</span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="rent-paid-actions-dropdown">
-                          <button className="rent-paid-actions-btn">Actions ▼</button>
-                          <div className="rent-paid-actions-menu">
-                            <button
-                              className="rent-paid-actions-menu-item"
-                              onClick={() => setEditRentModal(payment)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="rent-paid-actions-menu-item delete"
-                              onClick={() => deleteRentPayment(payment.id)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
+                  {paidRent.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} style={{ textAlign: "center", color: "#888" }}>
+                        No payments added yet
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    paidRent.map(payment => (
+                      <tr key={payment.id}>
+                        <td>{payment.property}</td>
+                        <td>{payment.tenant}</td>
+                        <td>£{payment.amount}</td>
+                        <td>{payment.due_date ? formatDate(payment.due_date) : ""}</td>
+                        <td>{payment.paid_on ? formatDate(payment.paid_on) : ""}</td>
+                        <td>{payment.method || ""}</td>
+                        <td>{payment.reference || ""}</td>
+                        <td>
+                          {payment.payment_status === "Late" ? (
+                            <span style={{ color: "#d9534f" }}>Late</span>
+                          ) : (
+                            <span style={{ color: "#22c55e" }}>On Time</span>
+                          )}
+                        </td>
+                        <td>
+                          <div className="rent-paid-actions-dropdown">
+                            <button className="rent-paid-actions-btn">Actions ▼</button>
+                            <div className="rent-paid-actions-menu">
+                              <button
+                                className="rent-paid-actions-menu-item"
+                                onClick={() => setEditRentModal(payment)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="rent-paid-actions-menu-item delete"
+                                onClick={() => deleteRentPayment(payment.id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </section>
 
+            {/* Outgoing Expenses Table */}
             <section className="finances-section">
               <h2>Outgoing Expenses</h2>
               <table className="finances-table">
@@ -486,33 +502,41 @@ export default function Finances() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredExpenses.map(expense => (
-                    <tr key={expense.id}>
-                      <td>{formatDate(expense.date)}</td>
-                      <td>{expense.category}</td>
-                      <td>{expense.description}</td>
-                      <td>£{expense.amount}</td>
-                      <td>
-                        <div className="finances-actions-dropdown">
-                          <button className="finances-actions-btn">Actions ▼</button>
-                          <div className="finances-actions-menu">
-                            <button
-                              className="finances-actions-menu-item"
-                              onClick={() => setEditExpenseModal(expense)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="finances-actions-menu-item"
-                              onClick={() => deleteExpense(expense.id)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
+                  {filteredExpenses.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} style={{ textAlign: "center", color: "#888" }}>
+                        No payments added yet
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    filteredExpenses.map(expense => (
+                      <tr key={expense.id}>
+                        <td>{formatDate(expense.date)}</td>
+                        <td>{expense.category}</td>
+                        <td>{expense.description}</td>
+                        <td>£{expense.amount}</td>
+                        <td>
+                          <div className="finances-actions-dropdown">
+                            <button className="finances-actions-btn">Actions ▼</button>
+                            <div className="finances-actions-menu">
+                              <button
+                                className="finances-actions-menu-item"
+                                onClick={() => setEditExpenseModal(expense)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="finances-actions-menu-item"
+                                onClick={() => deleteExpense(expense.id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </section>

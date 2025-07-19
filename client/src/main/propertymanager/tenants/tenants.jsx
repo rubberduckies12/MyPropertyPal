@@ -253,50 +253,58 @@ export default function Tenants() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {tenants.map((tenant) => (
-                                    <tr
-                                        key={tenant.id}
-                                        className="tenant-row"
-                                        onClick={() => handleRowClick(tenant)}
-                                        style={{ cursor: "pointer" }}
-                                    >
-                                        <td>
-                                            {tenant.first_name} {tenant.last_name}
-                                        </td>
-                                        <td>{tenant.address}</td>
-                                        <td>
-                                            £
-                                            {showYearly
-                                                ? (tenant.rent_amount * 12).toLocaleString()
-                                                : tenant.rent_amount.toLocaleString()}
-                                            /{showYearly ? "yr" : "mo"}
-                                        </td>
-                                        <td>{getNextDueDate(tenant)}</td>
-                                        <td>
-                                            <span className={
-                                                "tenant-status " +
-                                                (tenant.is_pending
-                                                    ? "status-pending"
-                                                    : (tenant.pays_rent ? "status-active" : "status-overdue"))
-                                            }>
-                                                {tenant.is_pending
-                                                    ? "Pending"
-                                                    : (tenant.pays_rent ? "Active" : "Overdue")}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span className="countdown">
-                                                {daysLeft(tenant)}
-                                                {" days"}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <button onClick={e => { e.stopPropagation(); handleEditTenant(tenant); }}>
-                                                Edit
-                                            </button>
+                                {tenants.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={7} style={{ textAlign: "center", color: "#888" }}>
+                                            No tenants added yet
                                         </td>
                                     </tr>
-                                ))}
+                                ) : (
+                                    tenants.map((tenant) => (
+                                        <tr
+                                            key={tenant.id}
+                                            className="tenant-row"
+                                            onClick={() => handleRowClick(tenant)}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            <td>
+                                                {tenant.first_name} {tenant.last_name}
+                                            </td>
+                                            <td>{tenant.address}</td>
+                                            <td>
+                                                £
+                                                {showYearly
+                                                    ? (tenant.rent_amount * 12).toLocaleString()
+                                                    : tenant.rent_amount.toLocaleString()}
+                                                /{showYearly ? "yr" : "mo"}
+                                            </td>
+                                            <td>{getNextDueDate(tenant)}</td>
+                                            <td>
+                                                <span className={
+                                                    "tenant-status " +
+                                                    (tenant.is_pending
+                                                        ? "status-pending"
+                                                        : (tenant.pays_rent ? "status-active" : "status-overdue"))
+                                                }>
+                                                    {tenant.is_pending
+                                                        ? "Pending"
+                                                        : (tenant.pays_rent ? "Active" : "Overdue")}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span className="countdown">
+                                                    {daysLeft(tenant)}
+                                                    {" days"}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button onClick={e => { e.stopPropagation(); handleEditTenant(tenant); }}>
+                                                    Edit
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
                             </tbody>
                         </table>
                     </div>

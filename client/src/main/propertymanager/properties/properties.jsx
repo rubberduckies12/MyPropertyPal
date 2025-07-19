@@ -156,41 +156,42 @@ export default function Properties() {
                 </tr>
               </thead>
               <tbody>
-                {properties.length === 0 && (
+                {properties.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ textAlign: "center" }}>
-                      No properties found.
+                    <td colSpan={7} style={{ textAlign: "center", color: "#888" }}>
+                      No properties added yet
                     </td>
                   </tr>
+                ) : (
+                  properties.map((prop, idx) => (
+                    <tr
+                      key={idx}
+                      className="property-row"
+                      onClick={() => handleRowClick(prop)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <td>{prop.name || "-"}</td>
+                      <td>{prop.address || "-"}</td>
+                      <td>
+                        <span className={`property-status status-${prop.status?.toLowerCase().replace(/\s/g, "-")}`}>
+                          {prop.status}
+                        </span>
+                      </td>
+                      <td>
+                        {prop.tenants && prop.tenants.length > 0
+                          ? prop.tenants.map(t => `${t.first_name} ${t.last_name}`).join(", ")
+                          : "No tenant"}
+                      </td>
+                      <td>
+                        {prop.tenants && prop.tenants.length > 0
+                          ? prop.tenants.map(t => t.rent_amount ? `£${Number(t.rent_amount).toFixed(2)}` : "N/A").join(", ")
+                          : "N/A"}
+                      </td>
+                      <td>{prop.nextRentDue || "N/A"}</td>
+                      <td>{prop.rental_income}</td>
+                    </tr>
+                  ))
                 )}
-                {properties.map((prop, idx) => (
-                  <tr
-                    key={idx}
-                    className="property-row"
-                    onClick={() => handleRowClick(prop)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <td>{prop.name || "-"}</td>
-                    <td>{prop.address || "-"}</td>
-                    <td>
-                      <span className={`property-status status-${prop.status?.toLowerCase().replace(/\s/g, "-")}`}>
-                        {prop.status}
-                      </span>
-                    </td>
-                    <td>
-                      {prop.tenants && prop.tenants.length > 0
-                        ? prop.tenants.map(t => `${t.first_name} ${t.last_name}`).join(", ")
-                        : "No tenant"}
-                    </td>
-                    <td>
-                      {prop.tenants && prop.tenants.length > 0
-                        ? prop.tenants.map(t => t.rent_amount ? `£${Number(t.rent_amount).toFixed(2)}` : "N/A").join(", ")
-                        : "N/A"}
-                    </td>
-                    <td>{prop.nextRentDue || "N/A"}</td>
-                    <td>{prop.rental_income}</td>
-                  </tr>
-                ))}
               </tbody>
             </table>
           </div>

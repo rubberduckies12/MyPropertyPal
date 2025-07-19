@@ -460,18 +460,26 @@ export default function Compliance() {
               </tr>
             </thead>
             <tbody>
-              {(Array.isArray(deadlines) ? deadlines : []).map(item => (
-                <tr key={item.id} onClick={() => { setSelectedEvent(item); setEventSuccess(""); setError(""); }}>
-                  <td>{item.name}</td>
-                  <td>{item.property_name}</td>
-                  <td>{item.description}</td>
-                  <td>
-                    <span className={`status-bubble ${getDueStatus(item.due_date, item.reminder_days)}`}>
-                      {formatDate(item.due_date)}
-                    </span>
+              {(Array.isArray(deadlines) && deadlines.length === 0) ? (
+                <tr>
+                  <td colSpan={4} style={{ textAlign: "center", color: "#888" }}>
+                    No compliance deadlines added yet
                   </td>
                 </tr>
-              ))}
+              ) : (
+                (Array.isArray(deadlines) ? deadlines : []).map(item => (
+                  <tr key={item.id} onClick={() => { setSelectedEvent(item); setEventSuccess(""); setError(""); }}>
+                    <td>{item.name}</td>
+                    <td>{item.property_name}</td>
+                    <td>{item.description}</td>
+                    <td>
+                      <span className={`status-bubble ${getDueStatus(item.due_date, item.reminder_days)}`}>
+                        {formatDate(item.due_date)}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </section>

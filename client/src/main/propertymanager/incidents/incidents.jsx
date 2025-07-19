@@ -103,53 +103,61 @@ export default function Incidents() {
               </tr>
             </thead>
             <tbody>
-              {incidents.map((incident) => (
-                <tr
-                  key={incident.id}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => handleRowClick(incident)}
-                >
-                  <td>
-                    <div className="incident-title-cell">
-                      <span className="incident-title">{incident.title}</span>
-                      <span className="incident-id">#{incident.id}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className="incident-property">{incident.property_display}</span>
-                  </td>
-                  <td>
-                    <span className="incident-tenant">
-                      {incident.tenant_first_name || ""} {incident.tenant_last_name || ""}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="incident-date">
-                      {new Date(incident.created_at).toLocaleDateString("en-GB")}
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      className={`incident-severity bubble ${getSeverityColor(incident.severity)}`}
-                    >
-                      {incident.severity}
-                    </span>
-                  </td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <select
-                      className={`incident-progress-select bubble ${getProgressColor(incident.progress)}`}
-                      value={incident.progress}
-                      onChange={(e) =>
-                        handleProgressChange(incident.id, e.target.value)
-                      }
-                    >
-                      <option value="Not Started">Not Started</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Solved">Solved</option>
-                    </select>
+              {incidents.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: "center", color: "#888" }}>
+                    No new maintenance requests
                   </td>
                 </tr>
-              ))}
+              ) : (
+                incidents.map((incident) => (
+                  <tr
+                    key={incident.id}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleRowClick(incident)}
+                  >
+                    <td>
+                      <div className="incident-title-cell">
+                        <span className="incident-title">{incident.title}</span>
+                        <span className="incident-id">#{incident.id}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="incident-property">{incident.property_display}</span>
+                    </td>
+                    <td>
+                      <span className="incident-tenant">
+                        {incident.tenant_first_name || ""} {incident.tenant_last_name || ""}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="incident-date">
+                        {new Date(incident.created_at).toLocaleDateString("en-GB")}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`incident-severity bubble ${getSeverityColor(incident.severity)}`}
+                      >
+                        {incident.severity}
+                      </span>
+                    </td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <select
+                        className={`incident-progress-select bubble ${getProgressColor(incident.progress)}`}
+                        value={incident.progress}
+                        onChange={(e) =>
+                          handleProgressChange(incident.id, e.target.value)
+                        }
+                      >
+                        <option value="Not Started">Not Started</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Solved">Solved</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
