@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import Header from "../../components/desktop/desktopHeader";
 import MobileHeader from "../../components/mobile/mobileHeader";
 import Footer from "../../components/desktop/desktopFooter";
@@ -12,7 +13,7 @@ const brand = "#2563eb";
 
 export default function Product() {
   return (
-    <div className="bg-white text-[#171717] font-sans">
+    <div className="bg-[#f7f9fb] text-[#171717] font-sans min-h-screen">
       <Head>
         <title>The Product – Beta Release | MyPropertyPal</title>
         <meta name="description" content="Explore all the features available to tenants in MyPropertyPal. Flexible rent schedules, maintenance requests, messaging, and more." />
@@ -41,12 +42,11 @@ export default function Product() {
       </section>
 
       {/* Dashboard */}
-      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14 border-b border-gray-100">
         <div className="flex justify-center">
-          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
-            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">1</span>
-            {/* <Image src="/dashboard.png" alt="Dashboard" fill className="object-contain rounded-2xl" /> */}
-            <span className="text-gray-400">[Dashboard Image]</span>
+          <div className="relative w-full max-w-md h-56 bg-white rounded-2xl shadow flex items-center justify-center overflow-hidden">
+            <span className="absolute top-3 left-3 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">1</span>
+            <Image src="/Dashboard.png" alt="Dashboard" fill className="object-contain rounded-2xl" />
           </div>
         </div>
         <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
@@ -61,12 +61,11 @@ export default function Product() {
       </section>
 
       {/* Property Manager */}
-      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14 border-b border-gray-100">
         <div className="flex justify-center order-2 md:order-1">
-          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
-            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">2</span>
-            {/* <Image src="/property-manager.png" alt="Property Manager" fill className="object-contain rounded-2xl" /> */}
-            <span className="text-gray-400">[Property Manager Image]</span>
+          <div className="relative w-full max-w-md h-56 bg-white rounded-2xl shadow flex items-center justify-center overflow-hidden">
+            <span className="absolute top-3 left-3 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">2</span>
+            <Image src="/PropertyManager.png" alt="Property Manager" fill className="object-contain rounded-2xl" />
           </div>
         </div>
         <div className="order-1 md:order-2 grid md:grid-cols-2 gap-12 items-start w-full">
@@ -106,12 +105,11 @@ export default function Product() {
       </section>
 
       {/* Financial Manager */}
-      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14 border-b border-gray-100">
         <div className="flex justify-center">
-          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
-            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">3</span>
-            {/* <Image src="/financial-manager.png" alt="Financial Manager" fill className="object-contain rounded-2xl" /> */}
-            <span className="text-gray-400">[Financial Manager Image]</span>
+          <div className="relative w-full max-w-md h-56 bg-white rounded-2xl shadow flex items-center justify-center overflow-hidden">
+            <span className="absolute top-3 left-3 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">3</span>
+            <Image src="/Financemanager.png" alt="Financial Manager" fill className="object-contain rounded-2xl" />
           </div>
         </div>
         <div className="grid md:grid-cols-2 gap-12 items-start w-full">
@@ -146,12 +144,11 @@ export default function Product() {
       </section>
 
       {/* Legal Manager */}
-      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14 border-b border-gray-100">
         <div className="flex justify-center order-2 md:order-1">
-          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
-            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">4</span>
-            {/* <Image src="/legal-manager.png" alt="Legal Manager" fill className="object-contain rounded-2xl" /> */}
-            <span className="text-gray-400">[Legal Manager Image]</span>
+          <div className="relative w-full max-w-md h-56 bg-white rounded-2xl shadow flex items-center justify-center overflow-hidden">
+            <span className="absolute top-3 left-3 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">4</span>
+            <Image src="/ComplianceManager.png" alt="Legal Manager" fill className="object-contain rounded-2xl" />
           </div>
         </div>
         <div className="order-1 md:order-2 flex flex-col items-center md:items-start text-center md:text-left w-full">
@@ -171,12 +168,11 @@ export default function Product() {
       </section>
 
       {/* Additional Features */}
-      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20 border-b border-gray-100">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14 border-b border-gray-100">
         <div className="flex justify-center">
-          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
-            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">5</span>
-            {/* <Image src="/additional-features.png" alt="Additional Features" fill className="object-contain rounded-2xl" /> */}
-            <span className="text-gray-400">[Additional Features Image]</span>
+          <div className="relative w-full max-w-md h-56 bg-white rounded-2xl shadow flex items-center justify-center overflow-hidden">
+            <span className="absolute top-3 left-3 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">5</span>
+            <Image src="/AI_Chatbot.png" alt="AI Chatbot" fill className="object-contain rounded-2xl" />
           </div>
         </div>
         <div className="grid md:grid-cols-2 gap-12 items-start w-full">
@@ -202,12 +198,11 @@ export default function Product() {
       </section>
 
       {/* Tenant Portal */}
-      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-20">
+      <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14">
         <div className="flex justify-center order-2 md:order-1">
-          <div className="relative w-full max-w-md h-44 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
-            <span className="absolute top-2 left-2 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">6</span>
-            {/* <Image src="/tenant-portal.png" alt="Tenant Portal" fill className="object-contain rounded-2xl" /> */}
-            <span className="text-gray-400">[Tenant Portal Image]</span>
+          <div className="relative w-full max-w-md h-56 bg-white rounded-2xl shadow flex items-center justify-center overflow-hidden">
+            <span className="absolute top-3 left-3 bg-[#2563eb] text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold shadow">6</span>
+            <Image src="/TenantPortal.png" alt="Tenant Portal" fill className="object-contain rounded-2xl" />
           </div>
         </div>
         <div className="order-1 md:order-2 flex flex-col items-center md:items-start text-center md:text-left w-full">
