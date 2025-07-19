@@ -33,6 +33,16 @@ export default function Header() {
                 >
                     Home
                 </a>
+                <a
+                    href="/product"
+                    className={`hover:text-[#2563eb] transition ${
+                        currentPath === "/product"
+                            ? "text-[#2563eb] font-bold underline underline-offset-4"
+                            : ""
+                    }`}
+                >
+                    Product
+                </a>
                 <Link href="/about" passHref legacyBehavior>
                     <a
                         className={`hover:text-[#2563eb] transition ${
