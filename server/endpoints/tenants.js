@@ -122,6 +122,25 @@ router.get("/", async (req, res) => {
       }
     }
 
+    // Calculate outstanding balances for each tenant
+    for (const tenant of tenantsResult.rows) {
+      // Calculate periods_due (monthly example)
+      const rentDueDate = new Date(tenant.rent_due_date);
+      const today = new Date();
+      let periods_due = (today.getFullYear() - rentDueDate.getFullYear()) * 12 + (today.getMonth() - rentDueDate.getMonth()) + 1;
+      if (periods_due < 0) periods_due = 0;
+      const expected = periods_due * Number(tenant.rent_amount);
+
+      // Get total paid
+      const paidRes = await pool.query(
+        "SELECT COALESCE(SUM(amount),0) AS total_paid FROM rent_payment WHERE tenant_id = $1 AND property_id = $2",
+        [tenant.id, tenant.property_id]
+      );
+      const total_paid = Number(paidRes.rows[0].total_paid);
+
+      tenant.outstanding_balance = expected - total_paid;
+    }
+
     res.json({ tenants: tenantsResult.rows });
   } catch (err) {
     console.error("Error fetching tenants:", err);
