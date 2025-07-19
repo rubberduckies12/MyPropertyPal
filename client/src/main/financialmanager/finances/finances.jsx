@@ -436,7 +436,7 @@ export default function Finances() {
                       <td>{payment.property}</td>
                       <td>{payment.tenant}</td>
                       <td>£{payment.amount}</td>
-                      <td>{payment.rent_due_date ? new Date(payment.rent_due_date).toLocaleDateString() : ""}</td>
+                      <td>{payment.rent_due_date ? formatDate(payment.rent_due_date) : ""}</td>
                       <td>{payment.paid_on ? new Date(payment.paid_on).toLocaleDateString() : ""}</td>
                       <td>{payment.method || ""}</td>
                       <td>{payment.reference || ""}</td>
