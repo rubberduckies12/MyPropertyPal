@@ -46,7 +46,7 @@ export default function Product() {
         <div className="flex justify-center">
           <div className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden">
             <Image
-              src="/Dashboard.png"
+              src="/dashboard.png"
               alt="Dashboard"
               fill
               style={{ objectFit: "contain" }}
