@@ -4,10 +4,11 @@ const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Make sure to pass your database pool/connection to this file
-const pool = require('../db'); // Adjust path as needed
+// const pool = require('../db'); // Adjust path as needed
 
 // Use raw body for Stripe signature verification
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const pool = req.app.get("pool"); // <-- Use this to get your pool
   const sig = req.headers['stripe-signature'];
   let event;
 
