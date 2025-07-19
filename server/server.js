@@ -22,6 +22,7 @@ const complianceRouter = require('./endpoints/compliance');
 const maintenanceRouter = require('./endpoints/maintenance');
 const messagesRouter = require('./endpoints/messages.js');
 const stripeRouter = require('./endpoints/stripe');
+const stripeWebhookRouter = require('./endpoints/stripeWebhook');
 const accountRouter = require('./endpoints/account.js');
 const tenantRentRouter = require('./endpoints/tenants/tenantRent');
 const { searchContractors } = require('./database/getcontractors');
@@ -44,6 +45,8 @@ app.use(express.json());
 // --- Public Routes ---
 app.use('/api/chat', chatRoute);
 app.use('/api/account', accountRouter); // <-- Add this line here for public account routes
+app.use('/api/stripe', stripeRouter); // <-- Stripe checkout session (public)
+app.use('/api/stripe', stripeWebhookRouter); // <-- Stripe webhook (public)
 
 // External API example
 app.get('/external-api', async (req, res) => {
@@ -100,8 +103,7 @@ app.get('/api/tenants/invite/:token', async (req, res) => {
 
 // --- Protected Routes ---
 app.use(authenticate);
-app.use(checkSubscriptionStatus); // <-- Add this line to wrap all protected routes below
-
+app.use(checkSubscriptionStatus);
 app.use("/api/tenants", tenantsRouter);
 app.use('/api/finances', financesRouter);
 app.use('/api/documents', documentsRouter);
