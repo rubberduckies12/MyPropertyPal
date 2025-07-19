@@ -39,6 +39,13 @@ export default function MobileHeader() {
                         Home
                     </a>
                     <a
+                        href="/product"
+                        className={`w-full py-2 ${currentPath === "/product" ? "text-[#2563eb] font-bold underline underline-offset-4" : "text-gray-900"} transition`}
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        Product
+                    </a>
+                    <a
                         href="/about"
                         className={`w-full py-2 ${currentPath === "/about" ? "text-[#2563eb] font-bold underline underline-offset-4" : "text-gray-900"} transition`}
                         onClick={() => setMenuOpen(false)}
