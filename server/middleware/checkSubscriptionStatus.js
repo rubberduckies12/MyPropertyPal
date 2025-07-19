@@ -1,7 +1,11 @@
 // middleware/checkSubscriptionStatus.js
 module.exports = async function checkSubscriptionStatus(req, res, next) {
-    const pool = req.app.get("pool"); // <-- FIXED
+    const pool = req.app.get("pool");
     const landlordId = req.user.landlord_id;
+    if (!landlordId) {
+        // Not a landlord, skip subscription check
+        return next();
+    }
     const { rows } = await pool.query(
         `SELECT status, is_active FROM subscription WHERE landlord_id = $1 ORDER BY created_at DESC LIMIT 1`,
         [landlordId]
