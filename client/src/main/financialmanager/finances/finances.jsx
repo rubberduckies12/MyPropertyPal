@@ -249,12 +249,17 @@ export default function Finances() {
       const res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/tax-report?year=${year}`, {
         headers: { Authorization: token ? `Bearer ${token}` : "" }
       });
-      const data = await res.json();
-      if (data.url) {
-        window.open(`https://mypropertypal-3.onrender.com${data.url}`, "_blank");
-      } else {
-        alert("Failed to generate tax report.");
-      }
+      if (!res.ok) throw new Error("Failed to generate tax report.");
+      const blob = await res.blob();
+      // Create a download link for the PDF
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `tax-report-${year}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
     } catch (err) {
       alert("Failed to generate tax report.");
     }
