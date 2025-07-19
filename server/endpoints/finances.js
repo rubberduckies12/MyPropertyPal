@@ -344,4 +344,58 @@ router.put("/rent/:id", authenticate, async (req, res) => {
   }
 });
 
+// Expected rent router
+router.get("/expected-rent", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  const accountId = req.user.id;
+  const landlordId = await getLandlordId(pool, accountId);
+
+  // Get all active tenants for this landlord
+  const tenantsResult = await pool.query(`
+    SELECT pt.property_id, pt.tenant_id, pt.rent_amount, pt.rent_due_date, pt.rent_schedule_type, pt.rent_schedule_value,
+           a.first_name, a.last_name, p.name AS property_name, p.address
+    FROM property_tenant pt
+    JOIN tenant t ON pt.tenant_id = t.id
+    JOIN account a ON t.account_id = a.id
+    JOIN property p ON pt.property_id = p.id
+    WHERE p.landlord_id = $1
+  `, [landlordId]);
+
+  const today = new Date();
+  const expected = [];
+
+  for (const t of tenantsResult.rows) {
+    // Calculate the next due date(s) for this tenant
+    let dueDate = new Date(t.rent_due_date);
+    dueDate.setHours(0,0,0,0);
+
+    // For demo: show only the current due date
+    const rentPaymentRes = await pool.query(
+      `SELECT * FROM rent_payment WHERE tenant_id = $1 AND property_id = $2 AND paid_on = $3`,
+      [t.tenant_id, t.property_id, dueDate.toISOString().split("T")[0]]
+    );
+    let status = "Not Paid";
+    let paid_on = null;
+    if (rentPaymentRes.rows.length > 0) {
+      status = "Paid";
+      paid_on = rentPaymentRes.rows[0].paid_on;
+    } else if (dueDate < today) {
+      status = "Overdue";
+    }
+
+    expected.push({
+      property: [t.property_name, t.address].filter(Boolean).join(" "),
+      tenant: `${t.first_name} ${t.last_name}`,
+      amount: t.rent_amount,
+      due_date: dueDate.toISOString().split("T")[0],
+      status,
+      paid_on,
+      property_id: t.property_id,
+      tenant_id: t.tenant_id,
+    });
+  }
+
+  res.json({ expected });
+});
+
 module.exports = router;

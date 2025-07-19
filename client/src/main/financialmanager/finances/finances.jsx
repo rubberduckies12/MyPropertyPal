@@ -68,6 +68,7 @@ export default function Finances() {
   const [properties, setProperties] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [user, setUser] = useState(null);
+  const [expectedRent, setExpectedRent] = useState([]);
 
   useEffect(() => {
     async function fetchFinances() {
@@ -116,6 +117,18 @@ export default function Finances() {
       } catch {}
     }
     fetchDropdowns();
+  }, []);
+
+  useEffect(() => {
+    async function fetchExpectedRent() {
+      const token = localStorage.getItem("token");
+      const res = await fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", {
+        headers: { Authorization: token ? `Bearer ${token}` : "" }
+      });
+      const data = await res.json();
+      setExpectedRent(data.expected || []);
+    }
+    fetchExpectedRent();
   }, []);
 
   const filteredRent = filterByPeriod(rentPayments, period);
@@ -349,42 +362,51 @@ export default function Finances() {
               <table className="finances-table">
                 <thead>
                   <tr>
-                    <th>Date</th>
                     <th>Property</th>
                     <th>Tenant</th>
                     <th>Amount</th>
+                    <th>Date Due</th>
                     <th>Status</th>
+                    <th>Date Paid</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRent.map(payment => (
-                    <tr key={payment.id}>
-                      <td>{formatDate(payment.date)}</td>
+                  {expectedRent.map(payment => (
+                    <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
                       <td>{payment.property}</td>
                       <td>{payment.tenant}</td>
                       <td>£{payment.amount}</td>
-                      <td className={payment.status === "Received" ? "finances-status-received" : "finances-status-pending"}>
+                      <td>{payment.due_date}</td>
+                      <td className={
+                        payment.status === "Paid"
+                          ? "finances-status-received"
+                          : payment.status === "Overdue"
+                          ? "finances-status-overdue"
+                          : "finances-status-pending"
+                      }>
                         {payment.status}
                       </td>
+                      <td>{payment.paid_on ? new Date(payment.paid_on).toLocaleDateString() : ""}</td>
                       <td>
-                        <div className="finances-actions-dropdown">
-                          <button className="finances-actions-btn">Actions ▼</button>
-                          <div className="finances-actions-menu">
-                            <button
-                              className="finances-actions-menu-item"
-                              onClick={() => setEditRentModal(payment)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="finances-actions-menu-item"
-                              onClick={() => deleteRentPayment(payment.id)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
+                        {payment.status !== "Paid" && (
+                          <button
+                            className="finances-add-btn"
+                            onClick={() => {
+                              setRentForm({
+                                property_id: payment.property_id,
+                                tenant_id: payment.tenant_id,
+                                amount: payment.amount,
+                                paid_on: payment.due_date,
+                                method: "",
+                                reference: "",
+                              });
+                              setShowRentModal(true);
+                            }}
+                          >
+                            Mark as Received
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -442,9 +464,6 @@ export default function Finances() {
                 <div><strong>Total Income:</strong> £{totalIncome.toLocaleString()}</div>
                 <div><strong>Total Expenses:</strong> £{totalExpenses.toLocaleString()}</div>
                 <div><strong>Taxable Profit:</strong> £{taxableProfit.toLocaleString()}</div>
-                <button className="finances-export-btn" onClick={handleExportTaxReport}>
-                  Export Summary
-                </button>
               </div>
             </section>
           </>
