@@ -50,7 +50,7 @@ async function getProperties(req, res, pool) {
       status: row.property_status,
       rental_income: row.total_rent > 0 ? `£${parseFloat(row.total_rent).toFixed(2)}` : 'N/A',
       tenants: row.tenants,
-      nextRentDue: row.next_rent_due ? `Day ${row.next_rent_due} of month` : "N/A"
+      nextRentDue: row.next_rent_due ? `Day ${row.next_rent_due} of month` : 'N/A'
     }));
 
     res.json({ properties });
