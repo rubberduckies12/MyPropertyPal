@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { MdPeople, MdOutlineManageAccounts, MdHomeRepairService } from "react-icons/md";
 import { HiOutlineWrenchScrewdriver, HiOutlineChatBubbleLeftRight, HiOutlineBolt } from "react-icons/hi2";
@@ -6,15 +7,15 @@ import { PiRobotLight } from "react-icons/pi";
 import { FaPoundSign } from "react-icons/fa";
 
 const orbitIcons = [
-  <MdPeople size={38} key="Tenants" />,
-  <MdOutlineManageAccounts size={38} key="Management" />,
-  <MdHomeRepairService size={38} key="Maintenance" />,
-  <HiOutlineWrenchScrewdriver size={38} key="Repairs" />,
-  <HiOutlineChatBubbleLeftRight size={38} key="Chat" />,
-  <HiOutlineBolt size={38} key="AI" />,
-  <TbReportMoney size={38} key="Finance" />,
-  <PiRobotLight size={38} key="Assistant" />,
-  <FaPoundSign size={38} key="Rent" />,
+  <MdPeople key="Tenants" />,
+  <MdOutlineManageAccounts key="Management" />,
+  <MdHomeRepairService key="Maintenance" />,
+  <HiOutlineWrenchScrewdriver key="Repairs" />,
+  <HiOutlineChatBubbleLeftRight key="Chat" />,
+  <HiOutlineBolt key="AI" />,
+  <TbReportMoney key="Finance" />,
+  <PiRobotLight key="Assistant" />,
+  <FaPoundSign key="Rent" />,
 ];
 
 export default function OrbitGraphic() {
@@ -42,16 +43,24 @@ export default function OrbitGraphic() {
     iconOffset: 27,
   };
 
-  // Use CSS media queries for layout, JS for icon positions
-  const isMobile = typeof window !== "undefined" ? window.innerWidth < 640 : false;
+  // Use a hook to detect screen size on client only
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const cfg = isMobile ? mobile : desktop;
 
   return (
     <div
       className="relative mx-auto"
       style={{
-        width: isMobile ? `${mobile.size}px` : `${desktop.size}px`,
-        height: isMobile ? `${mobile.size}px` : `${desktop.size}px`,
+        width: `${cfg.size}px`,
+        height: `${cfg.size}px`,
       }}
     >
       {/* Center logo */}
@@ -69,7 +78,7 @@ export default function OrbitGraphic() {
           animation: `orbit-container ${duration}s linear infinite`,
         }}
       >
-        {orbitIcons.map((icon, i) => {
+        {orbitIcons.map((Icon, i) => {
           const angle = (2 * Math.PI * i) / orbitIcons.length;
           const x = cfg.center + cfg.radius * Math.cos(angle) - cfg.iconOffset;
           const y = cfg.center + cfg.radius * Math.sin(angle) - cfg.iconOffset;
@@ -102,7 +111,7 @@ export default function OrbitGraphic() {
                   justifyContent: "center",
                 }}
               >
-                {React.cloneElement(icon, { size: cfg.iconSize })}
+                {React.cloneElement(Icon, { size: cfg.iconSize })}
               </div>
             </div>
           );
