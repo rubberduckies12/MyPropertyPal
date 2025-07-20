@@ -53,3 +53,10 @@ html {
   scrollbar-width: thin;
   scrollbar-color: #2563eb #e0e7ff;
 }
+
+html, body {
+  cursor: default;
+}
+button, [role="button"], .cursor-pointer {
+  cursor: pointer;
+}
