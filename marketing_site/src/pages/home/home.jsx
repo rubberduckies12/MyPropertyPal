@@ -140,75 +140,72 @@ function FeaturesSlider() {
     return (
         <section className="max-w-3xl mx-auto py-20 px-6 flex flex-col items-center">
             <h2 className="text-2xl font-bold text-center mb-8">Powerful Features</h2>
-            <div
-                className="relative w-full flex flex-col items-center"
-                style={{
-                    minHeight: 340,
-                }}
-            >
-                <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                        key={current}
-                        initial={{ opacity: 0, x: direction > 0 ? 60 : -60, scale: 0.98 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: direction > 0 ? -60 : 60, scale: 0.98 }}
-                        transition={{ duration: 0.35, ease: "easeInOut" }}
-                        className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center absolute"
-                        style={{
-                            minHeight: 240,
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <div className="mb-4">{featureSlides[current].icon()}</div>
-                        <h3
-                            className="text-xl font-bold mb-2 text-[#2563eb] text-center"
+            <div className="relative w-full flex flex-col items-center" style={{ minHeight: 340 }}>
+                <div className="w-full flex flex-col items-center">
+                    <AnimatePresence mode="wait" initial={false}>
+                        <motion.div
+                            key={current}
+                            initial={{ opacity: 0, x: direction > 0 ? 60 : -60, scale: 0.98 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, x: direction > 0 ? -60 : 60, scale: 0.98 }}
+                            transition={{ duration: 0.35, ease: "easeInOut" }}
+                            className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center"
                             style={{
-                                minHeight: "2.5em",
+                                minHeight: 240,
                                 display: "flex",
-                                alignItems: "center",
+                                flexDirection: "column",
                                 justifyContent: "center",
                             }}
                         >
-                            {featureSlides[current].title}
-                        </h3>
-                        <p
-                            className="text-gray-700 text-center"
-                            style={{
-                                minHeight: "3.5em",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
+                            <div className="mb-4">{featureSlides[current].icon()}</div>
+                            <h3
+                                className="text-xl font-bold mb-2 text-[#2563eb] text-center"
+                                style={{
+                                    minHeight: "2.5em",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                {featureSlides[current].title}
+                            </h3>
+                            <p
+                                className="text-gray-700 text-center"
+                                style={{
+                                    minHeight: "3.5em",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                {featureSlides[current].description}
+                            </p>
+                        </motion.div>
+                    </AnimatePresence>
+                    <div className="flex gap-4 mt-8">
+                        <button
+                            aria-label="Previous feature"
+                            onClick={() => handleManualNav(prev)}
+                            className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition"
                         >
-                            {featureSlides[current].description}
-                        </p>
-                    </motion.div>
-                </AnimatePresence>
-                <div className="flex gap-4 mt-8 relative z-10">
-                    <button
-                        aria-label="Previous feature"
-                        onClick={() => handleManualNav(prev)}
-                        className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition"
-                    >
-                        <HiChevronLeft size={28} />
-                    </button>
-                    <button
-                        aria-label="Next feature"
-                        onClick={() => handleManualNav(next)}
-                        className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition"
-                    >
-                        <HiChevronRight size={28} />
-                    </button>
-                </div>
-                <div className="flex gap-2 mt-4 relative z-10">
-                    {featureSlides.map((_, idx) => (
-                        <span
-                            key={idx}
-                            className={`w-3 h-3 rounded-full ${idx === current ? "bg-[#2563eb]" : "bg-blue-100"}`}
-                        />
-                    ))}
+                            <HiChevronLeft size={28} />
+                        </button>
+                        <button
+                            aria-label="Next feature"
+                            onClick={() => handleManualNav(next)}
+                            className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition"
+                        >
+                            <HiChevronRight size={28} />
+                        </button>
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                        {featureSlides.map((_, idx) => (
+                            <span
+                                key={idx}
+                                className={`w-3 h-3 rounded-full ${idx === current ? "bg-[#2563eb]" : "bg-blue-100"}`}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>
