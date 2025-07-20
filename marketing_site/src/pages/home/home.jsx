@@ -2,7 +2,14 @@ import Head from "next/head";
 import Header from "../../components/desktop/desktopHeader";
 import MobileHeader from "../../components/mobile/mobileHeader";
 import Footer from "../../components/desktop/desktopFooter";
-import { MdOutlineNotificationsActive, MdGavel, MdHomeRepairService, MdPeople, MdOutlineManageAccounts } from "react-icons/md";
+import { 
+  MdOutlineNotificationsActive, 
+  MdGavel, 
+  MdHomeRepairService, 
+  MdPeople, 
+  MdOutlineManageAccounts, 
+  MdHttps 
+} from "react-icons/md";
 import { HiOutlineDocument, HiOutlineChatBubbleLeftRight, HiOutlineWrenchScrewdriver, HiOutlineBolt, HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { PiRobotLight } from "react-icons/pi";
 import { FaRegMoneyBillAlt, FaPoundSign, FaCcStripe, FaLock } from "react-icons/fa";
