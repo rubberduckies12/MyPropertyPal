@@ -376,24 +376,26 @@ export default function Landing() {
                     <span className="font-semibold">Start simple. Grow with confidence.</span>
                 </p>
                 {/* Billing toggle */}
-                <div className="flex justify-center mb-8">
+                <div className="flex justify-center mb-8 w-full max-w-xs mx-auto">
                     <button
-                        className={`px-6 py-2 rounded-l-lg border border-[#2563eb] font-semibold transition ${
+                        className={`flex-1 px-6 py-2 rounded-l-lg border border-[#2563eb] font-semibold transition text-center ${
                             billing === "monthly"
                                 ? "bg-[#2563eb] text-white"
                                 : "bg-white text-[#2563eb]"
                         }`}
                         onClick={() => setBilling("monthly")}
+                        style={{ minWidth: 0 }}
                     >
                         Monthly
                     </button>
                     <button
-                        className={`px-6 py-2 rounded-r-lg border border-[#2563eb] font-semibold transition ${
+                        className={`flex-1 px-6 py-2 rounded-r-lg border border-[#2563eb] font-semibold transition text-center ${
                             billing === "yearly"
                                 ? "bg-[#2563eb] text-white"
                                 : "bg-white text-[#2563eb]"
                         }`}
                         onClick={() => setBilling("yearly")}
+                        style={{ minWidth: 0 }}
                     >
                         Yearly
                     </button>
