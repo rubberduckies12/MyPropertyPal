@@ -35,7 +35,7 @@ export default function DesktopAbout() {
                 <meta property="og:type" content="website" />
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content="About | MyPropertyPal" />
-                <meta name="twitter:description" content="Meet the founders and story behind MyPropertyPal. Built by landlords, for landlords." />
+                <meta name="twitter:description" content="Meet the founderse and story behind MyPropertyPal. Built by landlords, for landlords." />
                 <meta name="twitter:image" content="/LogoWB.png" />
                 <link rel="icon" href="/LogoWB.png" />
             </Head>
@@ -86,7 +86,7 @@ export default function DesktopAbout() {
                         <div className="text-sm text-gray-500 mb-1">The Engine</div>
                         <div className="text-sm text-gray-700 mb-2">Software Engineer</div>
                         <p className="text-gray-700 text-center text-base">
-                            “Fin lives in the backend — the unsung hero behind our APIs, integrations, and platform performance. If it runs, he probably wrote it.”
+                            “Finn lives in the backend — the unsung hero behind our APIs, integrations, and platform performance. If it runs, he probably wrote it.”
                         </p>
                     </div>
                     {/* Chris Thomson */}
