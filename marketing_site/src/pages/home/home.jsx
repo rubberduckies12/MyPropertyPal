@@ -514,6 +514,33 @@ export default function Landing() {
         Try MyPropertyPal with no risk — cancel anytime, no questions asked.
     </p>
 </section>
+
+<section className="max-w-4xl mx-auto py-10 px-6 flex flex-col items-center">
+  <h3 className="text-lg font-semibold mb-4 text-center">Your data and payments are safe</h3>
+  <div className="flex flex-wrap gap-6 justify-center items-center">
+    {/* GDPR Badge */}
+    <div className="flex flex-col items-center">
+      <img src="/gdpr-badge.svg" alt="GDPR Compliant" className="w-12 h-12 mb-1" />
+      <span className="text-xs text-gray-600">GDPR Compliant</span>
+    </div>
+    {/* Stripe Badge */}
+    <div className="flex flex-col items-center">
+      <img src="/stripe-badge.svg" alt="Stripe Payments" className="w-12 h-12 mb-1" />
+      <span className="text-xs text-gray-600">Stripe Secure Payments</span>
+    </div>
+    {/* SSL Badge */}
+    <div className="flex flex-col items-center">
+      <img src="/ssl-badge.svg" alt="SSL Secured" className="w-12 h-12 mb-1" />
+      <span className="text-xs text-gray-600">SSL Encrypted</span>
+    </div>
+    {/* HTTPS Badge */}
+    <div className="flex flex-col items-center">
+      <img src="/https-badge.svg" alt="HTTPS Secure" className="w-12 h-12 mb-1" />
+      <span className="text-xs text-gray-600">HTTPS Secure</span>
+    </div>
+  </div>
+</section>
+
             <Footer />
         </div>
     );
