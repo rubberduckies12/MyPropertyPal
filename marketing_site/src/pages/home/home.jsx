@@ -147,8 +147,15 @@ function FeaturesSlider() {
     return (
         <section className="max-w-3xl mx-auto py-20 px-6 flex flex-col items-center">
             <h2 className="text-2xl font-bold text-center mb-8">Powerful Features</h2>
-            <div className="relative w-full flex flex-col items-center" style={{ minHeight: 340 }}>
-                <div className="w-full flex flex-col items-center">
+            <div
+                className="relative w-full flex flex-col items-center"
+                style={{
+                    minHeight: 340,
+                    height: 340, // <-- Fixed height for the whole slider area
+                    overflow: "hidden", // Prevents content from overflowing and shifting
+                }}
+            >
+                <div className="w-full flex flex-col items-center h-full">
                     <AnimatePresence mode="wait" initial={false}>
                         <motion.div
                             key={current}
@@ -156,12 +163,13 @@ function FeaturesSlider() {
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: direction > 0 ? -60 : 60, scale: 0.98 }}
                             transition={{ duration: 0.35, ease: "easeInOut" }}
-                            className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center"
+                            className="bg-white rounded-2xl shadow-lg p-6 w-full flex flex-col items-center h-full"
                             style={{
-                                height: 280, // <-- Set a fixed height (adjust as needed)
+                                height: "100%", // Fill the parent container
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "center",
+                                overflow: "hidden",
                             }}
                         >
                             <div className="mb-4">{featureSlides[current].icon()}</div>
@@ -193,14 +201,14 @@ function FeaturesSlider() {
                         <button
                             aria-label="Previous feature"
                             onClick={() => handleManualNav(prev)}
-                            className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition"
+                            className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition cursor-pointer"
                         >
                             <HiChevronLeft size={28} />
                         </button>
                         <button
                             aria-label="Next feature"
                             onClick={() => handleManualNav(next)}
-                            className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition"
+                            className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition cursor-pointer"
                         >
                             <HiChevronRight size={28} />
                         </button>
