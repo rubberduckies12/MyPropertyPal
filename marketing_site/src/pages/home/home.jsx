@@ -275,8 +275,8 @@ export default function Landing() {
                         Win Back your Time <br className="hidden md:block" />with MyPropertyPal
                     </h1>
                     <h2 className="text-lg md:text-2xl font-semibold mb-2 text-[#2563eb] tracking-tight leading-snug" style={{ letterSpacing: "-0.5px" }}>
-  Manage your rentals in <span className="bg-yellow-100 px-2 rounded">minutes</span> not hours
-</h2>
+                        <h2>Manage your rentals in minutes not hours</h2>
+                    </h2>
                     <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8">
                         30-Day Money Back Guarantee. No Questions Asked.
                     </p>
@@ -306,8 +306,7 @@ export default function Landing() {
             <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-6 py-20">
                 <div>
                     <h2 className="text-3xl font-bold mb-4 text-center md:text-left">
-                        Effortless Property{" "}
-                        <span className="bg-yellow-100 px-2 rounded">Management</span>
+                        Effortless Property Management
                     </h2>
                     <p className="text-gray-700 mb-6 text-center md:text-left">
                         All-in-one tools for small landlords who want less admin and more time. Stay compliant. Keep tenants happy. Get your evenings back.
@@ -381,7 +380,7 @@ export default function Landing() {
                 </div>
                 {/* Text content on the right */}
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
-                    <h3 className="text-2xl font-bold mb-4">Stay Organised</h3>
+                    <h2 className="text-3xl font-bold mb-4">Stay Organised</h2>
                     <p className="text-gray-700 mb-6 max-w-xl">
                         Never lose track of a payment or receipt again.
                         All your rental income, expenses, and tax records, automatically categorised, beautifully presented,
@@ -398,22 +397,9 @@ export default function Landing() {
 
             {/* Feature Section 2 */}
             <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-6 py-20">
-                <div className="flex justify-center order-2 md:order-1">
-                    <div className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
-                        <Image
-                            src="/finances.png"
-                            alt="Finances Preview"
-                            width={600}
-                            height={300}
-                            className="object-cover w-full h-full"
-                            priority
-                        />
-                    </div>
-                </div>
                 <div className="order-1 md:order-2 flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h2 className="text-3xl font-bold mb-4">
-                        Stay Compliant{" "}
-                        <span className="bg-yellow-100 px-2 rounded">Effortlessly</span>
+                        Stay Compliant Effortlessly
                     </h2>
                     <p className="text-gray-700 mb-6">
                         From gas saftey to EPC, never miss a deadline. We'll track your legal obligations and remind You
@@ -426,7 +412,84 @@ export default function Landing() {
                         Get Started
                     </button>
                 </div>
+                <div className="flex justify-center order-2 md:order-1">
+                    <div className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
+                        <Image
+                            src="/finances.png"
+                            alt="Finances Preview"
+                            width={600}
+                            height={300}
+                            className="object-cover w-full h-full"
+                            priority
+                        />
+                    </div>
+                </div>
             </section>
+
+            {/* How we are different section */}
+            <section className="max-w-4xl mx-auto px-4 md:px-0 py-16">
+  <h2 className="text-3xl font-bold text-center mb-4">How we are different</h2>
+  <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
+    Traditional platforms are either too simple, too clunky, or built for big agencies. 
+    MyPropertyPal gives smaller landlords everything they need — no fluff, no stress.
+  </p>
+  <div className="overflow-x-auto">
+    <table className="w-full bg-white rounded-2xl shadow-lg">
+      <thead>
+        <tr>
+          <th className="py-5 px-4 text-left text-base font-semibold text-[#2563eb] border-b border-gray-100">Feature</th>
+          <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">MyPropertyPal</th>
+          <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">Traditional</th>
+        </tr>
+      </thead>
+      <tbody>
+        {[
+          {
+            feature: "Simple, Modern Dashboard",
+            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+            other: <span className="text-gray-400">Often outdated & complex</span>,
+          },
+          {
+            feature: "AI Assistant for Landlord & Tenant Questions",
+            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+            other: <span className="text-gray-400">Not included</span>,
+          },
+          {
+            feature: "Automated Compliance Tracking & Reminders",
+            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+            other: <span className="text-gray-400">Manual or limited</span>,
+          },
+          {
+            feature: "Making Tax Digital (MTD) Ready",
+            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+            other: <span className="text-gray-400">Rarely supported</span>,
+          },
+          {
+            feature: "Find Vetted Contractors Instantly",
+            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+            other: <span className="text-gray-400">Not included</span>,
+          },
+          {
+            feature: "Automated Rent, Expense & Tax Tracking",
+            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+            other: <span className="text-gray-400">Manual entry</span>,
+          },
+          {
+            feature: "No Spreadsheets, No Stress",
+            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+            other: <span className="text-gray-400">Spreadsheets often required</span>,
+          },
+        ].map((row, i) => (
+          <tr key={row.feature} className={i !== 6 ? "border-b border-gray-100" : ""}>
+            <td className="py-6 px-4 text-base font-medium">{row.feature}</td>
+            <td className="py-6 px-4 text-center">{row.mpp}</td>
+            <td className="py-6 px-4 text-center">{row.other}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
 
             {/* Pricing Table */}
             <section className="max-w-7xl mx-auto py-24 px-6">
