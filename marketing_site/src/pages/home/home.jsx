@@ -114,7 +114,7 @@ const featureSlides = [
 
 function FeaturesSlider() {
     const [current, setCurrent] = useState(0);
-    const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
+    const [direction, setDirection] = useState(0);
     const intervalRef = useRef();
 
     const prev = () => {
@@ -126,7 +126,6 @@ function FeaturesSlider() {
         setCurrent((c) => (c === featureSlides.length - 1 ? 0 : c + 1));
     };
 
-    // Auto-advance every 3 seconds
     useEffect(() => {
         intervalRef.current = setInterval(() => {
             setDirection(1);
@@ -135,7 +134,6 @@ function FeaturesSlider() {
         return () => clearInterval(intervalRef.current);
     }, []);
 
-    // Reset timer on manual navigation
     const handleManualNav = (fn) => {
         clearInterval(intervalRef.current);
         fn();
@@ -146,18 +144,10 @@ function FeaturesSlider() {
     };
 
     return (
-        <section className="max-w-3xl mx-auto py-20 px-4 flex flex-col items-center">
+        <section className="w-full flex flex-col items-center py-20 px-2 sm:px-4">
             <h2 className="text-2xl font-bold text-center mb-8">Powerful Features</h2>
-            <div
-                className="relative w-full flex flex-col items-center"
-                style={{
-                    minHeight: "320px",
-                    height: "auto",
-                    maxWidth: "100%",
-                    overflow: "hidden",
-                }}
-            >
-                <div className="w-full flex flex-col items-center h-full">
+            <div className="w-full flex flex-col items-center">
+                <div className="w-full flex flex-col items-center">
                     <AnimatePresence mode="wait" initial={false}>
                         <motion.div
                             key={current}
@@ -165,38 +155,17 @@ function FeaturesSlider() {
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: direction > 0 ? -60 : 60, scale: 0.98 }}
                             transition={{ duration: 0.35, ease: "easeInOut" }}
-                            className="bg-white rounded-2xl shadow-lg p-6 w-full flex flex-col items-center h-full"
+                            className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 w-full max-w-xs mx-auto flex flex-col items-center"
                             style={{
-                                maxWidth: "100%",
-                                width: "100%",
-                                height: "100%",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                overflow: "hidden",
+                                minHeight: 220,
+                                boxSizing: "border-box",
                             }}
                         >
                             <div className="mb-4">{featureSlides[current].icon()}</div>
-                            <h3
-                                className="text-xl font-bold mb-2 text-[#2563eb] text-center"
-                                style={{
-                                    minHeight: "2.5em",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                }}
-                            >
+                            <h3 className="text-xl font-bold mb-2 text-[#2563eb] text-center flex items-center justify-center" style={{ minHeight: "2.5em" }}>
                                 {featureSlides[current].title}
                             </h3>
-                            <p
-                                className="text-gray-700 text-center"
-                                style={{
-                                    minHeight: "3.5em",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                }}
-                            >
+                            <p className="text-gray-700 text-center flex items-center justify-center" style={{ minHeight: "3.5em" }}>
                                 {featureSlides[current].description}
                             </p>
                         </motion.div>
