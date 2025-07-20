@@ -63,7 +63,6 @@ const plans = [
     },
 ];
 
-// All icons as functions for consistency
 const featureSlides = [
   {
     title: "Tenant Chat, Without the Chaos",
@@ -155,17 +154,18 @@ function FeaturesSlider() {
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: direction > 0 ? -60 : 60, scale: 0.98 }}
                             transition={{ duration: 0.35, ease: "easeInOut" }}
-                            className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 w-full max-w-xs mx-auto flex flex-col items-center"
+                            className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 w-full max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto flex flex-col items-center"
                             style={{
+                                minWidth: 0,
                                 minHeight: 220,
                                 boxSizing: "border-box",
                             }}
                         >
                             <div className="mb-4">{featureSlides[current].icon()}</div>
-                            <h3 className="text-xl font-bold mb-2 text-[#2563eb] text-center flex items-center justify-center" style={{ minHeight: "2.5em" }}>
+                            <h3 className="text-xl md:text-2xl font-bold mb-2 text-[#2563eb] text-center flex items-center justify-center" style={{ minHeight: "2.5em" }}>
                                 {featureSlides[current].title}
                             </h3>
-                            <p className="text-gray-700 text-center flex items-center justify-center" style={{ minHeight: "3.5em" }}>
+                            <p className="text-gray-700 text-center flex items-center justify-center text-base md:text-lg" style={{ minHeight: "3.5em" }}>
                                 {featureSlides[current].description}
                             </p>
                         </motion.div>
@@ -246,12 +246,11 @@ export default function Landing() {
     }
 
     return (
-        <div className="bg-white text-[#171717] font-sans pt-16 md:pt-0">
+        <div className="bg-white text-[#171717] font-sans pt-16 md:pt-0 overflow-x-hidden">
             <Head>
                 <title>MyPropertyPal</title>
                 <meta name="description" content="All-in-one property management for landlords. Track rent, expenses, compliance, and more." />
                 <link rel="icon" href="/favicon.ico" />
-                {/* Add more meta tags as needed */}
             </Head>
             {/* Mobile App Coming Soon Banner - hidden on desktop */}
             <div className="w-full flex justify-center md:hidden">
@@ -271,7 +270,7 @@ export default function Landing() {
             </div>
 
             {/* Hero Section */}
-            <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-24">
+            <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-24">
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h1 className="text-2xl md:text-5xl font-extrabold mb-4 md:mb-6 text-[#2563eb] leading-tight">
                         Win Back Your Time <br className="hidden md:block" />With MyPropertyPal
@@ -282,7 +281,6 @@ export default function Landing() {
                     <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8">
                         30-Day Money Back Guarantee. No Questions Asked.
                     </p>
-                    {/* Hide on mobile, show on md+ */}
                     <button
                         className="hidden md:inline-block bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto"
                         onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
@@ -308,8 +306,8 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* Effortless Property Management section (Feature Section 1) */}
-            <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-6 py-20">
+            {/* Effortless Property Management section */}
+            <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-20">
                 <div>
                     <h2 className="text-3xl font-bold mb-4 text-center md:text-left">
                         Effortless Property Management
@@ -343,7 +341,7 @@ export default function Landing() {
             </section>
 
             {/* Everything Your Tenants Need, In One Place */}
-            <section className="bg-[#2563eb] py-20 px-6 text-white text-center">
+            <section className="bg-[#2563eb] py-20 px-4 sm:px-6 text-white text-center">
                 <h2 className="text-3xl font-bold mb-4">
                     The Only Property Platform Built For Smaller Hands On Landlords
                 </h2>
@@ -382,13 +380,13 @@ export default function Landing() {
             {/* Powerful Features section */}
             <FeaturesSlider />
 
-            {/* Stay Organised Section - graph left, text right */}
-            <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-6 py-20">
-                {/* OrbitGraphic on the left */}
-                <div className="flex justify-center">
-                    <OrbitGraphic />
+            {/* Stay Organised Section */}
+            <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-20">
+                <div className="flex justify-center w-full">
+                    <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl overflow-hidden flex justify-center items-center">
+                        <OrbitGraphic className="w-full h-auto" />
+                    </div>
                 </div>
-                {/* Text content on the right */}
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h2 className="text-3xl font-bold mb-4">Stay Organised</h2>
                     <p className="text-gray-700 mb-6 max-w-xl">
@@ -405,8 +403,8 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* Feature Section 2 */}
-            <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-6 py-20">
+            {/* Stay Compliant Section */}
+            <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-20">
                 <div className="order-1 md:order-2 flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h2 className="text-3xl font-bold mb-4">
                         Stay Compliant Effortlessly
@@ -441,72 +439,72 @@ export default function Landing() {
             </section>
 
             {/* How we are different section */}
-            <section className="max-w-4xl mx-auto px-4 md:px-0 py-16">
-  <h2 className="text-3xl font-bold text-center mb-4">How we are different</h2>
-  <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
-    Traditional platforms are either too simple, too clunky, or built for big agencies. 
-    MyPropertyPal gives smaller landlords everything they need — no fluff, no stress.
-  </p>
-  <div className="overflow-x-auto">
-    <table className="w-full bg-white rounded-2xl shadow-lg">
-      <thead>
-        <tr>
-          <th className="py-5 px-4 text-left text-base font-semibold text-[#2563eb] border-b border-gray-100">Feature</th>
-          <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">MyPropertyPal</th>
-          <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">Traditional Ways to Manage</th>
-        </tr>
-      </thead>
-      <tbody>
-        {[
-          {
-            feature: "Simple, Modern Dashboard",
-            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
-            other: <span className="text-gray-400">Often outdated & complex</span>,
-          },
-          {
-            feature: "Built in AI Assistant For Instant Insights",
-            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
-            other: <span className="text-gray-400">Not included</span>,
-          },
-          {
-            feature: "Automated Compliance Tracking & Reminders",
-            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
-            other: <span className="text-gray-400">Manual or limited</span>,
-          },
-          {
-            feature: "Making Tax Digital (MTD) Ready",
-            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
-            other: <span className="text-gray-400">Rarely supported</span>,
-          },
-          {
-            feature: "Find Vetted Contractors Instantly",
-            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
-            other: <span className="text-gray-400">Not included</span>,
-          },
-          {
-            feature: "Automated Rent, Expense & Tax Tracking",
-            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
-            other: <span className="text-gray-400">Manual entry</span>,
-          },
-          {
-            feature: "Built For Smaller UK Landlords",
-            mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
-            other: <span className="text-gray-400">More general & Agency focused</span>,
-          },
-        ].map((row, i) => (
-          <tr key={row.feature} className={i !== 6 ? "border-b border-gray-100" : ""}>
-            <td className="py-6 px-4 text-base font-medium">{row.feature}</td>
-            <td className="py-6 px-4 text-center">{row.mpp}</td>
-            <td className="py-6 px-4 text-center">{row.other}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</section>
+            <section className="w-full max-w-4xl mx-auto px-2 sm:px-4 py-16">
+                <h2 className="text-3xl font-bold text-center mb-4">How we are different</h2>
+                <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
+                    Traditional platforms are either too simple, too clunky, or built for big agencies. 
+                    MyPropertyPal gives smaller landlords everything they need — no fluff, no stress.
+                </p>
+                <div className="w-full overflow-x-auto">
+                    <table className="min-w-[600px] bg-white rounded-2xl shadow-lg mx-auto">
+                        <thead>
+                            <tr>
+                                <th className="py-5 px-4 text-left text-base font-semibold text-[#2563eb] border-b border-gray-100">Feature</th>
+                                <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">MyPropertyPal</th>
+                                <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">Traditional Ways to Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {[
+                                {
+                                    feature: "Simple, Modern Dashboard",
+                                    mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+                                    other: <span className="text-gray-400">Often outdated & complex</span>,
+                                },
+                                {
+                                    feature: "Built in AI Assistant For Instant Insights",
+                                    mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+                                    other: <span className="text-gray-400">Not included</span>,
+                                },
+                                {
+                                    feature: "Automated Compliance Tracking & Reminders",
+                                    mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+                                    other: <span className="text-gray-400">Manual or limited</span>,
+                                },
+                                {
+                                    feature: "Making Tax Digital (MTD) Ready",
+                                    mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+                                    other: <span className="text-gray-400">Rarely supported</span>,
+                                },
+                                {
+                                    feature: "Find Vetted Contractors Instantly",
+                                    mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+                                    other: <span className="text-gray-400">Not included</span>,
+                                },
+                                {
+                                    feature: "Automated Rent, Expense & Tax Tracking",
+                                    mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+                                    other: <span className="text-gray-400">Manual entry</span>,
+                                },
+                                {
+                                    feature: "Built For Smaller UK Landlords",
+                                    mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
+                                    other: <span className="text-gray-400">More general & Agency focused</span>,
+                                },
+                            ].map((row, i) => (
+                                <tr key={row.feature} className={i !== 6 ? "border-b border-gray-100" : ""}>
+                                    <td className="py-6 px-4 text-base font-medium">{row.feature}</td>
+                                    <td className="py-6 px-4 text-center">{row.mpp}</td>
+                                    <td className="py-6 px-4 text-center">{row.other}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
             {/* Pricing Table */}
-            <section className="max-w-7xl mx-auto py-24 px-6">
+            <section className="w-full max-w-7xl mx-auto py-24 px-4 sm:px-6">
                 <h2 className="text-3xl font-bold text-center mb-4">
                     Choose Your Plan
                 </h2>
@@ -515,7 +513,6 @@ export default function Landing() {
                     MyPropertyPal is built with you in mind. <br /><br />
                     <span className="font-semibold">Start simple. Grow with confidence.</span>
                 </p>
-                {/* Billing toggle */}
                 <div className="flex justify-center mb-8 w-full max-w-xs mx-auto">
                     <button
                         className={`flex-1 px-6 py-2 rounded-l-lg border border-[#2563eb] font-semibold transition text-center ${
@@ -548,7 +545,7 @@ export default function Landing() {
                                 plan.featured
                                     ? "border-[#2563eb] bg-blue-50 shadow-lg scale-105"
                                     : "border-gray-200 bg-white shadow"
-                            } p-8 flex flex-col items-start`}
+                            } p-8 flex flex-col items-start min-w-0`}
                         >
                             <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
                             <div className="flex items-end gap-2 mb-1">
@@ -598,41 +595,37 @@ export default function Landing() {
             </section>
 
             {/* Your data and payments are safe section */}
-            <section className="max-w-4xl mx-auto py-10 px-6 flex flex-col items-center">
-  <h3 className="text-lg font-semibold mb-4 text-center">Your data and payments are safe</h3>
-  <div className="flex flex-wrap gap-6 justify-center items-center">
-    {/* GDPR */}
-    <div className="flex flex-col items-center">
-      <BsShieldCheck size={48} className="text-[#2563eb] mb-1" />
-      <span className="text-xs font-bold text-[#2563eb]">GDPR Compliant</span>
-    </div>
-    {/* Stripe */}
-    <div className="flex flex-col items-center">
-      <FaCcStripe size={48} className="text-[#2563eb] mb-1" />
-      <span className="text-xs font-bold text-[#2563eb]">Stripe Secure Payments</span>
-    </div>
-    {/* SSL */}
-    <div className="flex flex-col items-center">
-      <FaLock size={48} className="text-[#2563eb] mb-1" />
-      <span className="text-xs font-bold text-[#2563eb]">SSL Encrypted</span>
-    </div>
-    {/* HTTPS */}
-    <div className="flex flex-col items-center">
-      <MdHttps size={48} className="text-[#2563eb] mb-1" />
-      <span className="text-xs font-bold text-[#2563eb]">HTTPS Secure</span>
-    </div>
-  </div>
-</section>
+            <section className="w-full max-w-4xl mx-auto py-10 px-4 sm:px-6 flex flex-col items-center">
+                <h3 className="text-lg font-semibold mb-4 text-center">Your data and payments are safe</h3>
+                <div className="flex flex-wrap gap-6 justify-center items-center">
+                    <div className="flex flex-col items-center">
+                        <BsShieldCheck size={48} className="text-[#2563eb] mb-1" />
+                        <span className="text-xs font-bold text-[#2563eb]">GDPR Compliant</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <FaCcStripe size={48} className="text-[#2563eb] mb-1" />
+                        <span className="text-xs font-bold text-[#2563eb]">Stripe Secure Payments</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <FaLock size={48} className="text-[#2563eb] mb-1" />
+                        <span className="text-xs font-bold text-[#2563eb]">SSL Encrypted</span>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <MdHttps size={48} className="text-[#2563eb] mb-1" />
+                        <span className="text-xs font-bold text-[#2563eb]">HTTPS Secure</span>
+                    </div>
+                </div>
+            </section>
 
             {/* Bottom blue guarantee section */}
-            <section className="bg-[#2563eb] py-16 px-6 text-white text-center">
-    <h2 className="text-2xl md:text-3xl font-bold mb-4">
-        Built for landlords. Backed by a 30-day money-back guarantee.
-    </h2>
-    <p className="max-w-xl mx-auto text-lg">
-        Try It And Love It. Or Your Money Back. Guaranteed.
-    </p>
-</section>
+            <section className="bg-[#2563eb] py-16 px-4 sm:px-6 text-white text-center">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                    Built for landlords. Backed by a 30-day money-back guarantee.
+                </h2>
+                <p className="max-w-xl mx-auto text-lg">
+                    Try It And Love It. Or Your Money Back. Guaranteed.
+                </p>
+            </section>
 
             {/* Fullscreen Image Modal */}
             {modalImg && (
@@ -647,4 +640,3 @@ export default function Landing() {
         </div>
     );
 }
-//mentlaist
