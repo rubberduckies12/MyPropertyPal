@@ -18,36 +18,49 @@ const orbitIcons = [
 ];
 
 export default function OrbitGraphic() {
-  // Arrange icons in a circle
   const radius = 140;
   const center = 180;
+  const duration = 16; // seconds for a full orbit
+
   return (
     <div className="relative w-[360px] h-[360px] mx-auto">
       {/* Center logo */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg flex items-center justify-center" style={{ width: 120, height: 120 }}>
         <Image src="/LogoWB.png" alt="MyPropertyPal Logo" width={90} height={90} />
       </div>
-      {/* Orbiting icons */}
+      {/* Orbiting icons with animation */}
       {orbitIcons.map((item, i) => {
-        const angle = (2 * Math.PI * i) / orbitIcons.length;
-        const x = center + radius * Math.cos(angle) - 32;
-        const y = center + radius * Math.sin(angle) - 32;
+        const angle = (360 / orbitIcons.length) * i;
         return (
           <div
             key={item.label}
-            className="absolute flex flex-col items-center"
+            className="absolute"
             style={{
-              left: x,
-              top: y,
+              left: center - 32,
+              top: center - 32,
               width: 64,
               height: 64,
+              transform: `rotate(${angle}deg) translate(${radius}px) rotate(-${angle}deg)`,
+              transformOrigin: "32px 32px",
+              animation: `orbit ${duration}s linear infinite`,
+              animationDelay: `-${(duration / orbitIcons.length) * i}s`,
             }}
           >
-            <div className="bg-white rounded-full shadow p-2 flex items-center justify-center text-[#2563eb]">{item.icon}</div>
-            <span className="text-xs text-gray-700 mt-1 text-center w-16">{item.label}</span>
+            <div className="flex flex-col items-center">
+              <div className="bg-white rounded-full shadow p-2 flex items-center justify-center text-[#2563eb]">{item.icon}</div>
+              <span className="text-xs text-gray-700 mt-1 text-center w-16">{item.label}</span>
+            </div>
           </div>
         );
       })}
+      {/* Animation keyframes */}
+      <style jsx>{`
+        @keyframes orbit {
+          100% {
+            transform: rotate(360deg) translate(${radius}px) rotate(-360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 }
