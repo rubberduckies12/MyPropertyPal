@@ -512,17 +512,8 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* Bottom blue guarantee section */}
-            <section className="bg-[#2563eb] py-16 px-6 text-white text-center">
-    <h2 className="text-2xl md:text-3xl font-bold mb-4">
-        Built for landlords. Backed by a 30-day money-back guarantee.
-    </h2>
-    <p className="max-w-xl mx-auto text-lg">
-        Try MyPropertyPal with no risk — cancel anytime, no questions asked.
-    </p>
-</section>
-
-<section className="max-w-4xl mx-auto py-10 px-6 flex flex-col items-center">
+            {/* Your data and payments are safe section */}
+            <section className="max-w-4xl mx-auto py-10 px-6 flex flex-col items-center">
   <h3 className="text-lg font-semibold mb-4 text-center">Your data and payments are safe</h3>
   <div className="flex flex-wrap gap-6 justify-center items-center">
     {/* GDPR */}
@@ -546,6 +537,16 @@ export default function Landing() {
       <span className="text-xs text-gray-600">HTTPS Secure</span>
     </div>
   </div>
+</section>
+
+            {/* Bottom blue guarantee section */}
+            <section className="bg-[#2563eb] py-16 px-6 text-white text-center">
+    <h2 className="text-2xl md:text-3xl font-bold mb-4">
+        Built for landlords. Backed by a 30-day money-back guarantee.
+    </h2>
+    <p className="max-w-xl mx-auto text-lg">
+        Try MyPropertyPal with no risk — cancel anytime, no questions asked.
+    </p>
 </section>
 
             <Footer />
