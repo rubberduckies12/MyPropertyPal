@@ -339,8 +339,8 @@ export default function Landing() {
                     The Only Property Platform Built For Smaller Hands On Landlords
                 </h2>
                 <p className="max-w-2xl mx-auto text-lg">
-                    We know your doing it all, Managing rent, logging receipts, and now HMRC want digital tax returns too?
-                    <br /><br />So we built MyPropertyPal for you.
+                    We know you’re managing rent, chasing tenants, logging receipts — and now HMRC wants digital tax too?
+                    <br /><br />MyPropertyPal handles it all.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mt-6 mb-2">
                     <li className="flex flex-col items-center text-white">
