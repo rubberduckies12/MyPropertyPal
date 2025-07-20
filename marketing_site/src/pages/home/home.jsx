@@ -13,6 +13,7 @@ import { useState, useEffect, useRef } from "react";
 import { AiOutlineFileDone, AiOutlineRobot } from "react-icons/ai";
 import { MdNotificationsActive } from "react-icons/md";
 import { IoReceiptOutline } from "react-icons/io5";
+import OrbitGraphic from "../../components/OrbitGraphic";
 
 const brand = "#2563eb";
 
@@ -182,6 +183,12 @@ export default function Landing() {
 
     return (
         <div className="bg-white text-[#171717] font-sans pt-16 md:pt-0">
+            <Head>
+                <title>MyPropertyPal</title>
+                <meta name="description" content="All-in-one property management for landlords. Track rent, expenses, compliance, and more." />
+                <link rel="icon" href="/favicon.ico" />
+                {/* Add more meta tags as needed */}
+            </Head>
             {/* Mobile App Coming Soon Banner - hidden on desktop */}
             <div className="w-full flex justify-center md:hidden">
                 <div className="flex items-center gap-3 bg-[#2563eb] border border-[#2563eb] text-white px-4 py-2 rounded-b-xl shadow-sm mt-0 fixed top-0 left-0 right-0 z-50">
@@ -306,15 +313,9 @@ export default function Landing() {
 
             {/* Stay Organised Section - graph left, text right */}
             <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-6 py-20">
-                {/* Graphic on the left */}
+                {/* OrbitGraphic on the left */}
                 <div className="flex justify-center">
-                    <Image
-                        src="/stay-org.png"
-                        alt="Stay Organised Graphic"
-                        width={600}
-                        height={600}
-                        priority={false}
-                    />
+                    <OrbitGraphic />
                 </div>
                 {/* Text content on the right */}
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
