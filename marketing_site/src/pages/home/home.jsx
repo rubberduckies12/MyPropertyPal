@@ -519,22 +519,22 @@ export default function Landing() {
     {/* GDPR */}
     <div className="flex flex-col items-center">
       <BsShieldCheck size={48} className="text-[#2563eb] mb-1" />
-      <span className="text-xs text-gray-600">GDPR Compliant</span>
+      <span className="text-xs font-bold text-[#2563eb]">GDPR Compliant</span>
     </div>
     {/* Stripe */}
     <div className="flex flex-col items-center">
       <FaCcStripe size={48} className="text-[#2563eb] mb-1" />
-      <span className="text-xs text-gray-600">Stripe Secure Payments</span>
+      <span className="text-xs font-bold text-[#2563eb]">Stripe Secure Payments</span>
     </div>
     {/* SSL */}
     <div className="flex flex-col items-center">
       <FaLock size={48} className="text-[#2563eb] mb-1" />
-      <span className="text-xs text-gray-600">SSL Encrypted</span>
+      <span className="text-xs font-bold text-[#2563eb]">SSL Encrypted</span>
     </div>
     {/* HTTPS */}
     <div className="flex flex-col items-center">
       <MdHttps size={48} className="text-[#2563eb] mb-1" />
-      <span className="text-xs text-gray-600">HTTPS Secure</span>
+      <span className="text-xs font-bold text-[#2563eb]">HTTPS Secure</span>
     </div>
   </div>
 </section>
