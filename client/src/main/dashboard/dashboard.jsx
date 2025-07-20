@@ -292,6 +292,8 @@ function Dashboard() {
                     </div>
                     <div className="dashboard-event-property">
                       Property: {event.property_name}
+                      {event.property_address ? `, ${event.property_address}` : ""}
+                      {event.property_postcode ? `, ${event.property_postcode}` : ""}
                     </div>
                   </div>
                 ))

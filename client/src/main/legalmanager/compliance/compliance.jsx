@@ -470,7 +470,11 @@ export default function Compliance() {
                 (Array.isArray(deadlines) ? deadlines : []).map(item => (
                   <tr key={item.id} onClick={() => { setSelectedEvent(item); setEventSuccess(""); setError(""); }}>
                     <td>{item.name}</td>
-                    <td>{item.property_name}</td>
+                    <td>
+                      {item.property_name}
+                      {item.property_address ? `, ${item.property_address}` : ""}
+                      {item.property_postcode ? `, ${item.property_postcode}` : ""}
+                    </td>
                     <td>{item.description}</td>
                     <td>
                       <span className={`status-bubble ${getDueStatus(item.due_date, item.reminder_days)}`}>

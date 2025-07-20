@@ -40,7 +40,10 @@ router.get("/events", authenticate, async (req, res) => {
       }
     }
     const result = await pool.query(
-      `SELECT ce.*, p.name AS property_name
+      `SELECT ce.*, 
+              p.name AS property_name, 
+              p.address AS property_address, 
+              p.postcode AS property_postcode
        FROM compliance_event ce
        JOIN property p ON ce.property_id = p.id
        WHERE p.landlord_id = $1
