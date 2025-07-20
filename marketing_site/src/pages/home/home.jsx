@@ -30,7 +30,7 @@ const plans = [
         name: "Basic",
         price: 30,
         features: [
-            "All Features Included",
+            "Every Feature. No Upsells",
             "Up to 5 Properties",
             "Up to 4 Tenants per Property",
             "Email Support",
@@ -41,7 +41,7 @@ const plans = [
         name: "Professional",
         price: 50,
         features: [
-            "All Features Included",
+            "Every Feature. No Upsells",
             "Up to 10 Properties",
             "Up to 8 Tenants per Property",
             "Up to 2 Additional Team Members",
@@ -450,7 +450,7 @@ export default function Landing() {
             other: <span className="text-gray-400">Often outdated & complex</span>,
           },
           {
-            feature: "AI Assistant for Landlord & Tenant Questions",
+            feature: "Built in AI Assistant For Instant Insights",
             mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
             other: <span className="text-gray-400">Not included</span>,
           },
@@ -475,9 +475,9 @@ export default function Landing() {
             other: <span className="text-gray-400">Manual entry</span>,
           },
           {
-            feature: "No Spreadsheets, No Stress",
+            feature: "Built For Smaller UK Landlords",
             mpp: <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#2563eb]/10 text-[#2563eb] text-xl font-bold">✓</span>,
-            other: <span className="text-gray-400">Spreadsheets often required</span>,
+            other: <span className="text-gray-400">More general & Agency focused</span>,
           },
         ].map((row, i) => (
           <tr key={row.feature} className={i !== 6 ? "border-b border-gray-100" : ""}>
