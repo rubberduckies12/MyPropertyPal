@@ -274,9 +274,9 @@ export default function Landing() {
                     <h1 className="text-2xl md:text-5xl font-extrabold mb-4 md:mb-6 text-[#2563eb] leading-tight">
                         Win Back your Time <br className="hidden md:block" />with MyPropertyPal
                     </h1>
-                    <h2 className="text-lg md:text-2xl font-semibold mb-2 text-[#2563eb] tracking-tight leading-snug" style={{ letterSpacing: "-0.5px" }}>
-                        <h2>Manage your rentals in minutes not hours</h2>
-                    </h2>
+                    <h3 className="text-lg md:text-2xl font-semibold mb-2 text-[#2563eb] tracking-tight leading-snug" style={{ letterSpacing: "-0.5px" }}>
+                        Manage your rentals in minutes not hours
+                    </h3>
                     <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8">
                         30-Day Money Back Guarantee. No Questions Asked.
                     </p>
@@ -439,7 +439,7 @@ export default function Landing() {
         <tr>
           <th className="py-5 px-4 text-left text-base font-semibold text-[#2563eb] border-b border-gray-100">Feature</th>
           <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">MyPropertyPal</th>
-          <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">Traditional</th>
+          <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">Traditional Ways to Manage</th>
         </tr>
       </thead>
       <tbody>
