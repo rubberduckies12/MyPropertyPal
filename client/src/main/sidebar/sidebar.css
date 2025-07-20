@@ -141,6 +141,7 @@
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   text-align: center;
   min-width: 260px;
+  color: #171717; /* Make modal text black */
 }
 .logout-modal-actions {
   margin-top: 20px;
