@@ -204,7 +204,7 @@ export default function Properties() {
               <h2>Add Property</h2>
               <form onSubmit={handleAddProperty}>
                 <label>
-                  Name
+                  Number (or Name)
                   <input
                     name="name"
                     value={addForm.name}
