@@ -18,18 +18,48 @@ const orbitIcons = [
 ];
 
 export default function OrbitGraphic() {
-  const radius = 140;
-  const center = 180;
-  const duration = 24; // seconds for a full orbit
+  const duration = 24;
+
+  // Responsive values for mobile and desktop
+  const mobile = {
+    size: 260,
+    logo: 80,
+    logoImg: 60,
+    radius: 90,
+    center: 130,
+    iconSize: 38,
+    iconBox: 44,
+    iconOffset: 22,
+  };
+  const desktop = {
+    size: 360,
+    logo: 110,
+    logoImg: 80,
+    radius: 140,
+    center: 180,
+    iconSize: 38,
+    iconBox: 54,
+    iconOffset: 27,
+  };
+
+  // Use CSS media queries for layout, JS for icon positions
+  const isMobile = typeof window !== "undefined" ? window.innerWidth < 640 : false;
+  const cfg = isMobile ? mobile : desktop;
 
   return (
-    <div className="relative w-[360px] h-[360px] mx-auto">
+    <div
+      className="relative mx-auto"
+      style={{
+        width: isMobile ? `${mobile.size}px` : `${desktop.size}px`,
+        height: isMobile ? `${mobile.size}px` : `${desktop.size}px`,
+      }}
+    >
       {/* Center logo */}
       <div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg flex items-center justify-center"
-        style={{ width: 120, height: 120 }}
+        style={{ width: cfg.logo, height: cfg.logo }}
       >
-        <Image src="/LogoWB.png" alt="MyPropertyPal Logo" width={90} height={90} />
+        <Image src="/LogoWB.png" alt="MyPropertyPal Logo" width={cfg.logoImg} height={cfg.logoImg} />
       </div>
       {/* Orbiting icons in a rotating container */}
       <div
@@ -41,8 +71,8 @@ export default function OrbitGraphic() {
       >
         {orbitIcons.map((icon, i) => {
           const angle = (2 * Math.PI * i) / orbitIcons.length;
-          const x = center + radius * Math.cos(angle) - 32;
-          const y = center + radius * Math.sin(angle) - 32;
+          const x = cfg.center + cfg.radius * Math.cos(angle) - cfg.iconOffset;
+          const y = cfg.center + cfg.radius * Math.sin(angle) - cfg.iconOffset;
           return (
             <div
               key={i}
@@ -50,8 +80,8 @@ export default function OrbitGraphic() {
               style={{
                 left: x,
                 top: y,
-                width: 64,
-                height: 64,
+                width: cfg.iconBox,
+                height: cfg.iconBox,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -59,7 +89,6 @@ export default function OrbitGraphic() {
                 borderRadius: "9999px",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
                 color: "#2563eb",
-                // Counter-rotate each icon so it stays upright
                 transform: `rotate(${-angle * (180 / Math.PI)}deg)`,
               }}
             >
@@ -73,7 +102,7 @@ export default function OrbitGraphic() {
                   justifyContent: "center",
                 }}
               >
-                {icon}
+                {React.cloneElement(icon, { size: cfg.iconSize })}
               </div>
             </div>
           );
