@@ -22,7 +22,7 @@ function FounderIcon({ letter, color }) {
         </div>
     );
 }
-
+//removal
 export default function DesktopAbout() {
     return (
         <div className="bg-white text-[#171717] font-sans">
