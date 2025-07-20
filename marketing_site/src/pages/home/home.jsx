@@ -440,7 +440,7 @@ export default function Landing() {
                         Stay Compliant Effortlessly
                     </h2>
                     <p className="text-gray-700 mb-6">
-                        From gas saftey to EPC, never miss a deadline. We'll track your legal obligations and remind You
+                        From gas saftey to EPC, never miss a deadline. We'll track your legal obligations and remind you
                         before anything is due. So you stay compliant without stress.
                     </p>
                     <button
