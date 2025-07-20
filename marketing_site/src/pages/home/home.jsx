@@ -127,14 +127,51 @@ function FeaturesSlider() {
         }, 3000);
     };
 
+    // Calculate max heights for title and description
+    const maxTitleLength = Math.max(...featureSlides.map(f => f.title.length));
+    const maxDescLength = Math.max(...featureSlides.map(f => f.description.length));
+
     return (
         <section className="max-w-3xl mx-auto py-20 px-6 flex flex-col items-center">
             <h2 className="text-2xl font-bold text-center mb-8">Powerful Features</h2>
-            <div className="relative w-full flex flex-col items-center">
-                <div className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center transition-all duration-300">
+            <div
+                className="relative w-full flex flex-col items-center"
+                style={{
+                    minHeight: 340, // Ensures the card never shrinks below this height
+                }}
+            >
+                <div
+                    className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center transition-all duration-300"
+                    style={{
+                        minHeight: 240, // Ensures the card content area is always the same height
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                    }}
+                >
                     <div className="mb-4">{featureSlides[current].icon()}</div>
-                    <h3 className="text-xl font-bold mb-2 text-[#2563eb] text-center">{featureSlides[current].title}</h3>
-                    <p className="text-gray-700 text-center">{featureSlides[current].description}</p>
+                    <h3
+                        className="text-xl font-bold mb-2 text-[#2563eb] text-center"
+                        style={{
+                            minHeight: "2.5em", // Reserve space for 2 lines of title
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
+                        {featureSlides[current].title}
+                    </h3>
+                    <p
+                        className="text-gray-700 text-center"
+                        style={{
+                            minHeight: "3.5em", // Reserve space for 2-3 lines of description
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
+                        {featureSlides[current].description}
+                    </p>
                 </div>
                 <div className="flex gap-4 mt-8">
                     <button
