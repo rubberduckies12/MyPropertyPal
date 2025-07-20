@@ -3,15 +3,16 @@ import Header from "../../components/desktop/desktopHeader";
 import MobileHeader from "../../components/mobile/mobileHeader";
 import Footer from "../../components/desktop/desktopFooter";
 import { MdOutlineNotificationsActive, MdGavel, MdHomeRepairService, MdPeople, MdOutlineManageAccounts } from "react-icons/md";
-import { HiOutlineDocument, HiOutlineChatBubbleLeftRight, HiOutlineWrenchScrewdriver, HiOutlineBolt } from "react-icons/hi2";
+import { HiOutlineDocument, HiOutlineChatBubbleLeftRight, HiOutlineWrenchScrewdriver, HiOutlineBolt, HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { PiRobotLight } from "react-icons/pi";
-import { FaRegMoneyBillAlt } from "react-icons/fa";
+import { FaRegMoneyBillAlt, FaPoundSign } from "react-icons/fa";
 import { TbReportMoney } from "react-icons/tb";
-import { BsStars } from "react-icons/bs";
-import { BsHourglassSplit } from "react-icons/bs";
+import { BsStars, BsHourglassSplit, BsClipboardCheck } from "react-icons/bs";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
+import { AiOutlineFileDone, AiOutlineRobot } from "react-icons/ai";
+import { MdNotificationsActive } from "react-icons/md";
+import { IoReceiptOutline } from "react-icons/io5";
 
 const brand = "#2563eb";
 
@@ -52,58 +53,53 @@ const plans = [
     },
 ];
 
-// Example features for the slider, now with React Icons
+// All icons as functions for consistency
 const featureSlides = [
-    {
-        title: "Tenant Messages",
-        description: "Communicate directly and securely with your tenants in one place.",
-        icon: <HiOutlineChatBubbleLeftRight size={48} color={brand} />,
-    },
-    {
-        title: "Compliance Tracking",
-        description: "Track and manage all your compliance requirements with ease.",
-        icon: <MdGavel size={48} color={brand} />,
-    },
-    {
-        title: "Find Home Improvement Professionals",
-        description: "Easily connect with trusted tradespeople for any property job.",
-        icon: <MdHomeRepairService size={48} color={brand} />,
-    },
-    {
-        title: "Tenant Management",
-        description: "Organise, track, and manage all your tenants from one dashboard.",
-        icon: <MdPeople size={48} color={brand} />,
-    },
-    {
-        title: "Property Management",
-        description: "All your properties, documents, and tasks managed in one place.",
-        icon: <MdOutlineManageAccounts size={48} color={brand} />,
-    },
-    {
-        title: "Automated Rent Collection",
-        description: "Collect rent automatically with flexible, variable payment options.",
-        icon: <FaRegMoneyBillAlt size={48} color={brand} />,
-    },
-    {
-        title: "Maintenance Requests Tracking",
-        description: "Dedicated tools for tenants to submit and track maintenance requests.",
-        icon: <HiOutlineWrenchScrewdriver size={48} color={brand} />,
-    },
-    {
-        title: "AI Support",
-        description: "Get instant answers and support with our built-in AI assistant.",
-        icon: <PiRobotLight size={48} color={brand} />,
-    },
-    {
-        title: "AI Powered Expense Logging (BETA)",
-        description: "Log and categorise expenses automatically using AI (Beta).",
-        icon: <HiOutlineBolt size={48} color={brand} />,
-    },
-    {
-        title: "HMRC Compliant Tax Automation",
-        description: "Automate your tax calculations and submissions, fully HMRC compliant.",
-        icon: <TbReportMoney size={48} color={brand} />,
-    },
+  {
+    title: "Tenant Chat, Without the Chaos",
+    description: "No more WhatsApps, emails or calls — message tenants securely and keep a record of everything in one place.",
+    icon: () => <HiOutlineChatBubbleLeftRight size={48} color={brand} />,
+  },
+  {
+    title: "Never Miss a Legal Deadline",
+    description: "Track gas safety, EPCs, and all compliance in one dashboard — with automatic alerts and reminders.",
+    icon: () => <MdGavel size={48} color={brand} />,
+  },
+  {
+    title: "Find Reliable Trades in Seconds",
+    description: "Need a plumber or electrician fast? Instantly connect with vetted contractors nearby — no chasing quotes.",
+    icon: () => <MdHomeRepairService size={48} color={brand} />,
+  },
+  {
+    title: "Tenant Records Made Simple",
+    description: "View tenancy agreements, rent status, and documents — all linked to the right tenant, automatically.",
+    icon: () => <MdPeople size={48} color={brand} />,
+  },
+  {
+    title: "One Dashboard for Everything",
+    description: "Track your entire portfolio, from rent collection to documents — no more spreadsheets or folder hunting.",
+    icon: () => <MdOutlineManageAccounts size={48} color={brand} />,
+  },
+  {
+    title: "Handle Repairs Without Headaches",
+    description: "Tenants log issues, you update progress in a click. Everyone stays informed, no extra calls.",
+    icon: () => <HiOutlineWrenchScrewdriver size={48} color={brand} />,
+  },
+  {
+    title: "AI Assistant, Always On",
+    description: "Instant help with any task — from rent queries to compliance questions. Your personal property sidekick.",
+    icon: () => <PiRobotLight size={48} color={brand} />,
+  },
+  {
+    title: "Snap Receipts, Done.",
+    description: "Log expenses instantly. Our AI auto-categorises and stores them — ready for tax season.",
+    icon: () => <HiOutlineBolt size={48} color={brand} />,
+  },
+  {
+    title: "Stress-Free Tax Submissions",
+    description: "Your rent, expenses and receipts — automatically formatted for HMRC’s MTD requirements.",
+    icon: () => <TbReportMoney size={48} color={brand} />,
+  },
 ];
 
 function FeaturesSlider() {
@@ -113,7 +109,7 @@ function FeaturesSlider() {
     const prev = () => setCurrent((c) => (c === 0 ? featureSlides.length - 1 : c - 1));
     const next = () => setCurrent((c) => (c === featureSlides.length - 1 ? 0 : c + 1));
 
-    // Auto-advance every 4 seconds
+    // Auto-advance every 3 seconds
     useEffect(() => {
         intervalRef.current = setInterval(() => {
             setCurrent((c) => (c === featureSlides.length - 1 ? 0 : c + 1));
@@ -135,7 +131,7 @@ function FeaturesSlider() {
             <h2 className="text-2xl font-bold text-center mb-8">Powerful Features</h2>
             <div className="relative w-full flex flex-col items-center">
                 <div className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center transition-all duration-300">
-                    <div className="mb-4">{featureSlides[current].icon}</div>
+                    <div className="mb-4">{featureSlides[current].icon()}</div>
                     <h3 className="text-xl font-bold mb-2 text-[#2563eb] text-center">{featureSlides[current].title}</h3>
                     <p className="text-gray-700 text-center">{featureSlides[current].description}</p>
                 </div>
@@ -209,6 +205,9 @@ export default function Landing() {
                     <h1 className="text-2xl md:text-5xl font-extrabold mb-4 md:mb-6 text-[#2563eb] leading-tight">
                         Win Back your Time <br className="hidden md:block" />with MyPropertyPal
                     </h1>
+                    <h2 className="text-lg md:text-2xl font-semibold mb-2 text-[#2563eb] tracking-tight leading-snug" style={{ letterSpacing: "-0.5px" }}>
+  Manage your rentals in <span className="bg-yellow-100 px-2 rounded">minutes</span> not hours
+</h2>
                     <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8">
                         30-Day Money Back Guarantee. No Questions Asked.
                     </p>
@@ -242,9 +241,7 @@ export default function Landing() {
                         <span className="bg-yellow-100 px-2 rounded">Management</span>
                     </h2>
                     <p className="text-gray-700 mb-6 text-center md:text-left">
-                        Streamline your rental business with powerful tools, built for
-                        landlords and tenants. Stay organised, stay compliant, and reclaim
-                        more time.
+                        All-in-one tools for small landlords who want less admin and more time. Stay compliant. Keep tenants happy. Get your evenings back.
                     </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
@@ -253,11 +250,10 @@ export default function Landing() {
                         Get Started
                     </button>
                 </div>
-                {/* Feature Section 1 image box (2) */}
                 <div className="flex justify-center">
                     <div className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
                         <Image
-                            src="/add-tenants.png" // <-- updated to your dashboard preview
+                            src="/add-tenants.png"
                             alt="Add Tenants Preview"
                             width={600}
                             height={300}
@@ -268,6 +264,45 @@ export default function Landing() {
                 </div>
             </section>
 
+            {/* Everything Your Tenants Need, In One Place */}
+            <section className="bg-[#2563eb] py-20 px-6 text-white text-center">
+                <h2 className="text-3xl font-bold mb-4">
+                    The Only Property Platform Built For Smaller Hands On Landlords
+                </h2>
+                <p className="max-w-2xl mx-auto text-lg">
+                    We know your doing it all, Managing rent, logging receipts, and now HMRC want digital tax returns too?
+                    <br /><br />So we built MyPropertyPal for you.
+                </p>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mt-6 mb-2">
+                    <li className="flex flex-col items-center text-white">
+                        <FaPoundSign size={32} className="mb-2" />
+                        <span className="text-base font-medium text-center">Track rent, expenses & tax in one place</span>
+                    </li>
+                    <li className="flex flex-col items-center text-white">
+                        <IoReceiptOutline size={32} className="mb-2" />
+                        <span className="text-base font-medium text-center">Send tenants receipts & updates automatically</span>
+                    </li>
+                    <li className="flex flex-col items-center text-white">
+                        <AiOutlineFileDone size={32} className="mb-2" />
+                        <span className="text-base font-medium text-center">Stay compliant without spreadsheets or stress</span>
+                    </li>
+                    <li className="flex flex-col items-center text-white">
+                        <MdNotificationsActive size={32} className="mb-2" />
+                        <span className="text-base font-medium text-center">Get reminded when certificates expire</span>
+                    </li>
+                    <li className="flex flex-col items-center text-white">
+                        <AiOutlineRobot size={32} className="mb-2" />
+                        <span className="text-base font-medium text-center">Built-in AI assistant for tenant questions</span>
+                    </li>
+                    <li className="flex flex-col items-center text-white">
+                        <BsClipboardCheck size={32} className="mb-2" />
+                        <span className="text-base font-medium text-center">30-day money back guarantee — no strings</span>
+                    </li>
+                </ul>
+            </section>
+
+            {/* Powerful Features section */}
+            <FeaturesSlider />
 
             {/* Stay Organised Section - graph left, text right */}
             <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-6 py-20">
@@ -278,7 +313,6 @@ export default function Landing() {
                         alt="Stay Organised Graphic"
                         width={600}
                         height={600}
-                        //className="rounded-xl shadow"
                         priority={false}
                     />
                 </div>
@@ -286,8 +320,9 @@ export default function Landing() {
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h3 className="text-2xl font-bold mb-4">Stay Organised</h3>
                     <p className="text-gray-700 mb-6 max-w-xl">
-                        All of your rental income and expenses tracked and categorised for you,
-                        so you always know what’s important. One login, one simple app.
+                        Never lose track of a payment or receipt again.
+                        All your rental income, expenses, and tax records, automatically categorised, beautifully presented,
+                        and always up to date. One login. One place. Zero spreadsheets.
                     </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
@@ -298,37 +333,37 @@ export default function Landing() {
                 </div>
             </section>
 
-        {/* Feature Section 2 */}
-        <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-6 py-20">
-            <div className="flex justify-center order-2 md:order-1">
-                <div className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
-                    <Image
-                        src="/finances.png" // <-- updated to your dashboard preview
-                        alt="Finances Preview"
-                        width={600}
-                        height={300}
-                        className="object-cover w-full h-full"
-                        priority
-                    />
+            {/* Feature Section 2 */}
+            <section className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-6 py-20">
+                <div className="flex justify-center order-2 md:order-1">
+                    <div className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
+                        <Image
+                            src="/finances.png"
+                            alt="Finances Preview"
+                            width={600}
+                            height={300}
+                            className="object-cover w-full h-full"
+                            priority
+                        />
+                    </div>
                 </div>
-            </div>
-            <div className="order-1 md:order-2 flex flex-col items-center md:items-start text-center md:text-left w-full">
-                <h2 className="text-3xl font-bold mb-4">
-                    Stay Compliant {" "}
-                    <span className="bg-yellow-100 px-2 rounded">Effortlessly</span>
-                </h2>
-                <p className="text-gray-700 mb-6">
-                    Whether you’re managing a single property or a whole portfolio, we’re
-                    here to support you every step. MyPropertyPal is always by your side.
-                </p>
-                <button
-                    className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
-                    onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
-                >
-                    Get Started
-                </button>
-            </div> {/* <-- Add this line to close the div */}
-        </section>
+                <div className="order-1 md:order-2 flex flex-col items-center md:items-start text-center md:text-left w-full">
+                    <h2 className="text-3xl font-bold mb-4">
+                        Stay Compliant{" "}
+                        <span className="bg-yellow-100 px-2 rounded">Effortlessly</span>
+                    </h2>
+                    <p className="text-gray-700 mb-6">
+                        From gas saftey to EPC, never miss a deadline. We'll track your legal obligations and remind You
+                        before anything is due. So you stay compliant without stress.
+                    </p>
+                    <button
+                        className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
+                        onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                    >
+                        Get Started
+                    </button>
+                </div>
+            </section>
 
             {/* Pricing Table */}
             <section className="max-w-7xl mx-auto py-24 px-6">
@@ -336,8 +371,9 @@ export default function Landing() {
                     Choose Your Plan
                 </h2>
                 <p className="text-center text-gray-700 mb-12">
-                    Whether you want to manage your first buy to let, or your seventh HMO or
-                    hundreds! We have a plan for you.
+                    Whether you're renting out your first flat or juggling a handful of properties,
+                    MyPropertyPal is built with you in mind. <br /><br />
+                    <span className="font-semibold">Start simple. Grow with confidence.</span>
                 </p>
                 {/* Billing toggle */}
                 <div className="flex justify-center mb-8">
@@ -419,19 +455,15 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* Blue CTA Section */}
-            <section className="bg-[#2563eb] py-20 px-6 text-white text-center">
-                <h2 className="text-3xl font-bold mb-4">
-                    Everything Your Tenants Need, In One Place
-                </h2>
-                <p className="max-w-2xl mx-auto text-lg">
-                    From maintenance requests to messages, our tenant portal gives your renters
-                    a simple, secure way to manage their rental experience, No emails. No confusion.
-                    Just a better way to communicate.
-                </p>
-            </section>
-            <FeaturesSlider />
-
+            {/* Bottom blue guarantee section */}
+            <section className="bg-[#2563eb] py-16 px-6 text-white text-center">
+    <h2 className="text-2xl md:text-3xl font-bold mb-4">
+        Built for landlords. Backed by a 30-day money-back guarantee.
+    </h2>
+    <p className="max-w-xl mx-auto text-lg">
+        Try MyPropertyPal with no risk — cancel anytime, no questions asked.
+    </p>
+</section>
             <Footer />
         </div>
     );
