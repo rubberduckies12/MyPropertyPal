@@ -14,6 +14,7 @@ import { AiOutlineFileDone, AiOutlineRobot } from "react-icons/ai";
 import { MdNotificationsActive } from "react-icons/md";
 import { IoReceiptOutline } from "react-icons/io5";
 import OrbitGraphic from "../../components/OrbitGraphic";
+import { motion, AnimatePresence } from "framer-motion";
 
 const brand = "#2563eb";
 
@@ -105,14 +106,22 @@ const featureSlides = [
 
 function FeaturesSlider() {
     const [current, setCurrent] = useState(0);
+    const [direction, setDirection] = useState(0); // 1 for next, -1 for prev
     const intervalRef = useRef();
 
-    const prev = () => setCurrent((c) => (c === 0 ? featureSlides.length - 1 : c - 1));
-    const next = () => setCurrent((c) => (c === featureSlides.length - 1 ? 0 : c + 1));
+    const prev = () => {
+        setDirection(-1);
+        setCurrent((c) => (c === 0 ? featureSlides.length - 1 : c - 1));
+    };
+    const next = () => {
+        setDirection(1);
+        setCurrent((c) => (c === featureSlides.length - 1 ? 0 : c + 1));
+    };
 
     // Auto-advance every 3 seconds
     useEffect(() => {
         intervalRef.current = setInterval(() => {
+            setDirection(1);
             setCurrent((c) => (c === featureSlides.length - 1 ? 0 : c + 1));
         }, 3000);
         return () => clearInterval(intervalRef.current);
@@ -123,13 +132,10 @@ function FeaturesSlider() {
         clearInterval(intervalRef.current);
         fn();
         intervalRef.current = setInterval(() => {
+            setDirection(1);
             setCurrent((c) => (c === featureSlides.length - 1 ? 0 : c + 1));
         }, 3000);
     };
-
-    // Calculate max heights for title and description
-    const maxTitleLength = Math.max(...featureSlides.map(f => f.title.length));
-    const maxDescLength = Math.max(...featureSlides.map(f => f.description.length));
 
     return (
         <section className="max-w-3xl mx-auto py-20 px-6 flex flex-col items-center">
@@ -137,43 +143,50 @@ function FeaturesSlider() {
             <div
                 className="relative w-full flex flex-col items-center"
                 style={{
-                    minHeight: 340, // Ensures the card never shrinks below this height
+                    minHeight: 340,
                 }}
             >
-                <div
-                    className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center transition-all duration-300"
-                    style={{
-                        minHeight: 240, // Ensures the card content area is always the same height
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                    }}
-                >
-                    <div className="mb-4">{featureSlides[current].icon()}</div>
-                    <h3
-                        className="text-xl font-bold mb-2 text-[#2563eb] text-center"
+                <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                        key={current}
+                        initial={{ opacity: 0, x: direction > 0 ? 60 : -60, scale: 0.98 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: direction > 0 ? -60 : 60, scale: 0.98 }}
+                        transition={{ duration: 0.35, ease: "easeInOut" }}
+                        className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center absolute"
                         style={{
-                            minHeight: "2.5em", // Reserve space for 2 lines of title
+                            minHeight: 240,
                             display: "flex",
-                            alignItems: "center",
+                            flexDirection: "column",
                             justifyContent: "center",
                         }}
                     >
-                        {featureSlides[current].title}
-                    </h3>
-                    <p
-                        className="text-gray-700 text-center"
-                        style={{
-                            minHeight: "3.5em", // Reserve space for 2-3 lines of description
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
-                        {featureSlides[current].description}
-                    </p>
-                </div>
-                <div className="flex gap-4 mt-8">
+                        <div className="mb-4">{featureSlides[current].icon()}</div>
+                        <h3
+                            className="text-xl font-bold mb-2 text-[#2563eb] text-center"
+                            style={{
+                                minHeight: "2.5em",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            {featureSlides[current].title}
+                        </h3>
+                        <p
+                            className="text-gray-700 text-center"
+                            style={{
+                                minHeight: "3.5em",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            {featureSlides[current].description}
+                        </p>
+                    </motion.div>
+                </AnimatePresence>
+                <div className="flex gap-4 mt-8 relative z-10">
                     <button
                         aria-label="Previous feature"
                         onClick={() => handleManualNav(prev)}
@@ -189,7 +202,7 @@ function FeaturesSlider() {
                         <HiChevronRight size={28} />
                     </button>
                 </div>
-                <div className="flex gap-2 mt-4">
+                <div className="flex gap-2 mt-4 relative z-10">
                     {featureSlides.map((_, idx) => (
                         <span
                             key={idx}
