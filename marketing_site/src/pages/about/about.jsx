@@ -82,7 +82,7 @@ export default function DesktopAbout() {
                     {/* Fin Perkins */}
                     <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
                         <FounderIcon letter="F" color="#2563eb" />
-                        <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Fin Perkins</h3>
+                        <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Finn Perkins</h3>
                         <div className="text-sm text-gray-500 mb-1">The Engine</div>
                         <div className="text-sm text-gray-700 mb-2">Software Engineer</div>
                         <p className="text-gray-700 text-center text-base">
