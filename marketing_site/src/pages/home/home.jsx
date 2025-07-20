@@ -156,7 +156,7 @@ function FeaturesSlider() {
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: direction > 0 ? -60 : 60, scale: 0.98 }}
                             transition={{ duration: 0.35, ease: "easeInOut" }}
-                            className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center"
+                            className="bg-white rounded-2xl shadow-lg p-10 w-full flex flex-col items-center h-[280px] sm:h-[320px]"
                             style={{
                                 minHeight: 240,
                                 display: "flex",
