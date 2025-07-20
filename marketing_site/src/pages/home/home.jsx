@@ -186,9 +186,9 @@ export default function Landing() {
 
     return (
         <div className="bg-white text-[#171717] font-sans pt-16 md:pt-0">
-            {/* Mobile App Coming Soon Banner */}
-            <div className="w-full flex justify-center">
-                <div className="flex items-center gap-3 bg-[#2563eb] border border-[#2563eb] text-white px-4 py-2 rounded-b-xl shadow-sm mt-0 fixed top-0 left-0 right-0 z-50 md:static md:rounded-xl md:mt-4 md:max-w-md md:mx-auto">
+            {/* Mobile App Coming Soon Banner - hidden on desktop */}
+            <div className="w-full flex justify-center md:hidden">
+                <div className="flex items-center gap-3 bg-[#2563eb] border border-[#2563eb] text-white px-4 py-2 rounded-b-xl shadow-sm mt-0 fixed top-0 left-0 right-0 z-50">
                     <BsHourglassSplit className="animate-spin-slow text-white" size={22} />
                     <span className="font-medium text-sm">
                         Mobile app is coming soon – join us on desktop for the best experience in the meantime!
