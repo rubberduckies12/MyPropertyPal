@@ -446,12 +446,12 @@ export default function Landing() {
                     MyPropertyPal gives smaller landlords everything they need — no fluff, no stress.
                 </p>
                 <div className="w-full overflow-x-auto">
-                    <table className="min-w-[600px] bg-white rounded-2xl shadow-lg mx-auto">
+                    <table className="min-w-[360px] sm:min-w-[600px] bg-white rounded-2xl mx-auto text-xs sm:text-base">
                         <thead>
                             <tr>
-                                <th className="py-5 px-4 text-left text-base font-semibold text-[#2563eb] border-b border-gray-100">Feature</th>
-                                <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">MyPropertyPal</th>
-                                <th className="py-5 px-4 text-center text-base font-semibold text-[#2563eb] border-b border-gray-100">Traditional Ways to Manage</th>
+                                <th className="py-4 px-2 sm:py-5 sm:px-4 text-left font-semibold text-[#2563eb] border-b border-gray-100">Feature</th>
+                                <th className="py-4 px-2 sm:py-5 sm:px-4 text-center font-semibold text-[#2563eb] border-b border-gray-100">MyPropertyPal</th>
+                                <th className="py-4 px-2 sm:py-5 sm:px-4 text-center font-semibold text-[#2563eb] border-b border-gray-100">Traditional Ways to Manage</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -493,9 +493,9 @@ export default function Landing() {
                                 },
                             ].map((row, i) => (
                                 <tr key={row.feature} className={i !== 6 ? "border-b border-gray-100" : ""}>
-                                    <td className="py-6 px-4 text-base font-medium">{row.feature}</td>
-                                    <td className="py-6 px-4 text-center">{row.mpp}</td>
-                                    <td className="py-6 px-4 text-center">{row.other}</td>
+                                    <td className="py-4 px-2 sm:py-6 sm:px-4 font-medium">{row.feature}</td>
+                                    <td className="py-4 px-2 sm:py-6 sm:px-4 text-center">{row.mpp}</td>
+                                    <td className="py-4 px-2 sm:py-6 sm:px-4 text-center">{row.other}</td>
                                 </tr>
                             ))}
                         </tbody>
