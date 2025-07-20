@@ -34,3 +34,22 @@ body {
     animation: spin 2s linear infinite;
   }
 }
+
+/* For Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 12px;
+  background: #e0e7ff; /* optional: light blue background */
+}
+::-webkit-scrollbar-thumb {
+  background: #2563eb; /* your brand blue */
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1d4ed8; /* darker blue on hover */
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #2563eb #e0e7ff;
+}
