@@ -59,20 +59,18 @@
 
 /* ===== Add Property Button ===== */
 .add-property-btn {
-  background: #2563eb; /* Use the exact brand blue */
   color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 22px;
-  font-size: 1rem;
-  font-weight: 700;
   cursor: pointer;
-  transition: background 0.18s, box-shadow 0.18s;
-  box-shadow: 0 2px 8px rgba(37,99,235,0.07);
+  font-size: 1em;
+  font-weight: 600;
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  transition: background 0.15s;
 }
 .add-property-btn:hover {
-  background: #3b82f6; /* Slightly lighter blue on hover */
-  box-shadow: 0 4px 16px rgba(37,99,235,0.13);
+  background: #1d4ed8;
 }
 
 /* ===== Table Styles ===== */
