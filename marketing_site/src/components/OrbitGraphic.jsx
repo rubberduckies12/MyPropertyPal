@@ -20,7 +20,7 @@ const orbitIcons = [
 export default function OrbitGraphic() {
   const radius = 140;
   const center = 180;
-  const duration = 16; // seconds for a full orbit
+  const duration = 24; // seconds for a full orbit
 
   return (
     <div className="relative w-[360px] h-[360px] mx-auto">
