@@ -59,9 +59,22 @@ export default function OrbitGraphic() {
                 borderRadius: "9999px",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
                 color: "#2563eb",
+                // Counter-rotate each icon so it stays upright
+                transform: `rotate(${-angle * (180 / Math.PI)}deg)`,
               }}
             >
-              {icon}
+              <div
+                style={{
+                  transform: `rotate(${angle * (180 / Math.PI)}deg)`,
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {icon}
+              </div>
             </div>
           );
         })}
