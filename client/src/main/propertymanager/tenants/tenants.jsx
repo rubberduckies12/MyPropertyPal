@@ -52,6 +52,8 @@ export default function Tenants() {
     const [editTenant, setEditTenant] = useState(null);
     const [editForm, setEditForm] = useState({});
     const [inviteMessage, setInviteMessage] = useState(""); // Add this state
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
     // Fetch tenants
     useEffect(() => {
@@ -353,16 +355,72 @@ export default function Tenants() {
                             <p>
                                 <b>Days Left:</b> {daysLeft(selectedTenant)} days
                             </p>
+                            {/* Delete Tenant Button triggers confirmation modal */}
                             <button
                                 className="remove-tenant-btn"
                                 style={{ marginTop: 16, background: "#d9534f", color: "#fff" }}
-                                onClick={() => {
-                                    if (window.confirm("Are you sure you want to delete this tenant?")) {
-                                        handleRemoveTenant(selectedTenant.id);
-                                    }
-                                }}
+                                onClick={() => setShowDeleteConfirm(true)}
                             >
                                 Delete Tenant
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Delete Confirmation Modal */}
+                {showDeleteConfirm && (
+                    <div className="tenant-modal-backdrop" onClick={() => setShowDeleteConfirm(false)}>
+                        <div className="tenant-modal delete-warning" onClick={e => e.stopPropagation()}>
+                            <button className="modal-close" onClick={() => setShowDeleteConfirm(false)}>
+                                &times;
+                            </button>
+                            <h3 style={{ color: "#d9534f" }}>Delete Tenant Account</h3>
+                            <p style={{ marginBottom: 12, color: "#222", fontWeight: 500 }}>
+                                Are you sure you want to delete this tenant? <br />
+                                <b>This will delete the tenant's account permanently.</b><br />
+                                Please ensure the tenant is no longer living in this property and you have given them appropriate notice.
+                            </p>
+                            <p style={{ marginBottom: 8 }}>
+                                To confirm, type <b>Delete my tenants account</b> below:
+                            </p>
+                            <input
+                                type="text"
+                                value={deleteConfirmText}
+                                onChange={e => setDeleteConfirmText(e.target.value)}
+                                placeholder="Type here to confirm"
+                                style={{
+                                    width: "100%",
+                                    padding: "8px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #e5e7eb",
+                                    marginBottom: "12px"
+                                }}
+                            />
+                            <button
+                                className="remove-tenant-btn"
+                                style={{
+                                    background: deleteConfirmText === "Delete my tenants account" ? "#d9534f" : "#aaa",
+                                    color: "#fff",
+                                    cursor: deleteConfirmText === "Delete my tenants account" ? "pointer" : "not-allowed"
+                                }}
+                                disabled={deleteConfirmText !== "Delete my tenants account"}
+                                onClick={() => {
+                                    handleRemoveTenant(selectedTenant.id);
+                                    setShowDeleteConfirm(false);
+                                    setDeleteConfirmText("");
+                                }}
+                            >
+                                Permanently Delete Tenant
+                            </button>
+                            <button
+                                className="add-tenant-btn"
+                                style={{ marginTop: 10, background: "#eee", color: "#222" }}
+                                onClick={() => {
+                                    setShowDeleteConfirm(false);
+                                    setDeleteConfirmText("");
+                                }}
+                            >
+                                Cancel
                             </button>
                         </div>
                     </div>

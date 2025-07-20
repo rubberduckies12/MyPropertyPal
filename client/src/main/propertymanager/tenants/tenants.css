@@ -305,6 +305,54 @@
   background: #b91c1c;
 }
 
+/* Delete Tenant Modal Styling */
+.tenant-modal.delete-warning {
+  border: 2px solid #d9534f;
+  box-shadow: 0 8px 40px rgba(217,83,79,0.13);
+}
+
+.tenant-modal.delete-warning h3 {
+  color: #d9534f;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.tenant-modal.delete-warning p {
+  color: #222;
+  font-size: 1.08rem;
+  margin-bottom: 10px;
+}
+
+.tenant-modal.delete-warning input[type="text"] {
+  border: 1.5px solid #d9534f;
+  background: #fff0f0;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.tenant-modal.delete-warning .remove-tenant-btn {
+  background: #d9534f;
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  margin-top: 10px;
+  transition: background 0.18s;
+}
+
+.tenant-modal.delete-warning .remove-tenant-btn:disabled {
+  background: #aaa;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+.tenant-modal.delete-warning .add-tenant-btn {
+  background: #eee;
+  color: #222;
+  margin-top: 10px;
+}
+
 /* Add Tenant Form Styles */
 .add-tenant-form label {
   display: flex;
