@@ -146,14 +146,15 @@ function FeaturesSlider() {
     };
 
     return (
-        <section className="max-w-3xl mx-auto py-20 px-6 flex flex-col items-center">
+        <section className="max-w-3xl mx-auto py-20 px-4 flex flex-col items-center">
             <h2 className="text-2xl font-bold text-center mb-8">Powerful Features</h2>
             <div
                 className="relative w-full flex flex-col items-center"
                 style={{
-                    minHeight: 340,
-                    height: 340, // <-- Fixed height for the whole slider area
-                    overflow: "hidden", // Prevents content from overflowing and shifting
+                    minHeight: "320px",
+                    height: "auto",
+                    maxWidth: "100%",
+                    overflow: "hidden",
                 }}
             >
                 <div className="w-full flex flex-col items-center h-full">
@@ -166,7 +167,9 @@ function FeaturesSlider() {
                             transition={{ duration: 0.35, ease: "easeInOut" }}
                             className="bg-white rounded-2xl shadow-lg p-6 w-full flex flex-col items-center h-full"
                             style={{
-                                height: "100%", // Fill the parent container
+                                maxWidth: "100%",
+                                width: "100%",
+                                height: "100%",
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "center",
@@ -440,7 +443,7 @@ export default function Landing() {
                         Stay Compliant Effortlessly
                     </h2>
                     <p className="text-gray-700 mb-6">
-                        From gas saftey to EPC, never miss a deadline. We'll track your legal obligations and remind you
+                        From gas safety to EPC, never miss a deadline. We'll track your legal obligations and remind you
                         before anything is due. So you stay compliant without stress.
                     </p>
                     <button
