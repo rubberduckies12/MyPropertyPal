@@ -5,9 +5,9 @@ import Footer from "../../components/desktop/desktopFooter";
 import { MdOutlineNotificationsActive, MdGavel, MdHomeRepairService, MdPeople, MdOutlineManageAccounts } from "react-icons/md";
 import { HiOutlineDocument, HiOutlineChatBubbleLeftRight, HiOutlineWrenchScrewdriver, HiOutlineBolt, HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { PiRobotLight } from "react-icons/pi";
-import { FaRegMoneyBillAlt, FaPoundSign } from "react-icons/fa";
+import { FaRegMoneyBillAlt, FaPoundSign, FaCcStripe, FaLock } from "react-icons/fa";
 import { TbReportMoney } from "react-icons/tb";
-import { BsStars, BsHourglassSplit, BsClipboardCheck } from "react-icons/bs";
+import { BsStars, BsHourglassSplit, BsClipboardCheck, BsShieldCheck, BsGlobe } from "react-icons/bs";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { AiOutlineFileDone, AiOutlineRobot } from "react-icons/ai";
@@ -518,24 +518,24 @@ export default function Landing() {
 <section className="max-w-4xl mx-auto py-10 px-6 flex flex-col items-center">
   <h3 className="text-lg font-semibold mb-4 text-center">Your data and payments are safe</h3>
   <div className="flex flex-wrap gap-6 justify-center items-center">
-    {/* GDPR Badge */}
+    {/* GDPR */}
     <div className="flex flex-col items-center">
-      <img src="/gdpr-badge.svg" alt="GDPR Compliant" className="w-12 h-12 mb-1" />
+      <BsShieldCheck size={48} className="text-[#2563eb] mb-1" />
       <span className="text-xs text-gray-600">GDPR Compliant</span>
     </div>
-    {/* Stripe Badge */}
+    {/* Stripe */}
     <div className="flex flex-col items-center">
-      <img src="/stripe-badge.svg" alt="Stripe Payments" className="w-12 h-12 mb-1" />
+      <FaCcStripe size={48} className="text-[#2563eb] mb-1" />
       <span className="text-xs text-gray-600">Stripe Secure Payments</span>
     </div>
-    {/* SSL Badge */}
+    {/* SSL */}
     <div className="flex flex-col items-center">
-      <img src="/ssl-badge.svg" alt="SSL Secured" className="w-12 h-12 mb-1" />
+      <FaLock size={48} className="text-[#2563eb] mb-1" />
       <span className="text-xs text-gray-600">SSL Encrypted</span>
     </div>
-    {/* HTTPS Badge */}
+    {/* HTTPS */}
     <div className="flex flex-col items-center">
-      <img src="/https-badge.svg" alt="HTTPS Secure" className="w-12 h-12 mb-1" />
+      <MdHttps size={48} className="text-[#2563eb] mb-1" />
       <span className="text-xs text-gray-600">HTTPS Secure</span>
     </div>
   </div>
