@@ -185,7 +185,7 @@ export default function Landing() {
     }
 
     return (
-        <div className="bg-white text-[#171717] font-sans">
+        <div className="bg-white text-[#171717] font-sans pt-16 md:pt-0">
             {/* Mobile App Coming Soon Banner */}
             <div className="w-full flex justify-center">
                 <div className="flex items-center gap-3 bg-[#2563eb] border border-[#2563eb] text-white px-4 py-2 rounded-b-xl shadow-sm mt-0 fixed top-0 left-0 right-0 z-50 md:static md:rounded-xl md:mt-4 md:max-w-md md:mx-auto">
@@ -195,21 +195,7 @@ export default function Landing() {
                     </span>
                 </div>
             </div>
-            <Head>
-                <title>MyPropertyPal | Effortless Property Management</title>
-                <meta name="description" content="MyPropertyPal helps landlords and tenants manage properties, rent, compliance, and communication with ease. 30-day money back guarantee." />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <meta property="og:title" content="MyPropertyPal | Effortless Property Management" />
-                <meta property="og:description" content="All-in-one platform for landlords and tenants. Automated rent collection, compliance, maintenance, and more." />
-                <meta property="og:image" content="/LogoWB.png" />
-                <meta property="og:type" content="website" />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content="MyPropertyPal | Effortless Property Management" />
-                <meta name="twitter:description" content="All-in-one platform for landlords and tenants. Automated rent collection, compliance, maintenance, and more." />
-                <meta name="twitter:image" content="/LogoWB.png" />
-                <link rel="icon" href="/LogoWB.png" />
-            </Head>
-            {/* Show desktop header on md+ screens, mobile header on mobile */}
+            {/* Header always visible */}
             <div className="hidden md:block">
                 <Header />
             </div>
