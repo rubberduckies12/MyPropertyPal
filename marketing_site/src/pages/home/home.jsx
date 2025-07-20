@@ -616,7 +616,7 @@ export default function Landing() {
         Built for landlords. Backed by a 30-day money-back guarantee.
     </h2>
     <p className="max-w-xl mx-auto text-lg">
-        Try MyPropertyPal with no risk — cancel anytime, no questions asked.
+        Try It And Love It. Or Your Money Back. Guaranteed.
     </p>
 </section>
 
