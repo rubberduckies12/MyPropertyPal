@@ -8,10 +8,42 @@ import { MdGavel, MdHomeRepairService, MdPeople, MdOutlineManageAccounts } from 
 import { FaRegMoneyBillAlt } from "react-icons/fa";
 import { PiRobotLight } from "react-icons/pi";
 import { HiOutlineDocument } from "react-icons/hi2";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 
 const brand = "#2563eb";
 
+function FullScreenImageModal({ src, alt, onClose }) {
+  if (typeof window === "undefined") return null;
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+      onClick={onClose}
+      style={{ cursor: "zoom-out" }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="max-w-full max-h-full rounded-lg shadow-2xl"
+        onClick={e => e.stopPropagation()}
+        style={{ background: "#fff" }}
+      />
+      <button
+        className="absolute top-6 right-6 text-white text-3xl font-bold"
+        onClick={onClose}
+        aria-label="Close"
+        style={{ cursor: "pointer" }}
+      >
+        &times;
+      </button>
+    </div>,
+    document.body
+  );
+}
+
 export default function Product() {
+  const [modalImg, setModalImg] = useState(null);
+
   return (
     <div className="bg-white text-[#171717] font-sans min-h-screen">
       <Head>
@@ -44,7 +76,11 @@ export default function Product() {
       {/* Dashboard - image left, text right */}
       <section className="bg-white max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14 border-b border-gray-100">
         <div className="flex justify-center">
-          <div className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden">
+          <div
+            className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden cursor-zoom-in"
+            onClick={() => setModalImg({ src: "/dashboard.png", alt: "Dashboard" })}
+            title="Click to view full screen"
+          >
             <Image
               src="/dashboard.png"
               alt="Dashboard"
@@ -104,7 +140,11 @@ export default function Product() {
           </div>
         </div>
         <div className="order-1 md:order-2 flex justify-center">
-          <div className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden">
+          <div
+            className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden cursor-zoom-in"
+            onClick={() => setModalImg({ src: "/PropertyManager.png", alt: "Property Manager" })}
+            title="Click to view full screen"
+          >
             <Image
               src="/PropertyManager.png"
               alt="Property Manager"
@@ -120,7 +160,11 @@ export default function Product() {
       {/* Financial Manager - image right, text left */}
       <section className="bg-white max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14 border-b border-gray-100">
         <div className="order-2 md:order-2 flex justify-center">
-          <div className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden">
+          <div
+            className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden cursor-zoom-in"
+            onClick={() => setModalImg({ src: "/Financemanager.png", alt: "Financial Manager" })}
+            title="Click to view full screen"
+          >
             <Image
               src="/Financemanager.png"
               alt="Financial Manager"
@@ -165,7 +209,11 @@ export default function Product() {
       {/* Legal Manager - image left, text right */}
       <section className="bg-white max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14 border-b border-gray-100">
         <div className="flex justify-center">
-          <div className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden">
+          <div
+            className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden cursor-zoom-in"
+            onClick={() => setModalImg({ src: "/ComplianceManager.png", alt: "Legal Manager" })}
+            title="Click to view full screen"
+          >
             <Image
               src="/ComplianceManager.png"
               alt="Legal Manager"
@@ -215,7 +263,11 @@ export default function Product() {
           </div>
         </div>
         <div className="order-1 md:order-2 flex justify-center">
-          <div className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden">
+          <div
+            className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden cursor-zoom-in"
+            onClick={() => setModalImg({ src: "/AI_Chatbot.png", alt: "AI Chatbot" })}
+            title="Click to view full screen"
+          >
             <Image
               src="/AI_Chatbot.png"
               alt="AI Chatbot"
@@ -231,7 +283,11 @@ export default function Product() {
       {/* Tenant Portal - image center on mobile, right on desktop */}
       <section className="bg-white max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-14">
         <div className="order-2 md:order-2 flex justify-center">
-          <div className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden">
+          <div
+            className="relative w-full max-w-md h-56 flex items-center justify-center overflow-hidden cursor-zoom-in"
+            onClick={() => setModalImg({ src: "/TenantPortal.png", alt: "Tenant Portal" })}
+            title="Click to view full screen"
+          >
             <Image
               src="/TenantPortal.png"
               alt="Tenant Portal"
@@ -260,6 +316,16 @@ export default function Product() {
           </ul>
         </div>
       </section>
+
+      {/* Fullscreen Image Modal */}
+      {modalImg && (
+        <FullScreenImageModal
+          src={modalImg.src}
+          alt={modalImg.alt}
+          onClose={() => setModalImg(null)}
+        />
+      )}
+
       <Footer />
     </div>
   );

@@ -22,6 +22,7 @@ import { MdNotificationsActive } from "react-icons/md";
 import { IoReceiptOutline } from "react-icons/io5";
 import OrbitGraphic from "../../components/OrbitGraphic";
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 
 const brand = "#2563eb";
 
@@ -227,8 +228,37 @@ function FeaturesSlider() {
     );
 }
 
+function FullScreenImageModal({ src, alt, onClose }) {
+  if (typeof window === "undefined") return null;
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80"
+      onClick={onClose}
+      style={{ cursor: "zoom-out" }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="max-w-full max-h-full rounded-lg shadow-2xl"
+        onClick={e => e.stopPropagation()}
+        style={{ background: "#fff" }}
+      />
+      <button
+        className="absolute top-6 right-6 text-white text-3xl font-bold"
+        onClick={onClose}
+        aria-label="Close"
+        style={{ cursor: "pointer" }}
+      >
+        &times;
+      </button>
+    </div>,
+    document.body
+  );
+}
+
 export default function Landing() {
     const [billing, setBilling] = useState("monthly");
+    const [modalImg, setModalImg] = useState(null);
     const discount = 0.15;
 
     function getPlanPrice(plan) {
@@ -289,7 +319,11 @@ export default function Landing() {
                     </button>
                 </div>
                 <div className="flex justify-center">
-                    <div className="w-full max-w-md h-40 md:h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
+                    <div
+                        className="w-full max-w-md h-40 md:h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden cursor-zoom-in"
+                        onClick={() => setModalImg({ src: "/dashboard.png", alt: "Dashboard Preview" })}
+                        title="Click to view full screen"
+                    >
                         <Image
                             src="/dashboard.png"
                             alt="Dashboard Preview"
@@ -319,7 +353,11 @@ export default function Landing() {
                     </button>
                 </div>
                 <div className="flex justify-center">
-                    <div className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
+                    <div
+                        className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden cursor-zoom-in"
+                        onClick={() => setModalImg({ src: "/add-tenants.png", alt: "Add Tenants Preview" })}
+                        title="Click to view full screen"
+                    >
                         <Image
                             src="/add-tenants.png"
                             alt="Add Tenants Preview"
@@ -413,7 +451,11 @@ export default function Landing() {
                     </button>
                 </div>
                 <div className="flex justify-center order-2 md:order-1">
-                    <div className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden">
+                    <div
+                        className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden cursor-zoom-in"
+                        onClick={() => setModalImg({ src: "/finances.png", alt: "Finances Preview" })}
+                        title="Click to view full screen"
+                    >
                         <Image
                             src="/finances.png"
                             alt="Finances Preview"
@@ -619,6 +661,15 @@ export default function Landing() {
         Try It And Love It. Or Your Money Back. Guaranteed.
     </p>
 </section>
+
+            {/* Fullscreen Image Modal */}
+            {modalImg && (
+                <FullScreenImageModal
+                    src={modalImg.src}
+                    alt={modalImg.alt}
+                    onClose={() => setModalImg(null)}
+                />
+            )}
 
             <Footer />
         </div>
