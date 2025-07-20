@@ -6,7 +6,7 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon-32x32.png" sizes="32x32" />
         {/* You can also use .png, .svg, etc. */}
       </Head>
       <Component {...pageProps} />

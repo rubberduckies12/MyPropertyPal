@@ -6,15 +6,15 @@ import { PiRobotLight } from "react-icons/pi";
 import { FaPoundSign } from "react-icons/fa";
 
 const orbitIcons = [
-  { icon: <MdPeople size={38} />, label: "Tenants" },
-  { icon: <MdOutlineManageAccounts size={38} />, label: "Management" },
-  { icon: <MdHomeRepairService size={38} />, label: "Maintenance" },
-  { icon: <HiOutlineWrenchScrewdriver size={38} />, label: "Repairs" },
-  { icon: <HiOutlineChatBubbleLeftRight size={38} />, label: "Chat" },
-  { icon: <HiOutlineBolt size={38} />, label: "AI" },
-  { icon: <TbReportMoney size={38} />, label: "Finance" },
-  { icon: <PiRobotLight size={38} />, label: "Assistant" },
-  { icon: <FaPoundSign size={38} />, label: "Rent" },
+  <MdPeople size={38} key="Tenants" />,
+  <MdOutlineManageAccounts size={38} key="Management" />,
+  <MdHomeRepairService size={38} key="Maintenance" />,
+  <HiOutlineWrenchScrewdriver size={38} key="Repairs" />,
+  <HiOutlineChatBubbleLeftRight size={38} key="Chat" />,
+  <HiOutlineBolt size={38} key="AI" />,
+  <TbReportMoney size={38} key="Finance" />,
+  <PiRobotLight size={38} key="Assistant" />,
+  <FaPoundSign size={38} key="Rent" />,
 ];
 
 export default function OrbitGraphic() {
@@ -25,39 +25,51 @@ export default function OrbitGraphic() {
   return (
     <div className="relative w-[360px] h-[360px] mx-auto">
       {/* Center logo */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg flex items-center justify-center" style={{ width: 120, height: 120 }}>
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-lg flex items-center justify-center"
+        style={{ width: 120, height: 120 }}
+      >
         <Image src="/LogoWB.png" alt="MyPropertyPal Logo" width={90} height={90} />
       </div>
-      {/* Orbiting icons with animation */}
-      {orbitIcons.map((item, i) => {
-        const angle = (360 / orbitIcons.length) * i;
-        return (
-          <div
-            key={item.label}
-            className="absolute"
-            style={{
-              left: center - 32,
-              top: center - 32,
-              width: 64,
-              height: 64,
-              transform: `rotate(${angle}deg) translate(${radius}px) rotate(-${angle}deg)`,
-              transformOrigin: "32px 32px",
-              animation: `orbit ${duration}s linear infinite`,
-              animationDelay: `-${(duration / orbitIcons.length) * i}s`,
-            }}
-          >
-            <div className="flex flex-col items-center">
-              <div className="bg-white rounded-full shadow p-2 flex items-center justify-center text-[#2563eb]">{item.icon}</div>
-              <span className="text-xs text-gray-700 mt-1 text-center w-16">{item.label}</span>
+      {/* Orbiting icons in a rotating container */}
+      <div
+        className="absolute left-0 top-0 w-full h-full"
+        style={{
+          transformOrigin: "50% 50%",
+          animation: `orbit-container ${duration}s linear infinite`,
+        }}
+      >
+        {orbitIcons.map((icon, i) => {
+          const angle = (2 * Math.PI * i) / orbitIcons.length;
+          const x = center + radius * Math.cos(angle) - 32;
+          const y = center + radius * Math.sin(angle) - 32;
+          return (
+            <div
+              key={i}
+              className="absolute"
+              style={{
+                left: x,
+                top: y,
+                width: 64,
+                height: 64,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "white",
+                borderRadius: "9999px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+                color: "#2563eb",
+              }}
+            >
+              {icon}
             </div>
-          </div>
-        );
-      })}
-      {/* Animation keyframes */}
+          );
+        })}
+      </div>
       <style jsx>{`
-        @keyframes orbit {
+        @keyframes orbit-container {
           100% {
-            transform: rotate(360deg) translate(${radius}px) rotate(-360deg);
+            transform: rotate(360deg);
           }
         }
       `}</style>
