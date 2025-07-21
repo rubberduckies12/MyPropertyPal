@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
-import "./incidents.css";
 import Sidebar from "../../sidebar/sidebar.jsx";
 
 function getSeverityColor(severity) {
   if (!severity) return "";
   const s = severity.toLowerCase();
-  if (s === "high" || s === "red") return "severity-red";
-  if (s === "medium" || s === "yellow") return "severity-yellow";
-  if (s === "low" || s === "green") return "severity-green";
+  if (s === "high" || s === "red") return "bg-red-100 text-red-700";
+  if (s === "medium" || s === "yellow") return "bg-yellow-100 text-yellow-800";
+  if (s === "low" || s === "green") return "bg-green-100 text-green-700";
   return "";
 }
 
 function getProgressColor(progress) {
   if (!progress) return "";
   const p = progress.toLowerCase();
-  if (p === "not started" || p === "red") return "progress-red";
-  if (p === "in progress" || p === "yellow") return "progress-yellow";
-  if (p === "solved" || p === "green") return "progress-green";
+  if (p === "not started" || p === "red") return "bg-red-100 text-red-700";
+  if (p === "in progress" || p === "yellow") return "bg-yellow-100 text-yellow-800";
+  if (p === "solved" || p === "green") return "bg-green-100 text-green-700";
   return "";
 }
 
@@ -84,28 +83,30 @@ export default function Incidents() {
   const handleCloseModal = () => setSelectedIncident(null);
 
   return (
-    <div className="properties-page">
-      <Sidebar />
-      <main className="properties-main">
-        <div className="properties-header">
-          <h2 className="properties-title">Maintenance Requests</h2>
+    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <div className="w-64 flex-shrink-0 h-screen">
+        <Sidebar />
+      </div>
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-y-auto">
+        <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
+          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Maintenance Requests</h1>
         </div>
-        <div className="incidents-table-container">
-          <table className="incidents-table">
+        <div className="w-full overflow-x-auto mt-8">
+          <table className="min-w-[900px] w-full bg-white rounded-2xl text-base divide-y divide-blue-100">
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Property Address</th>
-                <th>Tenant</th>
-                <th>Date Posted</th>
-                <th>Severity</th>
-                <th>Progress</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Title</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Property Address</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Tenant</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Date Posted</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-center">Severity</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Progress</th>
               </tr>
             </thead>
             <tbody>
               {incidents.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: "center", color: "#888" }}>
+                  <td colSpan={6} className="text-center text-gray-400 py-8">
                     No new maintenance requests
                   </td>
                 </tr>
@@ -113,42 +114,38 @@ export default function Incidents() {
                 incidents.map((incident) => (
                   <tr
                     key={incident.id}
-                    style={{ cursor: "pointer" }}
+                    className="hover:bg-blue-50 transition cursor-pointer"
                     onClick={() => handleRowClick(incident)}
                   >
-                    <td>
-                      <div className="incident-title-cell">
-                        <span className="incident-title">{incident.title}</span>
-                        <span className="incident-id">#{incident.id}</span>
+                    <td className="py-4 px-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-blue-700">{incident.title}</span>
+                        <span className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 ml-2">#{incident.id}</span>
                       </div>
                     </td>
-                    <td>
-                      <span className="incident-property">{incident.property_display}</span>
+                    <td className="py-4 px-3">
+                      <span className="font-medium text-black">{incident.property_display}</span>
                     </td>
-                    <td>
-                      <span className="incident-tenant">
+                    <td className="py-4 px-3">
+                      <span className="font-medium text-black">
                         {incident.tenant_first_name || ""} {incident.tenant_last_name || ""}
                       </span>
                     </td>
-                    <td>
-                      <span className="incident-date">
+                    <td className="py-4 px-3">
+                      <span className="text-gray-600">
                         {new Date(incident.created_at).toLocaleDateString("en-GB")}
                       </span>
                     </td>
-                    <td>
-                      <span
-                        className={`incident-severity bubble ${getSeverityColor(incident.severity)}`}
-                      >
+                    <td className="py-4 px-3 text-center">
+                      <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${getSeverityColor(incident.severity)}`}>
                         {incident.severity}
                       </span>
                     </td>
-                    <td onClick={(e) => e.stopPropagation()}>
+                    <td className="py-4 px-3" onClick={e => e.stopPropagation()}>
                       <select
-                        className={`incident-progress-select bubble ${getProgressColor(incident.progress)}`}
+                        className={`px-4 py-1 rounded-xl font-semibold text-sm border border-gray-300 focus:ring-2 focus:ring-blue-400 ${getProgressColor(incident.progress)}`}
                         value={incident.progress}
-                        onChange={(e) =>
-                          handleProgressChange(incident.id, e.target.value)
-                        }
+                        onChange={e => handleProgressChange(incident.id, e.target.value)}
                       >
                         <option value="Not Started">Not Started</option>
                         <option value="In Progress">In Progress</option>
@@ -162,49 +159,62 @@ export default function Incidents() {
           </table>
         </div>
 
+        {/* Incident Details Modal */}
         {selectedIncident && (
-          <div className="incident-modal-backdrop" onClick={handleCloseModal}>
-            <div
-              className="incident-modal"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button className="modal-close" onClick={handleCloseModal}>
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-start justify-center z-50 overflow-y-auto">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-lg my-8 flex flex-col gap-6 border border-blue-100 relative">
+              <button
+                className="absolute top-4 right-6 text-3xl text-gray-400 hover:text-gray-600"
+                onClick={handleCloseModal}
+                aria-label="Close"
+              >
                 &times;
               </button>
-              <h3 className="incident-modal-title">{selectedIncident.title}</h3>
-              <div className="incident-modal-section">
-                <span
-                  className={`incident-severity bubble ${getSeverityColor(selectedIncident.severity)}`}
-                >
-                  {selectedIncident.severity}
-                </span>
-                <span style={{ marginLeft: 16 }}>
-                  <b>Progress:</b>{" "}
-                  <span className={`incident-progress bubble ${getProgressColor(selectedIncident.progress)}`}>
+              <h2 className="text-2xl font-extrabold text-blue-700 mb-2">
+                {selectedIncident.title}
+              </h2>
+              <div className="bg-blue-50 rounded-lg p-4 mb-2 text-base text-black flex flex-col gap-2">
+                <div>
+                  <strong className="text-blue-700">Severity:</strong>{" "}
+                  <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${getSeverityColor(selectedIncident.severity)}`}>
+                    {selectedIncident.severity}
+                  </span>
+                </div>
+                <div>
+                  <strong className="text-blue-700">Progress:</strong>{" "}
+                  <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${getProgressColor(selectedIncident.progress)}`}>
                     {selectedIncident.progress}
                   </span>
-                </span>
+                </div>
+                <div>
+                  <strong className="text-blue-700">Property:</strong> {selectedIncident.property_display}
+                </div>
+                <div>
+                  <strong className="text-blue-700">Tenant:</strong> {selectedIncident.tenant_first_name || ""} {selectedIncident.tenant_last_name || ""}
+                </div>
+                <div>
+                  <strong className="text-blue-700">Date Posted:</strong>{" "}
+                  {new Date(selectedIncident.created_at).toLocaleDateString("en-GB")}
+                </div>
+                <div>
+                  <strong className="text-blue-700">Description:</strong>
+                  <div className="mt-1">{selectedIncident.description}</div>
+                </div>
               </div>
-              <div className="incident-modal-section">
-                <b>Property:</b> <span className="incident-property">{selectedIncident.property_display}</span>
+              <div className="flex gap-4 mt-2">
+                <button
+                  className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
+                  onClick={handleCloseModal}
+                >
+                  Close
+                </button>
+                <button
+                  className="bg-red-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 transition flex-1"
+                  onClick={() => handleDeleteIncident(selectedIncident.id)}
+                >
+                  Delete Request
+                </button>
               </div>
-              <div className="incident-modal-section">
-                <b>Tenant:</b> <span className="incident-tenant">{selectedIncident.tenant_first_name || ""} {selectedIncident.tenant_last_name || ""}</span>
-              </div>
-              <div className="incident-modal-section">
-                <b>Date Posted:</b>{" "}
-                <span className="incident-date">{new Date(selectedIncident.created_at).toLocaleDateString("en-GB")}</span>
-              </div>
-              <div className="incident-modal-description">
-                <b>Description:</b>
-                <div style={{ marginTop: 6 }}>{selectedIncident.description}</div>
-              </div>
-              <button
-                className="delete-incident-btn"
-                onClick={() => handleDeleteIncident(selectedIncident.id)}
-              >
-                Delete Request
-              </button>
             </div>
           </div>
         )}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
-import "./properties.css";
 
 const API_BASE = "https://mypropertypal-3.onrender.com";
 
@@ -128,37 +127,41 @@ export default function Properties() {
 
   // Render
   return (
-    <div className="properties-page">
-      <Sidebar />
-      <main className="properties-main">
-        <div className="properties-header">
-          <h1 className="properties-title">Your Properties</h1>
-          <button className="add-property-btn" onClick={() => setShowAddModal(true)}>
+    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <div className="w-64 flex-shrink-0 h-screen">
+        <Sidebar />
+      </div>
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-y-auto">
+        <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
+          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Your Properties</h1>
+          <button
+            className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+            onClick={() => setShowAddModal(true)}
+          >
             + Add Property
           </button>
         </div>
 
         {loading && <div>Loading properties...</div>}
-        {error && <div style={{ color: "red" }}>{error}</div>}
+        {error && <div className="text-red-500">{error}</div>}
 
         {!loading && !error && (
-          <div className="properties-table-container">
-            <table className="properties-table">
+          <div className="w-full overflow-x-auto mt-8">
+            <table className="min-w-[900px] w-full bg-white rounded-2xl text-base divide-y divide-blue-100">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Address</th>
-                  <th>Status</th>
-                  <th>Tenant</th>
-                  <th>Monthly Rent</th>
-                  <th>Next Rent Due</th>
-                  <th>Rental Income</th>
+                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Name</th>
+                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Address</th>
+                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-center">Status</th>
+                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Tenant</th>
+                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Next Rent Due</th>
+                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Rental Income</th>
                 </tr>
               </thead>
               <tbody>
                 {properties.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ textAlign: "center", color: "#888" }}>
+                    <td colSpan={6} className="text-center text-gray-400 py-8">
                       No properties added yet
                     </td>
                   </tr>
@@ -166,29 +169,40 @@ export default function Properties() {
                   properties.map((prop, idx) => (
                     <tr
                       key={idx}
-                      className="property-row"
+                      className="hover:bg-blue-50 transition cursor-pointer"
                       onClick={() => handleRowClick(prop)}
-                      style={{ cursor: "pointer" }}
                     >
-                      <td>{prop.name || "-"}</td>
-                      <td>{prop.address || "-"}</td>
-                      <td>
-                        <span className={`property-status status-${prop.status?.toLowerCase().replace(/\s/g, "-")}`}>
+                      <td className="py-4 px-3">{prop.name || "-"}</td>
+                      <td className="py-4 px-3">{prop.address || "-"}</td>
+                      <td className="py-4 px-3 text-center">
+                        <span className={
+                          `px-4 py-1 rounded-xl font-semibold text-sm
+                          ${prop.status === "Available" ? "bg-green-100 text-green-700"
+                            : prop.status === "Occupied" ? "bg-blue-100 text-blue-700"
+                            : prop.status === "Under Maintenance" ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-700"}`
+                        }>
                           {prop.status}
                         </span>
                       </td>
-                      <td>
+                      <td className="py-4 px-3">
                         {prop.tenants && prop.tenants.length > 0
                           ? prop.tenants.map(t => `${t.first_name} ${t.last_name}`).join(", ")
                           : "No tenant"}
                       </td>
-                      <td>
-                        {prop.tenants && prop.tenants.length > 0
-                          ? prop.tenants.map(t => t.rent_amount ? `£${Number(t.rent_amount).toFixed(2)}` : "N/A").join(", ")
-                          : "N/A"}
+                      <td className="py-4 px-3">
+                        {(() => {
+                          if (!prop.nextRentDue) return "N/A";
+                          // Try to extract a valid date substring
+                          const match = prop.nextRentDue.match(/[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{4} \d{2}:\d{2}:\d{2}/);
+                          const dateStr = match ? match[0] : prop.nextRentDue;
+                          const dateObj = new Date(dateStr);
+                          return !isNaN(dateObj)
+                            ? dateObj.toLocaleDateString("en-GB")
+                            : "N/A";
+                        })()}
                       </td>
-                      <td>{prop.nextRentDue || "N/A"}</td>
-                      <td>{prop.rental_income}</td>
+                      <td className="py-4 px-3">{prop.rental_income}</td>
                     </tr>
                   ))
                 )}
@@ -199,62 +213,71 @@ export default function Properties() {
 
         {/* Add Property Modal */}
         {showAddModal && (
-          <div className="add-property-modal">
-            <div className="add-property-modal-content">
-              <h2>Add Property</h2>
-              <form onSubmit={handleAddProperty}>
-                <label>
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-start justify-center z-50 overflow-y-auto">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-md sm:max-w-lg my-8 flex flex-col gap-6 border border-blue-100">
+              <h2 className="text-2xl font-extrabold text-blue-700 text-center mb-2">Add Property</h2>
+              <form onSubmit={handleAddProperty} className="flex flex-col gap-4">
+                <label className="font-semibold text-blue-700">
                   Number (or Name)
                   <input
                     name="name"
                     value={addForm.name}
                     onChange={handleAddFormChange}
                     required
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </label>
-                <label>
+                <label className="font-semibold text-blue-700">
                   Address
                   <input
                     name="address"
                     value={addForm.address}
                     onChange={handleAddFormChange}
                     required
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </label>
-                <label>
+                <label className="font-semibold text-blue-700">
                   City
                   <input
                     name="city"
                     value={addForm.city}
                     onChange={handleAddFormChange}
                     required
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </label>
-                <label>
+                <label className="font-semibold text-blue-700">
                   County
                   <input
                     name="county"
                     value={addForm.county}
                     onChange={handleAddFormChange}
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </label>
-                <label>
+                <label className="font-semibold text-blue-700">
                   Postcode
                   <input
                     name="postcode"
                     value={addForm.postcode}
                     onChange={handleAddFormChange}
                     required
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   />
                 </label>
-                {addError && <div style={{ color: "red" }}>{addError}</div>}
-                <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
-                  <button type="submit" className="add-property-btn" disabled={addLoading}>
+                {addError && <div className="text-red-500 text-center">{addError}</div>}
+                <div className="flex gap-4 mt-4">
+                  <button
+                    type="submit"
+                    className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition flex-1"
+                    disabled={addLoading}
+                  >
                     {addLoading ? "Adding..." : "Add Property"}
                   </button>
                   <button
                     type="button"
-                    className="close-notes-btn"
+                    className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
                     onClick={() => setShowAddModal(false)}
                   >
                     Cancel
@@ -267,53 +290,46 @@ export default function Properties() {
 
         {/* Property Notes Modal */}
         {selectedProperty && (
-          <div className="property-notes-modal">
-            <div className="property-notes-modal-content">
-              <h2>Notes for {selectedProperty.name}</h2>
-              <div className="property-info">
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-start justify-center z-50 overflow-y-auto">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-lg my-8 flex flex-col gap-6 border border-blue-100">
+              <h2 className="text-2xl font-extrabold text-blue-700 mb-2">
+                Details for {selectedProperty.name}
+              </h2>
+              <div className="bg-blue-50 rounded-lg p-4 mb-2 text-base text-gray-700 flex flex-col gap-2">
                 <div>
-                  <strong>Address:</strong> {selectedProperty.address}
+                  <strong className="text-blue-700">Address:</strong> {selectedProperty.address}
                 </div>
                 <div>
-                  <strong>Status:</strong> {selectedProperty.status}
+                  <strong className="text-blue-700">Status:</strong> {selectedProperty.status}
                 </div>
                 <div>
-                  <strong>Lead Tenant:</strong> {selectedProperty.tenant || "No tenant"}
+                  <strong className="text-blue-700">Lead Tenant:</strong> {selectedProperty.tenant || "No tenant"}
                 </div>
                 <div>
-                  <strong>Rental Income:</strong> {selectedProperty.rent || "N/A"}
+                  <strong className="text-blue-700">Rental Income:</strong> {selectedProperty.rent || "N/A"}
                 </div>
                 <div>
-                  <strong>Next Rent Due:</strong> {selectedProperty.nextRentDue || "N/A"}
+                  <strong className="text-blue-700">Next Rent Due:</strong>{" "}
+                  {(() => {
+                    if (!selectedProperty.nextRentDue) return "N/A";
+                    const match = selectedProperty.nextRentDue.match(/[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{4} \d{2}:\d{2}:\d{2}/);
+                    const dateStr = match ? match[0] : selectedProperty.nextRentDue;
+                    const dateObj = new Date(dateStr);
+                    return !isNaN(dateObj)
+                      ? dateObj.toLocaleDateString("en-GB")
+                      : "N/A";
+                  })()}
                 </div>
               </div>
-              <div className="property-notes-list">
-                {(propertyNotes[selectedProperty.name] || []).length === 0 && (
-                  <p>No notes yet.</p>
-                )}
-                {(propertyNotes[selectedProperty.name] || []).map((note, idx) => (
-                  <div key={idx} className="property-note">
-                    <div>{note.text}</div>
-                    <div className="property-note-date">{note.date}</div>
-                  </div>
-                ))}
-              </div>
-              <textarea
-                className="property-note-input"
-                placeholder="Add a note or event..."
-                value={noteInput}
-                onChange={(e) => setNoteInput(e.target.value)}
-              />
-              <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
-                <button onClick={handleAddNote} className="add-note-btn">
-                  Add Note
-                </button>
-                <button onClick={handleCloseNotesModal} className="close-notes-btn">
+              <div className="flex gap-4 mt-2">
+                <button
+                  onClick={handleCloseNotesModal}
+                  className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
+                >
                   Close
                 </button>
                 <button
-                  className="delete-property-btn"
-                  style={{ background: "#d9534f", color: "#fff" }}
+                  className="bg-red-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 transition flex-1"
                   onClick={() => handleDeleteProperty(selectedProperty.id)}
                 >
                   Delete Property

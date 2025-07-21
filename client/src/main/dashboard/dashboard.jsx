@@ -1,17 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './dashboard.css';
 import Sidebar from '../sidebar/sidebar.jsx';
+import { HiUsers, HiCurrencyPound, HiMail, HiHome, HiExclamationCircle, HiCog } from "react-icons/hi";
 
 // Hardcoded backend URLs
 const API_BASE = "https://mypropertypal-3.onrender.com";
-const MAINTENANCE_URL = `${API_BASE}/api/maintenance/landlord`; // Use landlord endpoint
+const MAINTENANCE_URL = `${API_BASE}/api/maintenance/landlord`;
 const MESSAGES_CONTACTS_URL = `${API_BASE}/api/messages/contacts`;
 const TENANTS_COUNT_URL = `${API_BASE}/api/tenants/count`;
 const DASHBOARD_USER_URL = `${API_BASE}/api/dashboard/user`;
 const DASHBOARD_PROPERTIES_URL = `${API_BASE}/api/dashboard/properties`;
 const DASHBOARD_MESSAGES_URL = `${API_BASE}/api/dashboard/messages`;
 const TENANTS_URL = `${API_BASE}/api/tenants`;
+
+const severityColors = {
+  red: 'bg-red-500 text-white',
+  yellow: 'bg-yellow-200 text-yellow-800',
+  green: 'bg-blue-500 text-white',
+};
+
+function capitalize(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function getUpcomingComplianceEvents(deadlines) {
+  const today = new Date();
+  return (Array.isArray(deadlines) ? deadlines : []).filter(event => {
+    if (!event.due_date) return false;
+    const dueDate = new Date(event.due_date);
+    const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
+    return diffDays <= 30;
+  });
+}
 
 // --- API Calls ---
 async function fetchUser() {
@@ -32,7 +53,6 @@ async function fetchTenantCount() {
   return data.count;
 }
 
-// Fetch contacts for mini contacts list in messages card
 async function fetchContacts() {
   const token = localStorage.getItem('token');
   const res = await fetch(MESSAGES_CONTACTS_URL, {
@@ -43,7 +63,6 @@ async function fetchContacts() {
   return data.contacts || [];
 }
 
-// Fetch unread messages for each contact
 async function fetchUnreadMessages() {
   const token = localStorage.getItem('token');
   const res = await fetch(DASHBOARD_MESSAGES_URL, {
@@ -81,31 +100,6 @@ async function fetchTenants() {
   return data.tenants || [];
 }
 
-// --- Utility ---
-const severityColors = {
-  red: 'dashboard-severity-red',
-  yellow: 'dashboard-severity-yellow',
-  green: 'dashboard-severity-green',
-};
-
-function capitalize(str) {
-  if (!str) return "";
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-// Utility to get compliance events that are due soon (within 30 days) OR overdue
-function getUpcomingComplianceEvents(deadlines) {
-  const today = new Date();
-  return (Array.isArray(deadlines) ? deadlines : []).filter(event => {
-    if (!event.due_date) return false;
-    const dueDate = new Date(event.due_date);
-    const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-    // Include overdue (diffDays < 0) and due soon (diffDays <= 30)
-    return diffDays <= 30;
-  });
-}
-
-// --- Main Dashboard Component ---
 function Dashboard() {
   const [showYearly, setShowYearly] = useState(false);
   const [user, setUser] = useState(null);
@@ -115,7 +109,6 @@ function Dashboard() {
   const [messages, setMessages] = useState([]);
   const [incidents, setIncidents] = useState([]);
   const [properties, setProperties] = useState([]);
-  const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [deadlines, setDeadlines] = useState([]);
 
   const navigate = useNavigate();
@@ -129,7 +122,6 @@ function Dashboard() {
       setMessages(await fetchUnreadMessages());
       setIncidents(await fetchIncidents());
       setProperties(await fetchProperties());
-      // setUpcomingEvents(await fetchEvents()); // Uncomment when backend is ready
 
       // Fetch compliance deadlines
       const token = localStorage.getItem('token');
@@ -142,7 +134,6 @@ function Dashboard() {
     loadData();
   }, []);
 
-  // Get property label by ID
   const getPropertyLabel = (propertyId) => {
     const property = properties.find(
       p => p._id === propertyId || p.propertyId === propertyId
@@ -153,7 +144,6 @@ function Dashboard() {
       : property.address || propertyId;
   };
 
-  // Income: sum rent_amount for all tenants
   const occupiedTenants = tenants.filter(
     t => typeof t.rent_amount !== "undefined" && t.rent_amount !== null
   );
@@ -165,40 +155,41 @@ function Dashboard() {
   }, 0);
   const yearlyIncome = monthlyIncome * 12;
 
-  // Recent incidents (show 2 most recent)
   const sortedIncidents = [...incidents].sort(
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
   const recentIncidents = sortedIncidents.slice(0, 2);
 
-  // Get upcoming compliance events (due in next 30 days)
   const upcomingCompliance = getUpcomingComplianceEvents(deadlines);
 
   return (
-    <div className="dashboard-container">
-      <Sidebar />
-      <main className="dashboard-main">
+    <div className="flex h-screen bg-blue-50 overflow-auto">
+      <div className="w-64 flex-shrink-0">
+        <Sidebar />
+      </div>
+      <main className="flex-1 px-2 sm:px-4 py-4">
         {/* Header */}
-        <header className="dashboard-header">
-          <div className="dashboard-welcome">
-            <h1>
-              Welcome, {user ? capitalize(user.first_name) : "User"}
-            </h1>
+        <header className="flex justify-between items-center mb-4 border-b border-blue-100 pb-2">
+          <div>
+            <h1 className="text-3xl font-extrabold text-blue-700">Welcome, {user ? capitalize(user.first_name) : "User"}</h1>
           </div>
-          <div className="dashboard-user-info">
-            <span>User ID: <strong>{user?.id || "—"}</strong></span>
+          <div className="text-sm text-gray-700">
+            User ID: <strong>{user?.id || "—"}</strong>
           </div>
         </header>
 
         {/* Dashboard Grid */}
-        <div className="dashboard-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:grid-rows-2 gap-4 min-h-0 overflow-auto pb-10">
           {/* Tenants Card */}
-          <div className="dashboard-card">
-            <h3>Tenants</h3>
-            <div className="dashboard-card-main">{tenantCount}</div>
-            <div className="dashboard-card-label">Current Tenants</div>
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col min-h-0">
+            <div className="flex items-center gap-2 mb-2">
+              <HiUsers className="text-blue-500 text-2xl" />
+              <h3 className="text-lg font-bold text-blue-700">Tenants</h3>
+            </div>
+            <div className="text-3xl font-extrabold text-blue-600 mb-2">{tenantCount}</div>
+            <div className="text-gray-600 mb-4">Current Tenants</div>
             <button
-              className="dashboard-btn"
+              className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
               onClick={() => navigate('/tenants')}
             >
               View Tenants
@@ -206,47 +197,53 @@ function Dashboard() {
           </div>
 
           {/* Income Card */}
-          <div className="dashboard-card dashboard-card-income">
-            <div className="dashboard-toggle">
-              <span className={!showYearly ? "active" : ""}>Monthly</span>
-              <label className="dashboard-switch">
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col relative min-h-0">
+            <div className="flex items-center gap-2 mb-2">
+              <HiCurrencyPound className="text-blue-500 text-2xl" />
+              <h3 className="text-lg font-bold text-blue-700">Income</h3>
+            </div>
+            <div className="absolute top-6 right-6 flex items-center gap-2">
+              <span className={`font-semibold ${!showYearly ? "text-blue-700" : "text-gray-400"}`}>Monthly</span>
+              <label className="relative inline-block w-10 h-5">
                 <input
                   type="checkbox"
                   checked={showYearly}
                   onChange={() => setShowYearly(v => !v)}
+                  className="sr-only"
                 />
-                <span className="dashboard-slider"></span>
+                <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition"></span>
+                <span className={`absolute left-1 top-1 w-3.5 h-3.5 bg-white rounded-full shadow transition-transform ${showYearly ? "transform translate-x-5" : ""}`}></span>
               </label>
-              <span className={showYearly ? "active" : ""}>Yearly</span>
+              <span className={`font-semibold ${showYearly ? "text-blue-700" : "text-gray-400"}`}>Yearly</span>
             </div>
-            <h3>Income</h3>
-            <div className="dashboard-card-main dashboard-income">
+            <div className="text-3xl font-extrabold text-blue-600 mb-2">
               £{(showYearly ? yearlyIncome : monthlyIncome).toLocaleString()}
             </div>
-            <div className="dashboard-card-label">
+            <div className="text-gray-600 mb-4">
               From occupied properties ({showYearly ? 'Yearly' : 'Monthly'})
             </div>
           </div>
 
-          {/* Messages Card */}
-          <div className="dashboard-card dashboard-card-tall">
-            <h3>Messages</h3>
-            <div className="dashboard-card-main">
+          {/* Messages Card - spans 2 rows */}
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col row-span-2 min-h-0">
+            <div className="flex items-center gap-2 mb-2">
+              <HiMail className="text-blue-500 text-2xl" />
+              <h3 className="text-lg font-bold text-blue-700">Messages</h3>
+            </div>
+            <div className="text-3xl font-extrabold text-blue-600 mb-2">
               {contacts.reduce((sum, c) => sum + (Number(c.unread_count) || 0), 0)}
             </div>
-            <div className="dashboard-card-label">New Messages</div>
-            <div className="dashboard-messages-list">
+            <div className="text-gray-600 mb-4">New Messages</div>
+            <div className="flex flex-col gap-2 mb-4">
               {contacts.length === 0 ? (
-                <div className="dashboard-message-empty">No new messages.</div>
+                <div className="text-gray-400">No new messages.</div>
               ) : (
                 contacts.slice(0, 3).map((c, idx) => (
-                  <div key={idx} className="dashboard-message-item">
-                    <strong>{c.display_name}</strong>
-                    <span className="dashboard-message-property">
-                      {c.property_address ? `(${c.property_address})` : ""}
-                    </span>
+                  <div key={idx} className="bg-blue-50 rounded-lg px-3 py-2 flex flex-col relative">
+                    <strong className="text-blue-700">{c.display_name}</strong>
+                    <span className="text-xs text-blue-500">{c.property_address ? `(${c.property_address})` : ""}</span>
                     {Number(c.unread_count) > 0 && (
-                      <span className="dashboard-message-unread">
+                      <span className="absolute top-2 right-3 bg-blue-600 text-white rounded px-2 py-0.5 text-xs font-bold">
                         {Number(c.unread_count)} new
                       </span>
                     )}
@@ -254,43 +251,45 @@ function Dashboard() {
                 ))
               )}
             </div>
-            <button className="dashboard-btn" onClick={() => navigate('/messages')}>
+            <button className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition" onClick={() => navigate('/messages')}>
               View All Messages
             </button>
           </div>
 
           {/* Properties Card */}
-          <div className="dashboard-card">
-            <h3>Properties</h3>
-            <div className="dashboard-card-main">{properties.length}</div>
-            <div className="dashboard-card-label">Total Properties</div>
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col min-h-0">
+            <div className="flex items-center gap-2 mb-2">
+              <HiHome className="text-blue-500 text-2xl" />
+              <h3 className="text-lg font-bold text-blue-700">Properties</h3>
+            </div>
+            <div className="text-3xl font-extrabold text-blue-600 mb-2">{properties.length}</div>
+            <div className="text-gray-600 mb-4">Total Properties</div>
             <button
-              className="dashboard-btn"
+              className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
               onClick={() => navigate('/properties')}
             >
               View All Properties
             </button>
           </div>
 
-          {/* Urgent Compliance Deadlines Card (was "Upcoming Compliance Deadlines") */}
-          <div className="dashboard-card">
-            <h3>Urgent Compliance Deadlines</h3>
+          {/* Urgent Compliance Deadlines Card */}
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col min-h-0">
+            <div className="flex items-center gap-2 mb-2">
+              <HiExclamationCircle className="text-blue-500 text-2xl" />
+              <h3 className="text-lg font-bold text-blue-700">Urgent Compliance Deadlines</h3>
+            </div>
             <div>
               {upcomingCompliance.length === 0 ? (
-                <div className="dashboard-message-empty">
-                  You're all caught up!
-                </div>
+                <div className="text-gray-400">You're all caught up!</div>
               ) : (
                 upcomingCompliance.slice(0, 3).map(event => (
-                  <div key={event.id || event.name} className="dashboard-event">
-                    <div className="dashboard-event-title">{event.name}</div>
-                    <div className="dashboard-event-date">
+                  <div key={event.id || event.name} className="bg-blue-50 rounded-lg px-3 py-2 mb-2">
+                    <div className="font-semibold text-blue-700">{event.name}</div>
+                    <div className="text-xs text-gray-500">
                       Due: {new Date(event.due_date).toLocaleDateString("en-GB")}
                     </div>
-                    <div className="dashboard-event-desc">
-                      {event.description}
-                    </div>
-                    <div className="dashboard-event-property">
+                    <div className="text-sm text-gray-700">{event.description}</div>
+                    <div className="text-xs text-blue-500">
                       Property: {event.property_name}
                       {event.property_address ? `, ${event.property_address}` : ""}
                       {event.property_postcode ? `, ${event.property_postcode}` : ""}
@@ -299,41 +298,44 @@ function Dashboard() {
                 ))
               )}
             </div>
-            <button className="dashboard-btn" onClick={() => navigate('/compliance')}>
+            <button className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition" onClick={() => navigate('/compliance')}>
               View All Compliance
             </button>
           </div>
 
           {/* Maintenance Requests (Wide Card) */}
-          <div className="dashboard-card dashboard-card-wide">
-            <h3>Maintenance Requests</h3>
-            <div className="dashboard-activity-table">
+          <div className="bg-white rounded-2xl shadow p-4 col-span-1 md:col-span-3 overflow-x-auto min-h-0">
+            <div className="flex items-center gap-2 mb-2">
+              <HiCog className="text-blue-500 text-2xl" />
+              <h3 className="text-lg font-bold text-blue-700">Maintenance Requests</h3>
+            </div>
+            <div>
               {recentIncidents.length === 0 ? (
-                <div className="dashboard-activity-empty">
+                <div className="text-gray-400 py-8 text-center">
                   No recent incidents to display.
                 </div>
               ) : (
-                <table className="maintenance-table">
+                <table className="min-w-full bg-blue-50 rounded-lg overflow-hidden">
                   <thead>
                     <tr>
-                      <th>Property</th>
-                      <th>Description</th>
-                      <th>Severity</th>
-                      <th>Status</th>
+                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Property</th>
+                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Description</th>
+                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Severity</th>
+                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {recentIncidents.map(incident => (
-                      <tr key={incident.id || incident.incidentId}>
-                        <td>{incident.property_address || getPropertyLabel(incident.propertyId)}</td>
-                        <td>{incident.description}</td>
-                        <td>
-                          <span className={`dashboard-severity ${severityColors[incident.severity] || ''}`}>
+                      <tr key={incident.id || incident.incidentId} className="border-b last:border-b-0 border-blue-100">
+                        <td className="py-2 px-2">{incident.property_address || getPropertyLabel(incident.propertyId)}</td>
+                        <td className="py-2 px-2">{incident.description}</td>
+                        <td className="py-2 px-2">
+                          <span className={`px-2 py-1 rounded font-bold text-xs ${severityColors[incident.severity] || 'bg-gray-200 text-gray-700'}`}>
                             {incident.severity ? capitalize(incident.severity) : '-'}
                           </span>
                         </td>
-                        <td>
-                          <span className="dashboard-status">
+                        <td className="py-2 px-2">
+                          <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 font-semibold text-xs">
                             {incident.progress ? capitalize(incident.progress) : '-'}
                           </span>
                         </td>
@@ -343,7 +345,10 @@ function Dashboard() {
                 </table>
               )}
             </div>
-            <button className="dashboard-btn" onClick={() => navigate('/incidents')}>
+            <button
+              className="mt-6 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition w-full"
+              onClick={() => navigate('/incidents')}
+            >
               View All Maintenance Requests
             </button>
           </div>

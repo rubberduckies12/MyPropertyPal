@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Sidebar from '../sidebar/sidebar.jsx';
-import './chatbot.css';
 import { fetchChatbotReply } from './chatbot.js';
 import ReactMarkdown from 'react-markdown';
+import { HiUser, HiSparkles } from "react-icons/hi";
+import { HiPaperAirplane } from "react-icons/hi2";
 
 function Chatbot() {
   const [message, setMessage] = useState('');
@@ -10,7 +11,6 @@ function Chatbot() {
   const [loading, setLoading] = useState(false);
   const chatEndRef = useRef(null);
 
-  // Scroll to bottom when chatHistory or loading changes
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -38,48 +38,87 @@ function Chatbot() {
   };
 
   return (
-    <div className="dashboard-container">
-      <Sidebar />
-      <main className="dashboard-main">
-        <div className={`chatbot-container${chatHistory.length > 0 ? ' has-messages' : ''}`}>
-          <div className="chatbot-header">
-            What's on your mind?
-          </div>
-          <div className="chatbot-history">
+    <div className="flex h-screen bg-blue-50 overflow-hidden">
+      <div className="w-64 flex-shrink-0 h-screen">
+        <Sidebar />
+      </div>
+      <main className="flex-1 flex flex-col h-screen">
+        <div className="w-full px-0 pt-8 pb-4 border-b border-blue-100 bg-blue-50">
+          <h1 className="text-2xl font-bold text-blue-700 text-center">PropertyPal Chatbot</h1>
+          <div className="text-base text-blue-400 text-center mt-2">Ask anything about property management</div>
+        </div>
+        <div className="flex-1 flex flex-col justify-between overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-8 py-6 pb-32">
             {chatHistory.map((msg, idx) => (
-              <div key={idx} className={`chatbot-message ${msg.role}`}>
-                {msg.role === 'assistant' ? (
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
-                ) : (
-                  <p>{msg.content}</p>
+              <div
+                key={idx}
+                className={`flex mb-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                {msg.role === 'assistant' && (
+                  <div className="flex items-end mr-2">
+                    <div className="w-9 h-9 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 shadow text-2xl">
+                      <HiSparkles />
+                    </div>
+                  </div>
+                )}
+                <div
+                  className={`max-w-lg px-4 py-2 rounded-2xl shadow
+                    ${msg.role === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-blue-100 text-black'
+                    }`}
+                >
+                  {msg.role === 'assistant'
+                    ? <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    : <p>{msg.content}</p>
+                  }
+                </div>
+                {msg.role === 'user' && (
+                  <div className="flex items-end ml-2">
+                    <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white shadow text-2xl">
+                      <HiUser />
+                    </div>
+                  </div>
                 )}
               </div>
             ))}
             {loading && (
-              <div className="chatbot-message assistant chatbot-typing">
-                <p>Typing<span className="typing-dots">...</span></p>
+              <div className="flex justify-start mb-2">
+                <div className="max-w-lg px-4 py-2 rounded-2xl shadow bg-blue-100 text-black italic opacity-90 flex items-center gap-2">
+                  <span>Typing</span>
+                  <span className="flex gap-1">
+                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                  </span>
+                </div>
               </div>
             )}
+            {/* This should always be last */}
             <div ref={chatEndRef} />
           </div>
-          <div className="chatbot-input-container">
+          <form
+            className="absolute bottom-0 left-64 right-0 flex items-center gap-2 px-8 py-6 border-t border-blue-100 bg-blue-50"
+            onSubmit={e => { e.preventDefault(); sendMessage(); }}
+            style={{ zIndex: 10 }}
+          >
             <input
               type="text"
               value={message}
               onChange={e => setMessage(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
-              placeholder="Ask anything about property management..."
-              className="chatbot-input"
+              placeholder="Type your message..."
+              className="flex-1 px-4 py-3 rounded-full border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-lg"
               disabled={loading}
             />
             <button
-              onClick={sendMessage}
-              className="chatbot-send-btn"
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-12 h-12 flex items-center justify-center text-2xl font-bold shadow transition"
               disabled={loading || !message.trim()}
             >
-              &#9658;
+              <HiPaperAirplane className="w-7 h-7" />
             </button>
-          </div>
+          </form>
         </div>
       </main>
     </div>

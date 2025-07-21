@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
-import "./finances.css";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from "recharts";
 
 const PERIODS = [
   { label: "Monthly", value: "month" },
@@ -69,6 +69,7 @@ export default function Finances() {
   const [tenants, setTenants] = useState([]);
   const [user, setUser] = useState(null);
   const [expectedRent, setExpectedRent] = useState([]);
+  const [chartType, setChartType] = useState("bar"); // "bar" or "line"
 
   useEffect(() => {
     async function fetchFinances() {
@@ -305,34 +306,136 @@ export default function Finances() {
     setExpenses(expenses => expenses.filter(e => e.id !== expenseId));
   };
 
-  // Split expectedRent into paid and expected/overdue
-  const paidRent = rentPayments;
-  const expectedOrOverdueRent = expectedRent.filter(r => r.status !== "Paid");
+  function getMonthlySummary(rentPayments, expenses) {
+    // Get current year
+    const year = new Date().getFullYear();
+    // Build all months for current year
+    const monthsArr = Array.from({ length: 12 }, (_, i) => {
+      const date = new Date(year, i, 1);
+      return {
+        key: `${year}-${i}`,
+        month: date.toLocaleString("default", { month: "short", year: "numeric" }),
+        income: 0,
+        expenses: 0,
+      };
+    });
+
+    // Fill in income
+    rentPayments.forEach(rp => {
+      const d = new Date(rp.paid_on || rp.date);
+      if (d.getFullYear() === year) {
+        const idx = d.getMonth();
+        monthsArr[idx].income += Number(rp.amount || 0);
+      }
+    });
+
+    // Fill in expenses
+    expenses.forEach(e => {
+      const d = new Date(e.incurred_on || e.date);
+      if (d.getFullYear() === year) {
+        const idx = d.getMonth();
+        monthsArr[idx].expenses += Number(e.amount || 0);
+      }
+    });
+
+    return monthsArr;
+  }
+
+  const monthlySummaryData = getMonthlySummary(rentPayments, expenses);
+
+  // Track which dropdown is open for actions
+  const [openRentDropdown, setOpenRentDropdown] = useState(null);
+  const [openExpenseDropdown, setOpenExpenseDropdown] = useState(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    function handleClick() {
+      setOpenRentDropdown(null);
+      setOpenExpenseDropdown(null);
+    }
+    window.addEventListener("click", handleClick);
+    return () => window.removeEventListener("click", handleClick);
+  }, []);
+
+  const summaryData = [
+    { name: "Rent Received", value: totalIncome },
+    { name: "Expenses", value: totalExpenses },
+  ];
+
+  function HouseBarShape(props) {
+    const { x, y, width, height, fill } = props;
+    const roofHeight = Math.min(14, height * 0.22);
+    const roofOverhang = Math.max(3, width * 0.12);
+
+    // Roof base is at y + roofHeight, roof top is at y
+    return (
+      <g>
+        {/* Roof */}
+        <polygon
+          points={`
+            ${x - roofOverhang},${y + roofHeight}
+            ${x + width / 2},${y}
+            ${x + width + roofOverhang},${y + roofHeight}
+          `}
+          fill={fill}
+        />
+        {/* Body */}
+        <rect
+          x={x}
+          y={y + roofHeight}
+          width={width}
+          height={height - roofHeight}
+          fill={fill}
+        />
+        {/* Door (optional, subtle) */}
+        {height > 30 && (
+          <rect
+            x={x + width / 2 - width * 0.10}
+            y={y + roofHeight + (height - roofHeight) - Math.max(10, (height - roofHeight) * 0.22)}
+            width={width * 0.20}
+            height={Math.max(10, (height - roofHeight) * 0.22)}
+            fill="#fff"
+            opacity={0.18}
+          />
+        )}
+      </g>
+    );
+  }
 
   return (
-    <div className="properties-page">
-      <Sidebar />
-      <main className="properties-main">
-        <div className="properties-header">
-          <h1 className="properties-title">Financial Manager</h1>
-          <div>
-            <button className="add-property-btn" onClick={() => setShowExpenseModal(true)}>
+    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <div className="w-64 flex-shrink-0 h-screen">
+        <Sidebar />
+      </div>
+      {/* Make main content scrollable, not each table */}
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-auto">
+        <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
+          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Financial Manager</h1>
+          <div className="flex gap-4">
+            <button
+              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+              onClick={() => setShowExpenseModal(true)}
+            >
               + Add Expense
             </button>
             <button
-              className="add-property-btn"
-              style={{ marginLeft: 12 }}
+              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
               onClick={() => setShowRentModal(true)}
             >
               + Mark Rent Received
             </button>
           </div>
         </div>
-        <div className="finances-period-toggle">
+
+        <div className="flex gap-4 mb-8">
           {PERIODS.map(opt => (
             <button
               key={opt.value}
-              className={`finances-period-btn${period === opt.value ? " active" : ""}`}
+              className={`font-semibold rounded-lg px-4 py-2 border border-blue-100 transition ${
+                period === opt.value
+                  ? "bg-blue-600 text-white"
+                  : "bg-white text-blue-700 hover:bg-blue-50"
+              }`}
               onClick={() => setPeriod(opt.value)}
               type="button"
             >
@@ -340,491 +443,348 @@ export default function Finances() {
             </button>
           ))}
         </div>
+
         {loading ? (
           <div>Loading...</div>
         ) : error ? (
-          <div style={{ color: "red" }}>{error}</div>
+          <div className="text-red-500">{error}</div>
         ) : (
           <>
-            <div className="finances-summary-cards">
-              <div className="finances-summary-card">
-                <div className="finances-summary-label">Total Rent Received</div>
-                <div className="finances-summary-value">£{totalIncome.toLocaleString()}</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-2xl p-6 border border-blue-100 flex flex-col items-center">
+                <div className="font-semibold text-blue-700 mb-2">Total Rent Received</div>
+                <div className="text-2xl font-bold text-black">£{totalIncome.toLocaleString()}</div>
               </div>
-              <div className="finances-summary-card">
-                <div className="finances-summary-label">Total Expenses</div>
-                <div className="finances-summary-value">£{totalExpenses.toLocaleString()}</div>
+              <div className="bg-white rounded-2xl p-6 border border-blue-100 flex flex-col items-center">
+                <div className="font-semibold text-blue-700 mb-2">Total Expenses</div>
+                <div className="text-2xl font-bold text-black">£{totalExpenses.toLocaleString()}</div>
               </div>
-              <div className="finances-summary-card">
-                <div className="finances-summary-label">Taxable Profit</div>
-                <div className="finances-summary-value">£{taxableProfit.toLocaleString()}</div>
+              <div className="bg-white rounded-2xl p-6 border border-blue-100 flex flex-col items-center">
+                <div className="font-semibold text-blue-700 mb-2">Taxable Profit</div>
+                <div className="text-2xl font-bold text-black">£{taxableProfit.toLocaleString()}</div>
               </div>
             </div>
 
             {/* Expected/Overdue Rent Table */}
-            <section className="finances-section">
-              <h2>Expected & Overdue Rent Payments</h2>
-              <table className="finances-table">
-                <thead>
-                  <tr>
-                    <th>Property</th>
-                    <th>Tenant</th>
-                    <th>Amount</th>
-                    <th>Date Due</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {expectedOrOverdueRent.length === 0 ? (
+            <section className="mb-10">
+              <div className="bg-white rounded-2xl p-6 border border-blue-100">
+                <h2 className="text-xl font-bold text-blue-700 mb-4">Expected & Overdue Rent Payments</h2>
+                <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
+                  <thead>
                     <tr>
-                      <td colSpan={6} style={{ textAlign: "center", color: "#888" }}>
-                        No payments added yet
-                      </td>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Property</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Tenant</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Amount</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date Due</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Status</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Action</th>
                     </tr>
-                  ) : (
-                    expectedOrOverdueRent.map(payment => (
-                      <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
-                        <td>{payment.property}</td>
-                        <td>{payment.tenant}</td>
-                        <td>£{payment.amount}</td>
-                        <td>{payment.due_date ? formatDate(payment.due_date) : ""}</td>
-                        <td className={
-                          payment.status === "Overdue"
-                            ? "finances-status-overdue"
-                            : "finances-status-pending"
-                        }>
-                          {payment.status}
-                        </td>
-                        <td>
-                          <button
-                            className="finances-add-btn"
-                            onClick={() => {
-                              setRentForm({
-                                property_id: payment.property_id,
-                                tenant_id: payment.tenant_id,
-                                amount: payment.amount,
-                                paid_on: payment.due_date,
-                                method: "",
-                                reference: "",
-                              });
-                              setShowRentModal(true);
-                            }}
-                          >
-                            Mark as Received
-                          </button>
+                  </thead>
+                  <tbody>
+                    {expectedRent.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="text-center text-gray-400 py-8">
+                          No payments added yet
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      expectedRent.map(payment => (
+                        <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
+                          <td className="py-4 px-3">{payment.property}</td>
+                          <td className="py-4 px-3">{payment.tenant}</td>
+                          <td className="py-4 px-3">£{payment.amount}</td>
+                          <td className="py-4 px-3">{payment.due_date ? formatDate(payment.due_date) : ""}</td>
+                          <td className="py-4 px-3">
+                            <span className="px-4 py-1 rounded-xl font-semibold text-sm bg-blue-100 text-blue-700">
+                              {payment.status}
+                            </span>
+                          </td>
+                          <td className="py-4 px-3">
+                            <button
+                              className="bg-blue-600 text-white font-semibold rounded-lg px-3 py-1 hover:bg-blue-700 transition"
+                              onClick={() => {
+                                setRentForm({
+                                  property_id: payment.property_id,
+                                  tenant_id: payment.tenant_id,
+                                  amount: payment.amount,
+                                  paid_on: payment.due_date,
+                                  method: "",
+                                  reference: "",
+                                });
+                                setShowRentModal(true);
+                              }}
+                            >
+                              Mark as Received
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </section>
 
             {/* Paid Rent Table */}
-            <section className="finances-section">
-              <h2>Rent Paid</h2>
-              <table className="finances-table">
-                <thead>
-                  <tr>
-                    <th>Property</th>
-                    <th>Tenant</th>
-                    <th>Amount</th>
-                    <th>Date Due</th>
-                    <th>Date Paid</th>
-                    <th>Method</th>
-                    <th>Reference</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {paidRent.length === 0 ? (
+            <section className="mb-10">
+              <div className="bg-white rounded-2xl p-6 border border-blue-100">
+                <h2 className="text-xl font-bold text-blue-700 mb-4">Rent Paid</h2>
+                <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
+                  <thead>
                     <tr>
-                      <td colSpan={9} style={{ textAlign: "center", color: "#888" }}>
-                        No payments added yet
-                      </td>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Property</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Tenant</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Amount</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date Due</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date Paid</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Method</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Reference</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Status</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Action</th>
                     </tr>
-                  ) : (
-                    paidRent.map(payment => (
-                      <tr key={payment.id}>
-                        <td>{payment.property}</td>
-                        <td>{payment.tenant}</td>
-                        <td>£{payment.amount}</td>
-                        <td>{payment.due_date ? formatDate(payment.due_date) : ""}</td>
-                        <td>{payment.paid_on ? formatDate(payment.paid_on) : ""}</td>
-                        <td>{payment.method || ""}</td>
-                        <td>{payment.reference || ""}</td>
-                        <td>
-                          {payment.payment_status === "Late" ? (
-                            <span style={{ color: "#d9534f" }}>Late</span>
-                          ) : (
-                            <span style={{ color: "#22c55e" }}>On Time</span>
-                          )}
-                        </td>
-                        <td>
-                          <div className="rent-paid-actions-dropdown">
-                            <button className="rent-paid-actions-btn">Actions ▼</button>
-                            <div className="rent-paid-actions-menu">
-                              <button
-                                className="rent-paid-actions-menu-item"
-                                onClick={() => setEditRentModal(payment)}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                className="rent-paid-actions-menu-item delete"
-                                onClick={() => deleteRentPayment(payment.id)}
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </div>
+                  </thead>
+                  <tbody>
+                    {rentPayments.length === 0 ? (
+                      <tr>
+                        <td colSpan={9} className="text-center text-gray-400 py-8">
+                          No payments added yet
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      rentPayments.map(payment => (
+                        <tr key={payment.id}>
+                          <td className="py-4 px-3">{payment.property}</td>
+                          <td className="py-4 px-3">{payment.tenant}</td>
+                          <td className="py-4 px-3">£{payment.amount}</td>
+                          <td className="py-4 px-3">{payment.due_date ? formatDate(payment.due_date) : ""}</td>
+                          <td className="py-4 px-3">{payment.paid_on ? formatDate(payment.paid_on) : ""}</td>
+                          <td className="py-4 px-3">{payment.method || ""}</td>
+                          <td className="py-4 px-3">{payment.reference || ""}</td>
+                          <td className="py-4 px-3">
+                            {payment.payment_status === "Late" ? (
+                              <span className="text-red-600 font-semibold">Late</span>
+                            ) : (
+                              <span className="text-green-600 font-semibold">On Time</span>
+                            )}
+                          </td>
+                          <td className="py-4 px-3">
+                            <div className="relative">
+                              <button
+                                className="bg-white text-blue-700 font-semibold rounded-lg px-3 py-1 border border-blue-200 hover:bg-blue-50 transition"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setOpenRentDropdown(payment.id === openRentDropdown ? null : payment.id);
+                                }}
+                              >
+                                Actions ▼
+                              </button>
+                              {openRentDropdown === payment.id && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden z-10">
+                                  <button
+                                    className="w-full text-left px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition"
+                                    onClick={() => setEditRentModal(payment)}
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition"
+                                    onClick={() => deleteRentPayment(payment.id)}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </section>
 
             {/* Outgoing Expenses Table */}
-            <section className="finances-section">
-              <h2>Outgoing Expenses</h2>
-              <table className="finances-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Category</th>
-                    <th>Description</th>
-                    <th>Amount</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredExpenses.length === 0 ? (
+            <section className="mb-10">
+              <div className="bg-white rounded-2xl p-6 border border-blue-100">
+                <h2 className="text-xl font-bold text-blue-700 mb-4">Outgoing Expenses</h2>
+                <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
+                  <thead>
                     <tr>
-                      <td colSpan={5} style={{ textAlign: "center", color: "#888" }}>
-                        No payments added yet
-                      </td>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Category</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Description</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Amount</th>
+                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Action</th>
                     </tr>
-                  ) : (
-                    filteredExpenses.map(expense => (
-                      <tr key={expense.id}>
-                        <td>{formatDate(expense.date)}</td>
-                        <td>{expense.category}</td>
-                        <td>{expense.description}</td>
-                        <td>£{expense.amount}</td>
-                        <td>
-                          <div className="finances-actions-dropdown">
-                            <button className="finances-actions-btn">Actions ▼</button>
-                            <div className="finances-actions-menu">
-                              <button
-                                className="finances-actions-menu-item"
-                                onClick={() => setEditExpenseModal(expense)}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                className="finances-actions-menu-item"
-                                onClick={() => deleteExpense(expense.id)}
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </div>
+                  </thead>
+                  <tbody>
+                    {filteredExpenses.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="text-center text-gray-400 py-8">
+                          No payments added yet
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    ) : (
+                      filteredExpenses.map(expense => (
+                        <tr key={expense.id}>
+                          <td className="py-4 px-3">{formatDate(expense.date)}</td>
+                          <td className="py-4 px-3">{expense.category}</td>
+                          <td className="py-4 px-3">{expense.description}</td>
+                          <td className="py-4 px-3">£{expense.amount}</td>
+                          <td className="py-4 px-3">
+                            <div className="relative">
+                              <button
+                                className="bg-white text-blue-700 font-semibold rounded-lg px-3 py-1 border border-blue-200 hover:bg-blue-50 transition"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setOpenExpenseDropdown(expense.id === openExpenseDropdown ? null : expense.id);
+                                }}
+                              >
+                                Actions ▼
+                              </button>
+                              {openExpenseDropdown === expense.id && (
+                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden z-10">
+                                  <button
+                                    className="w-full text-left px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition"
+                                    onClick={() => setEditExpenseModal(expense)}
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition"
+                                    onClick={() => deleteExpense(expense.id)}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </section>
 
-            <section className="finances-section">
-              <h2>Summary</h2>
-              <div className="finances-tax-summary">
-                <div><strong>Total Income:</strong> £{totalIncome.toLocaleString()}</div>
-                <div><strong>Total Expenses:</strong> £{totalExpenses.toLocaleString()}</div>
-                <div><strong>Taxable Profit:</strong> £{taxableProfit.toLocaleString()}</div>
+            {/* Interactive Summary Section */}
+            <section className="mb-10">
+              <div className="bg-white rounded-2xl p-8 border border-blue-100 shadow-lg">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-extrabold text-blue-700 tracking-tight">Monthly Income & Expenses</h2>
+                  <div className="flex items-center">
+                    <span className="mr-2 text-blue-700 font-semibold text-sm">Bar</span>
+                    <span
+                      className="relative inline-block w-12 h-6 bg-blue-200 rounded-full transition"
+                      onClick={() => setChartType(chartType === "bar" ? "line" : "bar")}
+                      style={{ cursor: "pointer" }}
+                      tabIndex={0}
+                      role="button"
+                      aria-pressed={chartType === "line"}
+                      onKeyDown={e => {
+                        if (e.key === "Enter" || e.key === " ") setChartType(chartType === "bar" ? "line" : "bar");
+                      }}
+                    >
+                      <span
+                        className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
+                          chartType === "line" ? "translate-x-6" : ""
+                        }`}
+                      ></span>
+                    </span>
+                    <span className="ml-2 text-blue-700 font-semibold text-sm">Line</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-blue-700 mb-1">Total Income</div>
+                    <div className="text-3xl font-bold text-black">£{totalIncome.toLocaleString()}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-blue-700 mb-1">Total Expenses</div>
+                    <div className="text-3xl font-bold text-black">£{totalExpenses.toLocaleString()}</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-blue-700 mb-1">Taxable Profit</div>
+                    <div className="text-3xl font-bold text-black">£{taxableProfit.toLocaleString()}</div>
+                  </div>
+                </div>
+                <hr className="my-6 border-blue-100" />
+                <div className="w-full h-72 bg-white rounded-xl shadow-md p-4 flex items-center justify-center">
+                  <ResponsiveContainer>
+                    {chartType === "bar" ? (
+                      <BarChart data={monthlySummaryData} barCategoryGap="30%">
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="month" stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
+                        <YAxis stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
+                        <Tooltip
+                          formatter={value => `£${value.toLocaleString()}`}
+                          contentStyle={{ backgroundColor: "#f9fafb", borderRadius: "8px", border: "1px solid #2563eb" }}
+                          labelStyle={{ color: "#2563eb", fontWeight: "bold" }}
+                        />
+                        <Legend
+                          wrapperStyle={{ paddingTop: 10 }}
+                          iconType="circle"
+                          formatter={(value, entry) => (
+                            <span style={{ color: entry.color, fontWeight: 700 }}>{value}</span>
+                          )}
+                        />
+                        <Bar
+                          dataKey="income"
+                          name="Rental Income"
+                          fill="#22c55e"
+                          shape={<HouseBarShape />}
+                        />
+                        <Bar
+                          dataKey="expenses"
+                          name="Expenses"
+                          fill="#ef4444"
+                          shape={<HouseBarShape />}
+                        />
+                      </BarChart>
+                    ) : (
+                      <LineChart data={monthlySummaryData}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="month" stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
+                        <YAxis stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
+                        <Tooltip
+                          formatter={value => `£${value.toLocaleString()}`}
+                          contentStyle={{ backgroundColor: "#f9fafb", borderRadius: "8px", border: "1px solid #2563eb" }}
+                          labelStyle={{ color: "#2563eb", fontWeight: "bold" }}
+                        />
+                        <Legend
+                          wrapperStyle={{ paddingTop: 10 }}
+                          iconType="circle"
+                          formatter={(value, entry) => (
+                            <span style={{ color: entry.color, fontWeight: 700 }}>{value}</span>
+                          )}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="income"
+                          name="Rental Income"
+                          stroke="#22c55e"
+                          strokeWidth={3}
+                          dot={{ r: 5 }}
+                          activeDot={{ r: 7 }}
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="expenses"
+                          name="Expenses"
+                          stroke="#ef4444"
+                          strokeWidth={3}
+                          dot={{ r: 5 }}
+                          activeDot={{ r: 7 }}
+                        />
+                      </LineChart>
+                    )}
+                  </ResponsiveContainer>
+                </div>
               </div>
             </section>
           </>
-        )}
-
-        {/* Add Expense Modal */}
-        {showExpenseModal && (
-          <div className="finances-modal-backdrop" onClick={() => setShowExpenseModal(false)}>
-            <div className="finances-modal" onClick={e => e.stopPropagation()}>
-              <button className="modal-close" onClick={() => setShowExpenseModal(false)}>&times;</button>
-              <h3>Add Expense</h3>
-              <form onSubmit={handleAddExpense}>
-                <label>
-                  Property
-                  <select
-                    required
-                    value={expenseForm.property_id}
-                    onChange={e => setExpenseForm(f => ({ ...f, property_id: e.target.value }))}
-                  >
-                    <option value="">Select property</option>
-                    {properties.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Amount (£)
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={expenseForm.amount}
-                    onChange={e => setExpenseForm(f => ({ ...f, amount: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  Category
-                  <input
-                    required
-                    value={expenseForm.category}
-                    onChange={e => setExpenseForm(f => ({ ...f, category: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  Description
-                  <input
-                    required
-                    value={expenseForm.description}
-                    onChange={e => setExpenseForm(f => ({ ...f, description: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  Date
-                  <input
-                    type="date"
-                    required
-                    value={expenseForm.incurred_on}
-                    onChange={e => setExpenseForm(f => ({ ...f, incurred_on: e.target.value }))}
-                  />
-                </label>
-                <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
-                  Add Expense
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Add Rent Payment Modal */}
-        {showRentModal && (
-          <div className="finances-modal-backdrop" onClick={() => setShowRentModal(false)}>
-            <div className="finances-modal" onClick={e => e.stopPropagation()}>
-              <button className="modal-close" onClick={() => setShowRentModal(false)}>&times;</button>
-              <h3>Mark Rent as Received</h3>
-              <form onSubmit={handleAddRent}>
-                <label>
-                  Tenant
-                  <select
-                    required
-                    value={rentForm.tenant_id}
-                    onChange={e => {
-                      const tenantId = e.target.value;
-                      const selectedTenant = tenants.find(t => String(t.id) === tenantId);
-                      setRentForm(f => ({
-                        ...f,
-                        tenant_id: tenantId,
-                        property_id: selectedTenant ? selectedTenant.property_id : "",
-                        amount: selectedTenant && selectedTenant.rent_amount ? selectedTenant.rent_amount : ""
-                      }));
-                    }}
-                  >
-                    <option value="">Select tenant</option>
-                    {tenants.map(t => (
-                      <option key={t.id} value={t.id}>
-                        {t.first_name} {t.last_name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Amount (£)
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={rentForm.amount}
-                    onChange={e => setRentForm(f => ({ ...f, amount: e.target.value }))}
-                    readOnly={!!rentForm.tenant_id}
-                  />
-                </label>
-                <label>
-                  Date
-                  <input
-                    type="date"
-                    required
-                    value={rentForm.paid_on}
-                    onChange={e => setRentForm(f => ({ ...f, paid_on: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  Method
-                  <input
-                    value={rentForm.method}
-                    onChange={e => setRentForm(f => ({ ...f, method: e.target.value }))}
-                    placeholder="e.g. Bank Transfer"
-                  />
-                </label>
-                <label>
-                  Reference
-                  <input
-                    value={rentForm.reference}
-                    onChange={e => setRentForm(f => ({ ...f, reference: e.target.value }))}
-                    placeholder="Reference (optional)"
-                  />
-                </label>
-                <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
-                  Add Rent Payment
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Edit Expense Modal */}
-        {editExpenseModal && (
-          <div className="finances-modal-backdrop" onClick={() => setEditExpenseModal(null)}>
-            <div className="finances-modal" onClick={e => e.stopPropagation()}>
-              <button className="modal-close" onClick={() => setEditExpenseModal(null)}>&times;</button>
-              <h3>Edit Expense</h3>
-              <form onSubmit={handleEditExpense}>
-                <label>
-                  Property
-                  <select
-                    required
-                    value={editExpenseModal.property_id}
-                    onChange={e => setEditExpenseModal(f => ({ ...f, property_id: e.target.value }))}
-                  >
-                    <option value="">Select property</option>
-                    {properties.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Amount (£)
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={editExpenseModal.amount}
-                    onChange={e => setEditExpenseModal(f => ({ ...f, amount: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  Category
-                  <input
-                    required
-                    value={editExpenseModal.category}
-                    onChange={e => setEditExpenseModal(f => ({ ...f, category: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  Description
-                  <input
-                    required
-                    value={editExpenseModal.description}
-                    onChange={e => setEditExpenseModal(f => ({ ...f, description: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  Date
-                  <input
-                    type="date"
-                    required
-                    value={editExpenseModal.incurred_on}
-                    onChange={e => setEditExpenseModal(f => ({ ...f, incurred_on: e.target.value }))}
-                  />
-                </label>
-                <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
-                  Save Changes
-                </button>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Edit Rent Payment Modal */}
-        {editRentModal && (
-          <div className="finances-modal-backdrop" onClick={() => setEditRentModal(null)}>
-            <div className="finances-modal" onClick={e => e.stopPropagation()}>
-              <button className="modal-close" onClick={() => setEditRentModal(null)}>&times;</button>
-              <h3>Edit Rent Payment</h3>
-              <form onSubmit={handleEditRent}>
-                <label>
-                  Tenant
-                  <select
-                    required
-                    value={editRentModal.tenant_id}
-                    onChange={e => {
-                      const tenantId = e.target.value;
-                      const selectedTenant = tenants.find(t => String(t.id) === tenantId);
-                      setEditRentModal(f => ({
-                        ...f,
-                        tenant_id: tenantId,
-                        property_id: selectedTenant ? selectedTenant.property_id : "",
-                        amount: selectedTenant && selectedTenant.rent_amount ? selectedTenant.rent_amount : ""
-                      }));
-                    }}
-                  >
-                    <option value="">Select tenant</option>
-                    {tenants.map(t => (
-                      <option key={t.id} value={t.id}>
-                        {t.first_name} {t.last_name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Amount (£)
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={editRentModal.amount}
-                    onChange={e => setEditRentModal(f => ({ ...f, amount: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  Date
-                  <input
-                    type="date"
-                    required
-                    value={editRentModal.paid_on}
-                    onChange={e => setEditRentModal(f => ({ ...f, paid_on: e.target.value }))}
-                  />
-                </label>
-                <label>
-                  Method
-                  <input
-                    value={editRentModal.method}
-                    onChange={e => setEditRentModal(f => ({ ...f, method: e.target.value }))}
-                    placeholder="e.g. Bank Transfer"
-                  />
-                </label>
-                <label>
-                  Reference
-                  <input
-                    value={editRentModal.reference}
-                    onChange={e => setEditRentModal(f => ({ ...f, reference: e.target.value }))}
-                    placeholder="Reference (optional)"
-                  />
-                </label>
-                <button type="submit" className="finances-add-btn" style={{ marginTop: 12 }}>
-                  Save Changes
-                </button>
-              </form>
-            </div>
-          </div>
         )}
       </main>
     </div>
