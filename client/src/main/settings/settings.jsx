@@ -18,9 +18,7 @@ export default function Settings() {
   // Fetch user data from backend on mount
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/account/me`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include", // <-- Add this line!
     })
       .then((res) => res.json())
       .then((data) => {
@@ -32,25 +30,13 @@ export default function Settings() {
       });
   }, []);
 
-  if (!email) {
-    return (
-      <div className="settings-page" style={{ display: "flex" }}>
-        <Sidebar />
-        <main className="settings-main">
-          <h1 className="finances-title">Account Settings</h1>
-          <div style={{ textAlign: "center", marginTop: "48px" }}>Loading...</div>
-        </main>
-      </div>
-    );
-  }
-
   // Update email
   const handleSaveEmail = async () => {
     const res = await fetch(`${BACKEND_URL}/api/account/settings`, {
       method: "PUT",
+      credentials: "include", // <-- Add this line!
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ email: newEmail })
     });
@@ -76,9 +62,9 @@ export default function Settings() {
     }
     const res = await fetch(`${BACKEND_URL}/api/account/settings`, {
       method: "PUT",
+      credentials: "include", // <-- Add this line!
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ password: passwords.password })
     });
@@ -98,6 +84,7 @@ export default function Settings() {
     try {
       const res = await fetch(`${BACKEND_URL}/api/stripe/create-checkout-session`, {
         method: "POST",
+        credentials: "include", // <-- Add this line!
         headers: {
           "Content-Type": "application/json",
         },
@@ -117,6 +104,18 @@ export default function Settings() {
       alert("Failed to start checkout");
     }
   };
+
+  if (!email) {
+    return (
+      <div className="settings-page" style={{ display: "flex" }}>
+        <Sidebar />
+        <main className="settings-main">
+          <h1 className="finances-title">Account Settings</h1>
+          <div style={{ textAlign: "center", marginTop: "48px" }}>Loading...</div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="settings-page" style={{ display: "flex" }}>
