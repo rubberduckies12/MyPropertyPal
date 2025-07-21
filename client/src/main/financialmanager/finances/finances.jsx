@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import ExpenseModal from "./ExpenseModal.jsx";
 import RentModal from "./RentModal.jsx";
@@ -70,6 +70,8 @@ export default function Finances() {
   });
   const [showDeleteExpenseConfirm, setShowDeleteExpenseConfirm] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState(null);
+
+  const originalDueDateRef = useRef("");
 
   // Fetch data from backend
   useEffect(() => {
@@ -180,6 +182,7 @@ export default function Finances() {
 
   function openEditRentModal(payment) {
     setEditRentModal(payment);
+    originalDueDateRef.current = payment.due_date || ""; // Save original due date
     setRentForm({
       property_id: payment.property_id || properties.find(p => p.name === payment.property)?.id || "",
       tenant_id: payment.tenant_id || tenants.find(t => t.name === payment.tenant)?.id || "",
@@ -187,6 +190,7 @@ export default function Finances() {
       paid_on: payment.paid_on ? payment.paid_on.slice(0, 10) : "",
       method: payment.method || "",
       reference: payment.reference || "",
+      // Don't include due_date in the form unless you want user to edit it
     });
     setShowRentModal(true);
   }
@@ -194,14 +198,14 @@ export default function Finances() {
   async function handleAddOrEditRent(form) {
     const token = localStorage.getItem("token");
     try {
-      console.log("Submitting rent payment:", form); // Debug
       const payload = {
         property_id: Number(form.property_id),
         tenant_id: Number(form.tenant_id),
         amount: Number(form.amount),
         paid_on: form.paid_on,
         method: form.method || "",
-        reference: form.reference || ""
+        reference: form.reference || "",
+        due_date: originalDueDateRef.current // Always send original due date
       };
       let res;
       if (editRentModal) {
