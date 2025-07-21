@@ -15,9 +15,8 @@ export default function Tmessages() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     fetch(`${BACKEND_URL}/api/messages/contacts`, {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => setContacts(data.contacts || []));
@@ -26,9 +25,8 @@ export default function Tmessages() {
   useEffect(() => {
     if (!selectedContact) return;
     setLoading(true);
-    const token = localStorage.getItem("token");
     fetch(`${BACKEND_URL}/api/messages/${selectedContact.property_id}`, {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => {
@@ -40,9 +38,9 @@ export default function Tmessages() {
         if (unreadIds.length) {
           fetch(`${BACKEND_URL}/api/messages/read`, {
             method: "POST",
+            credentials: "include",
             headers: {
-              "Content-Type": "application/json",
-              Authorization: token ? `Bearer ${token}` : "",
+              "Content-Type": "application/json"
             },
             body: JSON.stringify({ message_ids: unreadIds }),
           });
@@ -64,12 +62,11 @@ export default function Tmessages() {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newMsg.trim() || !selectedContact) return;
-    const token = localStorage.getItem("token");
     const res = await fetch(`${BACKEND_URL}/api/messages`, {
       method: "POST",
+      credentials: "include",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         property_id: selectedContact.property_id,
@@ -79,7 +76,7 @@ export default function Tmessages() {
     if (res.ok) {
       setNewMsg("");
       fetch(`${BACKEND_URL}/api/messages/${selectedContact.property_id}`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include"
       })
         .then((res) => res.json())
         .then((data) => setMessages(data.messages || []));

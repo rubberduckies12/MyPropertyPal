@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import Sidebar from "../tsidebar/tenantSidebar.jsx";
 
 function getProgressColor(progress) {
@@ -32,9 +31,8 @@ export default function MaintenanceRequestsTenant() {
 
   // Helper to fetch incidents
   const fetchIncidents = () => {
-    const token = localStorage.getItem("token");
     fetch(`${BACKEND_URL}/api/maintenance`, {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => setIncidents(data.incidents || []));
@@ -47,9 +45,8 @@ export default function MaintenanceRequestsTenant() {
 
   // Fetch properties assigned to tenant
   useEffect(() => {
-    const token = localStorage.getItem("token");
     fetch(`${BACKEND_URL}/api/maintenance/my-properties`, {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => {
@@ -63,14 +60,13 @@ export default function MaintenanceRequestsTenant() {
   // Add new maintenance request
   const handleAddIncident = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     const severityMap = { red: 4, yellow: 2, green: 1 }; // Adjust to match your incident_severity table
     try {
       const res = await fetch(`${BACKEND_URL}/api/maintenance`, {
         method: "POST",
+        credentials: "include",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           property_id: addForm.property_id,
@@ -90,12 +86,11 @@ export default function MaintenanceRequestsTenant() {
 
   // Delete maintenance request
   const handleDeleteIncident = async (id) => {
-    const token = localStorage.getItem("token");
     if (!window.confirm("Are you sure you want to delete this request?")) return;
     try {
       const res = await fetch(`${BACKEND_URL}/api/maintenance/${id}`, {
         method: "DELETE",
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include"
       });
       if (!res.ok) throw new Error("Failed to delete request");
       setSelectedIncident(null);

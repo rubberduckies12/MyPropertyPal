@@ -16,9 +16,8 @@ export default function Messages() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     fetch(`${BACKEND_URL}/api/messages/contacts`, {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => setContacts(data.contacts || []));
@@ -27,23 +26,22 @@ export default function Messages() {
   useEffect(() => {
     if (!selectedContact) return;
     setLoading(true);
-    const token = localStorage.getItem("token");
     fetch(`${BACKEND_URL}/api/messages/${selectedContact.property_id}`, {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
         setMessages(data.messages || []);
         setLoading(false);
         const unreadIds = (data.messages || [])
-          .filter(m => !m.is_read && m.sender_id !== getAccountId())
-          .map(m => m.id);
+          .filter((m) => !m.is_read && m.sender_id !== getAccountId())
+          .map((m) => m.id);
         if (unreadIds.length) {
           fetch(`${BACKEND_URL}/api/messages/read`, {
             method: "POST",
+            credentials: "include",
             headers: {
               "Content-Type": "application/json",
-              Authorization: token ? `Bearer ${token}` : "",
             },
             body: JSON.stringify({ message_ids: unreadIds }),
           });
@@ -65,12 +63,11 @@ export default function Messages() {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newMsg.trim() || !selectedContact) return;
-    const token = localStorage.getItem("token");
     const res = await fetch(`${BACKEND_URL}/api/messages`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
       },
       body: JSON.stringify({
         property_id: selectedContact.property_id,
@@ -80,7 +77,7 @@ export default function Messages() {
     if (res.ok) {
       setNewMsg("");
       fetch(`${BACKEND_URL}/api/messages/${selectedContact.property_id}`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include",
       })
         .then((res) => res.json())
         .then((data) => setMessages(data.messages || []));
@@ -170,7 +167,7 @@ export default function Messages() {
                 <input
                   type="text"
                   value={newMsg}
-                  onChange={e => setNewMsg(e.target.value)}
+                  onChange={(e) => setNewMsg(e.target.value)}
                   placeholder="Type a message..."
                   className="flex-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />

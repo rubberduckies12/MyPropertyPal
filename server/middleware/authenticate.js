@@ -2,11 +2,10 @@ const jwt = require('jsonwebtoken');
 
 async function authenticate(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const token = req.cookies.token; // Read JWT from cookie
+    if (!token) {
       return res.status(401).json({ error: 'Unauthorized: No token provided' });
     }
-    const token = authHeader.split(' ')[1];
     jwt.verify(token, process.env.AUTH_TOKEN_KEY, async (err, user) => {
       if (err) {
         return res.status(401).json({ error: 'Unauthorized: Invalid token' });

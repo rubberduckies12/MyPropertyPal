@@ -79,12 +79,11 @@ export default function Finances() {
       setLoading(true);
       setError("");
       try {
-        const token = localStorage.getItem("token");
         const [finRes, propRes, tenantRes, expRentRes] = await Promise.all([
-          fetch("https://mypropertypal-3.onrender.com/api/finances", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
-          fetch("https://mypropertypal-3.onrender.com/api/properties", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
-          fetch("https://mypropertypal-3.onrender.com/api/tenants", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
-          fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
+          fetch("https://mypropertypal-3.onrender.com/api/finances", { credentials: "include" }),
+          fetch("https://mypropertypal-3.onrender.com/api/properties", { credentials: "include" }),
+          fetch("https://mypropertypal-3.onrender.com/api/tenants", { credentials: "include" }),
+          fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", { credentials: "include" }),
         ]);
         if (!finRes.ok) throw new Error("Failed to fetch finances");
         const finData = await finRes.json();
@@ -171,7 +170,7 @@ export default function Finances() {
     setEditRentModal(null);
     setRentForm({
       property_id: payment.property_id || "",
-      tenant_id: payment.tenant_id || "", // ✅ FIX: ensure tenant_id is set
+      tenant_id: payment.tenant_id || "",
       amount: payment.amount ? String(payment.amount) : "",
       paid_on: payment.due_date ? payment.due_date.slice(0, 10) : "",
       method: "",
@@ -190,13 +189,11 @@ export default function Finances() {
       paid_on: payment.paid_on ? payment.paid_on.slice(0, 10) : "",
       method: payment.method || "",
       reference: payment.reference || "",
-      // Don't include due_date in the form unless you want user to edit it
     });
     setShowRentModal(true);
   }
 
   async function handleAddOrEditRent(form) {
-    const token = localStorage.getItem("token");
     try {
       const payload = {
         property_id: Number(form.property_id),
@@ -205,13 +202,14 @@ export default function Finances() {
         paid_on: form.paid_on,
         method: form.method || "",
         reference: form.reference || "",
-        due_date: originalDueDateRef.current // Always send original due date
+        due_date: originalDueDateRef.current
       };
       let res;
       if (editRentModal) {
         res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/rent/${editRentModal.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
         if (!res.ok) {
@@ -224,7 +222,8 @@ export default function Finances() {
       } else {
         res = await fetch("https://mypropertypal-3.onrender.com/api/finances/rent", {
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
         if (!res.ok) {
@@ -235,9 +234,9 @@ export default function Finances() {
         const added = await res.json();
         setRentPayments(prev => [...prev, added]);
       }
-      // ✅ Refetch expectedRent after saving rent
+      // Refetch expectedRent after saving rent
       const expRentRes = await fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include"
       });
       if (expRentRes.ok) {
         const data = await expRentRes.json();
@@ -254,10 +253,9 @@ export default function Finances() {
 
   async function confirmDeleteRentPayment() {
     if (!rentToDelete) return;
-    const token = localStorage.getItem("token");
     await fetch(`https://mypropertypal-3.onrender.com/api/finances/rent/${rentToDelete}`, {
       method: "DELETE",
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include"
     });
     setRentPayments(rentPayments => rentPayments.filter(r => r.id !== rentToDelete));
     setShowDeleteConfirm(false);
@@ -271,7 +269,6 @@ export default function Finances() {
   }
 
   async function handleExpenseModalSubmit(form) {
-    const token = localStorage.getItem("token");
     const payload = {
       property_id: Number(form.property_id),
       amount: Number(form.amount),
@@ -284,7 +281,8 @@ export default function Finances() {
       if (editExpenseModal) {
         res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/expense/${editExpenseModal.id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
         if (!res.ok) {
@@ -297,7 +295,8 @@ export default function Finances() {
       } else {
         res = await fetch("https://mypropertypal-3.onrender.com/api/finances/expense", {
           method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
         if (!res.ok) {
@@ -318,10 +317,9 @@ export default function Finances() {
 
   async function confirmDeleteExpense() {
     if (!expenseToDelete) return;
-    const token = localStorage.getItem("token");
     await fetch(`https://mypropertypal-3.onrender.com/api/finances/expense/${expenseToDelete}`, {
       method: "DELETE",
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include"
     });
     setExpenses(expenses => expenses.filter(e => e.id !== expenseToDelete));
     setShowDeleteExpenseConfirm(false);

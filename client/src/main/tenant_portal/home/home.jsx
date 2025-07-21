@@ -6,18 +6,16 @@ const API_BASE = "https://mypropertypal-3.onrender.com";
 
 // --- API Calls ---
 async function fetchTenantRent() {
-  const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/api/tenant/rent`, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: "include"
   });
   if (!res.ok) return { rent_amount: 0, rent_due_date: null };
   return res.json();
 }
 
 async function fetchContacts() {
-  const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/api/messages/contacts`, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: "include"
   });
   if (!res.ok) return [];
   const data = await res.json();
@@ -25,9 +23,8 @@ async function fetchContacts() {
 }
 
 async function fetchTenantIncidents() {
-  const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/api/maintenance`, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: "include"
   });
   if (!res.ok) return [];
   const data = await res.json();
@@ -35,9 +32,8 @@ async function fetchTenantIncidents() {
 }
 
 async function fetchTenantUser() {
-  const token = localStorage.getItem("token");
   const res = await fetch(`${API_BASE}/api/dashboard/user`, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: "include"
   });
   if (!res.ok) return null;
   return res.json();

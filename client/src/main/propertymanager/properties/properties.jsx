@@ -32,9 +32,8 @@ export default function Properties() {
 
   const fetchProperties = () => {
     setLoading(true);
-    const token = localStorage.getItem("token");
     fetch(`${API_BASE}/api/properties`, {
-      headers: { "Authorization": token ? `Bearer ${token}` : "" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => {
@@ -76,12 +75,11 @@ export default function Properties() {
     setAddError("");
     setAddLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const res = await fetch(`${API_BASE}/api/properties`, {
         method: "POST",
+        credentials: "include",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": token ? `Bearer ${token}` : "",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(addForm),
       });
@@ -109,10 +107,9 @@ export default function Properties() {
   const handleDeleteProperty = async (propertyId) => {
     if (!window.confirm("Are you sure you want to delete this property?")) return;
     try {
-      const token = localStorage.getItem("token");
       const res = await fetch(`${API_BASE}/api/properties/${propertyId}`, {
         method: "DELETE",
-        headers: { "Authorization": token ? `Bearer ${token}` : "" },
+        credentials: "include"
       });
       if (!res.ok) {
         const data = await res.json();

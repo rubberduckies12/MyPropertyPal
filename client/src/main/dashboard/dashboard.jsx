@@ -36,27 +36,24 @@ function getUpcomingComplianceEvents(deadlines) {
 
 // --- API Calls ---
 async function fetchUser() {
-  const token = localStorage.getItem('token');
   const res = await fetch(DASHBOARD_USER_URL, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: 'include'
   });
   if (!res.ok) throw new Error("Failed to fetch user");
   return res.json();
 }
 
 async function fetchTenantCount() {
-  const token = localStorage.getItem('token');
   const res = await fetch(TENANTS_COUNT_URL, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: 'include'
   });
   const data = await res.json();
   return data.count;
 }
 
 async function fetchContacts() {
-  const token = localStorage.getItem('token');
   const res = await fetch(MESSAGES_CONTACTS_URL, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: 'include'
   });
   if (!res.ok) return [];
   const data = await res.json();
@@ -64,18 +61,16 @@ async function fetchContacts() {
 }
 
 async function fetchUnreadMessages() {
-  const token = localStorage.getItem('token');
   const res = await fetch(DASHBOARD_MESSAGES_URL, {
-    headers: { Authorization: `Bearer ${token}` }
+    credentials: 'include'
   });
   if (!res.ok) return [];
   return res.json();
 }
 
 async function fetchIncidents() {
-  const token = localStorage.getItem('token');
   const res = await fetch(MAINTENANCE_URL, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: 'include'
   });
   if (!res.ok) return [];
   const data = await res.json();
@@ -83,18 +78,16 @@ async function fetchIncidents() {
 }
 
 async function fetchProperties() {
-  const token = localStorage.getItem('token');
   const res = await fetch(DASHBOARD_PROPERTIES_URL, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: 'include'
   });
   if (!res.ok) throw new Error("Failed to fetch properties");
   return res.json();
 }
 
 async function fetchTenants() {
-  const token = localStorage.getItem('token');
   const res = await fetch(TENANTS_URL, {
-    headers: { Authorization: token ? `Bearer ${token}` : "" }
+    credentials: 'include'
   });
   const data = await res.json();
   return data.tenants || [];
@@ -124,9 +117,8 @@ function Dashboard() {
       setProperties(await fetchProperties());
 
       // Fetch compliance deadlines
-      const token = localStorage.getItem('token');
       const res = await fetch(`${API_BASE}/api/compliance/events`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" }
+        credentials: 'include'
       });
       const data = await res.json();
       setDeadlines(Array.isArray(data) ? data : []);

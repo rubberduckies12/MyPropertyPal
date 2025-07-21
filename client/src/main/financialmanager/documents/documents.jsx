@@ -11,10 +11,9 @@ export default function Documents() {
 
   useEffect(() => {
     const fetchDocs = async () => {
-      const token = localStorage.getItem("token");
       try {
         const res = await fetch(`${BACKEND_URL}/api/documents`, {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include",
         });
         const data = await res.json();
         if (res.ok) {
@@ -39,11 +38,10 @@ export default function Documents() {
     setError("");
     const formData = new FormData();
     formData.append("file", file);
-    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${BACKEND_URL}/api/documents/upload`, {
         method: "POST",
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include",
         body: formData,
       });
       const data = await res.json();
@@ -70,7 +68,7 @@ export default function Documents() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="flex min-h-screen bg-white">
       <Sidebar />
       <main className="flex-1 ml-64 px-4 py-8">
         <div className="flex items-center justify-between mb-8 border-b border-blue-100 pb-4">

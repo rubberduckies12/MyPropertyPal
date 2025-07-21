@@ -15,37 +15,31 @@ export default function Compliance() {
     name: "",
     description: "",
     due_date: "",
-    reminder_days: [90], // default
+    reminder_days: [90],
   });
   const [eventSuccess, setEventSuccess] = useState("");
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [editEvent, setEditEvent] = useState(null);
   const fileInputRef = useRef();
 
-  // Fetch compliance events, documents, and properties from backend using only JWT
+  // Fetch compliance events, documents, and properties from backend using cookies
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("No login token found. Please log in again.");
-      return;
-    }
-
     fetch(`${BACKEND_URL}/api/compliance/events`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include"
     })
       .then(res => res.json())
       .then(data => setDeadlines(Array.isArray(data) ? data : []))
       .catch(() => setError("Failed to load deadlines"));
 
     fetch(`${BACKEND_URL}/api/compliance/documents`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include"
     })
       .then(res => res.json())
       .then(data => setDocuments(Array.isArray(data) ? data : []))
       .catch(() => setError("Failed to load documents"));
 
     fetch(`${BACKEND_URL}/api/properties`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include"
     })
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch properties");
@@ -64,21 +58,20 @@ export default function Compliance() {
       setUploading(false);
       return;
     }
-    const token = localStorage.getItem("token");
     const formData = new FormData();
     formData.append("file", file);
 
     try {
       const res = await fetch(`${BACKEND_URL}/api/compliance/documents/upload`, {
         method: "POST",
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include",
         body: formData,
       });
       const data = await res.json();
       if (res.ok) {
         // Re-fetch documents after upload
         fetch(`${BACKEND_URL}/api/compliance/documents`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: "include"
         })
           .then(res => res.json())
           .then(data => setDocuments(Array.isArray(data) ? data : []));
@@ -91,18 +84,17 @@ export default function Compliance() {
     setUploading(false);
   };
 
-  // Add compliance event (no landlord_id in frontend)
+  // Add compliance event
   const handleAddEvent = async (e) => {
     e.preventDefault();
     setEventSuccess("");
     setError("");
-    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${BACKEND_URL}/api/compliance/events`, {
         method: "POST",
+        credentials: "include",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(newEvent),
       });
@@ -112,7 +104,7 @@ export default function Compliance() {
         setShowEventForm(false);
         // Re-fetch events
         fetch(`${BACKEND_URL}/api/compliance/events`, {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include"
         })
           .then(res => res.json())
           .then(data => setDeadlines(Array.isArray(data) ? data : []));
@@ -128,13 +120,12 @@ export default function Compliance() {
   const handleEditEvent = async (e) => {
     e.preventDefault();
     setError("");
-    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${BACKEND_URL}/api/compliance/events/${editEvent.id}`, {
         method: "PUT",
+        credentials: "include",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(editEvent),
       });
@@ -144,7 +135,7 @@ export default function Compliance() {
         setSelectedEvent(null);
         // Refresh events
         fetch(`${BACKEND_URL}/api/compliance/events`, {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include"
         })
           .then(res => res.json())
           .then(data => setDeadlines(Array.isArray(data) ? data : []));
@@ -159,18 +150,17 @@ export default function Compliance() {
   // Delete event handler
   const handleDeleteEvent = async (id) => {
     setError("");
-    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${BACKEND_URL}/api/compliance/events/${id}`, {
         method: "DELETE",
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include"
       });
       if (res.ok) {
         setEventSuccess("Event deleted!");
         setSelectedEvent(null);
         // Refresh events
         fetch(`${BACKEND_URL}/api/compliance/events`, {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include"
         })
           .then(res => res.json())
           .then(data => setDeadlines(Array.isArray(data) ? data : []));
@@ -182,7 +172,6 @@ export default function Compliance() {
     }
   };
 
-  // Format date to DD/MM/YYYY
   function formatDate(dateStr) {
     if (!dateStr) return "";
     const d = new Date(dateStr);
@@ -200,9 +189,9 @@ export default function Compliance() {
     const reminders = (reminderDaysArr && reminderDaysArr.length > 0) ? reminderDaysArr : [90];
     const soonest = Math.min(...reminders);
 
-    if (diffDays < 0) return "status-overdue"; // Overdue
-    if (diffDays <= soonest) return "status-expiringsoon"; // Due inside soonest reminder
-    return "status-valid"; // Not due for over soonest reminder
+    if (diffDays < 0) return "status-overdue";
+    if (diffDays <= soonest) return "status-expiringsoon";
+    return "status-valid";
   }
 
   return (

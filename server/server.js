@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 const axios = require('axios');
 const { Pool } = require("pg");
+const cookieParser = require('cookie-parser');
 
 const createDatabaseConnection = require('./assets/databaseConnect');
 const authenticate = require('./middleware/authenticate');
@@ -39,8 +40,10 @@ app.use(cors({
     'http://localhost:3001',
     'https://my-property-pal-front.vercel.app'
   ],
+  credentials: true // <-- Allow credentials for CORS
 }));
 app.use(express.json());
+app.use(cookieParser());
 
 // --- Public Routes ---
 app.use('/api/chat', chatRoute);

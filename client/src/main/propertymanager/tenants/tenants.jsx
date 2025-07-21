@@ -29,10 +29,9 @@ export default function Tenants() {
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     setLoading(true);
     fetch(`${API_BASE}/api/tenants`, {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => {
@@ -46,9 +45,8 @@ export default function Tenants() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     fetch(`${API_BASE}/api/properties`, {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => setProperties(data.properties || []));
@@ -95,11 +93,10 @@ export default function Tenants() {
   const handleCloseModal = () => setSelectedTenant(null);
 
   const handleRemoveTenant = async (id) => {
-    const token = localStorage.getItem("token");
     try {
       await fetch(`${API_BASE}/api/tenants/${id}`, {
         method: "DELETE",
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include"
       });
       setTenants((prev) => prev.filter((t) => t.id !== id));
       setSelectedTenant(null);
@@ -112,13 +109,12 @@ export default function Tenants() {
     e.preventDefault();
     setAddError("");
     setInviteMessage(""); // Reset message
-    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${API_BASE}/api/tenants`, {
         method: "POST",
+        credentials: "include",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           first_name: addForm.first_name,
@@ -130,14 +126,14 @@ export default function Tenants() {
           rent_schedule_type: addForm.rent_schedule_type,
           rent_schedule_value: addForm.rent_schedule_value !== "" ? addForm.rent_schedule_value : null,
         })
-});
+      });
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Failed to add tenant");
       }
       // Refresh tenants list
       const tenantsRes = await fetch(`${API_BASE}/api/tenants`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include"
       });
       const tenantsData = await tenantsRes.json();
       setTenants(tenantsData.tenants || []);
@@ -176,13 +172,12 @@ export default function Tenants() {
   // Submit edit
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${API_BASE}/api/tenants/${editTenant.id}`, {
         method: "PUT",
+        credentials: "include",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           ...editForm,
@@ -196,7 +191,7 @@ export default function Tenants() {
       }
       // Refresh tenants list
       const tenantsRes = await fetch(`${API_BASE}/api/tenants`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
+        credentials: "include"
       });
       const tenantsData = await tenantsRes.json();
       setTenants(tenantsData.tenants || []);

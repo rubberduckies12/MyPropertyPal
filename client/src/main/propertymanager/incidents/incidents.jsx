@@ -26,24 +26,22 @@ export default function Incidents() {
   const [selectedIncident, setSelectedIncident] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     fetch(`${BACKEND_URL}/api/maintenance/landlord`, {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => setIncidents(data.incidents || []));
   }, []);
 
   const handleProgressChange = async (id, newProgress) => {
-    const token = localStorage.getItem("token");
     try {
       const res = await fetch(
         `${BACKEND_URL}/api/maintenance/landlord/${id}/progress`,
         {
           method: "PUT",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
           },
           body: JSON.stringify({ progress: newProgress }),
         }
@@ -61,14 +59,13 @@ export default function Incidents() {
   };
 
   const handleDeleteIncident = async (id) => {
-    const token = localStorage.getItem("token");
     if (!window.confirm("Are you sure you want to delete this request?")) return;
     try {
       const res = await fetch(
         `${BACKEND_URL}/api/maintenance/${id}`,
         {
           method: "DELETE",
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+          credentials: "include"
         }
       );
       if (!res.ok) throw new Error("Failed to delete request");

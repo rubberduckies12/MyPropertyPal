@@ -41,8 +41,16 @@ async function login(req, res, pool) {
 
         const token = await generateAuthToken(user.id);
 
-        // Return both token and role
-        return res.status(200).json({ token: token, role: user.role });
+        // Set JWT in HTTP-only cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none',
+            maxAge: 60 * 60 * 1000 // 1 hour
+        });
+
+        // Return only the role (not the token)
+        return res.status(200).json({ role: user.role });
     } catch (err) {
         console.error('Error in login:', err);
         res.status(500).json({ error: 'Internal Server Error' });
