@@ -4,6 +4,7 @@ export async function login(email, password) {
   try {
     const response = await fetch(`${API_BASE}/login`, {
       method: 'POST',
+      credentials: 'include', // <-- Add this line!
       headers: {
         'Content-Type': 'application/json'
       },
@@ -17,10 +18,7 @@ export async function login(email, password) {
 
     // On success, return the user data
     const data = await response.json();
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-    }
-
+    // Remove localStorage usage, cookie will be used for auth
     return data;
   } catch (err) {
     // Handle error (e.g., show message to user)

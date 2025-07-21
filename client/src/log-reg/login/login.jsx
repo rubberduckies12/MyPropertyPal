@@ -18,6 +18,7 @@ function Login({ onRegisterClick }) {
     try {
       const response = await fetch(`${BACKEND_URL}/login`, {
         method: 'POST',
+        credentials: 'include', // <-- Add this line!
         headers: {
           'Content-Type': 'application/json'
         },
@@ -30,10 +31,6 @@ function Login({ onRegisterClick }) {
       }
 
       const data = await response.json();
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-
       return data;
     } catch (err) {
       throw err;
