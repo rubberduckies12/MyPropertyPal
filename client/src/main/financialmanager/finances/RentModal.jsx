@@ -57,10 +57,13 @@ export default function RentModal({
           )}
           <select
             className="w-full border rounded px-3 py-2"
-            value={rentForm.property_id}
-            onChange={e => setRentForm(f => ({ ...f, property_id: e.target.value }))}
+            value={localForm.property_id}
+            onChange={e => setLocalForm(f => ({
+              ...f,
+              property_id: e.target.value,
+              tenant_id: "" // reset tenant when property changes
+            }))}
             required
-            disabled={!!editRentModal}
           >
             <option value="">Select property</option>
             {properties.map(p => (
@@ -77,14 +80,13 @@ export default function RentModal({
           )}
           <select
             className="w-full border rounded px-3 py-2"
-            value={rentForm.tenant_id}
-            onChange={e => setRentForm(f => ({ ...f, tenant_id: e.target.value }))}
+            value={localForm.tenant_id}
+            onChange={e => setLocalForm(f => ({ ...f, tenant_id: e.target.value }))}
             required
-            disabled={!!editRentModal}
           >
             <option value="">Select tenant</option>
             {tenants
-              .filter(t => !rentForm.property_id || t.property_id === Number(rentForm.property_id))
+              .filter(t => !localForm.property_id || t.property_id === Number(localForm.property_id))
               .map(t => (
                 <option key={t.id} value={t.id}>{t.first_name} {t.last_name}</option>
               ))}
