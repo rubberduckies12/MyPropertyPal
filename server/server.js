@@ -34,24 +34,24 @@ const pool = createDatabaseConnection();
 app.set("pool", pool);
 
 // --- Middleware ---
+// CORS and cookies must be set before any routes
 app.use(cors({
   origin: [
     'http://localhost:3000',
     'http://localhost:3001',
     'https://my-property-pal-front.vercel.app'
   ],
-  credentials: true // <-- Allow credentials for CORS
+  credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
 
 // --- Public Routes ---
 app.use('/api/chat', chatRoute);
-app.use('/api/account', accountRouter); // <-- Add this line here for public account routes
-app.use('/api/stripe', stripeRouter); // <-- Stripe checkout session (public)
-app.use('/api/stripe', stripeWebhookRouter); // <-- Stripe webhook (public)
+app.use('/api/account', accountRouter);
+app.use('/api/stripe', stripeRouter);
+app.use('/api/stripe', stripeWebhookRouter);
 
-// External API example
 app.get('/external-api', async (req, res) => {
   try {
     const response = await axios.get('https://api.example.com/data');
@@ -61,7 +61,6 @@ app.get('/external-api', async (req, res) => {
   }
 });
 
-// Contractors API (public)
 app.get('/api/contractors', async (req, res) => {
   const { location, keyword } = req.query;
   if (!location) {
@@ -79,13 +78,30 @@ app.get('/api/contractors', async (req, res) => {
 app.post('/login', (req, res) => login(req, res, pool));
 app.post('/register', (req, res) => register(req, res, pool));
 
-// Dashboard endpoints
+// --- Protected Routes ---
+// Authenticate before any protected endpoints
+app.use(authenticate);
+app.use(checkSubscriptionStatus);
+
+// Dashboard endpoints (now protected)
 dashEndpoints(app, pool);
 
-// Properties endpoints (JWT protected)
-app.get('/api/properties', authenticate, (req, res) => require('./endpoints/properties').getProperties(req, res, pool));
-app.post('/api/properties', authenticate, (req, res) => require('./endpoints/properties').addProperty(req, res, pool));
-app.delete('/api/properties/:id', authenticate, (req, res) => require('./endpoints/properties').deleteProperty(req, res, pool));
+// Properties endpoints (protected)
+app.get('/api/properties', (req, res) => require('./endpoints/properties').getProperties(req, res, pool));
+app.post('/api/properties', (req, res) => require('./endpoints/properties').addProperty(req, res, pool));
+app.delete('/api/properties/:id', (req, res) => require('./endpoints/properties').deleteProperty(req, res, pool));
+
+app.use("/api/tenants", tenantsRouter);
+app.use('/api/finances', financesRouter);
+app.use('/api/documents', documentsRouter);
+app.use('/api/compliance', complianceRouter);
+app.use('/api/tenant/rent', tenantRentRouter);
+app.use('/api/maintenance', maintenanceRouter);
+app.use('/api/messages', messagesRouter);
+app.use('/api/stripe', stripeRouter);
+
+// --- Static Exports ---
+app.use("/exports", express.static(path.join(__dirname, "../exports")));
 
 // --- Tenant Invite Endpoint (public, no auth) ---
 app.get('/api/tenants/invite/:token', async (req, res) => {
@@ -103,21 +119,6 @@ app.get('/api/tenants/invite/:token', async (req, res) => {
   }
   res.json(result.rows[0]);
 });
-
-// --- Protected Routes ---
-app.use(authenticate);
-app.use(checkSubscriptionStatus);
-app.use("/api/tenants", tenantsRouter);
-app.use('/api/finances', financesRouter);
-app.use('/api/documents', documentsRouter);
-app.use('/api/compliance', complianceRouter);
-app.use('/api/tenant/rent', tenantRentRouter);
-app.use('/api/maintenance', maintenanceRouter);
-app.use('/api/messages', messagesRouter);
-app.use('/api/stripe', stripeRouter);
-
-// --- Static Exports ---
-app.use("/exports", express.static(path.join(__dirname, "../exports")));
 
 // --- Client Endpoints (placeholders) ---
 app.get('/', (req, res) => res.send('Welcome to the Property Management API'));
