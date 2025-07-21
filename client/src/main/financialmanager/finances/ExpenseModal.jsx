@@ -50,7 +50,7 @@ export default function ExpenseModal({
         className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md"
         onSubmit={e => {
           e.preventDefault();
-          onSubmit(form);
+          onSubmit(form); // Pass the latest form directly
         }}
         onClick={e => e.stopPropagation()}
       >

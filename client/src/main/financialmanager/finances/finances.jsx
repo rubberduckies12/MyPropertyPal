@@ -181,8 +181,8 @@ export default function Finances() {
   function openEditRentModal(payment) {
     setEditRentModal(payment);
     setRentForm({
-      property_id: payment.property_id || "",
-      tenant_id: payment.tenant_id || "",
+      property_id: payment.property_id || properties.find(p => p.name === payment.property)?.id || "",
+      tenant_id: payment.tenant_id || tenants.find(t => t.name === payment.tenant)?.id || "",
       amount: payment.amount ? String(payment.amount) : "",
       paid_on: payment.paid_on ? payment.paid_on.slice(0, 10) : "",
       method: payment.method || "",
@@ -305,14 +305,6 @@ export default function Finances() {
       }
       setShowExpenseModal(false);
       setEditExpenseModal(null);
-      // ✅ Refetch expectedRent after expense change (optional, if needed)
-      // const expRentRes = await fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", {
-      //   headers: { Authorization: token ? `Bearer ${token}` : "" },
-      // });
-      // if (expRentRes.ok) {
-      //   const data = await expRentRes.json();
-      //   setExpectedRent(data.expected || []);
-      // }
     } catch (err) {
       alert(err.message || "Failed to save expense");
     }
