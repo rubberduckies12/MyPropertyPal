@@ -246,6 +246,7 @@ export default function Finances() {
       setShowRentModal(false);
       setEditRentModal(null);
       setRentForm({ property_id: "", tenant_id: "", amount: "", paid_on: "", method: "", reference: "" });
+      window.location.reload();
     } catch (err) {
       alert(err.message || "Failed to save rent payment");
     }
@@ -309,6 +310,7 @@ export default function Finances() {
       }
       setShowExpenseModal(false);
       setEditExpenseModal(null);
+      window.location.reload();
     } catch (err) {
       alert(err.message || "Failed to save expense");
     }
