@@ -299,6 +299,11 @@ export default function Finances() {
   // --- Modal UI ---
   function RentModal() {
     if (!showRentModal) return null;
+
+    // Find property and tenant objects for display
+    const selectedProperty = properties.find(p => p.id === rentForm.property_id);
+    const selectedTenant = tenants.find(t => t.id === rentForm.tenant_id);
+
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
         <form
@@ -311,6 +316,11 @@ export default function Finances() {
           </h2>
           <div className="mb-4">
             <label className="block font-semibold mb-1">Property</label>
+            {editRentModal && selectedProperty && (
+              <div className="mb-2 text-blue-700 font-semibold">
+                {selectedProperty.name}
+              </div>
+            )}
             <select
               className="w-full border rounded px-3 py-2"
               value={rentForm.property_id}
@@ -320,6 +330,7 @@ export default function Finances() {
                 tenant_id: ""
               }))}
               required
+              disabled={!!editRentModal}
             >
               <option value="">Select property</option>
               {properties.map(p => (
@@ -329,11 +340,17 @@ export default function Finances() {
           </div>
           <div className="mb-4">
             <label className="block font-semibold mb-1">Tenant</label>
+            {editRentModal && selectedTenant && (
+              <div className="mb-2 text-blue-700 font-semibold">
+                {selectedTenant.name || `${selectedTenant.first_name || ""} ${selectedTenant.last_name || ""}`.trim()}
+              </div>
+            )}
             <select
               className="w-full border rounded px-3 py-2"
               value={String(rentForm.tenant_id)}
               onChange={e => setRentForm(f => ({ ...f, tenant_id: e.target.value }))}
               required
+              disabled={!!editRentModal}
             >
               <option value="">Select tenant</option>
               {filteredTenants.map(t => (
@@ -368,7 +385,7 @@ export default function Finances() {
             <input
               type="text"
               className="w-full border rounded px-3 py-2"
-              value={typeof rentForm.method === "string" ? rentForm.method : (rentForm.method ? String(rentForm.method) : "")}
+              value={rentForm.method || ""}
               onChange={e => setRentForm(f => ({ ...f, method: e.target.value }))}
               autoComplete="off"
             />
@@ -378,7 +395,7 @@ export default function Finances() {
             <input
               type="text"
               className="w-full border rounded px-3 py-2"
-              value={typeof rentForm.reference === "string" ? rentForm.reference : (rentForm.reference ? String(rentForm.reference) : "")}
+              value={rentForm.reference || ""}
               onChange={e => setRentForm(f => ({ ...f, reference: e.target.value }))}
               autoComplete="off"
             />
@@ -446,7 +463,7 @@ export default function Finances() {
             <input
               type="text"
               className="w-full border rounded px-3 py-2"
-              value={typeof expenseForm.category === "string" ? expenseForm.category : (expenseForm.category ? String(expenseForm.category) : "")}
+              value={expenseForm.category || ""}
               onChange={e => setExpenseForm(f => ({ ...f, category: e.target.value }))}
               autoComplete="off"
               required
@@ -457,7 +474,7 @@ export default function Finances() {
             <input
               type="text"
               className="w-full border rounded px-3 py-2"
-              value={typeof expenseForm.description === "string" ? expenseForm.description : (expenseForm.description ? String(expenseForm.description) : "")}
+              value={expenseForm.description || ""}
               onChange={e => setExpenseForm(f => ({ ...f, description: e.target.value }))}
               autoComplete="off"
               maxLength={200}
