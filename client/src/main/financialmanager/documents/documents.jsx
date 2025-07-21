@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
-import "./documents.css";
 
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
@@ -71,11 +70,11 @@ export default function Documents() {
   };
 
   return (
-    <div className="properties-page">
+    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <Sidebar />
-      <main className="properties-main">
-        <div className="properties-header">
-          <h1 className="properties-title">Documents & Uploads</h1>
+      <main className="flex-1 ml-64 px-4 py-8">
+        <div className="flex items-center justify-between mb-8 border-b border-blue-100 pb-4">
+          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Documents & Uploads</h1>
           <div>
             <input
               type="file"
@@ -89,7 +88,7 @@ export default function Documents() {
               disabled={uploading}
             />
             <button
-              className="add-property-btn"
+              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
               onClick={() => fileInputRef.current.click()}
               disabled={uploading}
               type="button"
@@ -98,39 +97,51 @@ export default function Documents() {
             </button>
           </div>
         </div>
-        {error && <div className="documents-error">{error}</div>}
-        <section className="documents-list-section">
-          <h2>Uploaded Documents</h2>
-          <table className="documents-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>File Name</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {documents.length === 0 ? (
+        {error && (
+          <div className="text-red-500 text-center mb-4">{error}</div>
+        )}
+        <section className="bg-white rounded-2xl p-6 border border-blue-100 shadow mb-10">
+          <h2 className="text-xl font-bold text-blue-700 mb-4">Uploaded Documents</h2>
+          <div className="w-full overflow-x-auto">
+            <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
+              <thead>
                 <tr>
-                  <td colSpan={5} style={{ textAlign: "center", color: "#64748b" }}>
-                    No documents uploaded yet.
-                  </td>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Date</th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">File Name</th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Type</th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Amount</th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Status</th>
                 </tr>
-              ) : (
-                documents.map((doc) => (
-                  <tr key={doc.id}>
-                    <td>{doc.date}</td>
-                    <td>{doc.name}</td>
-                    <td>{doc.type}</td>
-                    <td>£{doc.amount}</td>
-                    <td className="documents-status">{doc.status}</td>
+              </thead>
+              <tbody>
+                {documents.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center text-gray-400 py-8">
+                      No documents uploaded yet.
+                    </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  documents.map((doc) => (
+                    <tr key={doc.id} className="hover:bg-blue-50 transition">
+                      <td className="py-4 px-3">{doc.date}</td>
+                      <td className="py-4 px-3">{doc.name}</td>
+                      <td className="py-4 px-3">{doc.type}</td>
+                      <td className="py-4 px-3">£{doc.amount}</td>
+                      <td className="py-4 px-3">
+                        <span className={
+                          doc.status === "Processed"
+                            ? "bg-green-100 text-green-700 px-3 py-1 rounded-xl font-semibold text-sm"
+                            : "bg-red-100 text-red-700 px-3 py-1 rounded-xl font-semibold text-sm"
+                        }>
+                          {doc.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </section>
       </main>
     </div>

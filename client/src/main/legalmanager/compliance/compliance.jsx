@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
-import "./compliance.css";
 
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
@@ -207,34 +206,30 @@ export default function Compliance() {
   }
 
   return (
-    <div className="properties-page">
+    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <Sidebar />
-      <main className="properties-main">
-        <div className="properties-header">
-          <h1 className="properties-title">Compliance Manager</h1>
-          <div>
-            {/* Remove Upload/Scan Document button and file input */}
-            <button
-              className="add-property-btn"
-              type="button"
-              style={{ background: "#2563eb", color: "#fff" }}
-              onClick={() => setShowEventForm(true)}
-            >
-              Add Compliance Event
-            </button>
-          </div>
+      <main className="flex-1 ml-64 px-4 py-8">
+        <div className="flex items-center justify-between mb-8 border-b border-blue-100 pb-4">
+          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Compliance Manager</h1>
+          <button
+            className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+            type="button"
+            onClick={() => setShowEventForm(true)}
+          >
+            Add Compliance Event
+          </button>
         </div>
 
         {/* Modal for Add Compliance Event */}
         {showEventForm && (
-          <div className="compliance-modal-overlay" onClick={() => setShowEventForm(false)}>
-            <div className="compliance-modal-card" onClick={e => e.stopPropagation()}>
-              <h2 className="compliance-modal-title">Add Compliance Event</h2>
-              <form className="compliance-add-event-form" onSubmit={handleAddEvent}>
-                <label>
-                  <span className="compliance-form-label">Property</span>
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl p-8 w-full max-w-md border border-blue-100 shadow-lg">
+              <h2 className="text-2xl font-extrabold text-blue-700 text-center mb-6">Add Compliance Event</h2>
+              <form className="flex flex-col gap-4" onSubmit={handleAddEvent}>
+                <label className="font-semibold text-blue-700">
+                  Property
                   <select
-                    className="compliance-add-event-input"
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                     value={newEvent.property_id}
                     onChange={e => setNewEvent(ev => ({ ...ev, property_id: e.target.value }))}
                     required
@@ -247,10 +242,10 @@ export default function Compliance() {
                     ))}
                   </select>
                 </label>
-                <label>
-                  <span className="compliance-form-label">Name</span>
+                <label className="font-semibold text-blue-700">
+                  Name
                   <input
-                    className="compliance-add-event-input"
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                     type="text"
                     placeholder="Name (e.g. Gas Safety)"
                     value={newEvent.name}
@@ -258,30 +253,30 @@ export default function Compliance() {
                     required
                   />
                 </label>
-                <label>
-                  <span className="compliance-form-label">Description</span>
+                <label className="font-semibold text-blue-700">
+                  Description
                   <input
-                    className="compliance-add-event-input"
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                     type="text"
                     placeholder="Description"
                     value={newEvent.description}
                     onChange={e => setNewEvent(ev => ({ ...ev, description: e.target.value }))}
                   />
                 </label>
-                <label>
-                  <span className="compliance-form-label">Due Date</span>
+                <label className="font-semibold text-blue-700">
+                  Due Date
                   <input
-                    className="compliance-add-event-input"
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                     type="date"
                     value={newEvent.due_date}
                     onChange={e => setNewEvent(ev => ({ ...ev, due_date: e.target.value }))}
                     required
                   />
                 </label>
-                <label>
-                  <span className="compliance-form-label">Reminder days</span>
+                <label className="font-semibold text-blue-700">
+                  Reminder days
                   <input
-                    className="compliance-add-event-input"
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                     type="text"
                     placeholder="Reminder days (e.g. 90,30,7)"
                     value={newEvent.reminder_days ? newEvent.reminder_days.join(",") : ""}
@@ -296,12 +291,15 @@ export default function Compliance() {
                     }
                   />
                 </label>
-                <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
-                  <button className="compliance-add-event-btn" type="submit">
+                <div className="flex gap-4 mt-4">
+                  <button
+                    className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition flex-1"
+                    type="submit"
+                  >
                     Add Event
                   </button>
                   <button
-                    className="compliance-modal-close-btn"
+                    className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
                     type="button"
                     onClick={() => setShowEventForm(false)}
                   >
@@ -315,40 +313,40 @@ export default function Compliance() {
 
         {/* Event Details Modal */}
         {selectedEvent && (
-          <div className="compliance-modal-overlay" onClick={() => { setSelectedEvent(null); setEditEvent(null); }}>
-            <div className="compliance-modal-card" onClick={e => e.stopPropagation()}>
-              <h2 className="compliance-modal-title">
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl p-8 w-full max-w-md border border-blue-100 shadow-lg">
+              <h2 className="text-2xl font-extrabold text-blue-700 text-center mb-6">
                 {editEvent && editEvent.onlyRenew ? "Renew Compliance" : "Compliance Event Details"}
               </h2>
               {!editEvent ? (
                 <>
-                  <div className="compliance-modal-info">
-                    <div><strong>Name:</strong> {selectedEvent.name}</div>
-                    <div><strong>Property:</strong> {selectedEvent.property_name}</div>
-                    <div><strong>Description:</strong> {selectedEvent.description}</div>
-                    <div><strong>Due Date:</strong> {formatDate(selectedEvent.due_date)}</div>
+                  <div className="bg-blue-50 rounded-lg p-4 mb-4 text-base text-gray-700 flex flex-col gap-2">
+                    <div><strong className="text-blue-700">Name:</strong> {selectedEvent.name}</div>
+                    <div><strong className="text-blue-700">Property:</strong> {selectedEvent.property_name}</div>
+                    <div><strong className="text-blue-700">Description:</strong> {selectedEvent.description}</div>
+                    <div><strong className="text-blue-700">Due Date:</strong> {formatDate(selectedEvent.due_date)}</div>
                   </div>
-                  <div className="compliance-modal-actions">
+                  <div className="flex gap-4 mt-2">
                     <button
-                      className="compliance-add-event-btn"
+                      className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition flex-1"
                       onClick={() => setEditEvent(selectedEvent)}
                     >
                       Edit
                     </button>
                     <button
-                      className="compliance-add-event-btn"
+                      className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition flex-1"
                       onClick={() => setEditEvent({ ...selectedEvent, onlyRenew: true })}
                     >
                       Renew
                     </button>
                     <button
-                      className="compliance-modal-delete-btn"
+                      className="bg-red-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 transition flex-1"
                       onClick={() => handleDeleteEvent(selectedEvent.id)}
                     >
                       Delete
                     </button>
                     <button
-                      className="compliance-modal-close-btn"
+                      className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
                       onClick={() => { setSelectedEvent(null); setEditEvent(null); }}
                     >
                       Close
@@ -356,11 +354,11 @@ export default function Compliance() {
                   </div>
                 </>
               ) : (
-                <form className="compliance-add-event-form" onSubmit={handleEditEvent}>
-                  <label>
-                    <span className="compliance-form-label">Property</span>
+                <form className="flex flex-col gap-4" onSubmit={handleEditEvent}>
+                  <label className="font-semibold text-blue-700">
+                    Property
                     <select
-                      className="compliance-add-event-input"
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                       value={editEvent.property_id}
                       onChange={e => setEditEvent(ev => ({ ...ev, property_id: e.target.value }))}
                       required
@@ -374,10 +372,10 @@ export default function Compliance() {
                       ))}
                     </select>
                   </label>
-                  <label>
-                    <span className="compliance-form-label">Name</span>
+                  <label className="font-semibold text-blue-700">
+                    Name
                     <input
-                      className="compliance-add-event-input"
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                       type="text"
                       placeholder="Name"
                       value={editEvent.name}
@@ -386,10 +384,10 @@ export default function Compliance() {
                       disabled={editEvent.onlyRenew}
                     />
                   </label>
-                  <label>
-                    <span className="compliance-form-label">Description</span>
+                  <label className="font-semibold text-blue-700">
+                    Description
                     <input
-                      className="compliance-add-event-input"
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                       type="text"
                       placeholder="Description"
                       value={editEvent.description}
@@ -397,22 +395,20 @@ export default function Compliance() {
                       disabled={editEvent.onlyRenew}
                     />
                   </label>
-                  <label>
-                    <span className="compliance-form-label">
-                      {editEvent.onlyRenew ? "New Due Date" : "Due Date"}
-                    </span>
+                  <label className="font-semibold text-blue-700">
+                    {editEvent.onlyRenew ? "New Due Date" : "Due Date"}
                     <input
-                      className="compliance-add-event-input"
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                       type="date"
                       value={editEvent.due_date ? editEvent.due_date.slice(0,10) : ""}
                       onChange={e => setEditEvent(ev => ({ ...ev, due_date: e.target.value }))}
                       required
                     />
                   </label>
-                  <label>
-                    <span className="compliance-form-label">Reminder days</span>
+                  <label className="font-semibold text-blue-700">
+                    Reminder days
                     <input
-                      className="compliance-add-event-input"
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                       type="text"
                       placeholder="Reminder days (e.g. 90,30,7)"
                       value={editEvent.reminder_days ? editEvent.reminder_days.join(",") : ""}
@@ -428,19 +424,22 @@ export default function Compliance() {
                       disabled={editEvent.onlyRenew}
                     />
                   </label>
-                  <div style={{ display: "flex", gap: 12, marginTop: 10 }}>
-                    <button className="compliance-add-event-btn" type="submit">
+                  <div className="flex gap-4 mt-4">
+                    <button
+                      className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition flex-1"
+                      type="submit"
+                    >
                       Save
                     </button>
                     <button
-                      className="compliance-modal-close-btn"
+                      className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
                       type="button"
                       onClick={() => setEditEvent(null)}
                     >
                       Cancel
                     </button>
                   </div>
-                  {error && <div className="error">{error}</div>}
+                  {error && <div className="text-red-500 text-center mt-2">{error}</div>}
                 </form>
               )}
             </div>
@@ -448,121 +447,131 @@ export default function Compliance() {
         )}
 
         {/* Compliance Tracker */}
-        <section className="compliance-section">
-          <h2>Compliance Tracker</h2>
-          <table className="compliance-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Property</th>
-                <th>Description</th>
-                <th>Due Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(Array.isArray(deadlines) && deadlines.length === 0) ? (
+        <section className="bg-white rounded-2xl p-6 border border-blue-100 shadow mb-10">
+          <h2 className="text-xl font-bold text-blue-700 mb-4">Compliance Tracker</h2>
+          <div className="w-full overflow-x-auto">
+            <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
+              <thead>
                 <tr>
-                  <td colSpan={4} style={{ textAlign: "center", color: "#888" }}>
-                    No compliance deadlines added yet
-                  </td>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Name</th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Property</th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Description</th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Due Date</th>
                 </tr>
-              ) : (
-                (Array.isArray(deadlines) ? deadlines : []).map(item => (
-                  <tr key={item.id} onClick={() => { setSelectedEvent(item); setEventSuccess(""); setError(""); }}>
-                    <td>{item.name}</td>
-                    <td>
-                      {item.property_name}
-                      {item.property_address ? `, ${item.property_address}` : ""}
-                      {item.property_postcode ? `, ${item.property_postcode}` : ""}
-                    </td>
-                    <td>{item.description}</td>
-                    <td>
-                      <span className={`status-bubble ${getDueStatus(item.due_date, item.reminder_days)}`}>
-                        {formatDate(item.due_date)}
-                      </span>
+              </thead>
+              <tbody>
+                {(Array.isArray(deadlines) && deadlines.length === 0) ? (
+                  <tr>
+                    <td colSpan={4} className="text-center text-gray-400 py-8">
+                      No compliance deadlines added yet
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  (Array.isArray(deadlines) ? deadlines : []).map(item => (
+                    <tr key={item.id} className="hover:bg-blue-50 transition cursor-pointer"
+                      onClick={() => { setSelectedEvent(item); setEventSuccess(""); setError(""); }}>
+                      <td className="py-4 px-3">{item.name}</td>
+                      <td className="py-4 px-3">
+                        {item.property_name}
+                        {item.property_address ? `, ${item.property_address}` : ""}
+                        {item.property_postcode ? `, ${item.property_postcode}` : ""}
+                      </td>
+                      <td className="py-4 px-3">{item.description}</td>
+                      <td className="py-4 px-3">
+                        <span className={
+                          `px-4 py-1 rounded-xl font-semibold text-sm
+                          ${getDueStatus(item.due_date, item.reminder_days) === "status-overdue"
+                            ? "bg-red-100 text-red-700"
+                            : getDueStatus(item.due_date, item.reminder_days) === "status-expiringsoon"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-green-100 text-green-700"}`
+                        }>
+                          {formatDate(item.due_date)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </section>
 
         {/* Resource Hub */}
-        <section className="compliance-section">
-          <h2>Regulation Resources</h2>
-          <div className="compliance-resource-grid">
+        <section className="bg-white rounded-2xl p-6 border border-blue-100 shadow mb-10">
+          <h2 className="text-xl font-bold text-blue-700 mb-4">Regulation Resources</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             <a
-              className="compliance-resource-card"
+              className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
               href="https://www.gov.uk/private-renting/your-landlords-safety-responsibilities"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="compliance-resource-title">Landlord Safety Responsibilities</span>
-              <span className="compliance-resource-desc">gov.uk guidance on landlord safety duties</span>
+              <span className="font-bold text-blue-700">Landlord Safety Responsibilities</span>
+              <span className="text-gray-700">gov.uk guidance on landlord safety duties</span>
             </a>
             <a
-              className="compliance-resource-card"
+              className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
               href="https://www.gov.uk/energy-performance-certificate-commercial-property"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="compliance-resource-title">EPC Rules</span>
-              <span className="compliance-resource-desc">Energy Performance Certificate requirements</span>
+              <span className="font-bold text-blue-700">EPC Rules</span>
+              <span className="text-gray-700">Energy Performance Certificate requirements</span>
             </a>
             <a
-              className="compliance-resource-card"
+              className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
               href="https://www.gov.uk/guidance/making-tax-digital-for-vat"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="compliance-resource-title">Making Tax Digital</span>
-              <span className="compliance-resource-desc">Digital tax submission for landlords</span>
+              <span className="font-bold text-blue-700">Making Tax Digital</span>
+              <span className="text-gray-700">Digital tax submission for landlords</span>
             </a>
             <a
-              className="compliance-resource-card"
+              className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
               href="https://www.gov.uk/government/collections/landlord-and-letting-agents-forms"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="compliance-resource-title">Templates & Forms</span>
-              <span className="compliance-resource-desc">Official landlord forms and templates</span>
+              <span className="font-bold text-blue-700">Templates & Forms</span>
+              <span className="text-gray-700">Official landlord forms and templates</span>
             </a>
             <a
-              className="compliance-resource-card"
+              className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
               href="https://www.gov.uk/deposit-protection-schemes-and-landlords"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="compliance-resource-title">Deposit Protection</span>
-              <span className="compliance-resource-desc">Deposit protection scheme rules</span>
+              <span className="font-bold text-blue-700">Deposit Protection</span>
+              <span className="text-gray-700">Deposit protection scheme rules</span>
             </a>
             <a
-              className="compliance-resource-card"
+              className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
               href="https://www.gov.uk/private-renting-tenancy-agreements"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="compliance-resource-title">Tenancy Agreements</span>
-              <span className="compliance-resource-desc">Tenancy agreement legal requirements</span>
+              <span className="font-bold text-blue-700">Tenancy Agreements</span>
+              <span className="text-gray-700">Tenancy agreement legal requirements</span>
             </a>
             <a
-              className="compliance-resource-card"
+              className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
               href="https://www.gov.uk/private-renting-energy-performance-certificates"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="compliance-resource-title">EPC for Private Renting</span>
-              <span className="compliance-resource-desc">EPC rules for private landlords</span>
+              <span className="font-bold text-blue-700">EPC for Private Renting</span>
+              <span className="text-gray-700">EPC rules for private landlords</span>
             </a>
             <a
-              className="compliance-resource-card"
+              className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
               href="https://www.gov.uk/government/publications/how-to-rent"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="compliance-resource-title">How to Rent Guide</span>
-              <span className="compliance-resource-desc">Official government guide for tenants and landlords</span>
+              <span className="font-bold text-blue-700">How to Rent Guide</span>
+              <span className="text-gray-700">Official government guide for tenants and landlords</span>
             </a>
           </div>
         </section>
