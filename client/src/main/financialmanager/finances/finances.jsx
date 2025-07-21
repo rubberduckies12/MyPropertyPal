@@ -307,20 +307,17 @@ export default function Finances() {
   };
 
   function getMonthlySummary(rentPayments, expenses) {
-    // Get current year
     const year = new Date().getFullYear();
+    // Array of month names
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     // Build all months for current year
-    const monthsArr = Array.from({ length: 12 }, (_, i) => {
-      const date = new Date(year, i, 1);
-      return {
-        key: `${year}-${i}`,
-        month: date.toLocaleString("default", { month: "short", year: "numeric" }),
-        income: 0,
-        expenses: 0,
-      };
-    });
+    const monthsArr = Array.from({ length: 12 }, (_, i) => ({
+      key: `${year}-${i}`,
+      month: `${monthNames[i]} ${year}`,
+      income: 0,
+      expenses: 0,
+    }));
 
-    // Fill in income
     rentPayments.forEach(rp => {
       const d = new Date(rp.paid_on || rp.date);
       if (d.getFullYear() === year) {
@@ -329,7 +326,6 @@ export default function Finances() {
       }
     });
 
-    // Fill in expenses
     expenses.forEach(e => {
       const d = new Date(e.incurred_on || e.date);
       if (d.getFullYear() === year) {
