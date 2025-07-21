@@ -8,36 +8,28 @@ const PERIODS = [
   { label: "Yearly", value: "year" },
 ];
 
+const API_BASE = "https://mypropertypal-3.onrender.com/api/finances";
+
 function getPeriodDates(period) {
   const now = new Date();
-  if (period === "month") {
-    const start = new Date(now.getFullYear(), now.getMonth(), 1);
-    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    return { start, end };
-  }
+  if (period === "month") return { start: new Date(now.getFullYear(), now.getMonth(), 1), end: new Date(now.getFullYear(), now.getMonth() + 1, 0) };
   if (period === "quarter") {
-    const quarter = Math.floor(now.getMonth() / 3);
-    const start = new Date(now.getFullYear(), quarter * 3, 1);
-    const end = new Date(now.getFullYear(), quarter * 3 + 3, 0);
-    return { start, end };
+    const q = Math.floor(now.getMonth() / 3);
+    return { start: new Date(now.getFullYear(), q * 3, 1), end: new Date(now.getFullYear(), q * 3 + 3, 0) };
   }
-  // year
-  const start = new Date(now.getFullYear(), 0, 1);
-  const end = new Date(now.getFullYear(), 11, 31);
-  return { start, end };
+  return { start: new Date(now.getFullYear(), 0, 1), end: new Date(now.getFullYear(), 11, 31) };
 }
 
 function filterByPeriod(items, period) {
   const { start, end } = getPeriodDates(period);
   return items.filter(item => {
-    const d = new Date(item.date);
+    const d = new Date(item.date || item.paid_on || item.due_date || item.incurred_on);
     return d >= start && d <= end;
   });
 }
 
-const API_BASE = "https://mypropertypal-3.onrender.com/api/finances";
-
 export default function Finances() {
+  // State
   const [period, setPeriod] = useState("month");
   const [rentPayments, setRentPayments] = useState([]);
   const [expenses, setExpenses] = useState([]);
@@ -48,13 +40,6 @@ export default function Finances() {
   const [error, setError] = useState("");
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showRentModal, setShowRentModal] = useState(false);
-  const [expenseForm, setExpenseForm] = useState({
-    property_id: "",
-    amount: "",
-    category: "",
-    description: "",
-    incurred_on: "",
-  });
   const [rentForm, setRentForm] = useState({
     property_id: "",
     tenant_id: "",
@@ -63,254 +48,88 @@ export default function Finances() {
     method: "",
     reference: "",
   });
-  const [editExpenseModal, setEditExpenseModal] = useState(null);
   const [editRentModal, setEditRentModal] = useState(null);
   const [properties, setProperties] = useState([]);
   const [tenants, setTenants] = useState([]);
-  const [user, setUser] = useState(null);
   const [expectedRent, setExpectedRent] = useState([]);
-  const [chartType, setChartType] = useState("bar"); // "bar" or "line"
+  const [chartType, setChartType] = useState("bar");
+  const [openRentDropdown, setOpenRentDropdown] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [rentToDelete, setRentToDelete] = useState(null);
 
+  const [openExpenseDropdown, setOpenExpenseDropdown] = useState(null);
+  const [editExpenseModal, setEditExpenseModal] = useState(null);
+  const [expenseForm, setExpenseForm] = useState({
+    property_id: "",
+    amount: "",
+    category: "",
+    description: "",
+    incurred_on: "",
+  });
+  const [showDeleteExpenseConfirm, setShowDeleteExpenseConfirm] = useState(false);
+  const [expenseToDelete, setExpenseToDelete] = useState(null);
+
+  // Fetch data
   useEffect(() => {
-    async function fetchFinances() {
+    async function fetchAll() {
       setLoading(true);
       setError("");
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(API_BASE, {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
-        });
-        if (!res.ok) throw new Error("Failed to fetch finances");
-        const data = await res.json();
-        setRentPayments(data.rentPayments || []);
-        setExpenses(data.expenses || []);
-        setTotalIncome(data.totalIncome || 0);
-        setTotalExpenses(data.totalExpenses || 0);
-        setTaxableProfit(data.taxableProfit || 0);
-        setUser(data.user || null);
+        const [finRes, propRes, tenantRes, expRentRes] = await Promise.all([
+          fetch(API_BASE, { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
+          fetch("https://mypropertypal-3.onrender.com/api/properties", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
+          fetch("https://mypropertypal-3.onrender.com/api/tenants", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
+          fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
+        ]);
+        if (!finRes.ok) throw new Error("Failed to fetch finances");
+        const finData = await finRes.json();
+        setRentPayments(finData.rentPayments || []);
+        setExpenses(finData.expenses || []);
+        setTotalIncome(finData.totalIncome || 0);
+        setTotalExpenses(finData.totalExpenses || 0);
+        setTaxableProfit(finData.taxableProfit || 0);
+
+        if (propRes.ok) {
+          const data = await propRes.json();
+          setProperties(data.properties || []);
+        }
+        if (tenantRes.ok) {
+          const data = await tenantRes.json();
+          setTenants(data.tenants || []);
+        }
+        if (expRentRes.ok) {
+          const data = await expRentRes.json();
+          setExpectedRent(data.expected || []);
+        }
       } catch (err) {
         setError(err.message || "Error loading finances");
       } finally {
         setLoading(false);
       }
     }
-    fetchFinances();
+    fetchAll();
   }, []);
 
-  useEffect(() => {
-    async function fetchDropdowns() {
-      const token = localStorage.getItem("token");
-      try {
-        const propRes = await fetch("https://mypropertypal-3.onrender.com/api/properties", {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
-        });
-        if (propRes.ok) {
-          const data = await propRes.json();
-          setProperties(data.properties || []);
-        }
-        const tenantRes = await fetch("https://mypropertypal-3.onrender.com/api/tenants", {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
-        });
-        if (tenantRes.ok) {
-          const data = await tenantRes.json();
-          setTenants(data.tenants || []);
-        }
-      } catch {}
-    }
-    fetchDropdowns();
-  }, []);
-
-  useEffect(() => {
-    async function fetchExpectedRent() {
-      const token = localStorage.getItem("token");
-      const res = await fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", {
-        headers: { Authorization: token ? `Bearer ${token}` : "" }
-      });
-      const data = await res.json();
-      setExpectedRent(data.expected || []);
-    }
-    fetchExpectedRent();
-  }, []);
-
+  // Filtering
   const filteredRent = filterByPeriod(rentPayments, period);
   const filteredExpenses = filterByPeriod(expenses, period);
 
-  async function handleAddExpense(e) {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_BASE}/expense`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify(expenseForm),
-      });
-      if (!res.ok) throw new Error("Failed to add expense");
-      setShowExpenseModal(false);
-      setExpenseForm({
-        property_id: "",
-        amount: "",
-        category: "",
-        description: "",
-        incurred_on: "",
-      });
-      const refreshed = await fetch(API_BASE, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      });
-      const data = await refreshed.json();
-      setExpenses(data.expenses || []);
-      setTotalExpenses(data.totalExpenses || 0);
-      setTaxableProfit(data.taxableProfit || 0);
-    } catch (err) {
-      alert(err.message || "Failed to add expense");
-    }
-  }
+  // Only show tenants for the selected property (fix: use property_id only)
+  const filteredTenants = tenants.filter(
+    t => !rentForm.property_id || t.property_id === rentForm.property_id
+  );
 
-  async function handleAddRent(e) {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_BASE}/rent`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify(rentForm),
-      });
-      if (!res.ok) throw new Error("Failed to add rent payment");
-      setShowRentModal(false);
-      setRentForm({
-        property_id: "",
-        tenant_id: "",
-        amount: "",
-        paid_on: "",
-        method: "",
-        reference: "",
-      });
-      const refreshed = await fetch(API_BASE, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      });
-      const data = await refreshed.json();
-      setRentPayments(data.rentPayments || []);
-      setTotalIncome(data.totalIncome || 0);
-      setTaxableProfit(data.taxableProfit || 0);
-    } catch (err) {
-      alert(err.message || "Failed to add rent payment");
-    }
-  }
-
-  async function handleEditExpense(e) {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("token");
-      const { id, property_id, amount, category, description, incurred_on } = editExpenseModal;
-      const res = await fetch(`${API_BASE}/expense/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({ property_id, amount, category, description, incurred_on }),
-      });
-      if (!res.ok) throw new Error("Failed to update expense");
-      setEditExpenseModal(null);
-      const refreshed = await fetch(API_BASE, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      });
-      const data = await refreshed.json();
-      setExpenses(data.expenses || []);
-      setTotalExpenses(data.totalExpenses || 0);
-      setTaxableProfit(data.taxableProfit || 0);
-    } catch (err) {
-      alert(err.message || "Failed to update expense");
-    }
-  }
-
-  async function handleEditRent(e) {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("token");
-      const { id, property_id, tenant_id, amount, paid_on, method, reference } = editRentModal;
-      const res = await fetch(`${API_BASE}/rent/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-        body: JSON.stringify({ property_id, tenant_id, amount, paid_on, method, reference }),
-      });
-      if (!res.ok) throw new Error("Failed to update rent payment");
-      setEditRentModal(null);
-      const refreshed = await fetch(API_BASE, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      });
-      const data = await refreshed.json();
-      setRentPayments(data.rentPayments || []);
-      setTotalIncome(data.totalIncome || 0);
-      setTaxableProfit(data.taxableProfit || 0);
-    } catch (err) {
-      alert(err.message || "Failed to update rent payment");
-    }
-  }
-
-  async function handleExportTaxReport() {
-    try {
-      const year = new Date().getFullYear();
-      const token = localStorage.getItem("token");
-      const res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/tax-report?year=${year}`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" }
-      });
-      if (!res.ok) throw new Error("Failed to generate tax report.");
-      const blob = await res.blob();
-      // Create a download link for the PDF
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `tax-report-${year}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      alert("Failed to generate tax report.");
-    }
-  }
-
+  // Helpers
   function formatDate(dateStr) {
     if (!dateStr) return "";
     const d = new Date(dateStr);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
   }
-
-  const deleteRentPayment = async (rentId) => {
-    const token = localStorage.getItem("token");
-    await fetch(`${API_BASE}/rent/${rentId}`, {
-      method: "DELETE",
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
-    });
-    setRentPayments(rentPayments => rentPayments.filter(r => r.id !== rentId));
-  };
-
-  const deleteExpense = async (expenseId) => {
-    const token = localStorage.getItem("token");
-    await fetch(`${API_BASE}/expense/${expenseId}`, {
-      method: "DELETE",
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
-    });
-    setExpenses(expenses => expenses.filter(e => e.id !== expenseId));
-  };
 
   function getMonthlySummary(rentPayments, expenses) {
     const year = new Date().getFullYear();
-    // Array of month names
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    // Build all months for current year
     const monthsArr = Array.from({ length: 12 }, (_, i) => ({
       key: `${year}-${i}`,
       month: `${monthNames[i]} ${year}`,
@@ -320,18 +139,12 @@ export default function Finances() {
 
     rentPayments.forEach(rp => {
       const d = new Date(rp.paid_on || rp.date);
-      if (d.getFullYear() === year) {
-        const idx = d.getMonth();
-        monthsArr[idx].income += Number(rp.amount || 0);
-      }
+      if (d.getFullYear() === year) monthsArr[d.getMonth()].income += Number(rp.amount || 0);
     });
 
     expenses.forEach(e => {
       const d = new Date(e.incurred_on || e.date);
-      if (d.getFullYear() === year) {
-        const idx = d.getMonth();
-        monthsArr[idx].expenses += Number(e.amount || 0);
-      }
+      if (d.getFullYear() === year) monthsArr[d.getMonth()].expenses += Number(e.amount || 0);
     });
 
     return monthsArr;
@@ -339,11 +152,7 @@ export default function Finances() {
 
   const monthlySummaryData = getMonthlySummary(rentPayments, expenses);
 
-  // Track which dropdown is open for actions
-  const [openRentDropdown, setOpenRentDropdown] = useState(null);
-  const [openExpenseDropdown, setOpenExpenseDropdown] = useState(null);
-
-  // Close dropdowns when clicking outside
+  // Dropdown close on outside click
   useEffect(() => {
     function handleClick() {
       setOpenRentDropdown(null);
@@ -353,20 +162,398 @@ export default function Finances() {
     return () => window.removeEventListener("click", handleClick);
   }, []);
 
-  const summaryData = [
-    { name: "Rent Received", value: totalIncome },
-    { name: "Expenses", value: totalExpenses },
-  ];
+  // --- Rent Modal Logic ---
+  function openAddRentModal(payment) {
+    setEditRentModal(null);
+    setRentForm({
+      property_id: payment.property_id,
+      tenant_id: "",
+      amount: payment.amount,
+      paid_on: payment.due_date,
+      method: "",
+      reference: "",
+    });
+    setShowRentModal(true);
+  }
+
+  function openEditRentModal(payment) {
+    setEditRentModal(payment);
+    setRentForm({
+      property_id: payment.property_id,
+      tenant_id: payment.tenant_id,
+      amount: payment.amount,
+      paid_on: payment.paid_on,
+      method: payment.method || "",
+      reference: payment.reference || "",
+    });
+    setShowRentModal(true);
+  }
+
+  async function handleAddOrEditRent(e) {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    try {
+      let res;
+      if (editRentModal) {
+        // Rent payment update
+        res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/rent/${editRentModal.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+          body: JSON.stringify(rentForm),
+        });
+        if (!res.ok) throw new Error("Failed to update rent payment");
+      } else {
+        // Rent add
+        res = await fetch("https://mypropertypal-3.onrender.com/api/finances/rent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+          body: JSON.stringify(rentForm),
+        });
+        if (!res.ok) throw new Error("Failed to add rent payment");
+      }
+      setShowRentModal(false);
+      setEditRentModal(null);
+      setRentForm({ property_id: "", tenant_id: "", amount: "", paid_on: "", method: "", reference: "" });
+      const refreshed = await fetch(API_BASE, { headers: { Authorization: token ? `Bearer ${token}` : "" } });
+      const data = await refreshed.json();
+      setRentPayments(data.rentPayments || []);
+      setTotalIncome(data.totalIncome || 0);
+      setTaxableProfit(data.taxableProfit || 0);
+    } catch (err) {
+      alert(err.message || "Failed to save rent payment");
+    }
+  }
+
+  async function confirmDeleteRentPayment() {
+    if (!rentToDelete) return;
+    const token = localStorage.getItem("token");
+    await fetch(`https://mypropertypal-3.onrender.com/api/finances/rent/${rentToDelete}`, {
+      method: "DELETE",
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    });
+    setRentPayments(rentPayments => rentPayments.filter(r => r.id !== rentToDelete));
+    setShowDeleteConfirm(false);
+    setRentToDelete(null);
+  }
+
+  // --- Expense Modal Logic ---
+  function openEditExpenseModal(expense) {
+    setEditExpenseModal(expense);
+    setExpenseForm({
+      property_id: expense.property_id || "",
+      amount: expense.amount || "",
+      category: expense.category || "",
+      description: expense.description || "",
+      incurred_on: expense.incurred_on ? expense.incurred_on.slice(0, 10) : expense.date ? expense.date.slice(0, 10) : "",
+    });
+    setShowExpenseModal(true);
+  }
+
+  async function handleAddOrEditExpense(e) {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    try {
+      let res;
+      if (editExpenseModal) {
+        // Expense update
+        res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/expense/${editExpenseModal.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+          body: JSON.stringify(expenseForm),
+        });
+        if (!res.ok) throw new Error("Failed to update expense");
+      } else {
+        // Expense add
+        res = await fetch("https://mypropertypal-3.onrender.com/api/finances/expense", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
+          body: JSON.stringify(expenseForm),
+        });
+        if (!res.ok) throw new Error("Failed to add expense");
+      }
+      setShowExpenseModal(false);
+      setEditExpenseModal(null);
+      setExpenseForm({ property_id: "", amount: "", category: "", description: "", incurred_on: "" });
+      const refreshed = await fetch(API_BASE, { headers: { Authorization: token ? `Bearer ${token}` : "" } });
+      const data = await refreshed.json();
+      setExpenses(data.expenses || []);
+      setTotalExpenses(data.totalExpenses || 0);
+      setTaxableProfit(data.taxableProfit || 0);
+    } catch (err) {
+      alert(err.message || "Failed to save expense");
+    }
+  }
+
+  async function confirmDeleteExpense() {
+    if (!expenseToDelete) return;
+    const token = localStorage.getItem("token");
+    await fetch(`https://mypropertypal-3.onrender.com/api/finances/expense/${expenseToDelete}`, {
+      method: "DELETE",
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    });
+    setExpenses(expenses => expenses.filter(e => e.id !== expenseToDelete));
+    setShowDeleteExpenseConfirm(false);
+    setExpenseToDelete(null);
+  }
+
+  // --- Modal UI ---
+  function RentModal() {
+    if (!showRentModal) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+        <form
+          className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md"
+          onSubmit={handleAddOrEditRent}
+          onClick={e => e.stopPropagation()}
+        >
+          <h2 className="text-xl font-bold mb-4 text-blue-700">
+            {editRentModal ? "Edit Rent Payment" : "Mark Rent Received"}
+          </h2>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Property</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={rentForm.property_id}
+              onChange={e => setRentForm(f => ({
+                ...f,
+                property_id: e.target.value,
+                tenant_id: ""
+              }))}
+              required
+            >
+              <option value="">Select property</option>
+              {properties.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Tenant</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={String(rentForm.tenant_id)}
+              onChange={e => setRentForm(f => ({ ...f, tenant_id: e.target.value }))}
+              required
+            >
+              <option value="">Select tenant</option>
+              {filteredTenants.map(t => (
+                <option key={t.id} value={String(t.id)}>
+                  {t.name || `${t.first_name || ""} ${t.last_name || ""}`.trim()}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Amount</label>
+            <input
+              type="number"
+              className="w-full border rounded px-3 py-2"
+              value={rentForm.amount}
+              onChange={e => setRentForm(f => ({ ...f, amount: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Date Paid</label>
+            <input
+              type="date"
+              className="w-full border rounded px-3 py-2"
+              value={rentForm.paid_on ? rentForm.paid_on.slice(0, 10) : ""}
+              onChange={e => setRentForm(f => ({ ...f, paid_on: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Method</label>
+            <input
+              type="text"
+              className="w-full border rounded px-3 py-2"
+              value={typeof rentForm.method === "string" ? rentForm.method : (rentForm.method ? String(rentForm.method) : "")}
+              onChange={e => setRentForm(f => ({ ...f, method: e.target.value }))}
+              autoComplete="off"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Reference</label>
+            <input
+              type="text"
+              className="w-full border rounded px-3 py-2"
+              value={typeof rentForm.reference === "string" ? rentForm.reference : (rentForm.reference ? String(rentForm.reference) : "")}
+              onChange={e => setRentForm(f => ({ ...f, reference: e.target.value }))}
+              autoComplete="off"
+            />
+          </div>
+          <div className="flex gap-4 mt-6">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+            >
+              {editRentModal ? "Save Changes" : "Mark Received"}
+            </button>
+            <button
+              type="button"
+              className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 hover:bg-gray-300 transition"
+              onClick={() => {
+                setShowRentModal(false);
+                setEditRentModal(null);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  function ExpenseModal() {
+    if (!showExpenseModal) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+        <form
+          className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md"
+          onSubmit={handleAddOrEditExpense}
+          onClick={e => e.stopPropagation()}
+        >
+          <h2 className="text-xl font-bold mb-4 text-blue-700">
+            {editExpenseModal ? "Edit Expense" : "Add Expense"}
+          </h2>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Property</label>
+            <select
+              className="w-full border rounded px-3 py-2"
+              value={expenseForm.property_id}
+              onChange={e => setExpenseForm(f => ({ ...f, property_id: e.target.value }))}
+            >
+              <option value="">Select property</option>
+              {properties.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Amount</label>
+            <input
+              type="number"
+              className="w-full border rounded px-3 py-2"
+              value={expenseForm.amount}
+              onChange={e => setExpenseForm(f => ({ ...f, amount: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Category</label>
+            <input
+              type="text"
+              className="w-full border rounded px-3 py-2"
+              value={typeof expenseForm.category === "string" ? expenseForm.category : (expenseForm.category ? String(expenseForm.category) : "")}
+              onChange={e => setExpenseForm(f => ({ ...f, category: e.target.value }))}
+              autoComplete="off"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Description</label>
+            <input
+              type="text"
+              className="w-full border rounded px-3 py-2"
+              value={typeof expenseForm.description === "string" ? expenseForm.description : (expenseForm.description ? String(expenseForm.description) : "")}
+              onChange={e => setExpenseForm(f => ({ ...f, description: e.target.value }))}
+              autoComplete="off"
+              maxLength={200}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-semibold mb-1">Date</label>
+            <input
+              type="date"
+              className="w-full border rounded px-3 py-2"
+              value={expenseForm.incurred_on ?? ""}
+              onChange={e => setExpenseForm(f => ({ ...f, incurred_on: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="flex gap-4 mt-6">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+            >
+              {editExpenseModal ? "Save Changes" : "Add Expense"}
+            </button>
+            <button
+              type="button"
+              className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 hover:bg-gray-300 transition"
+              onClick={() => {
+                setShowExpenseModal(false);
+                setEditExpenseModal(null);
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  }
+
+  function DeleteConfirmModal() {
+    if (!showDeleteConfirm) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30" onClick={() => setShowDeleteConfirm(false)}>
+        <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm" onClick={e => e.stopPropagation()}>
+          <h2 className="text-xl font-bold mb-4 text-red-700">Are you sure?</h2>
+          <p className="mb-6">This will permanently delete this rent payment.</p>
+          <div className="flex gap-4">
+            <button
+              className="bg-red-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-red-700 transition"
+              onClick={confirmDeleteRentPayment}
+            >
+              Delete
+            </button>
+            <button
+              className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 hover:bg-gray-300 transition"
+              onClick={() => setShowDeleteConfirm(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function DeleteExpenseConfirmModal() {
+    if (!showDeleteExpenseConfirm) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30" onClick={() => setShowDeleteExpenseConfirm(false)}>
+        <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm" onClick={e => e.stopPropagation()}>
+          <h2 className="text-xl font-bold mb-4 text-red-700">Are you sure?</h2>
+          <p className="mb-6">This will permanently delete this expense.</p>
+          <div className="flex gap-4">
+            <button
+              className="bg-red-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-red-700 transition"
+              onClick={confirmDeleteExpense}
+            >
+              Delete
+            </button>
+            <button
+              className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 hover:bg-gray-300 transition"
+              onClick={() => setShowDeleteExpenseConfirm(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   function HouseBarShape(props) {
     const { x, y, width, height, fill } = props;
     const roofHeight = Math.min(14, height * 0.22);
     const roofOverhang = Math.max(3, width * 0.12);
-
-    // Roof base is at y + roofHeight, roof top is at y
     return (
       <g>
-        {/* Roof */}
         <polygon
           points={`
             ${x - roofOverhang},${y + roofHeight}
@@ -375,7 +562,6 @@ export default function Finances() {
           `}
           fill={fill}
         />
-        {/* Body */}
         <rect
           x={x}
           y={y + roofHeight}
@@ -383,7 +569,6 @@ export default function Finances() {
           height={height - roofHeight}
           fill={fill}
         />
-        {/* Door (optional, subtle) */}
         {height > 30 && (
           <rect
             x={x + width / 2 - width * 0.10}
@@ -398,25 +583,56 @@ export default function Finances() {
     );
   }
 
+  function getStatusBubble(status) {
+    let color = "bg-blue-100 text-blue-700";
+    let label = status;
+    if (status === "Late" || status === "Overdue") {
+      color = "bg-red-100 text-red-700";
+      label = "Overdue";
+    } else if (status === "Not Paid") {
+      color = "bg-yellow-100 text-yellow-800";
+      label = "Not Paid";
+    } else if (status === "On Time" || status === "Paid") {
+      color = "bg-blue-100 text-blue-700";
+      label = "On Time";
+    }
+    return (
+      <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${color}`}>
+        {label}
+      </span>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <RentModal />
+      <ExpenseModal />
+      <DeleteConfirmModal />
+      <DeleteExpenseConfirmModal />
       <div className="w-64 flex-shrink-0 h-screen">
         <Sidebar />
       </div>
-      {/* Make main content scrollable, not each table */}
       <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-auto">
         <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
           <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Financial Manager</h1>
           <div className="flex gap-4">
             <button
               className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
-              onClick={() => setShowExpenseModal(true)}
+              onClick={() => {
+                setEditExpenseModal(null);
+                setExpenseForm({ property_id: "", amount: "", category: "", description: "", incurred_on: "" });
+                setShowExpenseModal(true);
+              }}
             >
               + Add Expense
             </button>
             <button
               className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
-              onClick={() => setShowRentModal(true)}
+              onClick={() => {
+                setEditRentModal(null);
+                setRentForm({ property_id: "", tenant_id: "", amount: "", paid_on: "", method: "", reference: "" });
+                setShowRentModal(true);
+              }}
             >
               + Mark Rent Received
             </button>
@@ -490,25 +706,11 @@ export default function Finances() {
                           <td className="py-4 px-3">{payment.tenant}</td>
                           <td className="py-4 px-3">£{payment.amount}</td>
                           <td className="py-4 px-3">{payment.due_date ? formatDate(payment.due_date) : ""}</td>
-                          <td className="py-4 px-3">
-                            <span className="px-4 py-1 rounded-xl font-semibold text-sm bg-blue-100 text-blue-700">
-                              {payment.status}
-                            </span>
-                          </td>
+                          <td className="py-4 px-3">{getStatusBubble(payment.status)}</td>
                           <td className="py-4 px-3">
                             <button
                               className="bg-blue-600 text-white font-semibold rounded-lg px-3 py-1 hover:bg-blue-700 transition"
-                              onClick={() => {
-                                setRentForm({
-                                  property_id: payment.property_id,
-                                  tenant_id: payment.tenant_id,
-                                  amount: payment.amount,
-                                  paid_on: payment.due_date,
-                                  method: "",
-                                  reference: "",
-                                });
-                                setShowRentModal(true);
-                              }}
+                              onClick={() => openAddRentModal(payment)}
                             >
                               Mark as Received
                             </button>
@@ -556,13 +758,7 @@ export default function Finances() {
                           <td className="py-4 px-3">{payment.paid_on ? formatDate(payment.paid_on) : ""}</td>
                           <td className="py-4 px-3">{payment.method || ""}</td>
                           <td className="py-4 px-3">{payment.reference || ""}</td>
-                          <td className="py-4 px-3">
-                            {payment.payment_status === "Late" ? (
-                              <span className="text-red-600 font-semibold">Late</span>
-                            ) : (
-                              <span className="text-green-600 font-semibold">On Time</span>
-                            )}
-                          </td>
+                          <td className="py-4 px-3">{getStatusBubble(payment.payment_status)}</td>
                           <td className="py-4 px-3">
                             <div className="relative">
                               <button
@@ -578,13 +774,16 @@ export default function Finances() {
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden z-10">
                                   <button
                                     className="w-full text-left px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition"
-                                    onClick={() => setEditRentModal(payment)}
+                                    onClick={() => openEditRentModal(payment)}
                                   >
                                     Edit
                                   </button>
                                   <button
                                     className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition"
-                                    onClick={() => deleteRentPayment(payment.id)}
+                                    onClick={() => {
+                                      setRentToDelete(payment.id);
+                                      setShowDeleteConfirm(true);
+                                    }}
                                   >
                                     Delete
                                   </button>
@@ -624,7 +823,7 @@ export default function Finances() {
                     ) : (
                       filteredExpenses.map(expense => (
                         <tr key={expense.id}>
-                          <td className="py-4 px-3">{formatDate(expense.date)}</td>
+                          <td className="py-4 px-3">{formatDate(expense.date || expense.incurred_on)}</td>
                           <td className="py-4 px-3">{expense.category}</td>
                           <td className="py-4 px-3">{expense.description}</td>
                           <td className="py-4 px-3">£{expense.amount}</td>
@@ -643,13 +842,16 @@ export default function Finances() {
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden z-10">
                                   <button
                                     className="w-full text-left px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition"
-                                    onClick={() => setEditExpenseModal(expense)}
+                                    onClick={() => openEditExpenseModal(expense)}
                                   >
                                     Edit
                                   </button>
                                   <button
                                     className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition"
-                                    onClick={() => deleteExpense(expense.id)}
+                                    onClick={() => {
+                                      setExpenseToDelete(expense.id);
+                                      setShowDeleteExpenseConfirm(true);
+                                    }}
                                   >
                                     Delete
                                   </button>
@@ -675,8 +877,6 @@ export default function Finances() {
                     <span
                       className="relative inline-block w-12 h-6 bg-blue-200 rounded-full transition"
                       onClick={() => setChartType(chartType === "bar" ? "line" : "bar")}
-                      style={{ cursor: "pointer" }}
-                      tabIndex={0}
                       role="button"
                       aria-pressed={chartType === "line"}
                       onKeyDown={e => {
