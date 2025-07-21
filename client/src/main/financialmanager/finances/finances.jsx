@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
-import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, CartesianGrid } from "recharts";
+import ExpenseModal from "./ExpenseModal.jsx";
+import RentModal from "./RentModal.jsx";
+import DeleteConfirmModal from "./DeleteConfirmModal.jsx";
+import DeleteExpenseConfirmModal from "./DeleteExpenseConfirmModal.jsx";
+import { BarChart, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, Line, ResponsiveContainer } from "recharts";
 
 const PERIODS = [
   { label: "Monthly", value: "month" },
   { label: "Quarterly", value: "quarter" },
   { label: "Yearly", value: "year" },
 ];
-
-const API_BASE = "https://mypropertypal-3.onrender.com/api/finances";
 
 function getPeriodDates(period) {
   const now = new Date();
@@ -39,7 +41,7 @@ export default function Finances() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showExpenseModal, setShowExpenseModal] = useState(false);
-  const [showRentModal, setShowRentModal] = useState(false);
+  const [editExpenseModal, setEditExpenseModal] = useState(null);
   const [rentForm, setRentForm] = useState({
     property_id: "",
     tenant_id: "",
@@ -49,6 +51,7 @@ export default function Finances() {
     reference: "",
   });
   const [editRentModal, setEditRentModal] = useState(null);
+  const [showRentModal, setShowRentModal] = useState(false);
   const [properties, setProperties] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [expectedRent, setExpectedRent] = useState([]);
@@ -58,7 +61,6 @@ export default function Finances() {
   const [rentToDelete, setRentToDelete] = useState(null);
 
   const [openExpenseDropdown, setOpenExpenseDropdown] = useState(null);
-  const [editExpenseModal, setEditExpenseModal] = useState(null);
   const [expenseForm, setExpenseForm] = useState({
     property_id: "",
     amount: "",
@@ -69,7 +71,7 @@ export default function Finances() {
   const [showDeleteExpenseConfirm, setShowDeleteExpenseConfirm] = useState(false);
   const [expenseToDelete, setExpenseToDelete] = useState(null);
 
-  // Fetch data
+  // Fetch data from backend
   useEffect(() => {
     async function fetchAll() {
       setLoading(true);
@@ -77,7 +79,7 @@ export default function Finances() {
       try {
         const token = localStorage.getItem("token");
         const [finRes, propRes, tenantRes, expRentRes] = await Promise.all([
-          fetch(API_BASE, { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
+          fetch("https://mypropertypal-3.onrender.com/api/finances", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
           fetch("https://mypropertypal-3.onrender.com/api/properties", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
           fetch("https://mypropertypal-3.onrender.com/api/tenants", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
           fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", { headers: { Authorization: token ? `Bearer ${token}` : "" } }),
@@ -115,7 +117,7 @@ export default function Finances() {
   const filteredRent = filterByPeriod(rentPayments, period);
   const filteredExpenses = filterByPeriod(expenses, period);
 
-  // Only show tenants for the selected property (fix: use property_id only)
+  // Only show tenants for the selected property
   const filteredTenants = tenants.filter(
     t => !rentForm.property_id || t.property_id === rentForm.property_id
   );
@@ -166,10 +168,10 @@ export default function Finances() {
   function openAddRentModal(payment) {
     setEditRentModal(null);
     setRentForm({
-      property_id: payment.property_id,
-      tenant_id: "",
-      amount: payment.amount,
-      paid_on: payment.due_date,
+      property_id: payment.property_id || "",
+      tenant_id: payment.tenant_id || "", // ✅ FIX: ensure tenant_id is set
+      amount: payment.amount ? String(payment.amount) : "",
+      paid_on: payment.due_date ? payment.due_date.slice(0, 10) : "",
       method: "",
       reference: "",
     });
@@ -179,10 +181,10 @@ export default function Finances() {
   function openEditRentModal(payment) {
     setEditRentModal(payment);
     setRentForm({
-      property_id: payment.property_id,
-      tenant_id: payment.tenant_id,
-      amount: payment.amount,
-      paid_on: payment.paid_on,
+      property_id: payment.property_id || "",
+      tenant_id: payment.tenant_id || "",
+      amount: payment.amount ? String(payment.amount) : "",
+      paid_on: payment.paid_on ? payment.paid_on.slice(0, 10) : "",
       method: payment.method || "",
       reference: payment.reference || "",
     });
@@ -193,32 +195,54 @@ export default function Finances() {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
+      console.log("Submitting rent payment:", rentForm); // ✅ Debug tip
+      const payload = {
+        property_id: Number(rentForm.property_id),
+        tenant_id: Number(rentForm.tenant_id),
+        amount: Number(rentForm.amount),
+        paid_on: rentForm.paid_on,
+        method: rentForm.method || "",
+        reference: rentForm.reference || ""
+      };
       let res;
       if (editRentModal) {
-        // Rent payment update
         res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/rent/${editRentModal.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
-          body: JSON.stringify(rentForm),
+          body: JSON.stringify(payload),
         });
-        if (!res.ok) throw new Error("Failed to update rent payment");
+        if (!res.ok) {
+          const errMsg = await res.text();
+          console.error("Rent update error:", errMsg);
+          throw new Error("Failed to update rent payment");
+        }
+        const updated = await res.json();
+        setRentPayments(prev => prev.map(r => r.id === editRentModal.id ? updated : r));
       } else {
-        // Rent add
         res = await fetch("https://mypropertypal-3.onrender.com/api/finances/rent", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
-          body: JSON.stringify(rentForm),
+          body: JSON.stringify(payload),
         });
-        if (!res.ok) throw new Error("Failed to add rent payment");
+        if (!res.ok) {
+          const errMsg = await res.text();
+          console.error("Rent add error:", errMsg);
+          throw new Error("Failed to add rent payment");
+        }
+        const added = await res.json();
+        setRentPayments(prev => [...prev, added]);
+      }
+      // ✅ Refetch expectedRent after saving rent
+      const expRentRes = await fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      });
+      if (expRentRes.ok) {
+        const data = await expRentRes.json();
+        setExpectedRent(data.expected || []);
       }
       setShowRentModal(false);
       setEditRentModal(null);
       setRentForm({ property_id: "", tenant_id: "", amount: "", paid_on: "", method: "", reference: "" });
-      const refreshed = await fetch(API_BASE, { headers: { Authorization: token ? `Bearer ${token}` : "" } });
-      const data = await refreshed.json();
-      setRentPayments(data.rentPayments || []);
-      setTotalIncome(data.totalIncome || 0);
-      setTaxableProfit(data.taxableProfit || 0);
     } catch (err) {
       alert(err.message || "Failed to save rent payment");
     }
@@ -239,46 +263,57 @@ export default function Finances() {
   // --- Expense Modal Logic ---
   function openEditExpenseModal(expense) {
     setEditExpenseModal(expense);
-    setExpenseForm({
-      property_id: expense.property_id || "",
-      amount: expense.amount || "",
-      category: expense.category || "",
-      description: expense.description || "",
-      incurred_on: expense.incurred_on ? expense.incurred_on.slice(0, 10) : expense.date ? expense.date.slice(0, 10) : "",
-    });
     setShowExpenseModal(true);
   }
 
-  async function handleAddOrEditExpense(e) {
-    e.preventDefault();
+  async function handleExpenseModalSubmit(form) {
     const token = localStorage.getItem("token");
+    const payload = {
+      property_id: Number(form.property_id),
+      amount: Number(form.amount),
+      category: form.category,
+      description: form.description || "",
+      incurred_on: form.incurred_on
+    };
     try {
       let res;
       if (editExpenseModal) {
-        // Expense update
         res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/expense/${editExpenseModal.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
-          body: JSON.stringify(expenseForm),
+          body: JSON.stringify(payload),
         });
-        if (!res.ok) throw new Error("Failed to update expense");
+        if (!res.ok) {
+          const errMsg = await res.text();
+          console.error("Expense update error:", errMsg);
+          throw new Error("Failed to update expense");
+        }
+        const updated = await res.json();
+        setExpenses(prev => prev.map(e => e.id === editExpenseModal.id ? updated : e));
       } else {
-        // Expense add
         res = await fetch("https://mypropertypal-3.onrender.com/api/finances/expense", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: token ? `Bearer ${token}` : "" },
-          body: JSON.stringify(expenseForm),
+          body: JSON.stringify(payload),
         });
-        if (!res.ok) throw new Error("Failed to add expense");
+        if (!res.ok) {
+          const errMsg = await res.text();
+          console.error("Expense add error:", errMsg);
+          throw new Error("Failed to add expense");
+        }
+        const added = await res.json();
+        setExpenses(prev => [...prev, added]);
       }
       setShowExpenseModal(false);
       setEditExpenseModal(null);
-      setExpenseForm({ property_id: "", amount: "", category: "", description: "", incurred_on: "" });
-      const refreshed = await fetch(API_BASE, { headers: { Authorization: token ? `Bearer ${token}` : "" } });
-      const data = await refreshed.json();
-      setExpenses(data.expenses || []);
-      setTotalExpenses(data.totalExpenses || 0);
-      setTaxableProfit(data.taxableProfit || 0);
+      // ✅ Refetch expectedRent after expense change (optional, if needed)
+      // const expRentRes = await fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", {
+      //   headers: { Authorization: token ? `Bearer ${token}` : "" },
+      // });
+      // if (expRentRes.ok) {
+      //   const data = await expRentRes.json();
+      //   setExpectedRent(data.expected || []);
+      // }
     } catch (err) {
       alert(err.message || "Failed to save expense");
     }
@@ -296,275 +331,7 @@ export default function Finances() {
     setExpenseToDelete(null);
   }
 
-  // --- Modal UI ---
-  function RentModal() {
-    if (!showRentModal) return null;
-
-    // Find property and tenant objects for display
-    const selectedProperty = properties.find(p => p.id === rentForm.property_id);
-    const selectedTenant = tenants.find(t => t.id === rentForm.tenant_id);
-
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-        <form
-          className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md"
-          onSubmit={handleAddOrEditRent}
-          onClick={e => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4 text-blue-700">
-            {editRentModal ? "Edit Rent Payment" : "Mark Rent Received"}
-          </h2>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Property</label>
-            {editRentModal && selectedProperty && (
-              <div className="mb-2 text-blue-700 font-semibold">
-                {selectedProperty.name}
-              </div>
-            )}
-            <select
-              className="w-full border rounded px-3 py-2"
-              value={rentForm.property_id}
-              onChange={e => setRentForm(f => ({
-                ...f,
-                property_id: e.target.value,
-                tenant_id: ""
-              }))}
-              required
-              disabled={!!editRentModal}
-            >
-              <option value="">Select property</option>
-              {properties.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Tenant</label>
-            {editRentModal && selectedTenant && (
-              <div className="mb-2 text-blue-700 font-semibold">
-                {selectedTenant.name || `${selectedTenant.first_name || ""} ${selectedTenant.last_name || ""}`.trim()}
-              </div>
-            )}
-            <select
-              className="w-full border rounded px-3 py-2"
-              value={String(rentForm.tenant_id)}
-              onChange={e => setRentForm(f => ({ ...f, tenant_id: e.target.value }))}
-              required
-              disabled={!!editRentModal}
-            >
-              <option value="">Select tenant</option>
-              {filteredTenants.map(t => (
-                <option key={t.id} value={String(t.id)}>
-                  {t.name || `${t.first_name || ""} ${t.last_name || ""}`.trim()}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Amount</label>
-            <input
-              type="number"
-              className="w-full border rounded px-3 py-2"
-              value={rentForm.amount}
-              onChange={e => setRentForm(f => ({ ...f, amount: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Date Paid</label>
-            <input
-              type="date"
-              className="w-full border rounded px-3 py-2"
-              value={rentForm.paid_on ? rentForm.paid_on.slice(0, 10) : ""}
-              onChange={e => setRentForm(f => ({ ...f, paid_on: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Method</label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              value={rentForm.method || ""}
-              onChange={e => setRentForm(f => ({ ...f, method: e.target.value }))}
-              autoComplete="off"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Reference</label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              value={rentForm.reference || ""}
-              onChange={e => setRentForm(f => ({ ...f, reference: e.target.value }))}
-              autoComplete="off"
-            />
-          </div>
-          <div className="flex gap-4 mt-6">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
-            >
-              {editRentModal ? "Save Changes" : "Mark Received"}
-            </button>
-            <button
-              type="button"
-              className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 hover:bg-gray-300 transition"
-              onClick={() => {
-                setShowRentModal(false);
-                setEditRentModal(null);
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
-
-  function ExpenseModal() {
-    if (!showExpenseModal) return null;
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-        <form
-          className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md"
-          onSubmit={handleAddOrEditExpense}
-          onClick={e => e.stopPropagation()}
-        >
-          <h2 className="text-xl font-bold mb-4 text-blue-700">
-            {editExpenseModal ? "Edit Expense" : "Add Expense"}
-          </h2>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Property</label>
-            <select
-              className="w-full border rounded px-3 py-2"
-              value={expenseForm.property_id}
-              onChange={e => setExpenseForm(f => ({ ...f, property_id: e.target.value }))}
-            >
-              <option value="">Select property</option>
-              {properties.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Amount</label>
-            <input
-              type="number"
-              className="w-full border rounded px-3 py-2"
-              value={expenseForm.amount}
-              onChange={e => setExpenseForm(f => ({ ...f, amount: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Category</label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              value={expenseForm.category || ""}
-              onChange={e => setExpenseForm(f => ({ ...f, category: e.target.value }))}
-              autoComplete="off"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Description</label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              value={expenseForm.description || ""}
-              onChange={e => setExpenseForm(f => ({ ...f, description: e.target.value }))}
-              autoComplete="off"
-              maxLength={200}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block font-semibold mb-1">Date</label>
-            <input
-              type="date"
-              className="w-full border rounded px-3 py-2"
-              value={expenseForm.incurred_on ?? ""}
-              onChange={e => setExpenseForm(f => ({ ...f, incurred_on: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="flex gap-4 mt-6">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
-            >
-              {editExpenseModal ? "Save Changes" : "Add Expense"}
-            </button>
-            <button
-              type="button"
-              className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 hover:bg-gray-300 transition"
-              onClick={() => {
-                setShowExpenseModal(false);
-                setEditExpenseModal(null);
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  }
-
-  function DeleteConfirmModal() {
-    if (!showDeleteConfirm) return null;
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30" onClick={() => setShowDeleteConfirm(false)}>
-        <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm" onClick={e => e.stopPropagation()}>
-          <h2 className="text-xl font-bold mb-4 text-red-700">Are you sure?</h2>
-          <p className="mb-6">This will permanently delete this rent payment.</p>
-          <div className="flex gap-4">
-            <button
-              className="bg-red-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-red-700 transition"
-              onClick={confirmDeleteRentPayment}
-            >
-              Delete
-            </button>
-            <button
-              className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 hover:bg-gray-300 transition"
-              onClick={() => setShowDeleteConfirm(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  function DeleteExpenseConfirmModal() {
-    if (!showDeleteExpenseConfirm) return null;
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30" onClick={() => setShowDeleteExpenseConfirm(false)}>
-        <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm" onClick={e => e.stopPropagation()}>
-          <h2 className="text-xl font-bold mb-4 text-red-700">Are you sure?</h2>
-          <p className="mb-6">This will permanently delete this expense.</p>
-          <div className="flex gap-4">
-            <button
-              className="bg-red-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-red-700 transition"
-              onClick={confirmDeleteExpense}
-            >
-              Delete
-            </button>
-            <button
-              className="bg-gray-200 text-gray-700 rounded-lg px-4 py-2 hover:bg-gray-300 transition"
-              onClick={() => setShowDeleteExpenseConfirm(false)}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  // --- Graph helpers ---
   function HouseBarShape(props) {
     const { x, y, width, height, fill } = props;
     const roofHeight = Math.min(14, height * 0.22);
@@ -620,12 +387,36 @@ export default function Finances() {
     );
   }
 
+  // --- Main UI ---
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <RentModal />
-      <ExpenseModal />
-      <DeleteConfirmModal />
-      <DeleteExpenseConfirmModal />
+      <ExpenseModal
+        show={showExpenseModal}
+        onClose={() => { setShowExpenseModal(false); setEditExpenseModal(null); }}
+        onSubmit={handleExpenseModalSubmit}
+        properties={properties}
+        initialExpense={editExpenseModal}
+      />
+      <RentModal
+        show={showRentModal}
+        onClose={() => { setShowRentModal(false); setEditRentModal(null); setRentForm({ property_id: "", tenant_id: "", amount: "", paid_on: "", method: "", reference: "" }); }}
+        onSubmit={handleAddOrEditRent}
+        properties={properties}
+        tenants={tenants}
+        rentForm={rentForm}
+        setRentForm={setRentForm}
+        editRentModal={editRentModal}
+      />
+      <DeleteConfirmModal
+        show={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onDelete={confirmDeleteRentPayment}
+      />
+      <DeleteExpenseConfirmModal
+        show={showDeleteExpenseConfirm}
+        onClose={() => setShowDeleteExpenseConfirm(false)}
+        onDelete={confirmDeleteExpense}
+      />
       <div className="w-64 flex-shrink-0 h-screen">
         <Sidebar />
       </div>
