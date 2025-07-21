@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
-import "./mrt.css";
+
 import Sidebar from "../tsidebar/tenantSidebar.jsx";
 
 function getProgressColor(progress) {
-  if (progress === "Not Started") return "red";
-  if (progress === "In Progress") return "yellow";
-  if (progress === "Solved") return "green";
-  return "gray";
+  if (progress === "Not Started") return "bg-red-100 text-red-700";
+  if (progress === "In Progress") return "bg-yellow-100 text-yellow-800";
+  if (progress === "Solved") return "bg-green-100 text-green-700";
+  return "bg-gray-100 text-gray-700";
 }
 
-// Map backend severity string to color class
 function mapSeverityToColor(severity) {
-  if (severity === "Critical" || severity === "High") return "red";
-  if (severity === "Medium") return "yellow";
-  if (severity === "Low") return "green";
-  return "gray";
+  if (severity === "Critical" || severity === "High" || severity === "red") return "bg-red-100 text-red-700";
+  if (severity === "Medium" || severity === "yellow") return "bg-yellow-100 text-yellow-800";
+  if (severity === "Low" || severity === "green") return "bg-green-100 text-green-700";
+  return "bg-gray-100 text-gray-700";
 }
 
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
@@ -107,199 +106,177 @@ export default function MaintenanceRequestsTenant() {
   };
 
   return (
-    <div className="properties-page">
+    <div className="flex min-h-screen bg-blue-50">
       <Sidebar />
-      <main className="properties-main">
-        <div className="properties-header">
-          <h2 className="properties-title" style={{ color: "#2563eb" }}>
-            Maintenance Requests
-          </h2>
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-y-auto ml-64">
+        <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
+          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Maintenance Requests</h1>
           <button
-            className="add-property-btn"
-            style={{ marginLeft: 18, background: "#2563eb" }}
+            className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
             onClick={() => setShowAddModal(true)}
           >
             + New Request
           </button>
         </div>
-        <div className="incidents-table-container">
-          <table className="incidents-table">
+        <div className="w-full overflow-x-auto mt-8">
+          <table className="min-w-[900px] w-full bg-white rounded-2xl text-base divide-y divide-blue-100">
             <thead>
               <tr>
-                <th>Title</th>
-                <th>Property Address</th>
-                <th>Date Posted</th>
-                <th>Severity</th>
-                <th>Progress</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Title</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Property Address</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date Posted</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-center">Severity</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Progress</th>
               </tr>
             </thead>
             <tbody>
-              {incidents.map((incident) => (
-                <tr
-                  key={incident.id}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => handleRowClick(incident)}
-                >
-                  <td>{incident.title}</td>
-                  <td>{incident.property_address}</td>
-                  <td>
-                    {new Date(incident.created_at).toLocaleDateString("en-GB")}
-                  </td>
-                  <td>
-                    <span
-                      className={
-                        "incident-severity severity-" +
-                        mapSeverityToColor(incident.severity)
-                      }
-                    >
-                      {incident.severity}
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      className={
-                        "incident-progress progress-" +
-                        getProgressColor(incident.progress)
-                      }
-                      style={{
-                        display: "inline-block",
-                        padding: "5px 14px",
-                        borderRadius: "12px",
-                        fontWeight: 600,
-                        fontSize: "0.98rem",
-                        letterSpacing: "0.02em",
-                        background:
-                          incident.progress === "Solved"
-                            ? "#dcfce7"
-                            : incident.progress === "In Progress"
-                            ? "#fef9c3"
-                            : "#fee2e2",
-                        color:
-                          incident.progress === "Solved"
-                            ? "#166534"
-                            : incident.progress === "In Progress"
-                            ? "#92400e"
-                            : "#b91c1c",
-                      }}
-                    >
-                      {incident.progress}
-                    </span>
+              {incidents.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center text-gray-400 py-8">
+                    No new maintenance requests
                   </td>
                 </tr>
-              ))}
+              ) : (
+                incidents.map((incident) => (
+                  <tr
+                    key={incident.id}
+                    className="hover:bg-blue-50 transition cursor-pointer"
+                    onClick={() => handleRowClick(incident)}
+                  >
+                    <td className="py-4 px-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-blue-700">{incident.title}</span>
+                        <span className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 ml-2">#{incident.id}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-3">
+                      <span className="font-medium text-black">{incident.property_address}</span>
+                    </td>
+                    <td className="py-4 px-3">
+                      <span className="text-gray-600">
+                        {new Date(incident.created_at).toLocaleDateString("en-GB")}
+                      </span>
+                    </td>
+                    <td className="py-4 px-3 text-center">
+                      <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${mapSeverityToColor(incident.severity)}`}>
+                        {incident.severity}
+                      </span>
+                    </td>
+                    <td className="py-4 px-3">
+                      <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${getProgressColor(incident.progress)}`}>
+                        {incident.progress}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* Modal for incident details */}
+        {/* Incident Details Modal */}
         {selectedIncident && (
-          <div className="incident-modal-backdrop" onClick={handleCloseModal}>
-            <div
-              className="incident-modal"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button className="modal-close" onClick={handleCloseModal}>
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-start justify-center z-50 overflow-y-auto">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-lg my-8 flex flex-col gap-6 border border-blue-100 relative">
+              <button
+                className="absolute top-4 right-6 text-3xl text-gray-400 hover:text-gray-600"
+                onClick={handleCloseModal}
+                aria-label="Close"
+              >
                 &times;
               </button>
-              <h3>{selectedIncident.title}</h3>
-              <div className="incident-modal-section">
-                <span className={"incident-severity severity-" + mapSeverityToColor(selectedIncident.severity)}>
-                  {selectedIncident.severity}
-                </span>
-                <span
-                  className={
-                    "incident-progress progress-" +
-                    getProgressColor(selectedIncident.progress)
-                  }
-                  style={{
-                    marginLeft: 16,
-                    display: "inline-block",
-                    padding: "5px 14px",
-                    borderRadius: "12px",
-                    fontWeight: 600,
-                    fontSize: "0.98rem",
-                    letterSpacing: "0.02em",
-                    background:
-                      selectedIncident.progress === "Solved"
-                        ? "#dcfce7"
-                        : selectedIncident.progress === "In Progress"
-                        ? "#fef9c3"
-                        : "#fee2e2",
-                    color:
-                      selectedIncident.progress === "Solved"
-                        ? "#166534"
-                        : selectedIncident.progress === "In Progress"
-                        ? "#92400e"
-                        : "#b91c1c",
-                  }}
+              <h2 className="text-2xl font-extrabold text-blue-700 mb-2">
+                {selectedIncident.title}
+              </h2>
+              <div className="bg-blue-50 rounded-lg p-4 mb-2 text-base text-black flex flex-col gap-2">
+                <div>
+                  <strong className="text-blue-700">Severity:</strong>{" "}
+                  <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${mapSeverityToColor(selectedIncident.severity)}`}>
+                    {selectedIncident.severity}
+                  </span>
+                </div>
+                <div>
+                  <strong className="text-blue-700">Progress:</strong>{" "}
+                  <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${getProgressColor(selectedIncident.progress)}`}>
+                    {selectedIncident.progress}
+                  </span>
+                </div>
+                <div>
+                  <strong className="text-blue-700">Property:</strong> {selectedIncident.property_address}
+                </div>
+                <div>
+                  <strong className="text-blue-700">Date Posted:</strong>{" "}
+                  {new Date(selectedIncident.created_at).toLocaleDateString("en-GB")}
+                </div>
+                <div>
+                  <strong className="text-blue-700">Description:</strong>
+                  <div className="mt-1">{selectedIncident.description}</div>
+                </div>
+              </div>
+              <div className="flex gap-4 mt-2">
+                <button
+                  className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
+                  onClick={handleCloseModal}
                 >
-                  {selectedIncident.progress}
-                </span>
+                  Close
+                </button>
+                <button
+                  className="bg-red-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 transition flex-1"
+                  onClick={() => handleDeleteIncident(selectedIncident.id)}
+                >
+                  Delete Request
+                </button>
               </div>
-              <div className="incident-modal-section">
-                <b>Property:</b> {selectedIncident.property_address}
-              </div>
-              <div className="incident-modal-section">
-                <b>Date Posted:</b>{" "}
-                {new Date(selectedIncident.created_at).toLocaleDateString("en-GB")}
-              </div>
-              <div className="incident-modal-description">
-                <b>Description:</b>
-                <div style={{ marginTop: 6 }}>{selectedIncident.description}</div>
-              </div>
-              <button
-                className="add-tenant-btn"
-                style={{ background: "#d9534f", color: "#fff", marginTop: 18 }}
-                onClick={() => handleDeleteIncident(selectedIncident.id)}
-              >
-                Delete Request
-              </button>
             </div>
           </div>
         )}
 
         {/* Modal for adding a new request */}
         {showAddModal && (
-          <div className="incident-modal-backdrop" onClick={() => setShowAddModal(false)}>
-            <div className="incident-modal" onClick={e => e.stopPropagation()}>
-              <button className="modal-close" onClick={() => setShowAddModal(false)}>
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl p-8 w-full max-w-md border border-blue-100 shadow-lg" onClick={e => e.stopPropagation()}>
+              <button className="absolute top-4 right-6 text-3xl text-gray-400 hover:text-gray-600" onClick={() => setShowAddModal(false)} aria-label="Close">
                 &times;
               </button>
-              <h3>New Maintenance Request</h3>
-              <form onSubmit={handleAddIncident} className="add-tenant-form">
-                <label>
+              <h3 className="text-2xl font-extrabold text-blue-700 mb-4">New Maintenance Request</h3>
+              <form onSubmit={handleAddIncident} className="flex flex-col gap-4">
+                <label className="font-semibold text-blue-700">
                   Title
                   <input
                     required
                     value={addForm.title}
                     onChange={e => setAddForm(f => ({ ...f, title: e.target.value }))}
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                   />
                 </label>
-                <label>
+                <label className="font-semibold text-blue-700">
                   Description
                   <textarea
                     required
                     value={addForm.description}
                     onChange={e => setAddForm(f => ({ ...f, description: e.target.value }))}
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                   />
                 </label>
-                <label>
+                <label className="font-semibold text-blue-700">
                   Severity
                   <select
                     value={addForm.severity}
                     onChange={e => setAddForm(f => ({ ...f, severity: e.target.value }))}
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                   >
                     <option value="red">High</option>
                     <option value="yellow">Medium</option>
                     <option value="green">Low</option>
                   </select>
                 </label>
-                <label>
+                <label className="font-semibold text-blue-700">
                   Property
                   <select
                     required
                     value={addForm.property_id}
                     onChange={e => setAddForm(f => ({ ...f, property_id: e.target.value }))}
+                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                   >
                     <option value="">Select property</option>
                     {propertyOptions.map((p) => (
@@ -307,7 +284,7 @@ export default function MaintenanceRequestsTenant() {
                     ))}
                   </select>
                 </label>
-                <button type="submit" className="add-tenant-btn" style={{ marginTop: 12 }}>
+                <button type="submit" className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition mt-4">
                   Submit Request
                 </button>
               </form>
