@@ -191,18 +191,17 @@ export default function Finances() {
     setShowRentModal(true);
   }
 
-  async function handleAddOrEditRent(e) {
-    e.preventDefault();
+  async function handleAddOrEditRent(form) {
     const token = localStorage.getItem("token");
     try {
-      console.log("Submitting rent payment:", rentForm); // ✅ Debug tip
+      console.log("Submitting rent payment:", form); // Debug
       const payload = {
-        property_id: Number(rentForm.property_id),
-        tenant_id: Number(rentForm.tenant_id),
-        amount: Number(rentForm.amount),
-        paid_on: rentForm.paid_on,
-        method: rentForm.method || "",
-        reference: rentForm.reference || ""
+        property_id: Number(form.property_id),
+        tenant_id: Number(form.tenant_id),
+        amount: Number(form.amount),
+        paid_on: form.paid_on,
+        method: form.method || "",
+        reference: form.reference || ""
       };
       let res;
       if (editRentModal) {

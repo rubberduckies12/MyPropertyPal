@@ -41,8 +41,7 @@ export default function RentModal({
         className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md"
         onSubmit={e => {
           e.preventDefault();
-          setRentForm(localForm); // sync local form to parent
-          onSubmit(e);
+          onSubmit(localForm); // Pass the latest form directly
         }}
         onClick={e => e.stopPropagation()}
       >
