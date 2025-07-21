@@ -38,12 +38,12 @@ function Chatbot() {
   };
 
   return (
-    <div className="flex h-screen bg-blue-50 overflow-hidden">
-      <div className="w-64 flex-shrink-0 h-screen">
+    <div className="flex h-screen bg-white overflow-hidden">
+      <div className="w-64 flex-shrink-0 h-screen border-r border-blue-100 bg-white">
         <Sidebar />
       </div>
       <main className="flex-1 flex flex-col h-screen">
-        <div className="w-full px-0 pt-8 pb-4 border-b border-blue-100 bg-blue-50">
+        <div className="w-full px-0 pt-8 pb-4 border-b border-blue-100 bg-white">
           <h1 className="text-2xl font-bold text-blue-700 text-center">PropertyPal Chatbot</h1>
           <div className="text-base text-blue-400 text-center mt-2">Ask anything about property management</div>
         </div>
@@ -56,16 +56,16 @@ function Chatbot() {
               >
                 {msg.role === 'assistant' && (
                   <div className="flex items-end mr-2">
-                    <div className="w-9 h-9 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 shadow text-2xl">
+                    <div className="w-9 h-9 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 shadow text-2xl border border-blue-200">
                       <HiSparkles />
                     </div>
                   </div>
                 )}
                 <div
-                  className={`max-w-lg px-4 py-2 rounded-2xl shadow
+                  className={`max-w-lg px-5 py-3 rounded-2xl shadow-lg
                     ${msg.role === 'user'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-blue-100 text-black'
+                      : 'bg-blue-50 text-blue-900 border border-blue-100'
                     }`}
                 >
                   {msg.role === 'assistant'
@@ -75,7 +75,7 @@ function Chatbot() {
                 </div>
                 {msg.role === 'user' && (
                   <div className="flex items-end ml-2">
-                    <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white shadow text-2xl">
+                    <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white shadow text-2xl border border-blue-200">
                       <HiUser />
                     </div>
                   </div>
@@ -84,7 +84,7 @@ function Chatbot() {
             ))}
             {loading && (
               <div className="flex justify-start mb-2">
-                <div className="max-w-lg px-4 py-2 rounded-2xl shadow bg-blue-100 text-black italic opacity-90 flex items-center gap-2">
+                <div className="max-w-lg px-5 py-3 rounded-2xl shadow-lg bg-blue-50 text-blue-900 italic opacity-90 flex items-center gap-2 border border-blue-100">
                   <span>Typing</span>
                   <span className="flex gap-1">
                     <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
@@ -94,11 +94,10 @@ function Chatbot() {
                 </div>
               </div>
             )}
-            {/* This should always be last */}
             <div ref={chatEndRef} />
           </div>
           <form
-            className="absolute bottom-0 left-64 right-0 flex items-center gap-2 px-8 py-6 border-t border-blue-100 bg-blue-50"
+            className="absolute bottom-0 left-64 right-0 flex items-center gap-2 px-8 py-6 border-t border-blue-100 bg-white"
             onSubmit={e => { e.preventDefault(); sendMessage(); }}
             style={{ zIndex: 10 }}
           >
@@ -108,7 +107,7 @@ function Chatbot() {
               onChange={e => setMessage(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
               placeholder="Type your message..."
-              className="flex-1 px-4 py-3 rounded-full border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-lg"
+              className="flex-1 px-4 py-3 rounded-full border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 text-lg"
               disabled={loading}
             />
             <button
