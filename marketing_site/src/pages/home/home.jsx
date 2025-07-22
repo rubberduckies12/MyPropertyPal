@@ -410,7 +410,7 @@ export default function Landing() {
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
                     >
-                        Get Started
+                        Get Organised
                     </button>
                 </div>
             </section>
@@ -429,7 +429,7 @@ export default function Landing() {
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
                     >
-                        Get Started
+                        Never Miss a Deadline
                     </button>
                 </div>
                 <div className="flex justify-center order-2 md:order-1">
@@ -599,7 +599,7 @@ export default function Landing() {
                                 className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition"
                                 onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
                             >
-                                Get Started
+                                Get Started Now
                             </button>
                         </div>
                     ))}
