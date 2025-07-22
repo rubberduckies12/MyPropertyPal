@@ -50,6 +50,18 @@ const plans = [
         ],
         featured: true,
     },
+   /* {
+        name: "Portfolio",
+        price: 100,
+        features: [
+            "Every Feature. No Upsells",
+            "Up to 30 Properties",
+            "Unlimited Tenants per Property",
+            "Up to 5 Additional Team Members",
+            "Priority Email Support",
+        ],
+        featured: false,
+    }, */
     {
         name: "Organisation",
         price: 250,
