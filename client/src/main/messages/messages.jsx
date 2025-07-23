@@ -62,12 +62,17 @@ export default function Messages() {
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMsg.trim() || !selectedContact) return;
+    if (!newMsg.trim() || !selectedContact) {
+      console.error("Message or selected contact is missing.");
+      return;
+    }
 
     const body = {
       message_text: newMsg.trim(),
-      recipient_id: selectedContact.account_id,
+      recipient_id: selectedContact.account_id, // Ensure this is set
     };
+
+    console.log("Sending message with body:", body); // Debug log
 
     const res = await fetch(`${BACKEND_URL}/api/messages`, {
       method: "POST",
@@ -77,6 +82,7 @@ export default function Messages() {
       },
       body: JSON.stringify(body),
     });
+
     if (res.ok) {
       setNewMsg("");
       fetch(`${BACKEND_URL}/api/messages/${selectedContact.account_id}`, {
@@ -84,6 +90,8 @@ export default function Messages() {
       })
         .then((res) => res.json())
         .then((data) => setMessages(data.messages || []));
+    } else {
+      console.error("Failed to send message:", await res.json());
     }
   };
 
@@ -103,7 +111,10 @@ export default function Messages() {
                     ? "bg-blue-100"
                     : "hover:bg-blue-50"
                 }`}
-                onClick={() => setSelectedContact(c)}
+                onClick={() => {
+                  console.log("Contact selected:", c); // Debug log
+                  setSelectedContact(c);
+                }}
               >
                 <span className="font-semibold text-blue-700">
                   {c.display_name}
