@@ -7,7 +7,7 @@ const API_BASE = "https://mypropertypal-3.onrender.com";
 // --- API Calls ---
 async function fetchTenantRent() {
   const res = await fetch(`${API_BASE}/api/tenant/rent`, {
-    credentials: "include"
+    credentials: "include",
   });
   if (!res.ok) return { rent_amount: 0, rent_due_date: null };
   return res.json();
@@ -15,7 +15,7 @@ async function fetchTenantRent() {
 
 async function fetchContacts() {
   const res = await fetch(`${API_BASE}/api/messages/contacts`, {
-    credentials: "include"
+    credentials: "include",
   });
   if (!res.ok) return [];
   const data = await res.json();
@@ -24,7 +24,7 @@ async function fetchContacts() {
 
 async function fetchTenantIncidents() {
   const res = await fetch(`${API_BASE}/api/maintenance`, {
-    credentials: "include"
+    credentials: "include",
   });
   if (!res.ok) return [];
   const data = await res.json();
@@ -33,10 +33,22 @@ async function fetchTenantIncidents() {
 
 async function fetchTenantUser() {
   const res = await fetch(`${API_BASE}/api/dashboard/user`, {
-    credentials: "include"
+    credentials: "include",
   });
   if (!res.ok) return null;
   return res.json();
+}
+
+async function fetchUnreadMessages() {
+  const res = await fetch(`${API_BASE}/api/dashboard/messages`, {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    console.error("Failed to fetch unread messages");
+    return 0;
+  }
+  const data = await res.json();
+  return data.unread_count || 0;
 }
 
 export default function TenantHome() {
@@ -44,6 +56,7 @@ export default function TenantHome() {
   const [contacts, setContacts] = useState([]);
   const [incidents, setIncidents] = useState([]);
   const [user, setUser] = useState(null);
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
     async function loadData() {
@@ -52,6 +65,7 @@ export default function TenantHome() {
       setContacts(await fetchContacts());
       setIncidents(await fetchTenantIncidents());
       setUser(await fetchTenantUser());
+      setUnreadMessages(await fetchUnreadMessages()); // Fetch unread messages count
     }
     loadData();
   }, []);
@@ -65,7 +79,8 @@ export default function TenantHome() {
             Hey{user && user.first_name ? `, ${user.first_name}` : ""}!
           </h1>
           <p>
-            Here you can view your tenancy details, report issues, download documents, and contact your landlord.
+            Here you can view your tenancy details, report issues, download
+            documents, and contact your landlord.
           </p>
         </header>
         <div className="tenant-dashboard-grid">
@@ -73,7 +88,8 @@ export default function TenantHome() {
           <div className="tenant-dashboard-card">
             <h3>Rent Amount</h3>
             <div className="tenant-dashboard-card-main">
-              £{rent && rent.rent_amount !== undefined && rent.rent_amount !== null
+              £
+              {rent && rent.rent_amount !== undefined && rent.rent_amount !== null
                 ? Number(rent.rent_amount).toLocaleString()
                 : "0"}
             </div>
@@ -93,13 +109,13 @@ export default function TenantHome() {
               {incidents.slice(0, 3).map((incident, idx) => (
                 <div key={idx} className="tenant-dashboard-list-item">
                   <strong>{incident.title || "Request"}</strong>
-                  <span>
-                    {incident.progress ? incident.progress : "Open"}
-                  </span>
+                  <span>{incident.progress ? incident.progress : "Open"}</span>
                 </div>
               ))}
               {incidents.length === 0 && (
-                <div className="tenant-dashboard-list-empty">No open requests.</div>
+                <div className="tenant-dashboard-list-empty">
+                  No open requests.
+                </div>
               )}
             </div>
             <button className="tenant-dashboard-btn">View All Requests</button>
@@ -109,7 +125,7 @@ export default function TenantHome() {
           <div className="tenant-dashboard-card">
             <h3>Messages</h3>
             <div className="tenant-dashboard-card-main">
-              {contacts.reduce((sum, c) => sum + (Number(c.unread_count) || 0), 0)}
+              {unreadMessages} {/* Display unread message count */}
             </div>
             <div className="tenant-dashboard-card-label">New Messages</div>
             <div className="tenant-dashboard-list">
@@ -131,7 +147,10 @@ export default function TenantHome() {
                 ))
               )}
             </div>
-            <button className="tenant-dashboard-btn" onClick={() => window.location.href = '/tenant-messages'}>
+            <button
+              className="tenant-dashboard-btn"
+              onClick={() => (window.location.href = "/tenant-messages")}
+            >
               View All Messages
             </button>
           </div>

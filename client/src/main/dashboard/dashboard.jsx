@@ -62,10 +62,14 @@ async function fetchContacts() {
 
 async function fetchUnreadMessages() {
   const res = await fetch(DASHBOARD_MESSAGES_URL, {
-    credentials: 'include'
+    credentials: 'include', // Include cookies for authentication
   });
-  if (!res.ok) return [];
-  return res.json();
+  if (!res.ok) {
+    console.error("Failed to fetch unread messages");
+    return 0;
+  }
+  const data = await res.json();
+  return data.unread_count || 0;
 }
 
 async function fetchIncidents() {
@@ -112,13 +116,13 @@ function Dashboard() {
       setTenantCount(await fetchTenantCount());
       setTenants(await fetchTenants());
       setContacts(await fetchContacts());
-      setMessages(await fetchUnreadMessages());
+      setMessages(await fetchUnreadMessages()); // Update unread messages count
       setIncidents(await fetchIncidents());
       setProperties(await fetchProperties());
 
       // Fetch compliance deadlines
       const res = await fetch(`${API_BASE}/api/compliance/events`, {
-        credentials: 'include'
+        credentials: 'include',
       });
       const data = await res.json();
       setDeadlines(Array.isArray(data) ? data : []);
@@ -223,7 +227,7 @@ function Dashboard() {
               <h3 className="text-lg font-bold text-blue-700">Messages</h3>
             </div>
             <div className="text-3xl font-extrabold text-blue-600 mb-2">
-              {contacts.reduce((sum, c) => sum + (Number(c.unread_count) || 0), 0)}
+              {messages} {/* Display unread message count */}
             </div>
             <div className="text-gray-600 mb-4">New Messages</div>
             <div className="flex flex-col gap-2 mb-4">
@@ -243,7 +247,10 @@ function Dashboard() {
                 ))
               )}
             </div>
-            <button className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition" onClick={() => navigate('/messages')}>
+            <button
+              className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
+              onClick={() => navigate('/messages')}
+            >
               View All Messages
             </button>
           </div>
