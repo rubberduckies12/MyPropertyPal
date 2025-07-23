@@ -61,8 +61,8 @@ async function fetchContacts() {
 }
 
 async function fetchUnreadMessages() {
-  const res = await fetch(DASHBOARD_MESSAGES_URL, {
-    credentials: 'include', // Include cookies for authentication
+  const res = await fetch(`${API_BASE}/api/dashboard/messages`, {
+    credentials: "include", // Include cookies for authentication
   });
   if (!res.ok) {
     console.error("Failed to fetch unread messages");
@@ -126,6 +126,13 @@ function Dashboard() {
       });
       const data = await res.json();
       setDeadlines(Array.isArray(data) ? data : []);
+    }
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    async function loadData() {
+      setUnreadMessages(await fetchUnreadMessages()); // Fetch unread messages count
     }
     loadData();
   }, []);
@@ -220,26 +227,25 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Messages Card - spans 2 rows */}
-          <div className="bg-white rounded-2xl shadow p-4 flex flex-col row-span-2 min-h-0">
-            <div className="flex items-center gap-2 mb-2">
-              <HiMail className="text-blue-500 text-2xl" />
-              <h3 className="text-lg font-bold text-blue-700">Messages</h3>
-            </div>
-            <div className="text-3xl font-extrabold text-blue-600 mb-2">
+          {/* Messages Card */}
+          <div className="tenant-dashboard-card">
+            <h3>Messages</h3>
+            <div className="tenant-dashboard-card-main">
               {messages} {/* Display unread message count */}
             </div>
-            <div className="text-gray-600 mb-4">New Messages</div>
-            <div className="flex flex-col gap-2 mb-4">
+            <div className="tenant-dashboard-card-label">New Messages</div>
+            <div className="tenant-dashboard-list">
               {contacts.length === 0 ? (
-                <div className="text-gray-400">No new messages.</div>
+                <div className="tenant-dashboard-list-empty">No new messages.</div>
               ) : (
                 contacts.slice(0, 3).map((c, idx) => (
-                  <div key={idx} className="bg-blue-50 rounded-lg px-3 py-2 flex flex-col relative">
-                    <strong className="text-blue-700">{c.display_name}</strong>
-                    <span className="text-xs text-blue-500">{c.property_address ? `(${c.property_address})` : ""}</span>
+                  <div key={idx} className="tenant-dashboard-list-item">
+                    <strong>{c.display_name}</strong>
+                    <span className="tenant-dashboard-message-property">
+                      {c.property_address ? `(${c.property_address})` : ""}
+                    </span>
                     {Number(c.unread_count) > 0 && (
-                      <span className="absolute top-2 right-3 bg-blue-600 text-white rounded px-2 py-0.5 text-xs font-bold">
+                      <span className="tenant-dashboard-message-unread">
                         {Number(c.unread_count)} new
                       </span>
                     )}
@@ -248,8 +254,8 @@ function Dashboard() {
               )}
             </div>
             <button
-              className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
-              onClick={() => navigate('/messages')}
+              className="tenant-dashboard-btn"
+              onClick={() => (window.location.href = "/tenant-messages")}
             >
               View All Messages
             </button>
