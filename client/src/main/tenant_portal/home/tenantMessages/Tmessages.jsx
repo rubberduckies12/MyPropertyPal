@@ -96,27 +96,64 @@ export default function Tmessages() {
       <div className="flex flex-1 ml-64">
         <aside className="w-80 bg-white border-r border-blue-100 p-6 flex-shrink-0">
           <h3 className="text-xl font-bold text-blue-700 mb-6">Chats</h3>
-          <ul>
-            {contacts.map((c) => (
-              <li
-                key={c.property_id}
-                className={`flex flex-col gap-1 p-4 rounded-lg cursor-pointer mb-2 transition ${
-                  selectedContact && selectedContact.property_id === c.property_id
-                    ? "bg-blue-100"
-                    : "hover:bg-blue-50"
-                }`}
-                onClick={() => setSelectedContact(c)}
-              >
-                <span className="font-semibold text-blue-700">{c.display_name}</span>
-                <span className="text-sm text-gray-500">{c.property_address}</span>
-                {c.unread_count > 0 && (
-                  <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full self-start mt-1">
-                    {c.unread_count}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
+          {/* Property Group Chats Section */}
+          <div className="mb-8">
+            <h4 className="text-lg font-semibold text-blue-600 mb-2">Property Group Chat</h4>
+            <ul>
+              {contacts
+                .filter((c) => !c.account_id)
+                .map((c) => (
+                  <li
+                    key={`property-${c.property_id}`}
+                    className={`flex flex-col gap-1 p-4 rounded-lg cursor-pointer mb-2 transition ${
+                      selectedContact &&
+                      !selectedContact.account_id &&
+                      selectedContact.property_id === c.property_id
+                        ? "bg-blue-100"
+                        : "hover:bg-blue-50"
+                    }`}
+                    onClick={() => setSelectedContact(c)}
+                  >
+                    <span className="font-semibold text-blue-700">{c.display_name || "Property Group"}</span>
+                    <span className="text-sm text-gray-500">{c.property_address}</span>
+                    {c.unread_count > 0 && (
+                      <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full self-start mt-1">
+                        {c.unread_count}
+                      </span>
+                    )}
+                  </li>
+                ))}
+            </ul>
+          </div>
+          {/* Landlord Direct Message Section */}
+          <div>
+            <h4 className="text-lg font-semibold text-blue-600 mb-2">Landlord</h4>
+            <ul>
+              {contacts
+                .filter((c) => c.account_id && c.role === "landlord")
+                .map((c) => (
+                  <li
+                    key={`landlord-${c.account_id}`}
+                    className={`flex flex-col gap-1 p-4 rounded-lg cursor-pointer mb-2 transition ${
+                      selectedContact &&
+                      selectedContact.account_id &&
+                      selectedContact.account_id === c.account_id
+                        ? "bg-blue-100"
+                        : "hover:bg-blue-50"
+                    }`}
+                    onClick={() => setSelectedContact(c)}
+                  >
+                    <span className="font-semibold text-blue-700">{c.display_name}</span>
+                    <span className="text-sm text-gray-500">{c.property_address}</span>
+                    {c.unread_count > 0 && (
+                      <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full self-start mt-1">
+                        {c.unread_count}
+                      </span>
+                    )}
+                  </li>
+                ))}
+            </ul>
+          </div>
         </aside>
         <main className="flex-1 flex flex-col bg-white p-8">
           {selectedContact ? (
