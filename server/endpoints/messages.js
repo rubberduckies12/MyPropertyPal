@@ -52,7 +52,7 @@ router.post("/", authenticate, async (req, res) => {
   }
 });
 
-// Fetch contacts (landlord or tenants) - must be above property_id route!
+// Fetch contacts (landlord or tenants)
 router.get("/contacts", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   const account_id = req.user.id; // Current user's account ID
@@ -69,34 +69,44 @@ router.get("/contacts", authenticate, async (req, res) => {
 
     let contacts = [];
     if (role === "landlord") {
-      // Landlord: Get all tenants they have chats with
+      // Landlord: Get all tenants associated with their properties
       const tenantsRes = await pool.query(
-        `SELECT c.id AS chat_id,
-                c.recipient_id AS account_id, -- Tenant's account ID
+        `SELECT DISTINCT a.id AS account_id,
                 a.first_name || ' ' || a.last_name AS display_name,
+                p.address AS property_address,
                 COUNT(CASE WHEN s.is_read = FALSE AND m.sender_id != $1 THEN 1 END) AS unread_count
-         FROM chat c
-         JOIN account a ON c.recipient_id = a.id
+         FROM property p
+         JOIN property_tenant pt ON p.id = pt.property_id
+         JOIN tenant t ON pt.tenant_id = t.id
+         JOIN account a ON t.account_id = a.id
+         LEFT JOIN chat c ON c.sender_id = $1 AND c.recipient_id = a.id
          LEFT JOIN chat_message m ON c.id = m.chat_id
          LEFT JOIN chat_message_status s ON m.id = s.chat_message_id AND s.account_id = $1
-         WHERE c.sender_id = $1
-         GROUP BY c.id, c.recipient_id, a.first_name, a.last_name`,
+         WHERE p.landlord_id = (
+           SELECT id FROM landlord WHERE account_id = $1
+         )
+         GROUP BY a.id, a.first_name, a.last_name, p.address`,
         [account_id]
       );
       contacts = tenantsRes.rows;
     } else if (role === "tenant") {
-      // Tenant: Get the landlord they have a chat with
+      // Tenant: Get the landlord associated with their property
       const landlordRes = await pool.query(
-        `SELECT c.id AS chat_id,
-                c.sender_id AS account_id, -- Landlord's account ID
+        `SELECT DISTINCT a.id AS account_id,
                 a.first_name || ' ' || a.last_name AS display_name,
+                p.address AS property_address,
                 COUNT(CASE WHEN s.is_read = FALSE AND m.sender_id != $1 THEN 1 END) AS unread_count
-         FROM chat c
-         JOIN account a ON c.sender_id = a.id
+         FROM property_tenant pt
+         JOIN property p ON pt.property_id = p.id
+         JOIN landlord l ON p.landlord_id = l.id
+         JOIN account a ON l.account_id = a.id
+         LEFT JOIN chat c ON c.sender_id = a.id AND c.recipient_id = $1
          LEFT JOIN chat_message m ON c.id = m.chat_id
          LEFT JOIN chat_message_status s ON m.id = s.chat_message_id AND s.account_id = $1
-         WHERE c.recipient_id = $1
-         GROUP BY c.id, c.sender_id, a.first_name, a.last_name`,
+         WHERE pt.tenant_id = (
+           SELECT id FROM tenant WHERE account_id = $1
+         )
+         GROUP BY a.id, a.first_name, a.last_name, p.address`,
         [account_id]
       );
       contacts = landlordRes.rows;
@@ -109,32 +119,40 @@ router.get("/contacts", authenticate, async (req, res) => {
   }
 });
 
-// Fetch chat history for a property (with read/unread status)
-router.get("/:property_id", authenticate, async (req, res) => {
+// Fetch chat history between current user and a recipient
+router.get("/:recipient_id", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
-  const { property_id } = req.params;
-  const account_id = req.user.id;
+  const { recipient_id } = req.params; // The recipient's account ID
+  const account_id = req.user.id; // The current user's account ID
 
   try {
-    // Get chat id for property
+    // Find the chat between the current user and the recipient
     const chatRes = await pool.query(
-      "SELECT id FROM chat WHERE property_id = $1",
-      [property_id]
+      `SELECT id FROM chat 
+       WHERE (sender_id = $1 AND recipient_id = $2)
+          OR (sender_id = $2 AND recipient_id = $1)`,
+      [account_id, recipient_id]
     );
-    if (chatRes.rows.length === 0) return res.json({ messages: [] });
+
+    if (chatRes.rows.length === 0) {
+      // No chat exists between these users
+      return res.json({ messages: [] });
+    }
+
     const chat_id = chatRes.rows[0].id;
 
-    // Get messages and read status for this user
+    // Fetch messages for the chat
     const messagesRes = await pool.query(
       `SELECT m.id, m.sender_id, m.message_text, m.sent_timestamp,
               s.is_read
          FROM chat_message m
          LEFT JOIN chat_message_status s
-           ON m.id = s.chat_message_id AND s.account_id = $2
-         WHERE m.chat_id = $1
+           ON m.id = s.chat_message_id AND s.account_id = $1
+         WHERE m.chat_id = $2
          ORDER BY m.sent_timestamp ASC`,
-      [chat_id, account_id]
+      [account_id, chat_id]
     );
+
     res.json({ messages: messagesRes.rows });
   } catch (err) {
     console.error("Fetch messages error:", err);

@@ -8,34 +8,44 @@ function formatTimestamp(ts) {
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
 export default function Messages() {
-  const [contacts, setContacts] = useState([]);
-  const [selectedContact, setSelectedContact] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [newMsg, setNewMsg] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [contacts, setContacts] = useState([]); // List of contacts
+  const [selectedContact, setSelectedContact] = useState(null); // Currently selected contact
+  const [messages, setMessages] = useState([]); // Chat messages
+  const [newMsg, setNewMsg] = useState(""); // New message input
+  const [loading, setLoading] = useState(false); // Loading state for messages
 
+  // Fetch contacts (landlords for tenants or tenants for landlords)
   useEffect(() => {
-    // Fetch contacts (landlord or tenants)
     fetch(`${BACKEND_URL}/api/messages/contacts`, {
       credentials: "include",
     })
       .then((res) => res.json())
-      .then((data) => setContacts(data.contacts || []));
+      .then((data) => {
+        console.log("Contacts fetched:", data.contacts); // Debug log
+        setContacts(data.contacts || []);
+      })
+      .catch((err) => console.error("Failed to fetch contacts:", err));
   }, []);
 
+  // Fetch chat history for the selected contact
   useEffect(() => {
     if (!selectedContact) return;
+
     setLoading(true);
     fetch(`${BACKEND_URL}/api/messages/${selectedContact.account_id}`, {
       credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log("Messages fetched:", data.messages); // Debug log
         setMessages(data.messages || []);
         setLoading(false);
+
+        // Mark unread messages as read
         const unreadIds = (data.messages || [])
-          .filter((m) => !m.is_read && m.sender_id !== getAccountId())
+          .filter((m) => !m.is_read && m.sender_id !== selectedContact.account_id)
           .map((m) => m.id);
+
         if (unreadIds.length) {
           fetch(`${BACKEND_URL}/api/messages/read`, {
             method: "POST",
@@ -44,22 +54,16 @@ export default function Messages() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ message_ids: unreadIds }),
-          });
+          }).catch((err) => console.error("Failed to mark messages as read:", err));
         }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch messages:", err);
+        setLoading(false);
       });
   }, [selectedContact]);
 
-  function getAccountId() {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return null;
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.id;
-    } catch {
-      return null;
-    }
-  }
-
+  // Handle sending a new message
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newMsg.trim() || !selectedContact) {
@@ -69,7 +73,7 @@ export default function Messages() {
 
     const body = {
       message_text: newMsg.trim(),
-      recipient_id: selectedContact.account_id, // Ensure this is set
+      recipient_id: selectedContact.account_id, // Send to the selected contact
     };
 
     console.log("Sending message with body:", body); // Debug log
@@ -84,7 +88,7 @@ export default function Messages() {
     });
 
     if (res.ok) {
-      setNewMsg("");
+      setNewMsg(""); // Clear the input field
       fetch(`${BACKEND_URL}/api/messages/${selectedContact.account_id}`, {
         credentials: "include",
       })
@@ -99,6 +103,7 @@ export default function Messages() {
     <div className="flex min-h-screen bg-blue-50">
       <Sidebar />
       <div className="flex flex-1 ml-64">
+        {/* Contacts Sidebar */}
         <aside className="w-80 bg-white border-r border-blue-100 p-6 flex-shrink-0">
           <h3 className="text-xl font-bold text-blue-700 mb-6">Chats</h3>
           <ul>
@@ -116,12 +121,8 @@ export default function Messages() {
                   setSelectedContact(c);
                 }}
               >
-                <span className="font-semibold text-blue-700">
-                  {c.display_name}
-                </span>
-                <span className="text-sm text-gray-500">
-                  {c.property_address}
-                </span>
+                <span className="font-semibold text-blue-700">{c.display_name}</span>
+                <span className="text-sm text-gray-500">{c.property_address}</span>
                 {c.unread_count > 0 && (
                   <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full self-start mt-1">
                     {c.unread_count}
@@ -131,9 +132,12 @@ export default function Messages() {
             ))}
           </ul>
         </aside>
+
+        {/* Chat Window */}
         <main className="flex-1 flex flex-col bg-white p-8">
           {selectedContact ? (
             <>
+              {/* Chat Header */}
               <div className="flex flex-col border-b border-blue-100 pb-4 mb-4">
                 <h4 className="text-2xl font-bold text-blue-700">
                   Chat with {selectedContact.display_name}
@@ -142,6 +146,8 @@ export default function Messages() {
                   Property: {selectedContact.property_address}
                 </div>
               </div>
+
+              {/* Chat Messages */}
               <div className="flex-1 overflow-y-auto mb-4 flex flex-col gap-2">
                 {loading ? (
                   <div className="text-blue-700 font-semibold">Loading...</div>
@@ -150,14 +156,14 @@ export default function Messages() {
                     <div
                       key={msg.id}
                       className={`flex flex-col max-w-xl ${
-                        msg.sender_id === getAccountId()
+                        msg.sender_id === selectedContact.account_id
                           ? "self-end items-end" // Sent messages on the right
                           : "self-start items-start" // Received messages on the left
                       }`}
                     >
                       <div
                         className={`px-4 py-2 rounded-2xl shadow text-base ${
-                          msg.sender_id === getAccountId()
+                          msg.sender_id === selectedContact.account_id
                             ? "bg-blue-800 text-white" // Sent messages: darker blue
                             : "bg-gray-200 text-gray-800" // Received messages: gray
                         }`}
@@ -171,6 +177,8 @@ export default function Messages() {
                   ))
                 )}
               </div>
+
+              {/* Message Input */}
               <form className="flex gap-2 mt-auto" onSubmit={handleSend}>
                 <input
                   type="text"
