@@ -55,60 +55,48 @@ router.post("/", authenticate, async (req, res) => {
 // Fetch contacts (landlord or tenants) - must be above property_id route!
 router.get("/contacts", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
-  const account_id = req.user.id;
+  const account_id = req.user.id; // Current user's account ID
 
   try {
     // Get role for current user
     const roleRes = await pool.query(
-      `SELECT r.role FROM account a JOIN account_role r ON a.role_id = r.id WHERE a.id = $1`,
+      `SELECT r.role FROM account a 
+       JOIN account_role r ON a.role_id = r.id 
+       WHERE a.id = $1`,
       [account_id]
     );
     const role = roleRes.rows[0]?.role;
 
     let contacts = [];
     if (role === "landlord") {
-      // Landlord: get all tenants for their properties
+      // Landlord: Get all tenants they have chats with
       const tenantsRes = await pool.query(
-        `SELECT pt.property_id,
-               p.address AS property_address,
-               a.first_name || ' ' || a.last_name AS display_name,
-               a.id AS account_id, -- Tenant's account ID
-               COUNT(CASE WHEN s.is_read = FALSE AND m.sender_id != $1 THEN 1 END) AS unread_count
-          FROM property_tenant pt
-          JOIN tenant t ON pt.tenant_id = t.id
-          JOIN account a ON t.account_id = a.id
-          JOIN property p ON pt.property_id = p.id
-          LEFT JOIN chat c ON pt.property_id = c.property_id
-          LEFT JOIN chat_message m ON c.id = m.chat_id
-          LEFT JOIN chat_message_status s ON m.id = s.chat_message_id AND s.account_id = $1
-          WHERE pt.property_id IN (
-            SELECT id FROM property WHERE landlord_id = (
-              SELECT id FROM landlord WHERE account_id = $1
-            )
-          )
-          GROUP BY pt.property_id, p.address, a.first_name, a.last_name, a.id`,
+        `SELECT c.id AS chat_id,
+                c.recipient_id AS account_id, -- Tenant's account ID
+                a.first_name || ' ' || a.last_name AS display_name,
+                COUNT(CASE WHEN s.is_read = FALSE AND m.sender_id != $1 THEN 1 END) AS unread_count
+         FROM chat c
+         JOIN account a ON c.recipient_id = a.id
+         LEFT JOIN chat_message m ON c.id = m.chat_id
+         LEFT JOIN chat_message_status s ON m.id = s.chat_message_id AND s.account_id = $1
+         WHERE c.sender_id = $1
+         GROUP BY c.id, c.recipient_id, a.first_name, a.last_name`,
         [account_id]
       );
       contacts = tenantsRes.rows;
     } else if (role === "tenant") {
-      // Tenant: get landlord for their property
+      // Tenant: Get the landlord they have a chat with
       const landlordRes = await pool.query(
-        `SELECT p.id AS property_id,
-               p.address AS property_address,
-               a.first_name || ' ' || a.last_name AS display_name,
-               a.id AS account_id, -- Landlord's account ID
-               COUNT(CASE WHEN s.is_read = FALSE AND m.sender_id != $1 THEN 1 END) AS unread_count
-          FROM property_tenant pt
-          JOIN property p ON pt.property_id = p.id
-          JOIN landlord l ON p.landlord_id = l.id
-          JOIN account a ON l.account_id = a.id
-          LEFT JOIN chat c ON p.id = c.property_id
-          LEFT JOIN chat_message m ON c.id = m.chat_id
-          LEFT JOIN chat_message_status s ON m.id = s.chat_message_id AND s.account_id = $1
-          WHERE pt.tenant_id = (
-            SELECT id FROM tenant WHERE account_id = $1
-          )
-          GROUP BY p.id, p.address, a.first_name, a.last_name, a.id`,
+        `SELECT c.id AS chat_id,
+                c.sender_id AS account_id, -- Landlord's account ID
+                a.first_name || ' ' || a.last_name AS display_name,
+                COUNT(CASE WHEN s.is_read = FALSE AND m.sender_id != $1 THEN 1 END) AS unread_count
+         FROM chat c
+         JOIN account a ON c.sender_id = a.id
+         LEFT JOIN chat_message m ON c.id = m.chat_id
+         LEFT JOIN chat_message_status s ON m.id = s.chat_message_id AND s.account_id = $1
+         WHERE c.recipient_id = $1
+         GROUP BY c.id, c.sender_id, a.first_name, a.last_name`,
         [account_id]
       );
       contacts = landlordRes.rows;
