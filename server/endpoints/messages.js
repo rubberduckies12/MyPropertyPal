@@ -5,7 +5,7 @@ const authenticate = require("../middleware/authenticate");
 // Send a message (tenant or landlord)
 router.post("/", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
-  const { property_id, message_text } = req.body;
+  const { property_id, message_text, recipient_id } = req.body;
   const sender_id = req.user.id;
 
   try {
@@ -32,25 +32,31 @@ router.post("/", authenticate, async (req, res) => {
       [chat_id, sender_id, message_text]
     );
 
-    // Get all participants (landlord and tenants for this property)
-    const participantsRes = await pool.query(
-      `SELECT a.id AS account_id
-         FROM property p
-         JOIN landlord l ON p.landlord_id = l.id
-         JOIN account a ON l.account_id = a.id
-         WHERE p.id = $1
-       UNION
-       SELECT a.id AS account_id
-         FROM property_tenant pt
-         JOIN tenant t ON pt.tenant_id = t.id
-         JOIN account a ON t.account_id = a.id
-         WHERE pt.property_id = $1`,
-      [property_id]
-    );
-    const participants = participantsRes.rows.map(r => r.account_id);
-    const unreadFor = participants.filter(id => id !== sender_id);
+    let unreadFor;
+    if (recipient_id) {
+      // Direct message: only recipient
+      unreadFor = [recipient_id];
+    } else {
+      // Property-wide: all participants except sender
+      const participantsRes = await pool.query(
+        `SELECT a.id AS account_id
+           FROM property p
+           JOIN landlord l ON p.landlord_id = l.id
+           JOIN account a ON l.account_id = a.id
+           WHERE p.id = $1
+         UNION
+         SELECT a.id AS account_id
+           FROM property_tenant pt
+           JOIN tenant t ON pt.tenant_id = t.id
+           JOIN account a ON t.account_id = a.id
+           WHERE pt.property_id = $1`,
+        [property_id]
+      );
+      const participants = participantsRes.rows.map(r => r.account_id);
+      unreadFor = participants.filter(id => id !== sender_id);
+    }
 
-    // Mark as unread for all other participants
+    // Mark as unread for intended recipients
     for (const account_id of unreadFor) {
       await pool.query(
         `INSERT INTO chat_message_status (chat_message_id, account_id, is_read)

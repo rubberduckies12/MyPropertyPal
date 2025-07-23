@@ -63,16 +63,23 @@ export default function Messages() {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newMsg.trim() || !selectedContact) return;
+
+    // If selectedContact has an account_id, send direct message
+    const body = {
+      property_id: selectedContact.property_id,
+      message_text: newMsg.trim(),
+    };
+    if (selectedContact.account_id) {
+      body.recipient_id = selectedContact.account_id;
+    }
+
     const res = await fetch(`${BACKEND_URL}/api/messages`, {
       method: "POST",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        property_id: selectedContact.property_id,
-        message_text: newMsg.trim(),
-      }),
+      body: JSON.stringify(body),
     });
     if (res.ok) {
       setNewMsg("");
@@ -132,15 +139,15 @@ export default function Messages() {
                       key={msg.id}
                       className={`flex flex-col max-w-xl ${
                         msg.sender_id === getAccountId()
-                          ? "self-end items-end"
-                          : "self-start items-start"
+                          ? "self-end items-end" // sent messages: right side
+                          : "self-start items-start" // received messages: left side
                       }`}
                     >
                       <div
                         className={`px-4 py-2 rounded-2xl shadow text-base ${
                           msg.sender_id === getAccountId()
-                            ? "bg-blue-600 text-white"
-                            : "bg-blue-100 text-blue-700"
+                            ? "bg-blue-800 text-white" // sent messages: darker blue
+                            : "bg-blue-100 text-blue-700" // received messages: as they are
                         }`}
                       >
                         {msg.message_text}
