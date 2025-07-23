@@ -74,6 +74,23 @@ app.get('/api/contractors', async (req, res) => {
 app.post('/login', (req, res) => login(req, res, pool));
 app.post('/register', (req, res) => register(req, res, pool));
 
+// --- Tenant Invite Endpoint (public, no auth) ---
+app.get('/api/tenants/invite/:token', async (req, res) => {
+  const pool = req.app.get("pool");
+  const { token } = req.params;
+  const result = await pool.query(
+    `SELECT a.first_name, a.last_name, a.email, 'tenant' AS role
+     FROM tenant t
+     JOIN account a ON t.account_id = a.id
+     WHERE t.invite_token = $1 AND t.is_pending = TRUE`,
+    [token]
+  );
+  if (result.rows.length === 0) {
+    return res.status(404).json({ error: "Invalid or expired invite." });
+  }
+  res.json(result.rows[0]);
+});
+
 // --- Protected Routes ---
 // Authenticate before any protected endpoints
 app.use(authenticate);
@@ -98,23 +115,6 @@ app.use('/api/stripe', stripeRouter);
 
 // --- Static Exports ---
 app.use("/exports", express.static(path.join(__dirname, "../exports")));
-
-// --- Tenant Invite Endpoint (public, no auth) ---
-app.get('/api/tenants/invite/:token', async (req, res) => {
-  const pool = req.app.get("pool");
-  const { token } = req.params;
-  const result = await pool.query(
-    `SELECT a.first_name, a.last_name, a.email, 'tenant' AS role
-     FROM tenant t
-     JOIN account a ON t.account_id = a.id
-     WHERE t.invite_token = $1 AND t.is_pending = TRUE`,
-    [token]
-  );
-  if (result.rows.length === 0) {
-    return res.status(404).json({ error: "Invalid or expired invite." });
-  }
-  res.json(result.rows[0]);
-});
 
 // --- Client Endpoints (placeholders) ---
 app.get('/', (req, res) => res.send('Welcome to the Property Management API'));
