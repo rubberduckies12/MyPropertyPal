@@ -15,8 +15,9 @@ export default function Tmessages() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Fetch contacts (landlord only for tenants)
     fetch(`${BACKEND_URL}/api/messages/contacts`, {
-      credentials: "include"
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => setContacts(data.contacts || []));
@@ -25,22 +26,22 @@ export default function Tmessages() {
   useEffect(() => {
     if (!selectedContact) return;
     setLoading(true);
-    fetch(`${BACKEND_URL}/api/messages/${selectedContact.property_id}`, {
-      credentials: "include"
+    fetch(`${BACKEND_URL}/api/messages/${selectedContact.account_id}`, {
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
         setMessages(data.messages || []);
         setLoading(false);
         const unreadIds = (data.messages || [])
-          .filter(m => !m.is_read && m.sender_id !== getAccountId())
-          .map(m => m.id);
+          .filter((m) => !m.is_read && m.sender_id !== getAccountId())
+          .map((m) => m.id);
         if (unreadIds.length) {
           fetch(`${BACKEND_URL}/api/messages/read`, {
             method: "POST",
             credentials: "include",
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ message_ids: unreadIds }),
           });
@@ -63,27 +64,23 @@ export default function Tmessages() {
     e.preventDefault();
     if (!newMsg.trim() || !selectedContact) return;
 
-    // If selectedContact has an account_id, send direct message
     const body = {
-      property_id: selectedContact.property_id,
       message_text: newMsg.trim(),
+      recipient_id: selectedContact.account_id,
     };
-    if (selectedContact.account_id) {
-      body.recipient_id = selectedContact.account_id;
-    }
 
     const res = await fetch(`${BACKEND_URL}/api/messages`, {
       method: "POST",
       credentials: "include",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
     });
     if (res.ok) {
       setNewMsg("");
-      fetch(`${BACKEND_URL}/api/messages/${selectedContact.property_id}`, {
-        credentials: "include"
+      fetch(`${BACKEND_URL}/api/messages/${selectedContact.account_id}`, {
+        credentials: "include",
       })
         .then((res) => res.json())
         .then((data) => setMessages(data.messages || []));
@@ -96,64 +93,32 @@ export default function Tmessages() {
       <div className="flex flex-1 ml-64">
         <aside className="w-80 bg-white border-r border-blue-100 p-6 flex-shrink-0">
           <h3 className="text-xl font-bold text-blue-700 mb-6">Chats</h3>
-          {/* Property Group Chats Section */}
-          <div className="mb-8">
-            <h4 className="text-lg font-semibold text-blue-600 mb-2">Property Group Chat</h4>
-            <ul>
-              {contacts
-                .filter((c) => !c.account_id)
-                .map((c) => (
-                  <li
-                    key={`property-${c.property_id}`}
-                    className={`flex flex-col gap-1 p-4 rounded-lg cursor-pointer mb-2 transition ${
-                      selectedContact &&
-                      !selectedContact.account_id &&
-                      selectedContact.property_id === c.property_id
-                        ? "bg-blue-100"
-                        : "hover:bg-blue-50"
-                    }`}
-                    onClick={() => setSelectedContact(c)}
-                  >
-                    <span className="font-semibold text-blue-700">{c.display_name || "Property Group"}</span>
-                    <span className="text-sm text-gray-500">{c.property_address}</span>
-                    {c.unread_count > 0 && (
-                      <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full self-start mt-1">
-                        {c.unread_count}
-                      </span>
-                    )}
-                  </li>
-                ))}
-            </ul>
-          </div>
-          {/* Landlord Direct Message Section */}
-          <div>
-            <h4 className="text-lg font-semibold text-blue-600 mb-2">Landlord</h4>
-            <ul>
-              {contacts
-                .filter((c) => c.account_id && c.role === "landlord")
-                .map((c) => (
-                  <li
-                    key={`landlord-${c.account_id}`}
-                    className={`flex flex-col gap-1 p-4 rounded-lg cursor-pointer mb-2 transition ${
-                      selectedContact &&
-                      selectedContact.account_id &&
-                      selectedContact.account_id === c.account_id
-                        ? "bg-blue-100"
-                        : "hover:bg-blue-50"
-                    }`}
-                    onClick={() => setSelectedContact(c)}
-                  >
-                    <span className="font-semibold text-blue-700">{c.display_name}</span>
-                    <span className="text-sm text-gray-500">{c.property_address}</span>
-                    {c.unread_count > 0 && (
-                      <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full self-start mt-1">
-                        {c.unread_count}
-                      </span>
-                    )}
-                  </li>
-                ))}
-            </ul>
-          </div>
+          <ul>
+            {contacts.map((c) => (
+              <li
+                key={`contact-${c.account_id}`}
+                className={`flex flex-col gap-1 p-4 rounded-lg cursor-pointer mb-2 transition ${
+                  selectedContact &&
+                  selectedContact.account_id === c.account_id
+                    ? "bg-blue-100"
+                    : "hover:bg-blue-50"
+                }`}
+                onClick={() => setSelectedContact(c)}
+              >
+                <span className="font-semibold text-blue-700">
+                  {c.display_name}
+                </span>
+                <span className="text-sm text-gray-500">
+                  {c.property_address}
+                </span>
+                {c.unread_count > 0 && (
+                  <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full self-start mt-1">
+                    {c.unread_count}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
         </aside>
         <main className="flex-1 flex flex-col bg-white p-8">
           {selectedContact ? (
@@ -175,32 +140,21 @@ export default function Tmessages() {
                       key={msg.id}
                       className={`flex flex-col max-w-xl ${
                         msg.sender_id === getAccountId()
-                          ? "self-end items-end" // sent messages: right side
-                          : "self-start items-start" // received messages: left side
+                          ? "self-end items-end" // Sent messages on the right
+                          : "self-start items-start" // Received messages on the left
                       }`}
                     >
                       <div
                         className={`px-4 py-2 rounded-2xl shadow text-base ${
                           msg.sender_id === getAccountId()
-                            ? "bg-blue-800 text-white" // sent messages: darker blue
-                            : "bg-blue-100 text-blue-700" // received messages: as they are
+                            ? "bg-blue-800 text-white" // Sent messages: darker blue
+                            : "bg-gray-200 text-gray-800" // Received messages: gray
                         }`}
                       >
                         {msg.message_text}
                       </div>
                       <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
                         <span>{formatTimestamp(msg.sent_timestamp)}</span>
-                        {msg.sender_id === getAccountId() ? (
-                          <span
-                            className={`ml-2 ${
-                              msg.is_read
-                                ? "text-green-600"
-                                : "text-gray-400"
-                            }`}
-                          >
-                            {msg.is_read ? "Read" : "Delivered"}
-                          </span>
-                        ) : null}
                       </div>
                     </div>
                   ))
@@ -210,7 +164,7 @@ export default function Tmessages() {
                 <input
                   type="text"
                   value={newMsg}
-                  onChange={e => setNewMsg(e.target.value)}
+                  onChange={(e) => setNewMsg(e.target.value)}
                   placeholder="Type a message..."
                   className="flex-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />

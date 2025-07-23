@@ -5,20 +5,26 @@ const authenticate = require("../middleware/authenticate");
 // Send a message (tenant or landlord)
 router.post("/", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
-  const { property_id, message_text, recipient_id } = req.body;
+  const { message_text, recipient_id } = req.body;
   const sender_id = req.user.id;
 
   try {
-    // Find or create chat for this property
+    // Ensure recipient_id is provided
+    if (!recipient_id) {
+      return res.status(400).json({ error: "Recipient ID is required." });
+    }
+
+    // Find or create chat between sender and recipient
     let chatRes = await pool.query(
-      "SELECT id FROM chat WHERE property_id = $1",
-      [property_id]
+      `SELECT id FROM chat WHERE (sender_id = $1 AND recipient_id = $2)
+                                OR (sender_id = $2 AND recipient_id = $1)`,
+      [sender_id, recipient_id]
     );
     let chat_id;
     if (chatRes.rows.length === 0) {
       const newChat = await pool.query(
-        "INSERT INTO chat (property_id) VALUES ($1) RETURNING id",
-        [property_id]
+        "INSERT INTO chat (sender_id, recipient_id) VALUES ($1, $2) RETURNING id",
+        [sender_id, recipient_id]
       );
       chat_id = newChat.rows[0].id;
     } else {
@@ -32,38 +38,12 @@ router.post("/", authenticate, async (req, res) => {
       [chat_id, sender_id, message_text]
     );
 
-    let unreadFor;
-    if (recipient_id) {
-      // Direct message: only recipient
-      unreadFor = [recipient_id];
-    } else {
-      // Property-wide: all participants except sender
-      const participantsRes = await pool.query(
-        `SELECT a.id AS account_id
-           FROM property p
-           JOIN landlord l ON p.landlord_id = l.id
-           JOIN account a ON l.account_id = a.id
-           WHERE p.id = $1
-         UNION
-         SELECT a.id AS account_id
-           FROM property_tenant pt
-           JOIN tenant t ON pt.tenant_id = t.id
-           JOIN account a ON t.account_id = a.id
-           WHERE pt.property_id = $1`,
-        [property_id]
-      );
-      const participants = participantsRes.rows.map(r => r.account_id);
-      unreadFor = participants.filter(id => id !== sender_id);
-    }
-
-    // Mark as unread for intended recipients
-    for (const account_id of unreadFor) {
-      await pool.query(
-        `INSERT INTO chat_message_status (chat_message_id, account_id, is_read)
-         VALUES ($1, $2, FALSE)`,
-        [msgRes.rows[0].id, account_id]
-      );
-    }
+    // Mark as unread for the recipient
+    await pool.query(
+      `INSERT INTO chat_message_status (chat_message_id, account_id, is_read)
+       VALUES ($1, $2, FALSE)`,
+      [msgRes.rows[0].id, recipient_id]
+    );
 
     res.status(201).json({ message: msgRes.rows[0] });
   } catch (err) {
@@ -92,7 +72,7 @@ router.get("/contacts", authenticate, async (req, res) => {
         `SELECT pt.property_id,
                p.address AS property_address,
                a.first_name || ' ' || a.last_name AS display_name,
-               a.id AS account_id, -- ADD THIS LINE
+               a.id AS account_id, -- Tenant's account ID
                COUNT(CASE WHEN s.is_read = FALSE AND m.sender_id != $1 THEN 1 END) AS unread_count
           FROM property_tenant pt
           JOIN tenant t ON pt.tenant_id = t.id
@@ -106,16 +86,17 @@ router.get("/contacts", authenticate, async (req, res) => {
               SELECT id FROM landlord WHERE account_id = $1
             )
           )
-          GROUP BY pt.property_id, p.address, a.first_name, a.last_name, a.id`
-        , [account_id]
+          GROUP BY pt.property_id, p.address, a.first_name, a.last_name, a.id`,
+        [account_id]
       );
       contacts = tenantsRes.rows;
-    } else {
+    } else if (role === "tenant") {
       // Tenant: get landlord for their property
       const landlordRes = await pool.query(
         `SELECT p.id AS property_id,
                p.address AS property_address,
                a.first_name || ' ' || a.last_name AS display_name,
+               a.id AS account_id, -- Landlord's account ID
                COUNT(CASE WHEN s.is_read = FALSE AND m.sender_id != $1 THEN 1 END) AS unread_count
           FROM property_tenant pt
           JOIN property p ON pt.property_id = p.id
@@ -127,8 +108,8 @@ router.get("/contacts", authenticate, async (req, res) => {
           WHERE pt.tenant_id = (
             SELECT id FROM tenant WHERE account_id = $1
           )
-          GROUP BY p.id, p.address, a.first_name, a.last_name`
-        , [account_id]
+          GROUP BY p.id, p.address, a.first_name, a.last_name, a.id`,
+        [account_id]
       );
       contacts = landlordRes.rows;
     }
