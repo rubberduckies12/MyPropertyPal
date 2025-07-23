@@ -157,15 +157,15 @@ export default function Messages() {
                       key={msg.id}
                       className={`flex flex-col max-w-xl ${
                         msg.sender_id === selectedContact.account_id
-                          ? "self-end items-end" // Sent messages on the right
-                          : "self-start items-start" // Received messages on the left
+                          ? "self-start items-start" // Received messages on the left
+                          : "self-end items-end" // Sent messages on the right
                       }`}
                     >
                       <div
                         className={`px-4 py-2 rounded-2xl shadow text-base ${
                           msg.sender_id === selectedContact.account_id
-                            ? "bg-blue-800 text-white" // Sent messages: darker blue
-                            : "bg-gray-200 text-gray-800" // Received messages: gray
+                            ? "bg-gray-200 text-gray-800" // Received messages: grey
+                            : "bg-blue-800 text-white" // Sent messages: blue
                         }`}
                       >
                         {msg.message_text}
