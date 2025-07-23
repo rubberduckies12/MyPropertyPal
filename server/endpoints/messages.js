@@ -92,6 +92,7 @@ router.get("/contacts", authenticate, async (req, res) => {
         `SELECT pt.property_id,
                p.address AS property_address,
                a.first_name || ' ' || a.last_name AS display_name,
+               a.id AS account_id, -- ADD THIS LINE
                COUNT(CASE WHEN s.is_read = FALSE AND m.sender_id != $1 THEN 1 END) AS unread_count
           FROM property_tenant pt
           JOIN tenant t ON pt.tenant_id = t.id
@@ -105,7 +106,7 @@ router.get("/contacts", authenticate, async (req, res) => {
               SELECT id FROM landlord WHERE account_id = $1
             )
           )
-          GROUP BY pt.property_id, p.address, a.first_name, a.last_name`
+          GROUP BY pt.property_id, p.address, a.first_name, a.last_name, a.id`
         , [account_id]
       );
       contacts = tenantsRes.rows;
