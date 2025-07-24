@@ -124,7 +124,7 @@ export default function Properties() {
 
   const handleAddPropertyClick = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/properties/can-add`, {
+      const res = await fetch(`${API_BASE}/api/properties/canAddProperty`, { // Use the correct endpoint
         credentials: "include",
       });
       const data = await res.json();

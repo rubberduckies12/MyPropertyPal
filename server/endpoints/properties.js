@@ -219,5 +219,5 @@ async function canAddProperty(req, res, pool) {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
-//ahhh
+
 module.exports = { getProperties, addProperty, deleteProperty, canAddProperty };
