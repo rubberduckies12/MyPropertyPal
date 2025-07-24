@@ -312,7 +312,7 @@ function Dashboard() {
               className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
               onClick={() => navigate('/messages')}
             >
-              View All Messages ({unreadMessages} unread)
+              View All Messages
             </button>
           </div>
 

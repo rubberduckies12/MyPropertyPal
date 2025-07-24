@@ -129,25 +129,17 @@ export default function Messages() {
               <li
                 key={`contact-${c.account_id}`}
                 className={`flex flex-col gap-1 p-4 rounded-lg cursor-pointer mb-2 transition ${
-                  selectedContact &&
-                  selectedContact.account_id === c.account_id
+                  selectedContact && selectedContact.account_id === c.account_id
                     ? "bg-blue-100"
                     : "hover:bg-blue-50"
                 }`}
-                onClick={() => {
-                  console.log("Contact selected:", c); // Debug log
-                  setSelectedContact(c);
-                }}
+                onClick={() => setSelectedContact(c)}
               >
-                <span className="font-semibold text-blue-700">
-                  {c.display_name}
-                </span>
-                <span className="text-sm text-gray-500">
-                  {c.property_address}
-                </span>
+                <span className="font-semibold text-blue-700">{c.display_name}</span>
+                <span className="text-sm text-gray-500">{c.property_address}</span>
                 {c.unread_count > 0 && (
                   <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full self-start mt-1">
-                    {c.unread_count}
+                    {c.unread_count} unread
                   </span>
                 )}
               </li>
