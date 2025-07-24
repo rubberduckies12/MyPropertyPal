@@ -423,12 +423,6 @@ function Dashboard() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <button
-              className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
-              onClick={() => navigate('/finances')}
-            >
-              View Finances
-            </button>
           </div>
         </div>
       </main>
