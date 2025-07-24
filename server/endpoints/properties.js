@@ -1,15 +1,19 @@
-// endpoints/properties.js
+const express = require("express");
+const router = express.Router();
+const pool = require("../assets/databaseConnect")(); // Assuming pool is created here
 
-async function getProperties(req, res, pool) {
+// Define route handlers
+async function getProperties(req, res) {
   try {
     const accountId = req.user.id;
+
     // Look up the landlord id for this account
     const landlordResult = await pool.query(
-      'SELECT id FROM landlord WHERE account_id = $1',
+      "SELECT id FROM landlord WHERE account_id = $1",
       [accountId]
     );
     if (landlordResult.rows.length === 0) {
-      return res.status(400).json({ error: 'No landlord record for this user' });
+      return res.status(400).json({ error: "No landlord record for this user" });
     }
     const landlordId = landlordResult.rows[0].id;
 
@@ -43,36 +47,34 @@ async function getProperties(req, res, pool) {
 
     const { rows } = await pool.query(query, [landlordId]);
 
-    const properties = rows.map(row => ({
+    const properties = rows.map((row) => ({
       id: row.id,
       name: row.name,
       address: row.full_address,
       status: row.property_status,
-      rental_income: row.total_rent > 0 ? `£${parseFloat(row.total_rent).toFixed(2)}` : 'N/A',
+      rental_income: row.total_rent > 0 ? `£${parseFloat(row.total_rent).toFixed(2)}` : "N/A",
       tenants: row.tenants,
-      nextRentDue: row.next_rent_due ? `Day ${row.next_rent_due} of month` : 'N/A'
+      nextRentDue: row.next_rent_due ? `Day ${row.next_rent_due} of month` : "N/A",
     }));
 
     res.json({ properties });
-
   } catch (err) {
-    console.error('Error fetching properties:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching properties:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
-async function addProperty(req, res, pool) {
+async function addProperty(req, res) {
   try {
-    // Get the account id from the JWT
     const accountId = req.user.id;
 
     // Look up the landlord id for this account
     const landlordResult = await pool.query(
-      'SELECT id FROM landlord WHERE account_id = $1',
+      "SELECT id FROM landlord WHERE account_id = $1",
       [accountId]
     );
     if (landlordResult.rows.length === 0) {
-      return res.status(400).json({ error: 'No landlord record for this user' });
+      return res.status(400).json({ error: "No landlord record for this user" });
     }
     const landlordId = landlordResult.rows[0].id;
 
@@ -88,14 +90,14 @@ async function addProperty(req, res, pool) {
     );
 
     if (subscriptionResult.rows.length === 0) {
-      return res.status(403).json({ error: 'No active subscription found.' });
+      return res.status(403).json({ error: "No active subscription found." });
     }
 
     const { plan_name, max_properties } = subscriptionResult.rows[0];
 
     // Count the current number of properties
     const propertyCountResult = await pool.query(
-      'SELECT COUNT(*) AS property_count FROM property WHERE landlord_id = $1',
+      "SELECT COUNT(*) AS property_count FROM property WHERE landlord_id = $1",
       [landlordId]
     );
     const propertyCount = parseInt(propertyCountResult.rows[0].property_count, 10);
@@ -112,11 +114,11 @@ async function addProperty(req, res, pool) {
 
     // Find the property_status_id for the given status string
     const statusResult = await pool.query(
-      'SELECT id FROM property_status WHERE status = $1',
+      "SELECT id FROM property_status WHERE status = $1",
       [status]
     );
     if (statusResult.rows.length === 0) {
-      return res.status(400).json({ error: 'Invalid property status' });
+      return res.status(400).json({ error: "Invalid property status" });
     }
     const property_status_id = statusResult.rows[0].id;
 
@@ -140,7 +142,7 @@ async function addProperty(req, res, pool) {
           rent_amount,
           rent_due_date !== undefined && rent_due_date !== null && rent_due_date !== ""
             ? Number(rent_due_date)
-            : null
+            : null,
         ]
       );
       // Set property status to "Occupied"
@@ -156,15 +158,14 @@ async function addProperty(req, res, pool) {
 
     res.status(201).json({ id: propertyId });
   } catch (err) {
-    console.error('Error adding property:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error adding property:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
-async function deleteProperty(req, res, pool) {
+async function deleteProperty(req, res) {
   try {
     const propertyId = req.params.id;
-    // Optionally: check ownership here
     await pool.query("DELETE FROM property WHERE id = $1", [propertyId]);
     res.json({ message: "Property deleted" });
   } catch (err) {
@@ -173,17 +174,17 @@ async function deleteProperty(req, res, pool) {
   }
 }
 
-async function canAddProperty(req, res, pool) {
+async function canAddProperty(req, res) {
   try {
     const accountId = req.user.id;
 
     // Look up the landlord id for this account
     const landlordResult = await pool.query(
-      'SELECT id FROM landlord WHERE account_id = $1',
+      "SELECT id FROM landlord WHERE account_id = $1",
       [accountId]
     );
     if (landlordResult.rows.length === 0) {
-      return res.status(400).json({ error: 'No landlord record for this user' });
+      return res.status(400).json({ error: "No landlord record for this user" });
     }
     const landlordId = landlordResult.rows[0].id;
 
@@ -199,14 +200,14 @@ async function canAddProperty(req, res, pool) {
     );
 
     if (subscriptionResult.rows.length === 0) {
-      return res.status(403).json({ error: 'No active subscription found.' });
+      return res.status(403).json({ error: "No active subscription found." });
     }
 
     const { max_properties } = subscriptionResult.rows[0];
 
     // Count the current number of properties
     const propertyCountResult = await pool.query(
-      'SELECT COUNT(*) AS property_count FROM property WHERE landlord_id = $1',
+      "SELECT COUNT(*) AS property_count FROM property WHERE landlord_id = $1",
       [landlordId]
     );
     const propertyCount = parseInt(propertyCountResult.rows[0].property_count, 10);
@@ -215,9 +216,15 @@ async function canAddProperty(req, res, pool) {
     const canAdd = max_properties === null || propertyCount < max_properties;
     res.json({ canAdd });
   } catch (err) {
-    console.error('Error checking property limit:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error checking property limit:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
-module.exports = { getProperties, addProperty, deleteProperty, canAddProperty };
+// Define routes
+router.get("/", getProperties);
+router.post("/", addProperty);
+router.delete("/:id", deleteProperty);
+router.get("/canAddProperty", canAddProperty);
+
+module.exports = router;
