@@ -52,10 +52,13 @@ async function fetchTenantCount() {
 }
 
 async function fetchContacts() {
-  const res = await fetch(MESSAGES_CONTACTS_URL, {
-    credentials: 'include'
+  const res = await fetch(`${API_BASE}/api/messages/contacts`, {
+    credentials: 'include',
   });
-  if (!res.ok) return [];
+  if (!res.ok) {
+    console.error("Failed to fetch contacts");
+    return [];
+  }
   const data = await res.json();
   return data.contacts || [];
 }
@@ -103,7 +106,7 @@ function Dashboard() {
   const [tenantCount, setTenantCount] = useState(0);
   const [tenants, setTenants] = useState([]);
   const [contacts, setContacts] = useState([]);
-  const [unreadMessages, setUnreadMessages] = useState(0); // Added state for unread messages
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const [incidents, setIncidents] = useState([]);
   const [properties, setProperties] = useState([]);
   const [deadlines, setDeadlines] = useState([]);
@@ -221,12 +224,49 @@ function Dashboard() {
           </div>
 
           {/* Messages Card */}
-          <div className="tenant-dashboard-card">
-            <h3>Messages</h3>
-            <div className="tenant-dashboard-card-main">
-              {unreadMessages} {/* Display unread message count */}
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-2 min-h-0">
+            <div className="flex items-center gap-2 mb-4">
+              <HiMail className="text-blue-500 text-2xl" />
+              <h3 className="text-lg font-bold text-blue-700">Messages</h3>
             </div>
-            <div className="tenant-dashboard-card-label">New Messages</div>
+            <div className="flex-1 overflow-y-auto">
+              {contacts.length === 0 ? (
+                <div className="text-gray-400 text-center py-8">No contacts available.</div>
+              ) : (
+                <ul className="space-y-4">
+                  {contacts.map((contact) => (
+                    <li
+                      key={contact.account_id}
+                      className="flex justify-between items-center bg-blue-50 rounded-lg p-4 shadow-sm"
+                    >
+                      <div>
+                        <div className="font-semibold text-blue-700">{contact.display_name}</div>
+                        <div className="text-sm text-gray-500">{contact.property_address}</div>
+                      </div>
+                      {contact.unread_count > 0 && (
+                        <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                          {contact.unread_count} unread
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <button
+              className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
+              onClick={async () => {
+                const updatedContacts = await fetchContacts();
+                setContacts(updatedContacts);
+                const totalUnread = updatedContacts.reduce(
+                  (sum, contact) => sum + (contact.unread_count || 0),
+                  0
+                );
+                setUnreadMessages(totalUnread);
+              }}
+            >
+              Refresh Messages
+            </button>
           </div>
 
           {/* Properties Card */}
