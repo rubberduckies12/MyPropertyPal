@@ -100,10 +100,7 @@ app.use(checkSubscriptionStatus);
 dashEndpoints(app, pool);
 
 // Properties endpoints (protected)
-app.get('/api/properties', (req, res) => require('./endpoints/properties').getProperties(req, res, pool));
-app.post('/api/properties', (req, res) => require('./endpoints/properties').addProperty(req, res, pool));
-app.delete('/api/properties/:id', (req, res) => require('./endpoints/properties').deleteProperty(req, res, pool));
-
+app.use('/api/properties', propertiesRouter);
 app.use("/api/tenants", tenantsRouter);
 app.use('/api/finances', financesRouter);
 app.use('/api/documents', documentsRouter);
