@@ -224,7 +224,7 @@ function Dashboard() {
           </div>
 
           {/* Messages Card */}
-          <div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-1 row-span-3 min-h-0">
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-1 row-span-2 min-h-0">
             <div className="flex items-center gap-2 mb-4">
               <HiMail className="text-blue-500 text-2xl" />
               <h3 className="text-lg font-bold text-blue-700">Messages</h3>
