@@ -31,8 +31,10 @@ export default function Messages() {
   useEffect(() => {
     if (!selectedContact) return;
 
-    const markMessagesAsRead = async () => {
+    const fetchMessagesAndMarkAsRead = async () => {
       try {
+        setLoading(true);
+
         // Fetch messages
         const res = await fetch(
           `${BACKEND_URL}/api/messages/${selectedContact.account_id}`,
@@ -70,7 +72,7 @@ export default function Messages() {
       }
     };
 
-    markMessagesAsRead();
+    fetchMessagesAndMarkAsRead();
   }, [selectedContact]);
 
   // Handle sending a new message

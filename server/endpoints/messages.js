@@ -9,7 +9,6 @@ router.post("/", authenticate, async (req, res) => {
   const sender_id = req.user.id;
 
   try {
-    // Ensure recipient_id is provided
     if (!recipient_id) {
       return res.status(400).json({ error: "Recipient ID is required." });
     }
@@ -122,11 +121,10 @@ router.get("/contacts", authenticate, async (req, res) => {
 // Fetch chat history between current user and a recipient
 router.get("/:recipient_id", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
-  const { recipient_id } = req.params; // The recipient's account ID
-  const account_id = req.user.id; // The current user's account ID
+  const { recipient_id } = req.params;
+  const account_id = req.user.id;
 
   try {
-    // Find the chat between the current user and the recipient
     const chatRes = await pool.query(
       `SELECT id FROM chat 
        WHERE (sender_id = $1 AND recipient_id = $2)
@@ -135,7 +133,6 @@ router.get("/:recipient_id", authenticate, async (req, res) => {
     );
 
     if (chatRes.rows.length === 0) {
-      // No chat exists between these users
       return res.json({ messages: [] });
     }
 
@@ -144,7 +141,7 @@ router.get("/:recipient_id", authenticate, async (req, res) => {
     // Fetch messages for the chat
     const messagesRes = await pool.query(
       `SELECT m.id, m.sender_id, m.message_text, m.sent_timestamp,
-              s.is_read
+              COALESCE(s.is_read, FALSE) AS is_read
          FROM chat_message m
          LEFT JOIN chat_message_status s
            ON m.id = s.chat_message_id AND s.account_id = $1
@@ -163,17 +160,22 @@ router.get("/:recipient_id", authenticate, async (req, res) => {
 // Mark messages as read
 router.post("/read", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
-  const { message_ids } = req.body; // array of message ids
+  const { message_ids } = req.body;
   const account_id = req.user.id;
 
   try {
-    for (const msg_id of message_ids) {
-      await pool.query(
-        `UPDATE chat_message_status SET is_read = TRUE
-         WHERE chat_message_id = $1 AND account_id = $2`,
-        [msg_id, account_id]
-      );
+    if (!message_ids || message_ids.length === 0) {
+      return res.status(400).json({ error: "No message IDs provided." });
     }
+
+    // Use a single query to update all message IDs
+    const query = `
+      UPDATE chat_message_status
+      SET is_read = TRUE
+      WHERE chat_message_id = ANY($1::int[]) AND account_id = $2
+    `;
+    await pool.query(query, [message_ids, account_id]);
+
     res.json({ success: true });
   } catch (err) {
     console.error("Mark read error:", err);
