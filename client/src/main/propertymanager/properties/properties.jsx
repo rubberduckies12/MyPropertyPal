@@ -340,7 +340,10 @@ export default function Properties() {
                     : "No tenants"}
                 </div>
                 <div>
-                  <strong className="text-blue-700">Rental Income:</strong> {selectedProperty.rent || "N/A"}
+                  <strong className="text-blue-700">Rental Income:</strong>{" "}
+                  {selectedProperty.rental_income
+                    ? `£${selectedProperty.rental_income.toLocaleString()}`
+                    : "N/A"}
                 </div>
                 <div>
                   <strong className="text-blue-700">Next Rent Due:</strong>{" "}
