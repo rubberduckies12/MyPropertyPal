@@ -349,29 +349,47 @@ function Dashboard() {
 
           {/* Maintenance Requests Card */}
           <div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-3 min-h-0">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-4">
               <HiCog className="text-blue-500 text-2xl" />
               <h3 className="text-lg font-bold text-blue-700">Maintenance Requests</h3>
             </div>
-            <div className="flex-1 overflow-y-auto">
-              {incidents.length === 0 ? (
-                <div className="text-gray-400 text-center py-8">No maintenance requests available.</div>
-              ) : (
-                <ul className="space-y-4">
-                  {incidents.slice(0, 3).map((incident) => (
-                    <li
-                      key={incident.id}
-                      className="bg-blue-50 rounded-lg p-4 shadow-sm"
-                    >
-                      <div className="font-semibold text-blue-700">{incident.title}</div>
-                      <div className="text-sm text-gray-500">{incident.property_address}</div>
-                      <div className="text-xs text-gray-400">
-                        Severity: {incident.severity} | Status: {incident.progress}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
+            <div className="w-full overflow-x-auto">
+              <table className="min-w-full bg-white rounded-2xl text-sm divide-y divide-blue-100">
+                <thead>
+                  <tr>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-left">Title</th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-left">Property</th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-center">Severity</th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-center">Progress</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {incidents.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="text-center text-gray-400 py-4">
+                        No maintenance requests available.
+                      </td>
+                    </tr>
+                  ) : (
+                    incidents.slice(0, 3).map((incident) => (
+                      <tr key={incident.id} className="hover:bg-blue-50 transition">
+                        <td className="py-2 px-3 font-semibold text-blue-700">{incident.title}</td>
+                        <td className="py-2 px-3">{incident.property_display}</td>
+                        <td className="py-2 px-3 text-center">
+                          <span className={`px-3 py-1 rounded-xl font-semibold text-xs ${getSeverityColor(incident.severity)}`}>
+                            {incident.severity}
+                          </span>
+                        </td>
+                        <td className="py-2 px-3 text-center">
+                          <span className={`px-3 py-1 rounded-xl font-semibold text-xs ${getProgressColor(incident.progress)}`}>
+                            {incident.progress}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
             <button
               className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
