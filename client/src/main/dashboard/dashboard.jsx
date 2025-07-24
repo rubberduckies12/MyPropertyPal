@@ -124,6 +124,22 @@ function getMonthlySummary(rentPayments, expenses) {
   return monthsArr;
 }
 
+function getSeverityColor(severity) {
+  if (!severity) return "bg-gray-300 text-gray-700";
+  if (severity === "High") return "bg-red-500 text-white";
+  if (severity === "Medium") return "bg-yellow-200 text-yellow-800";
+  if (severity === "Low") return "bg-green-500 text-white";
+  return "bg-gray-300 text-gray-700";
+}
+
+function getProgressColor(progress) {
+  if (!progress) return "bg-gray-300 text-gray-700";
+  if (progress === "Completed") return "bg-green-500 text-white";
+  if (progress === "In Progress") return "bg-yellow-200 text-yellow-800";
+  if (progress === "Pending") return "bg-red-500 text-white";
+  return "bg-gray-300 text-gray-700";
+}
+
 function Dashboard() {
   const [showYearly, setShowYearly] = useState(false);
   const [user, setUser] = useState(null);
