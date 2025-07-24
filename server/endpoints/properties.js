@@ -173,4 +173,51 @@ async function deleteProperty(req, res, pool) {
   }
 }
 
-module.exports = { getProperties, addProperty, deleteProperty };
+async function canAddProperty(req, res, pool) {
+  try {
+    const accountId = req.user.id;
+
+    // Look up the landlord id for this account
+    const landlordResult = await pool.query(
+      'SELECT id FROM landlord WHERE account_id = $1',
+      [accountId]
+    );
+    if (landlordResult.rows.length === 0) {
+      return res.status(400).json({ error: 'No landlord record for this user' });
+    }
+    const landlordId = landlordResult.rows[0].id;
+
+    // Check the subscription plan and property limits
+    const subscriptionResult = await pool.query(
+      `SELECT p.name AS plan_name, p.max_properties
+       FROM subscription s
+       JOIN payment_plan p ON s.plan_id = p.id
+       WHERE s.landlord_id = $1 AND s.is_active = TRUE
+       ORDER BY s.created_at DESC
+       LIMIT 1`,
+      [landlordId]
+    );
+
+    if (subscriptionResult.rows.length === 0) {
+      return res.status(403).json({ error: 'No active subscription found.' });
+    }
+
+    const { max_properties } = subscriptionResult.rows[0];
+
+    // Count the current number of properties
+    const propertyCountResult = await pool.query(
+      'SELECT COUNT(*) AS property_count FROM property WHERE landlord_id = $1',
+      [landlordId]
+    );
+    const propertyCount = parseInt(propertyCountResult.rows[0].property_count, 10);
+
+    // Return whether the user can add more properties
+    const canAdd = max_properties === null || propertyCount < max_properties;
+    res.json({ canAdd });
+  } catch (err) {
+    console.error('Error checking property limit:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+module.exports = { getProperties, addProperty, deleteProperty, canAddProperty };

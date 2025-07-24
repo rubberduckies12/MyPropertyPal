@@ -122,6 +122,26 @@ export default function Properties() {
     }
   };
 
+  const handleAddPropertyClick = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/properties/can-add`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to check property limit");
+      }
+
+      if (data.canAdd) {
+        setShowAddModal(true); // Open the Add Property modal
+      } else {
+        alert("You have reached the maximum number of properties allowed by your subscription plan. Upgrade your plan to add more properties.");
+      }
+    } catch (err) {
+      alert(err.message || "Error checking property limit");
+    }
+  };
+
   // Render
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -133,7 +153,7 @@ export default function Properties() {
           <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Your Properties</h1>
           <button
             className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
-            onClick={() => setShowAddModal(true)}
+            onClick={handleAddPropertyClick}
           >
             + Add Property
           </button>
