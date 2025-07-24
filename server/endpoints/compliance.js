@@ -11,6 +11,7 @@ const authenticate = require("../middleware/authenticate");
 const visionClient = new vision.ImageAnnotatorClient({
   keyFilename: path.join(__dirname, "../../google-vision-key.json"),
 });
+//ah
 
 // Multer setup for file uploads
 const uploadDir = path.join(__dirname, "../../uploads/compliance");
