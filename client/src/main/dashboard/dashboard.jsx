@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../sidebar/sidebar.jsx';
 import { HiUsers, HiCurrencyPound, HiMail, HiHome, HiExclamationCircle, HiCog } from "react-icons/hi";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 // Hardcoded backend URLs
 const API_BASE = "https://mypropertypal-3.onrender.com";
@@ -100,6 +101,29 @@ async function fetchTenants() {
   return data.tenants || [];
 }
 
+function getMonthlySummary(rentPayments, expenses) {
+  const year = new Date().getFullYear();
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthsArr = Array.from({ length: 12 }, (_, i) => ({
+    key: `${year}-${i}`,
+    month: `${monthNames[i]} ${year}`,
+    income: 0,
+    expenses: 0,
+  }));
+
+  rentPayments.forEach(rp => {
+    const d = new Date(rp.paid_on || rp.date);
+    if (d.getFullYear() === year) monthsArr[d.getMonth()].income += Number(rp.amount || 0);
+  });
+
+  expenses.forEach(e => {
+    const d = new Date(e.incurred_on || e.date);
+    if (d.getFullYear() === year) monthsArr[d.getMonth()].expenses += Number(e.amount || 0);
+  });
+
+  return monthsArr;
+}
+
 function Dashboard() {
   const [showYearly, setShowYearly] = useState(false);
   const [user, setUser] = useState(null);
@@ -110,6 +134,7 @@ function Dashboard() {
   const [incidents, setIncidents] = useState([]);
   const [properties, setProperties] = useState([]);
   const [deadlines, setDeadlines] = useState([]);
+  const [monthlySummaryData, setMonthlySummaryData] = useState([]);
 
   const navigate = useNavigate();
 
@@ -131,6 +156,20 @@ function Dashboard() {
       setDeadlines(Array.isArray(data) ? data : []);
     }
     loadData();
+  }, []);
+
+  useEffect(() => {
+    async function fetchFinancialData() {
+      try {
+        const res = await fetch(`${API_BASE}/api/finances`, { credentials: 'include' });
+        const data = await res.json();
+        const summaryData = getMonthlySummary(data.rentPayments || [], data.expenses || []);
+        setMonthlySummaryData(summaryData);
+      } catch (err) {
+        console.error("Error fetching financial data:", err);
+      }
+    }
+    fetchFinancialData();
   }, []);
 
   const getPropertyLabel = (propertyId) => {
@@ -339,6 +378,56 @@ function Dashboard() {
               onClick={() => navigate('/maintenance')}
             >
               View All Maintenance Requests
+            </button>
+          </div>
+
+          {/* Received Income vs Expenses Graph */}
+          <div className="bg-white rounded-2xl shadow p-6 col-span-1 md:col-span-3">
+            <h2 className="text-xl font-bold text-blue-700 mb-4">Received Income vs Expenses</h2>
+            <div className="w-full h-72">
+              <ResponsiveContainer>
+                <LineChart data={monthlySummaryData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
+                  <YAxis stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
+                  <Tooltip
+                    formatter={value => `£${value.toLocaleString()}`}
+                    contentStyle={{ backgroundColor: "#f9fafb", borderRadius: "8px", border: "1px solid #2563eb" }}
+                    labelStyle={{ color: "#2563eb", fontWeight: "bold" }}
+                  />
+                  <Legend
+                    wrapperStyle={{ paddingTop: 10 }}
+                    iconType="circle"
+                    formatter={(value, entry) => (
+                      <span style={{ color: entry.color, fontWeight: 700 }}>{value}</span>
+                    )}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="income"
+                    name="Rental Income"
+                    stroke="#22c55e"
+                    strokeWidth={3}
+                    dot={{ r: 5 }}
+                    activeDot={{ r: 7 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="expenses"
+                    name="Expenses"
+                    stroke="#ef4444"
+                    strokeWidth={3}
+                    dot={{ r: 5 }}
+                    activeDot={{ r: 7 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <button
+              className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
+              onClick={() => navigate('/finances')}
+            >
+              View Finances
             </button>
           </div>
         </div>
