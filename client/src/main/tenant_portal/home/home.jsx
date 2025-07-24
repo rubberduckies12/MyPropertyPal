@@ -40,8 +40,8 @@ async function fetchTenantUser() {
 }
 
 async function fetchUnreadMessages() {
-  const res = await fetch(`${API_BASE}/api/dashboard/messages`, {
-    credentials: "include",
+  const res = await fetch(`${API_BASE}/api/messages/unread/count`, {
+    credentials: "include", // Include cookies for authentication
   });
   if (!res.ok) {
     console.error("Failed to fetch unread messages");
@@ -65,10 +65,33 @@ export default function TenantHome() {
       setContacts(await fetchContacts());
       setIncidents(await fetchTenantIncidents());
       setUser(await fetchTenantUser());
-      setUnreadMessages(await fetchUnreadMessages()); // Fetch unread messages count
     }
     loadData();
   }, []);
+
+  useEffect(() => {
+    async function loadUnreadMessages() {
+      setUnreadMessages(await fetchUnreadMessages());
+    }
+    loadUnreadMessages();
+  }, []);
+
+  async function markMessagesAsRead(messageIds) {
+    const res = await fetch(`${API_BASE}/api/messages/read`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message_ids: messageIds }),
+    });
+
+    if (res.ok) {
+      setUnreadMessages(await fetchUnreadMessages()); // Refresh unread message count
+    } else {
+      console.error("Failed to mark messages as read");
+    }
+  }
 
   return (
     <div className="tenant-home-container">
@@ -128,31 +151,6 @@ export default function TenantHome() {
               {unreadMessages} {/* Display unread message count */}
             </div>
             <div className="tenant-dashboard-card-label">New Messages</div>
-            <div className="tenant-dashboard-list">
-              {contacts.length === 0 ? (
-                <div className="tenant-dashboard-list-empty">No new messages.</div>
-              ) : (
-                contacts.slice(0, 3).map((c, idx) => (
-                  <div key={idx} className="tenant-dashboard-list-item">
-                    <strong>{c.display_name}</strong>
-                    <span className="tenant-dashboard-message-property">
-                      {c.property_address ? `(${c.property_address})` : ""}
-                    </span>
-                    {Number(c.unread_count) > 0 && (
-                      <span className="tenant-dashboard-message-unread">
-                        {Number(c.unread_count)} new
-                      </span>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-            <button
-              className="tenant-dashboard-btn"
-              onClick={() => (window.location.href = "/tenant-messages")}
-            >
-              View All Messages
-            </button>
           </div>
         </div>
       </main>

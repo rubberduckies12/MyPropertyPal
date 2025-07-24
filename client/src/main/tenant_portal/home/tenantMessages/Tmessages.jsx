@@ -13,7 +13,6 @@ export default function Tmessages() {
   const [messages, setMessages] = useState([]); // Chat messages
   const [newMsg, setNewMsg] = useState(""); // New message input
   const [loading, setLoading] = useState(false); // Loading state for messages
-  const [unreadMessages, setUnreadMessages] = useState(0); // Unread messages count
 
   // Fetch contacts (landlords for tenants)
   useEffect(() => {
@@ -99,43 +98,6 @@ export default function Tmessages() {
       console.error("Failed to send message:", await res.json());
     }
   };
-
-  async function fetchUnreadMessages() {
-    const res = await fetch(`${BACKEND_URL}/api/dashboard/messages`, {
-      credentials: "include", // Include cookies for authentication
-    });
-    if (!res.ok) {
-      console.error("Failed to fetch unread messages");
-      return 0;
-    }
-    const data = await res.json();
-    return data.unread_count || 0;
-  }
-
-  async function markMessagesAsRead(messageIds) {
-    const res = await fetch(`${BACKEND_URL}/api/messages/read`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message_ids: messageIds }),
-    });
-
-    if (res.ok) {
-      setUnreadMessages(await fetchUnreadMessages()); // Refresh unread message count
-    } else {
-      console.error("Failed to mark messages as read");
-    }
-  }
-
-  // Fetch unread messages count on mount
-  useEffect(() => {
-    async function loadData() {
-      setUnreadMessages(await fetchUnreadMessages()); // Fetch unread messages count
-    }
-    loadData();
-  }, []);
 
   return (
     <div className="flex min-h-screen bg-blue-50">
@@ -236,40 +198,6 @@ export default function Tmessages() {
             </div>
           )}
         </main>
-      </div>
-
-      {/* Messages Card */}
-      <div className="tenant-dashboard-card">
-        <h3>Messages</h3>
-        <div className="tenant-dashboard-card-main">
-          {unreadMessages} {/* Display unread message count */}
-        </div>
-        <div className="tenant-dashboard-card-label">New Messages</div>
-        <div className="tenant-dashboard-list">
-          {contacts.length === 0 ? (
-            <div className="tenant-dashboard-list-empty">No new messages.</div>
-          ) : (
-            contacts.slice(0, 3).map((c, idx) => (
-              <div key={idx} className="tenant-dashboard-list-item">
-                <strong>{c.display_name}</strong>
-                <span className="tenant-dashboard-message-property">
-                  {c.property_address ? `(${c.property_address})` : ""}
-                </span>
-                {Number(c.unread_count) > 0 && (
-                  <span className="tenant-dashboard-message-unread">
-                    {Number(c.unread_count)} new
-                  </span>
-                )}
-              </div>
-            ))
-          )}
-        </div>
-        <button
-          className="tenant-dashboard-btn"
-          onClick={() => (window.location.href = "/tenant-messages")}
-        >
-          View All Messages
-        </button>
       </div>
     </div>
   );

@@ -61,7 +61,7 @@ async function fetchContacts() {
 }
 
 async function fetchUnreadMessages() {
-  const res = await fetch(`${API_BASE}/api/dashboard/messages`, {
+  const res = await fetch(`${API_BASE}/api/messages/unread/count`, {
     credentials: "include", // Include cookies for authentication
   });
   if (!res.ok) {
@@ -231,34 +231,9 @@ function Dashboard() {
           <div className="tenant-dashboard-card">
             <h3>Messages</h3>
             <div className="tenant-dashboard-card-main">
-              {messages} {/* Display unread message count */}
+              {unreadMessages} {/* Display unread message count */}
             </div>
             <div className="tenant-dashboard-card-label">New Messages</div>
-            <div className="tenant-dashboard-list">
-              {contacts.length === 0 ? (
-                <div className="tenant-dashboard-list-empty">No new messages.</div>
-              ) : (
-                contacts.slice(0, 3).map((c, idx) => (
-                  <div key={idx} className="tenant-dashboard-list-item">
-                    <strong>{c.display_name}</strong>
-                    <span className="tenant-dashboard-message-property">
-                      {c.property_address ? `(${c.property_address})` : ""}
-                    </span>
-                    {Number(c.unread_count) > 0 && (
-                      <span className="tenant-dashboard-message-unread">
-                        {Number(c.unread_count)} new
-                      </span>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-            <button
-              className="tenant-dashboard-btn"
-              onClick={() => (window.location.href = "/tenant-messages")}
-            >
-              View All Messages
-            </button>
           </div>
 
           {/* Properties Card */}

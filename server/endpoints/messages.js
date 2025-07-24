@@ -181,4 +181,24 @@ router.post("/read", authenticate, async (req, res) => {
   }
 });
 
+// Count unread messages
+router.get("/unread/count", authenticate, async (req, res) => {
+  const pool = req.app.get("pool");
+  const account_id = req.user.id;
+
+  try {
+    const result = await pool.query(
+      `SELECT COUNT(*) AS unread_count
+       FROM chat_message_status
+       WHERE account_id = $1 AND is_read = FALSE`,
+      [account_id]
+    );
+
+    res.json({ unread_count: Number(result.rows[0].unread_count) });
+  } catch (err) {
+    console.error("Failed to fetch unread message count:", err);
+    res.status(500).json({ error: "Failed to fetch unread message count." });
+  }
+});
+
 module.exports = router;
