@@ -382,6 +382,16 @@ export default function Finances() {
     );
   }
 
+  // Add state for toggling table rows
+  const [showAllExpectedRent, setShowAllExpectedRent] = useState(false);
+  const [showAllRentPayments, setShowAllRentPayments] = useState(false);
+  const [showAllExpenses, setShowAllExpenses] = useState(false);
+
+  // Limit rows to 5 by default
+  const visibleExpectedRent = showAllExpectedRent ? expectedRent : expectedRent.slice(0, 5);
+  const visibleRentPayments = showAllRentPayments ? rentPayments : rentPayments.slice(0, 5);
+  const visibleExpenses = showAllExpenses ? filteredExpenses : filteredExpenses.slice(0, 5);
+
   // --- Main UI ---
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -496,14 +506,14 @@ export default function Finances() {
                     </tr>
                   </thead>
                   <tbody>
-                    {expectedRent.length === 0 ? (
+                    {visibleExpectedRent.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="text-center text-gray-400 py-8">
                           No payments added yet
                         </td>
                       </tr>
                     ) : (
-                      expectedRent.map(payment => (
+                      visibleExpectedRent.map(payment => (
                         <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
                           <td className="py-4 px-3">{payment.property}</td>
                           <td className="py-4 px-3">{payment.tenant}</td>
@@ -523,6 +533,14 @@ export default function Finances() {
                     )}
                   </tbody>
                 </table>
+                {expectedRent.length > 5 && (
+                  <button
+                    className="mt-4 text-blue-600 font-semibold hover:underline"
+                    onClick={() => setShowAllExpectedRent(!showAllExpectedRent)}
+                  >
+                    {showAllExpectedRent ? "Show Less" : "Show More"}
+                  </button>
+                )}
               </div>
             </section>
 
@@ -545,14 +563,14 @@ export default function Finances() {
                     </tr>
                   </thead>
                   <tbody>
-                    {rentPayments.length === 0 ? (
+                    {visibleRentPayments.length === 0 ? (
                       <tr>
                         <td colSpan={9} className="text-center text-gray-400 py-8">
                           No payments added yet
                         </td>
                       </tr>
                     ) : (
-                      rentPayments.map(payment => (
+                      visibleRentPayments.map(payment => (
                         <tr key={payment.id}>
                           <td className="py-4 px-3">{payment.property}</td>
                           <td className="py-4 px-3">{payment.tenant}</td>
@@ -599,6 +617,14 @@ export default function Finances() {
                     )}
                   </tbody>
                 </table>
+                {rentPayments.length > 5 && (
+                  <button
+                    className="mt-4 text-blue-600 font-semibold hover:underline"
+                    onClick={() => setShowAllRentPayments(!showAllRentPayments)}
+                  >
+                    {showAllRentPayments ? "Show Less" : "Show More"}
+                  </button>
+                )}
               </div>
             </section>
 
@@ -617,14 +643,14 @@ export default function Finances() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredExpenses.length === 0 ? (
+                    {visibleExpenses.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="text-center text-gray-400 py-8">
                           No payments added yet
                         </td>
                       </tr>
                     ) : (
-                      filteredExpenses.map(expense => (
+                      visibleExpenses.map(expense => (
                         <tr key={expense.id}>
                           <td className="py-4 px-3">{formatDate(expense.date || expense.incurred_on)}</td>
                           <td className="py-4 px-3">{expense.category}</td>
@@ -667,6 +693,14 @@ export default function Finances() {
                     )}
                   </tbody>
                 </table>
+                {filteredExpenses.length > 5 && (
+                  <button
+                    className="mt-4 text-blue-600 font-semibold hover:underline"
+                    onClick={() => setShowAllExpenses(!showAllExpenses)}
+                  >
+                    {showAllExpenses ? "Show Less" : "Show More"}
+                  </button>
+                )}
               </div>
             </section>
 
