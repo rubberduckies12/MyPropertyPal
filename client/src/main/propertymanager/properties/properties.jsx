@@ -79,7 +79,7 @@ export default function Properties() {
         method: "POST",
         credentials: "include",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(addForm),
       });
@@ -97,7 +97,8 @@ export default function Properties() {
         rent_amount: "",
         status: "Available",
       });
-      fetchProperties();
+      // Refresh the page to fetch the updated list of properties
+      window.location.reload();
     } catch (err) {
       setAddError(err.message);
       setAddLoading(false);
@@ -234,55 +235,68 @@ export default function Properties() {
             <div className="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-md sm:max-w-lg my-8 flex flex-col gap-6 border border-blue-100">
               <h2 className="text-2xl font-extrabold text-blue-700 text-center mb-2">Add Property</h2>
               <form onSubmit={handleAddProperty} className="flex flex-col gap-4">
-                <label className="font-semibold text-blue-700">
-                  Number (or Name)
-                  <input
-                    name="name"
-                    value={addForm.name}
-                    onChange={handleAddFormChange}
-                    required
-                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </label>
-                <label className="font-semibold text-blue-700">
-                  Address
-                  <input
-                    name="address"
-                    value={addForm.address}
-                    onChange={handleAddFormChange}
-                    required
-                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </label>
-                <label className="font-semibold text-blue-700">
-                  City
-                  <input
-                    name="city"
-                    value={addForm.city}
-                    onChange={handleAddFormChange}
-                    required
-                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </label>
-                <label className="font-semibold text-blue-700">
-                  County
-                  <input
-                    name="county"
-                    value={addForm.county}
-                    onChange={handleAddFormChange}
-                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </label>
-                <label className="font-semibold text-blue-700">
-                  Postcode
-                  <input
-                    name="postcode"
-                    value={addForm.postcode}
-                    onChange={handleAddFormChange}
-                    required
-                    className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="font-semibold text-blue-700">
+                    Number (or Name)
+                    <input
+                      name="name"
+                      value={addForm.name}
+                      onChange={handleAddFormChange}
+                      required
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+                    />
+                  </label>
+                  <label className="font-semibold text-blue-700">
+                    Address
+                    <input
+                      name="address"
+                      value={addForm.address}
+                      onChange={handleAddFormChange}
+                      required
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+                    />
+                  </label>
+                  <label className="font-semibold text-blue-700">
+                    City
+                    <input
+                      name="city"
+                      value={addForm.city}
+                      onChange={handleAddFormChange}
+                      required
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+                    />
+                  </label>
+                  <label className="font-semibold text-blue-700">
+                    County
+                    <input
+                      name="county"
+                      value={addForm.county}
+                      onChange={handleAddFormChange}
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+                    />
+                  </label>
+                  <label className="font-semibold text-blue-700">
+                    Postcode
+                    <input
+                      name="postcode"
+                      value={addForm.postcode}
+                      onChange={handleAddFormChange}
+                      required
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+                    />
+                  </label>
+                  <label className="font-semibold text-blue-700">
+                    Rent Amount
+                    <input
+                      name="rent_amount"
+                      value={addForm.rent_amount}
+                      onChange={handleAddFormChange}
+                      required
+                      type="number"
+                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+                    />
+                  </label>
+                </div>
                 {addError && <div className="text-red-500 text-center">{addError}</div>}
                 <div className="flex gap-4 mt-4">
                   <button
@@ -320,7 +334,10 @@ export default function Properties() {
                   <strong className="text-blue-700">Status:</strong> {selectedProperty.status}
                 </div>
                 <div>
-                  <strong className="text-blue-700">Lead Tenant:</strong> {selectedProperty.tenant || "No tenant"}
+                  <strong className="text-blue-700">Tenants:</strong>{" "}
+                  {selectedProperty.tenants && selectedProperty.tenants.length > 0
+                    ? selectedProperty.tenants.map(t => `${t.first_name} ${t.last_name}`).join(", ")
+                    : "No tenants"}
                 </div>
                 <div>
                   <strong className="text-blue-700">Rental Income:</strong> {selectedProperty.rent || "N/A"}
