@@ -278,43 +278,50 @@ function Dashboard() {
             </div>
           </div>
 
-      {/* Messages Card */}
-<div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-1 row-span-2 min-h-0">
-  <div className="flex items-center gap-2 mb-4">
-    <HiMail className="text-blue-500 text-2xl" />
-    <h3 className="text-lg font-bold text-blue-700">Messages</h3>
-  </div>
-  <div className="flex-1 overflow-y-auto">
-    {contacts.length === 0 ? (
-      <div className="text-gray-400 text-center py-8">No contacts available.</div>
-    ) : (
-      <ul className="space-y-4">
-        {contacts.map((contact) => (
-          <li
-            key={contact.account_id}
-            className="flex justify-between items-center bg-blue-50 rounded-lg p-4 shadow-sm"
-          >
-            <div>
-              <div className="font-semibold text-blue-700">{contact.display_name}</div>
-              <div className="text-sm text-gray-500">{contact.property_address}</div>
+          {/* Messages Card */}
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-1 row-span-2 min-h-0">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <HiMail className="text-blue-500 text-2xl" />
+                <h3 className="text-lg font-bold text-blue-700">Messages</h3>
+              </div>
+              {unreadMessages > 0 && (
+                <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  {unreadMessages} unread
+                </span>
+              )}
             </div>
-            {contact.unread_count > 0 && (
-              <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
-                {contact.unread_count} unread
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
-  <button
-    className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
-    onClick={() => navigate('/messages')}
-  >
-    View All Messages
-  </button>
-</div>
+            <div className="flex-1 overflow-y-auto">
+              {contacts.length === 0 ? (
+                <div className="text-gray-400 text-center py-8">No contacts available.</div>
+              ) : (
+                <ul className="space-y-4">
+                  {contacts.map((contact) => (
+                    <li
+                      key={contact.account_id}
+                      className="flex justify-between items-center bg-blue-50 rounded-lg p-4 shadow-sm"
+                    >
+                      <div>
+                        <div className="font-semibold text-blue-700">{contact.display_name}</div>
+                        <div className="text-sm text-gray-500">{contact.property_address}</div>
+                      </div>
+                      {contact.unread_count > 0 && (
+                        <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                          {contact.unread_count} unread
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <button
+              className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
+              onClick={() => navigate('/messages')}
+            >
+              View All Messages
+            </button>
+          </div>
 
           {/* Properties Card */}
           <div className="bg-white rounded-2xl shadow p-4 flex flex-col min-h-0">
