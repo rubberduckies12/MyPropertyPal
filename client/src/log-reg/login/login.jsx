@@ -40,7 +40,10 @@ function Login({ onRegisterClick }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const user = await login(email, password);
+      // Normalize email to lowercase
+      const normalizedEmail = email.trim().toLowerCase();
+
+      const user = await login(normalizedEmail, password);
       setMessage("Login successful!");
       localStorage.setItem("token", user.token);
       localStorage.setItem("role", user.role);

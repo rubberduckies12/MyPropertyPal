@@ -178,7 +178,7 @@ function Dashboard() {
         </header>
 
         {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:grid-rows-2 gap-4 min-h-0 overflow-auto pb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-0 overflow-auto pb-10">
           {/* Tenants Card */}
           <div className="bg-white rounded-2xl shadow p-4 flex flex-col min-h-0">
             <div className="flex items-center gap-2 mb-2">
@@ -223,8 +223,8 @@ function Dashboard() {
             </div>
           </div>
 
-          {/* Messages Card */}
-          <div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-2 min-h-0">
+          {/* Messages Card (Single Height) */}
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col min-h-0">
             <div className="flex items-center gap-2 mb-4">
               <HiMail className="text-blue-500 text-2xl" />
               <h3 className="text-lg font-bold text-blue-700">Messages</h3>
@@ -316,53 +316,49 @@ function Dashboard() {
             </button>
           </div>
 
-          {/* Maintenance Requests (Wide Card) */}
-          <div className="bg-white rounded-2xl shadow p-4 col-span-1 md:col-span-3 overflow-x-auto min-h-0">
-            <div className="flex items-center gap-2 mb-2">
-              <HiCog className="text-blue-500 text-2xl" />
-              <h3 className="text-lg font-bold text-blue-700">Maintenance Requests</h3>
+          {/* Messages Card (Double Height) */}
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-3 min-h-0">
+            <div className="flex items-center gap-2 mb-4">
+              <HiMail className="text-blue-500 text-2xl" />
+              <h3 className="text-lg font-bold text-blue-700">Messages</h3>
             </div>
-            <div>
-              {recentIncidents.length === 0 ? (
-                <div className="text-gray-400 py-8 text-center">
-                  No recent incidents to display.
-                </div>
+            <div className="flex-1 overflow-y-auto">
+              {contacts.length === 0 ? (
+                <div className="text-gray-400 text-center py-8">No contacts available.</div>
               ) : (
-                <table className="min-w-full bg-blue-50 rounded-lg overflow-hidden">
-                  <thead>
-                    <tr>
-                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Property</th>
-                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Description</th>
-                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Severity</th>
-                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentIncidents.map(incident => (
-                      <tr key={incident.id || incident.incidentId} className="border-b last:border-b-0 border-blue-100">
-                        <td className="py-2 px-2">{incident.property_address || getPropertyLabel(incident.propertyId)}</td>
-                        <td className="py-2 px-2">{incident.description}</td>
-                        <td className="py-2 px-2">
-                          <span className={`px-2 py-1 rounded font-bold text-xs ${severityColors[incident.severity] || 'bg-gray-200 text-gray-700'}`}>
-                            {incident.severity ? capitalize(incident.severity) : '-'}
-                          </span>
-                        </td>
-                        <td className="py-2 px-2">
-                          <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 font-semibold text-xs">
-                            {incident.progress ? capitalize(incident.progress) : '-'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <ul className="space-y-4">
+                  {contacts.map((contact) => (
+                    <li
+                      key={contact.account_id}
+                      className="flex justify-between items-center bg-blue-50 rounded-lg p-4 shadow-sm"
+                    >
+                      <div>
+                        <div className="font-semibold text-blue-700">{contact.display_name}</div>
+                        <div className="text-sm text-gray-500">{contact.property_address}</div>
+                      </div>
+                      {contact.unread_count > 0 && (
+                        <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                          {contact.unread_count} unread
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
             <button
-              className="mt-6 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition w-full"
-              onClick={() => navigate('/incidents')}
+              className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
+              onClick={async () => {
+                const updatedContacts = await fetchContacts();
+                setContacts(updatedContacts);
+                const totalUnread = updatedContacts.reduce(
+                  (sum, contact) => sum + (contact.unread_count || 0),
+                  0
+                );
+                setUnreadMessages(totalUnread);
+              }}
             >
-              View All Maintenance Requests
+              Refresh Messages
             </button>
           </div>
         </div>
