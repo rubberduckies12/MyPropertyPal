@@ -54,7 +54,16 @@ export default function Messages() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ message_ids: unreadIds }),
-          }).catch((err) => console.error("Failed to mark messages as read:", err));
+          })
+            .then(() => {
+              // Refresh messages after marking as read
+              fetch(`${BACKEND_URL}/api/messages/${selectedContact.account_id}`, {
+                credentials: "include",
+              })
+                .then((res) => res.json())
+                .then((data) => setMessages(data.messages || []));
+            })
+            .catch((err) => console.error("Failed to mark messages as read:", err));
         }
       })
       .catch((err) => {
