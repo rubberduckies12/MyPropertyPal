@@ -31,45 +31,52 @@ export default function Messages() {
   useEffect(() => {
     if (!selectedContact) return;
 
-    setLoading(true);
-    fetch(`${BACKEND_URL}/api/messages/${selectedContact.account_id}`, {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchMessagesAndMarkAsRead = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch messages
+        const res = await fetch(
+          `${BACKEND_URL}/api/messages/${selectedContact.account_id}`,
+          {
+            credentials: "include",
+          }
+        );
+        const data = await res.json();
         console.log("Messages fetched:", data.messages); // Debug log
         setMessages(data.messages || []);
         setLoading(false);
 
         // Mark unread messages as read
         const unreadIds = (data.messages || [])
-          .filter((m) => !m.is_read && m.sender_id !== selectedContact.account_id)
+          .filter(
+            (m) => !m.is_read && m.sender_id !== selectedContact.account_id
+          )
           .map((m) => m.id);
 
         if (unreadIds.length) {
-          fetch(`${BACKEND_URL}/api/messages/read`, {
+          const markReadRes = await fetch(`${BACKEND_URL}/api/messages/read`, {
             method: "POST",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ message_ids: unreadIds }),
-          })
-            .then(() => {
-              // Refresh messages after marking as read
-              fetch(`${BACKEND_URL}/api/messages/${selectedContact.account_id}`, {
-                credentials: "include",
-              })
-                .then((res) => res.json())
-                .then((data) => setMessages(data.messages || []));
-            })
-            .catch((err) => console.error("Failed to mark messages as read:", err));
+          });
+
+          if (!markReadRes.ok) {
+            console.error("Failed to mark messages as read:", markReadRes.statusText);
+          } else {
+            console.log("Messages marked as read:", unreadIds);
+          }
         }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch messages:", err);
+      } catch (err) {
+        console.error("Failed to fetch or mark messages as read:", err);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchMessagesAndMarkAsRead();
   }, [selectedContact]);
 
   // Handle sending a new message
@@ -130,8 +137,12 @@ export default function Messages() {
                   setSelectedContact(c);
                 }}
               >
-                <span className="font-semibold text-blue-700">{c.display_name}</span>
-                <span className="text-sm text-gray-500">{c.property_address}</span>
+                <span className="font-semibold text-blue-700">
+                  {c.display_name}
+                </span>
+                <span className="text-sm text-gray-500">
+                  {c.property_address}
+                </span>
                 {c.unread_count > 0 && (
                   <span className="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full self-start mt-1">
                     {c.unread_count}
