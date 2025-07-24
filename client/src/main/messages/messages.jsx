@@ -31,10 +31,8 @@ export default function Messages() {
   useEffect(() => {
     if (!selectedContact) return;
 
-    const fetchMessagesAndMarkAsRead = async () => {
+    const markMessagesAsRead = async () => {
       try {
-        setLoading(true);
-
         // Fetch messages
         const res = await fetch(
           `${BACKEND_URL}/api/messages/${selectedContact.account_id}`,
@@ -47,7 +45,7 @@ export default function Messages() {
         setMessages(data.messages || []);
         setLoading(false);
 
-        // Mark unread messages as read
+        // Mark all unread messages as read
         const unreadIds = (data.messages || [])
           .filter(
             (m) => !m.is_read && m.sender_id !== selectedContact.account_id
@@ -55,7 +53,8 @@ export default function Messages() {
           .map((m) => m.id);
 
         if (unreadIds.length) {
-          const markReadRes = await fetch(`${BACKEND_URL}/api/messages/read`, {
+          console.log("Marking messages as read:", unreadIds); // Debug log
+          await fetch(`${BACKEND_URL}/api/messages/read`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -63,12 +62,7 @@ export default function Messages() {
             },
             body: JSON.stringify({ message_ids: unreadIds }),
           });
-
-          if (!markReadRes.ok) {
-            console.error("Failed to mark messages as read:", markReadRes.statusText);
-          } else {
-            console.log("Messages marked as read:", unreadIds);
-          }
+          console.log("Messages marked as read:", unreadIds);
         }
       } catch (err) {
         console.error("Failed to fetch or mark messages as read:", err);
@@ -76,7 +70,7 @@ export default function Messages() {
       }
     };
 
-    fetchMessagesAndMarkAsRead();
+    markMessagesAsRead();
   }, [selectedContact]);
 
   // Handle sending a new message
