@@ -104,6 +104,7 @@ function Dashboard() {
   const [tenants, setTenants] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [unreadMessages, setUnreadMessages] = useState(0); // Added state for unread messages
   const [incidents, setIncidents] = useState([]);
   const [properties, setProperties] = useState([]);
   const [deadlines, setDeadlines] = useState([]);
@@ -131,10 +132,10 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    async function loadData() {
+    async function loadUnreadMessages() {
       setUnreadMessages(await fetchUnreadMessages()); // Fetch unread messages count
     }
-    loadData();
+    loadUnreadMessages();
   }, []);
 
   const getPropertyLabel = (propertyId) => {
@@ -183,50 +184,6 @@ function Dashboard() {
 
         {/* Dashboard Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 md:grid-rows-2 gap-4 min-h-0 overflow-auto pb-10">
-          {/* Tenants Card */}
-          <div className="bg-white rounded-2xl shadow p-4 flex flex-col min-h-0">
-            <div className="flex items-center gap-2 mb-2">
-              <HiUsers className="text-blue-500 text-2xl" />
-              <h3 className="text-lg font-bold text-blue-700">Tenants</h3>
-            </div>
-            <div className="text-3xl font-extrabold text-blue-600 mb-2">{tenantCount}</div>
-            <div className="text-gray-600 mb-4">Current Tenants</div>
-            <button
-              className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
-              onClick={() => navigate('/tenants')}
-            >
-              View Tenants
-            </button>
-          </div>
-
-          {/* Income Card */}
-          <div className="bg-white rounded-2xl shadow p-4 flex flex-col relative min-h-0">
-            <div className="flex items-center gap-2 mb-2">
-              <HiCurrencyPound className="text-blue-500 text-2xl" />
-              <h3 className="text-lg font-bold text-blue-700">Income</h3>
-            </div>
-            <div className="absolute top-6 right-6 flex items-center gap-2">
-              <span className={`font-semibold ${!showYearly ? "text-blue-700" : "text-gray-400"}`}>Monthly</span>
-              <label className="relative inline-block w-10 h-5">
-                <input
-                  type="checkbox"
-                  checked={showYearly}
-                  onChange={() => setShowYearly(v => !v)}
-                  className="sr-only"
-                />
-                <span className="absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-300 rounded-full transition"></span>
-                <span className={`absolute left-1 top-1 w-3.5 h-3.5 bg-white rounded-full shadow transition-transform ${showYearly ? "transform translate-x-5" : ""}`}></span>
-              </label>
-              <span className={`font-semibold ${showYearly ? "text-blue-700" : "text-gray-400"}`}>Yearly</span>
-            </div>
-            <div className="text-3xl font-extrabold text-blue-600 mb-2">
-              £{(showYearly ? yearlyIncome : monthlyIncome).toLocaleString()}
-            </div>
-            <div className="text-gray-600 mb-4">
-              From occupied properties ({showYearly ? 'Yearly' : 'Monthly'})
-            </div>
-          </div>
-
           {/* Messages Card */}
           <div className="tenant-dashboard-card">
             <h3>Messages</h3>
@@ -234,103 +191,6 @@ function Dashboard() {
               {unreadMessages} {/* Display unread message count */}
             </div>
             <div className="tenant-dashboard-card-label">New Messages</div>
-          </div>
-
-          {/* Properties Card */}
-          <div className="bg-white rounded-2xl shadow p-4 flex flex-col min-h-0">
-            <div className="flex items-center gap-2 mb-2">
-              <HiHome className="text-blue-500 text-2xl" />
-              <h3 className="text-lg font-bold text-blue-700">Properties</h3>
-            </div>
-            <div className="text-3xl font-extrabold text-blue-600 mb-2">{properties.length}</div>
-            <div className="text-gray-600 mb-4">Total Properties</div>
-            <button
-              className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
-              onClick={() => navigate('/properties')}
-            >
-              View All Properties
-            </button>
-          </div>
-
-          {/* Urgent Compliance Deadlines Card */}
-          <div className="bg-white rounded-2xl shadow p-4 flex flex-col min-h-0">
-            <div className="flex items-center gap-2 mb-2">
-              <HiExclamationCircle className="text-blue-500 text-2xl" />
-              <h3 className="text-lg font-bold text-blue-700">Urgent Compliance Deadlines</h3>
-            </div>
-            <div>
-              {upcomingCompliance.length === 0 ? (
-                <div className="text-gray-400">You're all caught up!</div>
-              ) : (
-                upcomingCompliance.slice(0, 3).map(event => (
-                  <div key={event.id || event.name} className="bg-blue-50 rounded-lg px-3 py-2 mb-2">
-                    <div className="font-semibold text-blue-700">{event.name}</div>
-                    <div className="text-xs text-gray-500">
-                      Due: {new Date(event.due_date).toLocaleDateString("en-GB")}
-                    </div>
-                    <div className="text-sm text-gray-700">{event.description}</div>
-                    <div className="text-xs text-blue-500">
-                      Property: {event.property_name}
-                      {event.property_address ? `, ${event.property_address}` : ""}
-                      {event.property_postcode ? `, ${event.property_postcode}` : ""}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            <button className="mt-auto bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition" onClick={() => navigate('/compliance')}>
-              View All Compliance
-            </button>
-          </div>
-
-          {/* Maintenance Requests (Wide Card) */}
-          <div className="bg-white rounded-2xl shadow p-4 col-span-1 md:col-span-3 overflow-x-auto min-h-0">
-            <div className="flex items-center gap-2 mb-2">
-              <HiCog className="text-blue-500 text-2xl" />
-              <h3 className="text-lg font-bold text-blue-700">Maintenance Requests</h3>
-            </div>
-            <div>
-              {recentIncidents.length === 0 ? (
-                <div className="text-gray-400 py-8 text-center">
-                  No recent incidents to display.
-                </div>
-              ) : (
-                <table className="min-w-full bg-blue-50 rounded-lg overflow-hidden">
-                  <thead>
-                    <tr>
-                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Property</th>
-                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Description</th>
-                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Severity</th>
-                      <th className="py-3 px-2 text-left font-semibold text-blue-700 bg-blue-100">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentIncidents.map(incident => (
-                      <tr key={incident.id || incident.incidentId} className="border-b last:border-b-0 border-blue-100">
-                        <td className="py-2 px-2">{incident.property_address || getPropertyLabel(incident.propertyId)}</td>
-                        <td className="py-2 px-2">{incident.description}</td>
-                        <td className="py-2 px-2">
-                          <span className={`px-2 py-1 rounded font-bold text-xs ${severityColors[incident.severity] || 'bg-gray-200 text-gray-700'}`}>
-                            {incident.severity ? capitalize(incident.severity) : '-'}
-                          </span>
-                        </td>
-                        <td className="py-2 px-2">
-                          <span className="px-2 py-1 rounded bg-blue-100 text-blue-700 font-semibold text-xs">
-                            {incident.progress ? capitalize(incident.progress) : '-'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-            <button
-              className="mt-6 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition w-full"
-              onClick={() => navigate('/incidents')}
-            >
-              View All Maintenance Requests
-            </button>
           </div>
         </div>
       </main>
