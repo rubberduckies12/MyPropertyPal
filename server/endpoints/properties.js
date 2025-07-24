@@ -65,6 +65,7 @@ async function addProperty(req, res, pool) {
   try {
     // Get the account id from the JWT
     const accountId = req.user.id;
+
     // Look up the landlord id for this account
     const landlordResult = await pool.query(
       'SELECT id FROM landlord WHERE account_id = $1',
@@ -75,6 +76,38 @@ async function addProperty(req, res, pool) {
     }
     const landlordId = landlordResult.rows[0].id;
 
+    // Check the subscription plan and property limits
+    const subscriptionResult = await pool.query(
+      `SELECT p.name AS plan_name, p.max_properties
+       FROM subscription s
+       JOIN payment_plan p ON s.plan_id = p.id
+       WHERE s.landlord_id = $1 AND s.is_active = TRUE
+       ORDER BY s.created_at DESC
+       LIMIT 1`,
+      [landlordId]
+    );
+
+    if (subscriptionResult.rows.length === 0) {
+      return res.status(403).json({ error: 'No active subscription found.' });
+    }
+
+    const { plan_name, max_properties } = subscriptionResult.rows[0];
+
+    // Count the current number of properties
+    const propertyCountResult = await pool.query(
+      'SELECT COUNT(*) AS property_count FROM property WHERE landlord_id = $1',
+      [landlordId]
+    );
+    const propertyCount = parseInt(propertyCountResult.rows[0].property_count, 10);
+
+    // Enforce property limits
+    if (max_properties !== null && propertyCount >= max_properties) {
+      return res.status(403).json({
+        error: `Your subscription plan (${plan_name}) allows a maximum of ${max_properties} properties. Upgrade your plan to add more properties.`,
+      });
+    }
+
+    // Extract property details from the request body
     const { name, address, city, county, postcode, status, lead_tenant_id, rent_amount, rent_due_date } = req.body;
 
     // Find the property_status_id for the given status string

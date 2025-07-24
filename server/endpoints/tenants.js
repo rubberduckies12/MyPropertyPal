@@ -164,7 +164,53 @@ router.post("/", async (req, res) => {
   } = req.body;
 
   try {
-    // 1. Create account for tenant
+    // 1. Get landlord id for this property
+    const landlordResult = await pool.query(
+      `SELECT l.id AS landlord_id
+       FROM property p
+       JOIN landlord l ON p.landlord_id = l.id
+       WHERE p.id = $1`,
+      [property_id]
+    );
+    if (landlordResult.rows.length === 0) {
+      return res.status(400).json({ error: "Invalid property" });
+    }
+    const landlordId = landlordResult.rows[0].landlord_id;
+
+    // 2. Check the subscription plan and tenant limits
+    const subscriptionResult = await pool.query(
+      `SELECT p.name AS plan_name, p.max_tenants_per_property
+       FROM subscription s
+       JOIN payment_plan p ON s.plan_id = p.id
+       WHERE s.landlord_id = $1 AND s.is_active = TRUE
+       ORDER BY s.created_at DESC
+       LIMIT 1`,
+      [landlordId]
+    );
+
+    if (subscriptionResult.rows.length === 0) {
+      return res.status(403).json({ error: "No active subscription found." });
+    }
+
+    const { plan_name, max_tenants_per_property } = subscriptionResult.rows[0];
+
+    // 3. Count the current number of tenants for the property
+    const tenantCountResult = await pool.query(
+      `SELECT COUNT(*) AS tenant_count
+       FROM property_tenant
+       WHERE property_id = $1`,
+      [property_id]
+    );
+    const tenantCount = parseInt(tenantCountResult.rows[0].tenant_count, 10);
+
+    // 4. Enforce tenant limits
+    if (max_tenants_per_property !== null && tenantCount >= max_tenants_per_property) {
+      return res.status(403).json({
+        error: `Your subscription plan (${plan_name}) allows a maximum of ${max_tenants_per_property} tenants per property. Upgrade your plan to add more tenants.`,
+      });
+    }
+
+    // 5. Create account for tenant
     const roleResult = await pool.query(
       "SELECT id FROM account_role WHERE role = 'tenant'"
     );
@@ -181,19 +227,7 @@ router.post("/", async (req, res) => {
     );
     const accountId = accountResult.rows[0].id;
 
-    // 2. Get landlord id for this property (for validation)
-    const landlordResult = await pool.query(
-      `SELECT l.id
-       FROM property p
-       JOIN landlord l ON p.landlord_id = l.id
-       WHERE p.id = $1`,
-      [property_id]
-    );
-    if (landlordResult.rows.length === 0) {
-      return res.status(400).json({ error: "Invalid property" });
-    }
-
-    // 3. Create tenant row with pending status and invite token
+    // 6. Create tenant row with pending status and invite token
     const inviteToken = crypto.randomBytes(32).toString("hex");
     const tenantResult = await pool.query(
       `INSERT INTO tenant (account_id, is_pending, invite_token)
@@ -203,7 +237,7 @@ router.post("/", async (req, res) => {
     );
     const tenantId = tenantResult.rows[0].id;
 
-    // 4. Link tenant to property with rent_amount and calculated rent_due_date
+    // 7. Link tenant to property with rent_amount and calculated rent_due_date
     let rentDueDate;
     if (rent_schedule_type === "monthly" && rent_due_date) {
       rentDueDate = rent_due_date;
@@ -215,9 +249,8 @@ router.post("/", async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6)`,
       [property_id, tenantId, rent_amount, rentDueDate, rent_schedule_type, rent_schedule_value]
     );
-    console.log("Inserted property_tenant row for tenant", tenantId);
 
-    // 5. Set property status to "Occupied"
+    // 8. Set property status to "Occupied"
     await pool.query(
       `UPDATE property
        SET property_status_id = (
@@ -227,7 +260,7 @@ router.post("/", async (req, res) => {
       [property_id]
     );
 
-    // ...send invite email...
+    // 9. Send invite email
     const inviteUrl = `https://my-property-pal-front.vercel.app/register?invite=${inviteToken}`;
     await sendTenantInviteEmail(email, inviteUrl);
 
