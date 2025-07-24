@@ -49,22 +49,26 @@ export default function Messages() {
 
         // Mark all unread messages as read
         const unreadIds = (data.messages || [])
-          .filter(
-            (m) => !m.is_read && m.sender_id !== selectedContact.account_id
-          )
-          .map((m) => m.id);
+          .filter((m) => !m.is_read) // Filter unread messages
+          .map((m) => m.id); // Map to message IDs (chat_message_id)
+
+        console.log("Unread message IDs to mark as read:", unreadIds); // Debug log
 
         if (unreadIds.length) {
-          console.log("Marking messages as read:", unreadIds); // Debug log
-          await fetch(`${BACKEND_URL}/api/messages/read`, {
+          const response = await fetch(`${BACKEND_URL}/api/messages/read`, {
             method: "POST",
             credentials: "include",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ message_ids: unreadIds }),
+            body: JSON.stringify({ message_ids: unreadIds }), // Send message IDs
           });
-          console.log("Messages marked as read:", unreadIds);
+
+          if (!response.ok) {
+            console.error("Failed to mark messages as read:", await response.json());
+          } else {
+            console.log("Messages successfully marked as read:", unreadIds);
+          }
         }
       } catch (err) {
         console.error("Failed to fetch or mark messages as read:", err);

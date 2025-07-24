@@ -160,15 +160,17 @@ router.get("/:recipient_id", authenticate, async (req, res) => {
 // Mark messages as read
 router.post("/read", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
-  const { message_ids } = req.body;
-  const account_id = req.user.id;
+  const { message_ids } = req.body; // Array of chat_message_id values
+  const account_id = req.user.id; // Current user's account ID
 
   try {
     if (!message_ids || message_ids.length === 0) {
       return res.status(400).json({ error: "No message IDs provided." });
     }
 
-    // Use a single query to update all message IDs
+    console.log("Message IDs to mark as read:", message_ids); // Debug log
+
+    // Use a single query to update all message IDs for the current user
     const query = `
       UPDATE chat_message_status
       SET is_read = TRUE
@@ -176,6 +178,7 @@ router.post("/read", authenticate, async (req, res) => {
     `;
     await pool.query(query, [message_ids, account_id]);
 
+    console.log("Messages marked as read in the database."); // Debug log
     res.json({ success: true });
   } catch (err) {
     console.error("Mark read error:", err);
