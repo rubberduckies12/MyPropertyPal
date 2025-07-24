@@ -116,8 +116,10 @@ export default function Messages() {
       <Sidebar />
       <div className="flex flex-1 ml-64">
         {/* Contacts Sidebar */}
-        <aside className="w-80 bg-white border-r border-blue-100 p-6 flex-shrink-0">
-          <h3 className="text-xl font-bold text-blue-700 mb-6">Chats</h3>
+        <aside className="w-80 bg-white border-r border-blue-100 p-6 flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
+          <h3 className="text-xl font-bold text-blue-700 mb-6 sticky top-0 bg-white z-10">
+            Chats
+          </h3>
           <ul>
             {contacts.map((c) => (
               <li
@@ -154,7 +156,7 @@ export default function Messages() {
           {selectedContact ? (
             <>
               {/* Chat Header */}
-              <div className="flex flex-col border-b border-blue-100 pb-4 mb-4">
+              <div className="flex flex-col border-b border-blue-100 pb-4 mb-4 sticky top-0 bg-white z-10">
                 <h4 className="text-2xl font-bold text-blue-700">
                   Chat with {selectedContact.display_name}
                 </h4>
