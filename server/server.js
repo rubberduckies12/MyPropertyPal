@@ -44,6 +44,8 @@ app.use(cookieParser());
 
 // --- Public Routes ---
 app.use('/api/chat', chatRoute);
+app.post('/login', (req, res) => login(req, res, pool));
+app.post('/register', (req, res) => register(req, res, pool));
 //app.use('/api/account', accountRouter);
 app.use('/api/stripe', stripeRouter);
 app.use('/api/stripe', stripeWebhookRouter);
@@ -70,9 +72,6 @@ app.get('/api/contractors', async (req, res) => {
   }
 });
 
-// Auth endpoints
-app.post('/login', (req, res) => login(req, res, pool));
-app.post('/register', (req, res) => register(req, res, pool));
 
 // --- Tenant Invite Endpoint (public, no auth) ---
 app.get('/api/tenants/invite/:token', async (req, res) => {
