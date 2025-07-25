@@ -88,10 +88,10 @@ router.get("/me", authenticate, async (req, res) => {
       billing_cycle: "monthly"
     };
 
-    // Only fetch subscription if landlord exists
+    // Get landlord subscription info
     if (landlordQuery.rows.length > 0) {
       const landlordId = landlordQuery.rows[0].id;
-      
+
       // Get latest subscription
       const subscriptionQuery = await pool.query(
         `SELECT 
@@ -99,11 +99,8 @@ router.get("/me", authenticate, async (req, res) => {
           s.status,
           s.is_active,
           s.canceled_at,
-          s.id AS subscriptionId,
-          CASE 
-            WHEN s.billing_cycle_end > CURRENT_TIMESTAMP THEN 'active'
-            ELSE 'ended'
-          END AS billing_cycle
+          s.billing_cycle_end,
+          s.id AS subscriptionId
         FROM subscription s
         LEFT JOIN payment_plan p ON s.plan_id = p.id
         WHERE s.landlord_id = $1
@@ -120,13 +117,17 @@ router.get("/me", authenticate, async (req, res) => {
     }
 
     const response = {
-      ...result.rows[0],
+      ...result.rows[0], // Account info
       plan: subscriptionData.plan,
       subscriptionStatus: subscriptionData.status,
       isActive: subscriptionData.is_active,
-      canceledAt: subscriptionData.canceled_at,  // Changed to match database column name
+      canceledAt: subscriptionData.canceled_at,
       subscriptionId: subscriptionData.subscriptionId,
-      billingCycle: subscriptionData.billing_cycle
+      billingCycle: subscriptionData.billing_cycle_end
+        ? subscriptionData.billing_cycle_end > new Date()
+          ? "active"
+          : "ended"
+        : "unknown" // If `billing_cycle_end` is null
     };
 
     console.log("Sending response:", response);
