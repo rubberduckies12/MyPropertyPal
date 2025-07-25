@@ -4,7 +4,6 @@ import Sidebar from "../sidebar/sidebar.jsx";
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
 export default function Settings() {
-  // Add new state variables
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -15,6 +14,7 @@ export default function Settings() {
   const [plan, setPlan] = useState("");
   const [billingCycle, setBillingCycle] = useState("monthly");
   const [subscriptionId, setSubscriptionId] = useState(null);
+  const [landlordId, setLandlordId] = useState(null); // New state for landlord_id
   const [isCanceling, setIsCanceling] = useState(false);
 
   // Fetch user data from backend on mount
@@ -40,6 +40,7 @@ export default function Settings() {
         setPlan(data.plan || "basic");
         setBillingCycle(data.billingCycle || "monthly");
         setSubscriptionId(data.subscriptionId || null);
+        setLandlordId(data.landlordId || null); // Store landlord_id
         setNewEmail(data.email || "");
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -91,11 +92,12 @@ export default function Settings() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        firstName,  // Send current firstName
-        lastName,   // Send current lastName
+        firstName,
+        lastName,
         email: newEmail,
         password: null,
-        plan: null
+        plan: null,
+        landlordId, // Include landlord_id in the request
       }),
     });
     if (res.ok) {
@@ -106,17 +108,8 @@ export default function Settings() {
     }
   };
 
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswords((p) => ({ ...p, [name]: value }));
-  };
-
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    if (passwords.password !== passwords.confirm) {
-      alert("Passwords do not match!");
-      return;
-    }
+  // Update plan
+  const handlePlanChange = async (newPlan) => {
     const res = await fetch(`${BACKEND_URL}/api/account/settings`, {
       method: "PUT",
       credentials: "include",
@@ -124,19 +117,19 @@ export default function Settings() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        firstName,  // Send current firstName
-        lastName,   // Send current lastName
-        email: null,
-        password: passwords.password, // Send the new password
-        plan: null
+        firstName,
+        lastName,
+        email,
+        password: null,
+        plan: newPlan,
+        landlordId, // Include landlord_id in the request
       }),
     });
     if (res.ok) {
-      alert("Password changed!");
-      setShowPasswordModal(false);
-      setPasswords({ password: "", confirm: "" });
+      setPlan(newPlan);
+      alert("Plan updated successfully!");
     } else {
-      alert("Failed to change password");
+      alert("Failed to update plan");
     }
   };
 
@@ -212,7 +205,7 @@ export default function Settings() {
                 <select
                   name="plan"
                   value={plan}
-                  disabled
+                  onChange={(e) => handlePlanChange(e.target.value)}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
                 >
                   <option value="basic">Basic</option>

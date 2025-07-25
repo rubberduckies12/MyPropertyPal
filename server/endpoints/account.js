@@ -119,6 +119,7 @@ router.get("/me", authenticate, async (req, res) => {
 
     const response = {
       ...result.rows[0], // Account info
+      landlordId: landlordQuery.rows.length > 0 ? landlordQuery.rows[0].id : null, // Include landlord_id
       plan: subscriptionData.plan,
       subscriptionStatus: subscriptionData.status,
       isActive: subscriptionData.is_active,
@@ -128,7 +129,7 @@ router.get("/me", authenticate, async (req, res) => {
         ? subscriptionData.billing_cycle_end > new Date()
           ? "active"
           : "ended"
-        : "unknown" // If `billing_cycle_end` is null
+        : "unknown", // If `billing_cycle_end` is null
     };
 
     console.log("Sending response:", response);
