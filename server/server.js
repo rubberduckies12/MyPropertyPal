@@ -110,7 +110,7 @@ app.use('/api/compliance', complianceRouter);
 app.use('/api/tenant/rent', tenantRentRouter);
 app.use('/api/maintenance', maintenanceRouter);
 app.use('/api/messages', messagesRouter);
-app.use('/api/stripe', stripeRouter);
+//app.use('/api/stripe', stripeRouter);
 
 // --- Static Exports ---
 app.use("/exports", express.static(path.join(__dirname, "../exports")));
