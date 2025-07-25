@@ -19,19 +19,35 @@ export default function Settings() {
 
   // Fetch user data from backend on mount
   useEffect(() => {
-    fetch(`${BACKEND_URL}/api/account/me`, {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchUserData = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/account/me`, {
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("Failed to fetch user data:", errorData);
+          throw new Error(errorData.error || "Failed to fetch user data");
+        }
+
+        const data = await res.json();
+        console.log("Received user data:", data);
+
         setEmail(data.email || "");
         setFirstName(data.firstName || "");
         setLastName(data.lastName || "");
         setPlan(data.plan || "basic");
         setBillingCycle(data.billingCycle || "monthly");
-        setSubscriptionId(data.subscriptionId || null); // Fetch subscription ID
+        setSubscriptionId(data.subscriptionId || null);
         setNewEmail(data.email || "");
-      });
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        alert("Failed to load user data. Please try refreshing the page.");
+      }
+    };
+
+    fetchUserData();
   }, []);
 
   // Cancel subscription

@@ -57,33 +57,70 @@ router.get("/me", authenticate, async (req, res) => {
   const accountId = req.user.id;
 
   try {
+    // Debug log
+    console.log("Fetching account info for ID:", accountId);
+
+    // First query - get account info
     const result = await pool.query(
       "SELECT first_name AS firstName, last_name AS lastName, email FROM account WHERE id = $1",
       [accountId]
     );
+
+    console.log("Account query result:", result.rows);
+
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // If landlord, get plan
+    // Second query - get subscription info
     const landlordRes = await pool.query(
-      `SELECT p.name AS plan, s.status, s.is_active, s.canceled_at
-       FROM subscription s
-       JOIN payment_plan p ON s.plan_id = p.id
-       WHERE s.landlord_id = (SELECT id FROM landlord WHERE account_id = $1)
-       ORDER BY s.created_at DESC
-       LIMIT 1`,
+      `WITH landlord_info AS (
+        SELECT id FROM landlord WHERE account_id = $1
+      )
+      SELECT 
+        p.name AS plan,
+        s.status,
+        s.is_active,
+        s.canceled_at,
+        s.id AS subscriptionId,
+        s.billing_cycle
+      FROM landlord_info l
+      LEFT JOIN subscription s ON s.landlord_id = l.id
+      LEFT JOIN payment_plan p ON s.plan_id = p.id
+      WHERE s.is_active = TRUE
+      OR s.id = (
+        SELECT id FROM subscription 
+        WHERE landlord_id = l.id 
+        ORDER BY created_at DESC 
+        LIMIT 1
+      )`,
       [accountId]
     );
-    const plan = landlordRes.rows[0]?.plan || "basic";
-    const subscriptionStatus = landlordRes.rows[0]?.status || "inactive";
-    const isActive = landlordRes.rows[0]?.is_active || false;
-    const canceledAt = landlordRes.rows[0]?.canceled_at || null;
 
-    res.json({ ...result.rows[0], plan, subscriptionStatus, isActive, canceledAt });
+    console.log("Subscription query result:", landlordRes.rows);
+
+    // Default values if no subscription found
+    const subscriptionData = landlordRes.rows[0] || {};
+    
+    const response = {
+      ...result.rows[0],
+      plan: subscriptionData.plan || "basic",
+      subscriptionStatus: subscriptionData.status || "inactive",
+      isActive: subscriptionData.is_active || false,
+      canceledAt: subscriptionData.canceled_at || null,
+      subscriptionId: subscriptionData.subscriptionId || null,
+      billingCycle: subscriptionData.billing_cycle || "monthly"
+    };
+
+    console.log("Sending response:", response);
+    res.json(response);
+
   } catch (err) {
     console.error("Fetch account info error:", err);
-    res.status(500).json({ error: "Failed to fetch account info" });
+    res.status(500).json({ 
+      error: "Failed to fetch account info",
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
