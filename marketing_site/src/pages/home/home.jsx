@@ -295,9 +295,9 @@ export default function Landing() {
                     </p>
                     <button
                         className="hidden md:inline-block bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto"
-                        onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                        onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
-                        Get your Free Demo
+                        Get Started Now
                     </button>
                 </div>
                 <div className="flex justify-center">
@@ -329,7 +329,7 @@ export default function Landing() {
                     </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
-                        onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                        onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
                         Get Started
                     </button>
@@ -408,7 +408,7 @@ export default function Landing() {
                     </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
-                        onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                        onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
                         Get Organised
                     </button>
@@ -427,7 +427,7 @@ export default function Landing() {
                     </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
-                        onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                        onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
                         Never Miss a Deadline
                     </button>
@@ -597,7 +597,7 @@ export default function Landing() {
                             </ul>
                             <button
                                 className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition"
-                                onClick={() => window.location.href = "https://my-property-pal-front.vercel.app/register"}
+                                onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                             >
                                 Get Started Now
                             </button>
