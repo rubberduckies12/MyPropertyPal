@@ -4,6 +4,9 @@ import Sidebar from "../sidebar/sidebar.jsx";
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
 export default function Settings() {
+  // Add new state variables
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [editingEmail, setEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
@@ -22,6 +25,8 @@ export default function Settings() {
       .then((res) => res.json())
       .then((data) => {
         setEmail(data.email || "");
+        setFirstName(data.firstName || "");
+        setLastName(data.lastName || "");
         setPlan(data.plan || "basic");
         setBillingCycle(data.billingCycle || "monthly");
         setSubscriptionId(data.subscriptionId || null); // Fetch subscription ID
@@ -69,7 +74,13 @@ export default function Settings() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: newEmail }),
+      body: JSON.stringify({
+        firstName,  // Send current firstName
+        lastName,   // Send current lastName
+        email: newEmail,
+        password: null,
+        plan: null
+      }),
     });
     if (res.ok) {
       setEmail(newEmail);
@@ -96,7 +107,13 @@ export default function Settings() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ password: passwords.password }),
+      body: JSON.stringify({
+        firstName,  // Send current firstName
+        lastName,   // Send current lastName
+        email: null,
+        password: passwords.password,
+        plan: null
+      }),
     });
     if (res.ok) {
       alert("Password changed!");

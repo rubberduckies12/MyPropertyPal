@@ -44,7 +44,7 @@ app.use(cookieParser());
 
 // --- Public Routes ---
 app.use('/api/chat', chatRoute);
-app.use('/api/account', accountRouter);
+//app.use('/api/account', accountRouter);
 app.use('/api/stripe', stripeRouter);
 app.use('/api/stripe', stripeWebhookRouter);
 
@@ -95,6 +95,9 @@ app.get('/api/tenants/invite/:token', async (req, res) => {
 // Authenticate before any protected endpoints
 app.use(authenticate);
 app.use(checkSubscriptionStatus);
+
+//account 
+app.use('/api/account', accountRouter);
 
 // Dashboard endpoints (now protected)
 dashEndpoints(app, pool);
