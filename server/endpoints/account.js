@@ -100,7 +100,10 @@ router.get("/me", authenticate, async (req, res) => {
           s.is_active,
           s.canceled_at,
           s.id AS subscriptionId,
-          s.billing_cycle
+          CASE 
+            WHEN s.billing_cycle_end > CURRENT_TIMESTAMP THEN 'active'
+            ELSE 'ended'
+          END AS billing_cycle
         FROM subscription s
         LEFT JOIN payment_plan p ON s.plan_id = p.id
         WHERE s.landlord_id = $1
