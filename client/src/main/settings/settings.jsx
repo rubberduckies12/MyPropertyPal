@@ -4,8 +4,6 @@ import Sidebar from "../sidebar/sidebar.jsx";
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
 export default function Settings() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [editingEmail, setEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
@@ -23,8 +21,6 @@ export default function Settings() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setFirstName(data.firstName || "");
-        setLastName(data.lastName || "");
         setEmail(data.email || "");
         setPlan(data.plan || "basic");
         setBillingCycle(data.billingCycle || "monthly");
@@ -129,25 +125,6 @@ export default function Settings() {
       <main className="flex-1 p-8">
         <h1 className="text-2xl font-bold mb-6">Account Settings</h1>
         <div className="max-w-lg space-y-6">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <div className="flex gap-4 mt-1">
-              <input
-                type="text"
-                value={firstName}
-                readOnly
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-              />
-              <input
-                type="text"
-                value={lastName}
-                readOnly
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-              />
-            </div>
-          </div>
-
           {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
