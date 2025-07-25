@@ -116,11 +116,7 @@ app.use('/api/stripe', stripeRouter);
 // --- Static Exports ---
 app.use("/exports", express.static(path.join(__dirname, "../exports")));
 
-// --- Client Endpoints (placeholders) ---
-app.get('/', (req, res) => res.send('Welcome to the Property Management API'));
-app.get('/login', (req, res) => res.send('Login page placeholder'));
-app.get('/register', (req, res) => res.send('Register page placeholder'));
-app.get('/landing-page', (req, res) => res.send('Landing page placeholder'));
+
 
 // --- Catch-all route ---
 app.get('*', (req, res) => res.status(404).send('Not Found'));
