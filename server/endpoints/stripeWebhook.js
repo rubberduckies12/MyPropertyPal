@@ -25,6 +25,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
     // Handle the event
     switch (event.type) {
       case 'checkout.session.completed': {
+        // Handle new subscription creation after checkout
         const session = event.data.object;
         const stripeCustomerId = session.customer;
         const stripeSubscriptionId = session.subscription;
@@ -54,7 +55,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           }
         }
 
-        // Insert or update subscription record
+        // Insert or update subscription record in the database
         await pool.query(
           `INSERT INTO subscription (
             landlord_id, plan_id, stripe_subscription_id, stripe_customer_id, status, is_active, created_at, updated_at
@@ -72,6 +73,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       }
 
       case 'invoice.payment_failed': {
+        // Handle payment failure for a subscription
         const subscriptionId = event.data.object.subscription;
         await pool.query(
           `UPDATE subscription
@@ -83,6 +85,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       }
 
       case 'customer.subscription.updated': {
+        // Handle updates to a subscription (e.g., billing cycle changes)
         const subscription = event.data.object;
         const billingCycleEnd = subscription.current_period_end
           ? new Date(subscription.current_period_end * 1000)
@@ -98,19 +101,25 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       }
 
       case 'customer.subscription.deleted': {
+        // Handle subscription cancellation
+        // This event is triggered when a subscription is canceled in Stripe
         const subscriptionId = event.data.object.id;
+
+        // Update the subscription in the database to mark it as inactive
         await pool.query(
           `UPDATE subscription
-           SET status = 'canceled', is_active = FALSE, deleted_at = NOW(), updated_at = NOW()
+           SET is_active = FALSE, deleted_at = NOW(), updated_at = NOW()
            WHERE stripe_subscription_id = $1`,
           [subscriptionId]
         );
+
+        // At this point, Stripe has already stopped billing the customer
         break;
       }
 
       default: {
+        // Log unhandled events for later review
         console.log(`Unhandled event type ${event.type}`);
-        // Log unhandled events to the database for later review
         await pool.query(
           `INSERT INTO unhandled_events (event_type, event_data, created_at)
            VALUES ($1, $2, NOW())`,
@@ -119,6 +128,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       }
     }
 
+    // Respond to Stripe to acknowledge receipt of the event
     res.json({ received: true });
   } catch (err) {
     console.error('Error handling webhook event:', err);

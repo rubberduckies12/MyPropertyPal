@@ -57,7 +57,7 @@ CREATE TABLE public.chat (
 CREATE TABLE public.chat_message (
     id SERIAL PRIMARY KEY,
     chat_id INT NOT NULL REFERENCES public.chat(id) ON DELETE CASCADE,
-    sender_id INT NOT NULL REFERENCES public.account(id) ON DELETE CASCADE,
+    sender_id INT NOT
     incident_id INT REFERENCES public.incident(id) ON DELETE SET NULL,
     message_text VARCHAR(512) NOT NULL,
     sent_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
@@ -222,7 +222,8 @@ CREATE TABLE public.subscription (
     paused_at TIMESTAMP,
     deleted_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    canceled_at TIMESTAMP
 );
 
 -- ===== Tasks =====

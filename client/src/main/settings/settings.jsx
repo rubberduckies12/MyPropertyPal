@@ -14,11 +14,13 @@ export default function Settings() {
   const [passwords, setPasswords] = useState({ password: "", confirm: "" });
   const [plan, setPlan] = useState("");
   const [billingCycle, setBillingCycle] = useState("monthly");
+  const [subscriptionId, setSubscriptionId] = useState(null);
+  const [isCanceling, setIsCanceling] = useState(false);
 
   // Fetch user data from backend on mount
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/account/me`, {
-      credentials: "include", // <-- Add this line!
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
@@ -26,19 +28,48 @@ export default function Settings() {
         setLastName(data.lastName || "");
         setEmail(data.email || "");
         setPlan(data.plan || "basic");
+        setBillingCycle(data.billingCycle || "monthly");
+        setSubscriptionId(data.subscriptionId || null); // Fetch subscription ID
         setNewEmail(data.email || "");
       });
   }, []);
+
+  // Cancel subscription
+  const handleCancelSubscription = async () => {
+    if (!window.confirm("Are you sure you want to cancel your subscription? You will retain access until the end of your billing cycle.")) {
+      return;
+    }
+
+    setIsCanceling(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/subscriptions/${subscriptionId}/cancel`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        alert("Subscription canceled. You will retain access until the end of your billing cycle.");
+        setPlan("canceled"); // Update UI to reflect cancellation
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to cancel subscription.");
+      }
+    } catch (err) {
+      alert("An error occurred while canceling the subscription.");
+    } finally {
+      setIsCanceling(false);
+    }
+  };
 
   // Update email
   const handleSaveEmail = async () => {
     const res = await fetch(`${BACKEND_URL}/api/account/settings`, {
       method: "PUT",
-      credentials: "include", // <-- Add this line!
+      credentials: "include",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: newEmail })
+      body: JSON.stringify({ email: newEmail }),
     });
     if (res.ok) {
       setEmail(newEmail);
@@ -53,7 +84,6 @@ export default function Settings() {
     setPasswords((p) => ({ ...p, [name]: value }));
   };
 
-  // Update password
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (passwords.password !== passwords.confirm) {
@@ -62,11 +92,11 @@ export default function Settings() {
     }
     const res = await fetch(`${BACKEND_URL}/api/account/settings`, {
       method: "PUT",
-      credentials: "include", // <-- Add this line!
+      credentials: "include",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ password: passwords.password })
+      body: JSON.stringify({ password: passwords.password }),
     });
     if (res.ok) {
       alert("Password changed!");
@@ -74,34 +104,6 @@ export default function Settings() {
       setPasswords({ password: "", confirm: "" });
     } else {
       alert("Failed to change password");
-    }
-  };
-
-  const handlePlanChange = (e) => setPlan(e.target.value);
-
-  // Replace handleSavePlan with Stripe checkout logic
-  const handleSavePlan = async () => {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/stripe/create-checkout-session`, {
-        method: "POST",
-        credentials: "include", // <-- Add this line!
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          plan_name: plan,
-          billing_cycle: billingCycle,
-          email,
-        }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url; // Redirect to Stripe Checkout
-      } else {
-        alert(data.error || "Failed to start checkout");
-      }
-    } catch (err) {
-      alert("Failed to start checkout");
     }
   };
 
@@ -127,18 +129,8 @@ export default function Settings() {
           <label>
             Name
             <div style={{ display: "flex", gap: "12px" }}>
-              <input
-                type="text"
-                value={firstName}
-                readOnly
-                style={{ flex: 1 }}
-              />
-              <input
-                type="text"
-                value={lastName}
-                readOnly
-                style={{ flex: 1 }}
-              />
+              <input type="text" value={firstName} readOnly style={{ flex: 1 }} />
+              <input type="text" value={lastName} readOnly style={{ flex: 1 }} />
             </div>
           </label>
 
@@ -163,12 +155,7 @@ export default function Settings() {
                 </>
               ) : (
                 <>
-                  <input
-                    type="email"
-                    value={email}
-                    readOnly
-                    style={{ flex: 1 }}
-                  />
+                  <input type="email" value={email} readOnly style={{ flex: 1 }} />
                   <button type="button" className="settings-save-btn" onClick={() => setEditingEmail(true)}>
                     Change
                   </button>
@@ -194,20 +181,31 @@ export default function Settings() {
           <label>
             Plan
             <div style={{ display: "flex", gap: "10px" }}>
-              <select name="plan" value={plan} onChange={e => setPlan(e.target.value)} style={{ flex: 1 }}>
+              <select name="plan" value={plan} disabled style={{ flex: 1 }}>
                 <option value="basic">Basic</option>
                 <option value="pro">Pro</option>
                 <option value="organisation">Organisation</option>
+                <option value="canceled">Canceled</option>
               </select>
-              <select name="billing" value={billingCycle} onChange={e => setBillingCycle(e.target.value)}>
+              <select name="billing" value={billingCycle} disabled>
                 <option value="monthly">Monthly</option>
                 <option value="yearly">Yearly</option>
               </select>
-              <button type="button" className="settings-save-btn" onClick={handleSavePlan}>
-                Change
-              </button>
             </div>
           </label>
+
+          {/* Cancel Subscription Button */}
+          {subscriptionId && plan !== "canceled" && (
+            <button
+              type="button"
+              className="settings-cancel-btn"
+              style={{ marginTop: "20px", width: "100%" }}
+              onClick={handleCancelSubscription}
+              disabled={isCanceling}
+            >
+              {isCanceling ? "Canceling..." : "Cancel Subscription"}
+            </button>
+          )}
         </div>
 
         {/* Password Modal */}
