@@ -57,7 +57,6 @@ router.get("/me", authenticate, async (req, res) => {
   const accountId = req.user.id;
 
   try {
-    // Debug log
     console.log("Fetching account info for ID:", accountId);
 
     // First query - get account info
@@ -72,44 +71,59 @@ router.get("/me", authenticate, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Second query - get subscription info
-    const landlordRes = await pool.query(
-      `WITH landlord_info AS (
-        SELECT id FROM landlord WHERE account_id = $1
-      )
-      SELECT 
-        p.name AS plan,
-        s.status,
-        s.is_active,
-        s.canceled_at,
-        s.id AS subscriptionId,
-        s.billing_cycle
-      FROM landlord_info l
-      LEFT JOIN subscription s ON s.landlord_id = l.id
-      LEFT JOIN payment_plan p ON s.plan_id = p.id
-      WHERE s.is_active = TRUE
-      OR s.id = (
-        SELECT id FROM subscription 
-        WHERE landlord_id = l.id 
-        ORDER BY created_at DESC 
-        LIMIT 1
-      )`,
+    // Get landlord ID first
+    const landlordQuery = await pool.query(
+      "SELECT id FROM landlord WHERE account_id = $1",
       [accountId]
     );
 
-    console.log("Subscription query result:", landlordRes.rows);
+    console.log("Landlord query result:", landlordQuery.rows);
 
-    // Default values if no subscription found
-    const subscriptionData = landlordRes.rows[0] || {};
-    
+    let subscriptionData = {
+      plan: "basic",
+      status: "inactive",
+      is_active: false,
+      canceled_at: null,
+      subscriptionId: null,
+      billing_cycle: "monthly"
+    };
+
+    // Only fetch subscription if landlord exists
+    if (landlordQuery.rows.length > 0) {
+      const landlordId = landlordQuery.rows[0].id;
+      
+      // Get latest subscription
+      const subscriptionQuery = await pool.query(
+        `SELECT 
+          p.name AS plan,
+          s.status,
+          s.is_active,
+          s.canceled_at,
+          s.id AS subscriptionId,
+          s.billing_cycle
+        FROM subscription s
+        LEFT JOIN payment_plan p ON s.plan_id = p.id
+        WHERE s.landlord_id = $1
+        ORDER BY s.created_at DESC
+        LIMIT 1`,
+        [landlordId]
+      );
+
+      console.log("Subscription query result:", subscriptionQuery.rows);
+
+      if (subscriptionQuery.rows.length > 0) {
+        subscriptionData = subscriptionQuery.rows[0];
+      }
+    }
+
     const response = {
       ...result.rows[0],
-      plan: subscriptionData.plan || "basic",
-      subscriptionStatus: subscriptionData.status || "inactive",
-      isActive: subscriptionData.is_active || false,
-      canceledAt: subscriptionData.canceled_at || null,
-      subscriptionId: subscriptionData.subscriptionId || null,
-      billingCycle: subscriptionData.billing_cycle || "monthly"
+      plan: subscriptionData.plan,
+      subscriptionStatus: subscriptionData.status,
+      isActive: subscriptionData.is_active,
+      canceledAt: subscriptionData.canceled_at,
+      subscriptionId: subscriptionData.subscriptionId,
+      billingCycle: subscriptionData.billing_cycle
     };
 
     console.log("Sending response:", response);
