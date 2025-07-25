@@ -114,7 +114,7 @@ export default function Register() {
 
   // Add this function for the main back button
   const handleMainBack = () => {
-    window.location.href = "https://my-property-pal-ucto.vercel.app/";
+    window.location.href = "https://www.mypropertypal.com/";
   };
 
   return (

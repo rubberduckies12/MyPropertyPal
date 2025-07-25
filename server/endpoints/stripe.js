@@ -25,8 +25,8 @@ router.post('/create-checkout-session', async (req, res) => {
       customer_email: email,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      success_url: 'https://my-property-pal-front.vercel.app/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://my-property-pal-front.vercel.app/cancel',
+      success_url: 'https://app.mypropertypal.com/success?session_id={CHECKOUT_SESSION_ID}', // Updated URL
+      cancel_url: 'https://app.mypropertypal.com/cancel', // Updated URL
     });
     res.json({ url: session.url });
   } catch (err) {

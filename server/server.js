@@ -36,7 +36,7 @@ app.set("pool", pool);
 // --- Middleware ---
 // CORS and cookies must be set before any routes
 app.use(cors({
-  origin: 'https://my-property-pal-front.vercel.app', // ✅ exact match only
+  origin: 'https://app.mypropertypal.com', // ✅ exact match only
   credentials: true
 }));
 app.use(express.json());
