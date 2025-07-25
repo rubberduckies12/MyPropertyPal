@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../sidebar/sidebar.jsx";
-import "./settings.css";
 
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
@@ -37,6 +36,11 @@ export default function Settings() {
   // Cancel subscription
   const handleCancelSubscription = async () => {
     if (!window.confirm("Are you sure you want to cancel your subscription? You will retain access until the end of your billing cycle.")) {
+      return;
+    }
+
+    if (!subscriptionId) {
+      alert("No active subscription found to cancel.");
       return;
     }
 
@@ -109,103 +113,124 @@ export default function Settings() {
 
   if (!email) {
     return (
-      <div className="settings-page" style={{ display: "flex" }}>
+      <div className="flex">
         <Sidebar />
-        <main className="settings-main">
-          <h1 className="finances-title">Account Settings</h1>
-          <div style={{ textAlign: "center", marginTop: "48px" }}>Loading...</div>
+        <main className="flex-1 p-8">
+          <h1 className="text-2xl font-bold">Account Settings</h1>
+          <div className="text-center mt-12">Loading...</div>
         </main>
       </div>
     );
   }
 
   return (
-    <div className="settings-page" style={{ display: "flex" }}>
+    <div className="flex">
       <Sidebar />
-      <main className="settings-main" style={{ flex: 1, padding: "32px 24px" }}>
-        <h1 className="finances-title">Account Settings</h1>
-        <div className="settings-form" style={{ maxWidth: 540 }}>
+      <main className="flex-1 p-8">
+        <h1 className="text-2xl font-bold mb-6">Account Settings</h1>
+        <div className="max-w-lg space-y-6">
           {/* Name */}
-          <label>
-            Name
-            <div style={{ display: "flex", gap: "12px" }}>
-              <input type="text" value={firstName} readOnly style={{ flex: 1 }} />
-              <input type="text" value={lastName} readOnly style={{ flex: 1 }} />
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <div className="flex gap-4 mt-1">
+              <input
+                type="text"
+                value={firstName}
+                readOnly
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+              />
+              <input
+                type="text"
+                value={lastName}
+                readOnly
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+              />
             </div>
-          </label>
+          </div>
 
           {/* Email */}
-          <label>
-            Email
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <div className="flex items-center gap-4 mt-1">
               {editingEmail ? (
                 <>
                   <input
                     type="email"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
-                    style={{ flex: 1 }}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
                   />
-                  <button type="button" className="settings-save-btn" onClick={handleSaveEmail}>
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    onClick={handleSaveEmail}
+                  >
                     Save
                   </button>
-                  <button type="button" className="settings-cancel-btn" onClick={() => setEditingEmail(false)}>
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                    onClick={() => setEditingEmail(false)}
+                  >
                     Cancel
                   </button>
                 </>
               ) : (
                 <>
-                  <input type="email" value={email} readOnly style={{ flex: 1 }} />
-                  <button type="button" className="settings-save-btn" onClick={() => setEditingEmail(true)}>
+                  <input
+                    type="email"
+                    value={email}
+                    readOnly
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                  />
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    onClick={() => setEditingEmail(true)}
+                  >
                     Change
                   </button>
                 </>
               )}
             </div>
-          </label>
-
-          {/* Password */}
-          <label>
-            Password
-            <button
-              type="button"
-              className="settings-save-btn"
-              style={{ marginTop: 6, width: "100%" }}
-              onClick={() => setShowPasswordModal(true)}
-            >
-              Reset Password
-            </button>
-          </label>
+          </div>
 
           {/* Plan */}
-          <label>
-            Plan
-            <div style={{ display: "flex", gap: "10px" }}>
-              <select name="plan" value={plan} disabled style={{ flex: 1 }}>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Plan</label>
+            <div className="flex gap-4 mt-1">
+              <select
+                name="plan"
+                value={plan}
+                disabled
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+              >
                 <option value="basic">Basic</option>
                 <option value="pro">Pro</option>
                 <option value="organisation">Organisation</option>
                 <option value="canceled">Canceled</option>
               </select>
-              <select name="billing" value={billingCycle} disabled>
+              <select
+                name="billing"
+                value={billingCycle}
+                disabled
+                className="px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+              >
                 <option value="monthly">Monthly</option>
                 <option value="yearly">Yearly</option>
               </select>
             </div>
-          </label>
+          </div>
 
           {/* Cancel Subscription Button */}
-          {subscriptionId && plan !== "canceled" && (
-            <button
-              type="button"
-              className="settings-cancel-btn"
-              style={{ marginTop: "20px", width: "100%" }}
-              onClick={handleCancelSubscription}
-              disabled={isCanceling}
-            >
-              {isCanceling ? "Canceling..." : "Cancel Subscription"}
-            </button>
-          )}
+          <button
+            type="button"
+            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            onClick={handleCancelSubscription}
+            disabled={isCanceling}
+          >
+            {isCanceling ? "Canceling..." : "Cancel Subscription"}
+          </button>
         </div>
 
         {/* Password Modal */}
