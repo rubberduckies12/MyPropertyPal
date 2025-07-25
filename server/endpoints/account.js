@@ -67,15 +67,20 @@ router.get("/me", authenticate, async (req, res) => {
 
     // If landlord, get plan
     const landlordRes = await pool.query(
-      `SELECT p.name AS plan
-       FROM landlord l
-       JOIN payment_plan p ON l.payment_plan_id = p.id
-       WHERE l.account_id = $1`,
+      `SELECT p.name AS plan, s.status, s.is_active, s.canceled_at
+       FROM subscription s
+       JOIN payment_plan p ON s.plan_id = p.id
+       WHERE s.landlord_id = (SELECT id FROM landlord WHERE account_id = $1)
+       ORDER BY s.created_at DESC
+       LIMIT 1`,
       [accountId]
     );
     const plan = landlordRes.rows[0]?.plan || "basic";
+    const subscriptionStatus = landlordRes.rows[0]?.status || "inactive";
+    const isActive = landlordRes.rows[0]?.is_active || false;
+    const canceledAt = landlordRes.rows[0]?.canceled_at || null;
 
-    res.json({ ...result.rows[0], plan });
+    res.json({ ...result.rows[0], plan, subscriptionStatus, isActive, canceledAt });
   } catch (err) {
     console.error("Fetch account info error:", err);
     res.status(500).json({ error: "Failed to fetch account info" });
