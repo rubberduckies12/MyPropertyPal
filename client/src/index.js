@@ -26,6 +26,7 @@ import Tai from './main/tenant_portal/TenantAi/Tai.jsx';
 import Settings from './main/settings/settings.jsx';
 import Sidebar from './main/sidebar/sidebar.jsx';
 import TenantSidebar from './main/tenant_portal/tsidebar/tenantSidebar.jsx';
+import Success from './main/success.jsx'; // Import the Success page
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -74,6 +75,7 @@ function AppRoutes() {
         <Route path="/" element={<AnimatedRoute><Login /></AnimatedRoute>} />
         <Route path="/login" element={<AnimatedRoute><Login /></AnimatedRoute>} />
         <Route path="/register" element={<AnimatedRoute><Register /></AnimatedRoute>} />
+        <Route path="/success" element={<AnimatedRoute><Success /></AnimatedRoute>} /> {/* Add Success page */}
 
         {/* Landlord App pages (with landlord sidebar) */}
         <Route path="/dashboard" element={
