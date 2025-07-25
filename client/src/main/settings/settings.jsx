@@ -127,7 +127,7 @@ export default function Settings() {
         firstName,  // Send current firstName
         lastName,   // Send current lastName
         email: null,
-        password: passwords.password,
+        password: passwords.password, // Send the new password
         plan: null
       }),
     });

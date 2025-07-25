@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt"); // Make sure this is at the top
 
-// Update account settings (name, email, password)
+// Update account settings (name, email, password, plan)
 router.put("/settings", authenticate, async (req, res) => {
   const pool = req.app.get("pool");
   const { firstName, lastName, email, password, plan } = req.body;
@@ -14,15 +14,16 @@ router.put("/settings", authenticate, async (req, res) => {
   try {
     let hashedPassword = null;
     if (password) {
-      hashedPassword = await bcrypt.hash(password, 10);
+      hashedPassword = await bcrypt.hash(password, 10); // Hash the new password
     }
 
+    // Update account details
     await pool.query(
       `UPDATE account
          SET first_name = COALESCE($1, first_name),
              last_name = COALESCE($2, last_name),
              email = COALESCE($3, email),
-             password = COALESCE($4, password)
+             password = COALESCE($4, password) 
          WHERE id = $5`,
       [firstName, lastName, email, hashedPassword, accountId]
     );
