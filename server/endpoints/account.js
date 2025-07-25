@@ -98,7 +98,7 @@ router.get("/me", authenticate, async (req, res) => {
           p.name AS plan,
           s.status,
           s.is_active,
-          s.canceled_at,
+          s.cancelled_at,  
           s.id AS subscriptionId,
           s.billing_cycle
         FROM subscription s
@@ -121,7 +121,7 @@ router.get("/me", authenticate, async (req, res) => {
       plan: subscriptionData.plan,
       subscriptionStatus: subscriptionData.status,
       isActive: subscriptionData.is_active,
-      canceledAt: subscriptionData.canceled_at,
+      canceledAt: subscriptionData.cancelled_at,  // Note: we keep canceledAt in camelCase for the frontend
       subscriptionId: subscriptionData.subscriptionId,
       billingCycle: subscriptionData.billing_cycle
     };
