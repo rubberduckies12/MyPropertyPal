@@ -70,6 +70,7 @@ export default function Register() {
     e.preventDefault();
     setError("");
     setSuccess("");
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -78,9 +79,10 @@ export default function Register() {
       setError("First name and last name are required.");
       return;
     }
+
     try {
       if (inviteMode) {
-        // Only invited tenants can register as tenant
+        // Tenant Invite Flow
         await register({
           password,
           invite: inviteToken,
@@ -88,22 +90,32 @@ export default function Register() {
         setSuccess("Registration successful! Redirecting to login...");
         setTimeout(() => navigate("/login"), 1500);
       } else {
-        // Landlord: create Stripe Checkout Session
+        // Landlord Registration and Stripe Checkout Flow
+        // Step 1: Register the account
+        await register({
+          email,
+          password,
+          role: "landlord",
+          firstName,
+          lastName,
+          plan_name: plan,
+          billing_cycle: billingCycle,
+        });
+
+        // Step 2: Create Stripe Checkout Session
         const res = await fetch('https://mypropertypal-3.onrender.com/api/stripe/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email,
-            firstName,
-            lastName,
-            password,
-            role: "landlord",
             plan_name: plan,
             billing_cycle: billingCycle,
           }),
         });
+
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to create checkout session");
+
         // Redirect to Stripe Checkout
         window.location.href = data.url;
       }
