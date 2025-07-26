@@ -221,11 +221,13 @@ function Dashboard() {
       <div className="w-64 flex-shrink-0">
         <Sidebar />
       </div>
-      <main className="flex-1 px-2 sm:px-4 py-4">
+      <main className="flex-1 px-4 sm:px-6 py-4">
         {/* Header */}
         <header className="flex justify-between items-center mb-4 border-b border-blue-100 pb-2">
           <div>
-            <h1 className="text-3xl font-extrabold text-blue-700">Welcome, {user ? capitalize(user.first_name) : "User"}</h1>
+            <h1 className="text-3xl font-extrabold text-blue-700">
+              Welcome, {user ? capitalize(user.first_name) : "User"}
+            </h1>
           </div>
           <div className="text-sm text-gray-700">
             User ID: <strong>{user?.id || "—"}</strong>
