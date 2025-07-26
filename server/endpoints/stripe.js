@@ -1,24 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const Stripe = require('stripe');
-//const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use sandbox key
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use sandbox key
 
-const stripe = Stripe(process.env.SANDBOX_STRIPE_SECRET_KEY); // Use sandbox key
+//const stripe = Stripe(process.env.SANDBOX_STRIPE_SECRET_KEY); // Use sandbox key
 
 router.post('/create-checkout-session', async (req, res) => {
   const { plan_name, billing_cycle, email } = req.body;
 
   // Map plan and billing to Stripe Price ID
   let priceId;
-  //if (plan_name === 'basic' && billing_cycle === 'monthly') priceId = process.env.BASIC_MONTHLY_PRICE_ID;
-  //if (plan_name === 'basic' && billing_cycle === 'yearly') priceId = process.env.BASIC_YEARLY_PRICE_ID;
+  if (plan_name === 'basic' && billing_cycle === 'monthly') priceId = process.env.BASIC_MONTHLY_PRICE_ID;
+  if (plan_name === 'basic' && billing_cycle === 'yearly') priceId = process.env.BASIC_YEARLY_PRICE_ID;
   if (plan_name === 'pro' && billing_cycle === 'monthly') priceId = process.env.PRO_MONTHLY_PRICE_ID;
   if (plan_name === 'pro' && billing_cycle === 'yearly') priceId = process.env.PRO_YEARLY_PRICE_ID;
-  if (plan_name === 'organisation' && billing_cycle === 'monthly') priceId = process.env.ORG_MONTHLY_PRICE_ID;
-  if (plan_name === 'organisation' && billing_cycle === 'yearly') priceId = process.env.ORG_YEARLY_PRICE_ID;
+  if (plan_name === 'org' && billing_cycle === 'monthly') priceId = process.env.ORG_MONTHLY_PRICE_ID;
+  if (plan_name === 'org' && billing_cycle === 'yearly') priceId = process.env.ORG_YEARLY_PRICE_ID;
 
   // Add test product mapping
-  if (plan_name === 'basic' && billing_cycle === 'monthly') priceId = process.env.TEST_PRODUCT_MONTHLY_PRICE_ID;
+  //if (plan_name === 'pro' && billing_cycle === 'monthly') priceId = process.env.TEST_PRODUCT_MONTHLY_PRICE_ID;
 
   if (!priceId) {
     return res.status(400).json({ error: 'Invalid plan or billing cycle.' });
