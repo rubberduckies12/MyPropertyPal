@@ -297,7 +297,7 @@ export default function Landing() {
                         className="hidden md:inline-block bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
-                        Get Started Now
+                        Book A Free Call
                     </button>
                 </div>
                 <div className="flex justify-center">
