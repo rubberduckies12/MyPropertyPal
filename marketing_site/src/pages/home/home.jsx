@@ -285,13 +285,13 @@ export default function Landing() {
             <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-24">
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h1 className="text-2xl md:text-5xl font-extrabold mb-4 md:mb-6 text-[#2563eb] leading-tight">
-                        Win Back Your Time <br className="hidden md:block" />With MyPropertyPal
+                        The Easiest Way To<br className="hidden md:block" />Manage Your Properties
                     </h1>
                     <h3 className="text-lg md:text-2xl font-semibold mb-2 text-[#2563eb] tracking-tight leading-snug" style={{ letterSpacing: "-0.5px" }}>
                         Manage your rentals in minutes not hours
                     </h3>
                     <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8">
-                        30-Day Money Back Guarantee. No Questions Asked.
+                        Free 30 Minute Onboarding Call.
                     </p>
                     <button
                         className="hidden md:inline-block bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto"
