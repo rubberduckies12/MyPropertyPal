@@ -108,12 +108,14 @@ router.post('/', async (req, res) => {
         return res.status(400).json({ error: 'Invalid billing cycle.' });
       }
 
+      // Insert into landlord table with payment_plan_id
       const landlordResult = await pool.query(
-        `INSERT INTO landlord (account_id) VALUES ($1) RETURNING id`,
-        [accountId]
+        `INSERT INTO landlord (account_id, payment_plan_id) VALUES ($1, $2) RETURNING id`,
+        [accountId, plan.id]
       );
       const landlordId = landlordResult.rows[0].id;
 
+      // Insert into subscription table
       await pool.query(
         `INSERT INTO subscription (
           landlord_id, plan_id, status, is_active, created_at, updated_at
