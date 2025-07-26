@@ -291,7 +291,7 @@ export default function Landing() {
                         Manage your rentals in minutes not hours
                     </h3>
                     <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8">
-                        Free 30 Minute Onboarding Call.
+                        Free 30 Minute Onboarding Call. Reach Out Now.
                     </p>
                     <button
                         className="hidden md:inline-block bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto"
