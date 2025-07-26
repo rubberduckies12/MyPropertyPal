@@ -19,7 +19,7 @@ function useQuery() {
 
 // Update register function to use Render backend
 async function register(data) {
-  const res = await fetch('https://mypropertypal-3.onrender.com/register', {
+  const res = await fetch('https://mypropertypal-3.onrender.com/register', { // Hardcoded backend URL
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
