@@ -13,7 +13,7 @@ const checkSubscriptionStatus = require('./middleware/checkSubscriptionStatus');
 // Endpoint routers
 const login = require('./endpoints/login');
 const register = require('./endpoints/register');
-const dashEndpoints = require('./endpoints/dash.js');
+const dashRouter = require('./endpoints/dash');
 const chatRoute = require('./endpoints/chat');
 const tenantsRouter = require('./endpoints/tenants');
 const propertiesRouter = require('./endpoints/properties');
@@ -98,7 +98,7 @@ app.use(checkSubscriptionStatus);
 app.use('/api/account', accountRouter);
 
 // Dashboard endpoints (now protected)
-dashEndpoints(app, pool);
+app.use('/api/dashboard', dashRouter(pool));
 
 // Properties endpoints (protected)
 app.use('/api/properties', propertiesRouter);
