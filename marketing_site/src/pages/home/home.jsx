@@ -322,10 +322,10 @@ export default function Landing() {
             <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-20">
                 <div>
                     <h2 className="text-3xl font-bold mb-4 text-center md:text-left">
-                        Effortless Property Management
+                        Cut Out The Need For Property Managers
                     </h2>
                     <p className="text-gray-700 mb-6 text-center md:text-left">
-                        All-in-one tools for small landlords who want less admin and more time. Stay compliant. Keep tenants happy. Get your evenings back.
+                        All-in-one tools for the small landlords who want to save thousands on property management fees, hours of time every month, and have full control over their properties.
                     </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
