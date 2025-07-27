@@ -18,7 +18,7 @@ router.post('/create-checkout-session', async (req, res) => {
   if (plan_name === 'org' && billing_cycle === 'yearly') priceId = process.env.ORG_YEARLY_PRICE_ID;
 
   // Add test product mapping
-  //if (plan_name === 'pro' && billing_cycle === 'monthly') priceId = process.env.TEST_PRODUCT_MONTHLY_PRICE_ID;
+  if (plan_name === 'basic' && billing_cycle === 'monthly') priceId = process.env.TEST_PRODUCT_MONTHLY_PRICE_ID;
 
   if (!priceId) {
     return res.status(400).json({ error: 'Invalid plan or billing cycle.' });
