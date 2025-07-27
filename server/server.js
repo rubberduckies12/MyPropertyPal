@@ -47,7 +47,8 @@ app.use('/api/chat', chatRoute);
 app.post('/login', (req, res) => login(req, res, pool));
 app.use('/register', register); // Updated to use the Express router for the register endpoint
 app.use('/api/stripe', stripeRouter);
-app.use('/api/stripe', stripeWebhookRouter);
+//app.use('/api/stripe', stripeWebhookRouter);
+app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
 
 app.get('/external-api', async (req, res) => {
   try {
@@ -112,7 +113,7 @@ app.use('/api/compliance', complianceRouter);
 app.use('/api/tenant/rent', tenantRentRouter);
 app.use('/api/maintenance', maintenanceRouter);
 app.use('/api/messages', messagesRouter);
-//app.use('/api/stripe', stripeRouter);
+
 
 // --- Static Exports ---
 app.use("/exports", express.static(path.join(__dirname, "../exports")));
