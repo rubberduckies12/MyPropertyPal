@@ -295,7 +295,7 @@ export default function Landing() {
                     </p>
                     <button
                         className="hidden md:inline-block bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto"
-                        onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
+                        onClick={() => window.location.href = "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ00tJyuVNIkMFfFr4kCXBtwkhQSTM4PqaC-JMNe7mxLk3mf8nsa44MRj49R1H-Oc2hTPlfhKDwT"}
                     >
                         Book A Free Call
                     </button>
