@@ -285,7 +285,7 @@ export default function Landing() {
             <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-24">
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h1 className="text-2xl md:text-5xl font-extrabold mb-4 md:mb-6 text-[#2563eb] leading-tight">
-                        The Easiest Way To<br className="hidden md:block" />Manage Your Properties
+                        The Easiest Way To<br className="hidden md:block" /> Manage Your Properties
                     </h1>
                     <h3 className="text-lg md:text-2xl font-semibold mb-2 text-[#2563eb] tracking-tight leading-snug" style={{ letterSpacing: "-0.5px" }}>
                         Manage your rentals in minutes not hours
