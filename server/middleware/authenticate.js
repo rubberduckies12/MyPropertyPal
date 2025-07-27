@@ -6,7 +6,7 @@ async function authenticate(req, res, next) {
 
     // Exclude public routes and /webhook
     const excludedRoutes = ['/register', '/login', '/api/tenants/invite/:token', '/webhook'];
-    if (excludedRoutes.some(route => req.path.startsWith(route))) {
+    if (excludedRoutes.some(route => req.originalUrl.startsWith(route))) {
       return next(); // Skip authentication for excluded routes
     }
 
