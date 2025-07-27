@@ -32,8 +32,15 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
         const stripeSubscriptionId = session.subscription;
         const email = session.customer_email;
 
+        console.log('Stripe Customer ID:', stripeCustomerId);
         console.log('Stripe Subscription ID:', stripeSubscriptionId);
+        console.log('Customer Email:', email);
         console.log('Checkout Session:', session);
+
+        if (!stripeSubscriptionId) {
+          console.error('No subscription ID found in the session.');
+          break;
+        }
 
         // Find the landlord/account by email
         const accountResult = await pool.query(
