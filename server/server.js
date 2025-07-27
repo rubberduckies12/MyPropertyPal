@@ -42,6 +42,14 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Apply CORS to all routes except /webhook
+app.use((req, res, next) => {
+  if (req.path === '/webhook') {
+    return next(); // Skip CORS for /webhook
+  }
+  cors()(req, res, next);
+});
+
 // --- Public Routes ---
 app.use('/api/chat', chatRoute);
 app.post('/login', (req, res) => login(req, res, pool));

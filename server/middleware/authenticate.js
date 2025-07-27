@@ -4,8 +4,8 @@ async function authenticate(req, res, next) {
   try {
     console.log(`Authenticate middleware called for route: ${req.path}`);
 
-    // Exclude public routes
-    const excludedRoutes = ['/register', '/login', '/api/tenants/invite/:token'];
+    // Exclude public routes and /webhook
+    const excludedRoutes = ['/register', '/login', '/api/tenants/invite/:token', '/webhook'];
     if (excludedRoutes.some(route => req.path.startsWith(route))) {
       return next(); // Skip authentication for excluded routes
     }
