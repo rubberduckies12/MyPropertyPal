@@ -135,16 +135,6 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
         );
         break;
       }
-
-      default: {
-        // Log unhandled events for later review
-        console.log(`Unhandled event type ${event.type}`);
-        await pool.query(
-          `INSERT INTO unhandled_events (event_type, event_data, created_at)
-           VALUES ($1, $2, NOW())`,
-          [event.type, JSON.stringify(event.data)]
-        );
-      }
     }
 
     // Respond to Stripe to acknowledge receipt of the event
