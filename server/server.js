@@ -33,6 +33,9 @@ const port = process.env.PORT || 5001;
 const pool = createDatabaseConnection();
 app.set("pool", pool);
 
+
+app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
+
 // --- Middleware ---
 // CORS and cookies must be set before any routes
 app.use(cors({
@@ -48,7 +51,7 @@ app.post('/login', (req, res) => login(req, res, pool));
 app.use('/register', register); // Updated to use the Express router for the register endpoint
 app.use('/api/stripe', stripeRouter);
 //app.use('/api/stripe', stripeWebhookRouter);
-app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
+//app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
 
 app.get('/external-api', async (req, res) => {
   try {
