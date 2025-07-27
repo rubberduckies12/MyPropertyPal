@@ -92,7 +92,7 @@ app.get('/api/tenants/invite/:token', async (req, res) => {
 
 // --- Protected Routes ---
 // Authenticate before any protected endpoints
-app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
+//app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
 
 // Apply authentication middleware for all other routes
 app.use(authenticate);

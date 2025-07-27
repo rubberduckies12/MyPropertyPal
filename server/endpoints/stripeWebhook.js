@@ -5,7 +5,7 @@ const Stripe = require('stripe');
 const stripe = Stripe(process.env.SANDBOX_STRIPE_SECRET_KEY); // Use sandbox key
 
 // Use raw body for Stripe signature verification
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
   const pool = req.app.get('pool'); // Use the database pool from the app
   const sig = req.headers['stripe-signature'];
   let event;
