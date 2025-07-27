@@ -33,6 +33,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         const email = session.customer_email;
 
         console.log('Stripe Subscription ID:', stripeSubscriptionId);
+        console.log('Checkout Session:', session);
 
         // Find the landlord/account by email
         const accountResult = await pool.query(
