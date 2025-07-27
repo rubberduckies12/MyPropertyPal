@@ -58,7 +58,7 @@ export default function Settings() {
     }
 
     if (!subscriptionId) {
-      alert("No active subscription found to cancel.");
+      alert("No active subscription found to cancel. Please email billing@mypropertypal.com if there are any issues canceling your subscription from this page.");
       return;
     }
 
@@ -70,14 +70,14 @@ export default function Settings() {
       });
 
       if (res.ok) {
-        alert("Subscription canceled. You will retain access until the end of your billing cycle.");
+        alert("Subscription canceled. You will retain access until the end of your billing cycle. If you have any issues, please email billing@mypropertypal.com.");
         setPlan("canceled"); // Update UI to reflect cancellation
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to cancel subscription.");
+        alert(`${data.error || "Failed to cancel subscription."} Please email billing@mypropertypal.com if there are any issues.`);
       }
     } catch (err) {
-      alert("An error occurred while canceling the subscription.");
+      alert("An error occurred while canceling the subscription. Please email billing@mypropertypal.com for assistance.");
     } finally {
       setIsCanceling(false);
     }
