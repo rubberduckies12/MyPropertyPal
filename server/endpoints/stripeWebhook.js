@@ -84,20 +84,33 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
         }
 
         // Insert or update subscription record in the database
-        await pool.query(
-          `INSERT INTO subscription (
-            landlord_id, plan_id, stripe_subscription_id, stripe_customer_id, billing_cycle_end, status, is_active, created_at, updated_at
-          ) VALUES ($1, $2, $3, $4, $5, 'active', TRUE, NOW(), NOW())
-          ON CONFLICT (landlord_id) DO UPDATE SET
-            plan_id = $2,
-            stripe_subscription_id = $3,
-            stripe_customer_id = $4,
-            billing_cycle_end = $5,
-            status = 'active',
-            is_active = TRUE,
-            updated_at = NOW()`,
-          [landlord_id, planId, stripeSubscriptionId, stripeCustomerId, billingCycleEnd]
-        );
+        console.log('Inserting/Updating subscription with:', {
+          landlord_id,
+          planId,
+          stripeSubscriptionId,
+          stripeCustomerId,
+          billingCycleEnd,
+        });
+
+        try {
+          await pool.query(
+            `INSERT INTO subscription (
+              landlord_id, plan_id, stripe_subscription_id, stripe_customer_id, billing_cycle_end, status, is_active, created_at, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, 'active', TRUE, NOW(), NOW())
+            ON CONFLICT (landlord_id) DO UPDATE SET
+              plan_id = $2,
+              stripe_subscription_id = $3,
+              stripe_customer_id = $4,
+              billing_cycle_end = $5,
+              status = 'active',
+              is_active = TRUE,
+              updated_at = NOW()`,
+            [landlord_id, planId, stripeSubscriptionId, stripeCustomerId, billingCycleEnd]
+          );
+          console.log('Subscription inserted/updated successfully.');
+        } catch (err) {
+          console.error('Error inserting/updating subscription:', err.message);
+        }
         break;
       }
 
