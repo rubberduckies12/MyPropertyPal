@@ -66,19 +66,15 @@ router.get("/me", authenticate, async (req, res) => {
       [accountId]
     );
 
-    console.log("Account query result:", result.rows);
-
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Get landlord ID first
+    // Get landlord ID
     const landlordQuery = await pool.query(
       "SELECT id FROM landlord WHERE account_id = $1",
       [accountId]
     );
-
-    console.log("Landlord query result:", landlordQuery.rows);
 
     let subscriptionData = {
       plan: "basic",
@@ -86,7 +82,7 @@ router.get("/me", authenticate, async (req, res) => {
       is_active: false,
       canceled_at: null,
       subscriptionId: null,
-      billing_cycle: "monthly"
+      billing_cycle: "monthly",
     };
 
     // Get landlord subscription info
@@ -110,8 +106,6 @@ router.get("/me", authenticate, async (req, res) => {
         [landlordId]
       );
 
-      console.log("Subscription query result:", subscriptionQuery.rows);
-
       if (subscriptionQuery.rows.length > 0) {
         subscriptionData = subscriptionQuery.rows[0];
       }
@@ -134,13 +128,9 @@ router.get("/me", authenticate, async (req, res) => {
 
     console.log("Sending response:", response);
     res.json(response);
-
   } catch (err) {
     console.error("Fetch account info error:", err);
-    res.status(500).json({ 
-      error: "Failed to fetch account info",
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    res.status(500).json({ error: "Failed to fetch account info" });
   }
 });
 

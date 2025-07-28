@@ -64,9 +64,13 @@ export default function Settings() {
 
     setIsCanceling(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/subscriptions/${subscriptionId}/cancel`, {
+      const res = await fetch(`${BACKEND_URL}/api/subscriptions/cancel`, {
         method: "POST",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ subscriptionId }),
       });
 
       if (res.ok) {
