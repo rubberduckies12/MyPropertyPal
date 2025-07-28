@@ -127,6 +127,7 @@ router.get("/me", authenticate, async (req, res) => {
     };
 
     console.log("Sending response:", response);
+    console.log("Subscription ID in /me response:", subscriptionData.subscriptionId);
     res.json(response);
   } catch (err) {
     console.error("Fetch account info error:", err);
