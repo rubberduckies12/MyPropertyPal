@@ -5,26 +5,37 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY); // Initialize S
 
 // Cancel subscription endpoint
 router.post("/api/subscriptions/cancel", async (req, res) => {
-  const { subscriptionId } = req.body; // Subscription ID from the request body
   const userId = req.user.id; // Assuming user ID is available from authentication middleware
 
-  console.log("Canceling subscription with ID:", subscriptionId);
   console.log("User ID:", userId);
 
   try {
-    // Check if the subscription belongs to the user and is active
-    const subscription = await pool.query(
-      "SELECT stripe_subscription_id FROM subscription WHERE id = $1 AND landlord_id = $2 AND is_active = TRUE",
-      [subscriptionId, userId]
+    // Fetch the landlord ID for the user
+    const landlordQuery = await pool.query(
+      "SELECT id FROM landlord WHERE account_id = $1",
+      [userId]
     );
 
-    console.log("Subscription query result:", subscription.rows);
-
-    if (subscription.rows.length === 0) {
-      return res.status(404).json({ error: "Subscription not found or already canceled." });
+    if (landlordQuery.rows.length === 0) {
+      return res.status(404).json({ error: "Landlord not found." });
     }
 
-    const { stripe_subscription_id } = subscription.rows[0];
+    const landlordId = landlordQuery.rows[0].id;
+
+    // Fetch the active subscription for the landlord
+    const subscriptionQuery = await pool.query(
+      "SELECT id, stripe_subscription_id FROM subscription WHERE landlord_id = $1 AND is_active = TRUE",
+      [landlordId]
+    );
+
+    if (subscriptionQuery.rows.length === 0) {
+      return res.status(404).json({ error: "No active subscription found to cancel." });
+    }
+
+    const { id: subscriptionId, stripe_subscription_id } = subscriptionQuery.rows[0];
+
+    console.log("Canceling subscription with ID:", subscriptionId);
+    console.log("Stripe Subscription ID:", stripe_subscription_id);
 
     // Cancel the subscription immediately in Stripe
     const stripeResponse = await stripe.subscriptions.del(stripe_subscription_id, {
@@ -43,6 +54,7 @@ router.post("/api/subscriptions/cancel", async (req, res) => {
 
     res.status(200).json({
       message: "Subscription canceled successfully.",
+      subscriptionId,
     });
   } catch (err) {
     console.error("Error canceling subscription:", err);

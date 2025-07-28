@@ -53,39 +53,33 @@ export default function Settings() {
 
   // Cancel subscription
   const handleCancelSubscription = async () => {
-  if (!window.confirm("Are you sure you want to cancel your subscription? You will retain access until the end of your billing cycle.")) {
-    return;
-  }
-
-  if (!subscriptionId) {
-    alert("No active subscription found to cancel. Please email billing@mypropertypal.com if there are any issues canceling your subscription from this page.");
-    return;
-  }
-
-  setIsCanceling(true);
-  try {
-    const res = await fetch(`${BACKEND_URL}/api/subscriptions/cancel`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ subscriptionId }),
-    });
-
-    if (res.ok) {
-      alert("Subscription canceled. You will retain access until the end of your billing cycle. If you have any issues, please email billing@mypropertypal.com.");
-      setPlan("canceled"); // Update UI to reflect cancellation
-    } else {
-      const data = await res.json();
-      alert(`${data.error || "Failed to cancel subscription."} Please email billing@mypropertypal.com if there are any issues.`);
+    if (!window.confirm("Are you sure you want to cancel your subscription? You will retain access until the end of your billing cycle.")) {
+      return;
     }
-  } catch (err) {
-    alert("An error occurred while canceling the subscription. Please email billing@mypropertypal.com for assistance.");
-  } finally {
-    setIsCanceling(false);
-  }
-};
+
+    setIsCanceling(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/subscriptions/cancel`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.ok) {
+        alert("Subscription canceled. You will retain access until the end of your billing cycle. If you have any issues, please email billing@mypropertypal.com.");
+        setPlan("canceled"); // Update UI to reflect cancellation
+      } else {
+        const data = await res.json();
+        alert(`${data.error || "Failed to cancel subscription."} Please email billing@mypropertypal.com if there are any issues.`);
+      }
+    } catch (err) {
+      alert("An error occurred while canceling the subscription. Please email billing@mypropertypal.com for assistance.");
+    } finally {
+      setIsCanceling(false);
+    }
+  };
 
   // Update email
   const handleSaveEmail = async () => {
