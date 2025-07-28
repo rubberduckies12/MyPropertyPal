@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../sidebar/sidebar.jsx";
-import SubscriptionSettings from "./SubscriptionSettings.jsx";
 
 const BACKEND_URL = "https://mypropertypal-3.onrender.com";
 
@@ -10,12 +9,8 @@ export default function Settings() {
   const [email, setEmail] = useState("");
   const [editingEmail, setEditingEmail] = useState(false);
   const [newEmail, setNewEmail] = useState("");
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwords, setPasswords] = useState({ password: "", confirm: "" });
   const [plan, setPlan] = useState("");
   const [billingCycle, setBillingCycle] = useState("monthly");
-  const [subscriptionId, setSubscriptionId] = useState(null);
-  const [landlordId, setLandlordId] = useState(null); // New state for landlord_id
   const [isCanceling, setIsCanceling] = useState(false);
   const [activeTab, setActiveTab] = useState("account"); // Manage active section
 
@@ -41,8 +36,6 @@ export default function Settings() {
         setLastName(data.lastName || "");
         setPlan(data.plan || "basic");
         setBillingCycle(data.billingCycle || "monthly");
-        setSubscriptionId(data.subscriptionId || null);
-        setLandlordId(data.landlordId || null); // Store landlord_id
         setNewEmail(data.email || "");
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -52,6 +45,26 @@ export default function Settings() {
 
     fetchUserData();
   }, []);
+
+  // Update email
+  const handleSaveEmail = async () => {
+    const res = await fetch(`${BACKEND_URL}/api/account/settings`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: newEmail }),
+    });
+
+    if (res.ok) {
+      setEmail(newEmail);
+      setEditingEmail(false);
+      alert("Email updated successfully!");
+    } else {
+      alert("Failed to update email.");
+    }
+  };
 
   // Cancel subscription
   const handleCancelSubscription = async () => {
@@ -70,44 +83,16 @@ export default function Settings() {
       });
 
       if (res.ok) {
-        const data = await res.json();
-        console.log("Subscription canceled:", data);
-        alert("Subscription canceled. You will retain access until the end of your billing cycle. If you have any issues, please email billing@mypropertypal.com.");
-        setPlan("canceled"); // Update UI to reflect cancellation
+        alert("Subscription canceled successfully.");
+        setPlan("canceled");
       } else {
-        const data = await res.json();
-        alert(`${data.error || "Failed to cancel subscription."} Please email billing@mypropertypal.com if there are any issues.`);
+        alert("Failed to cancel subscription.");
       }
     } catch (err) {
       console.error("Error canceling subscription:", err);
-      alert("An error occurred while canceling the subscription. Please email billing@mypropertypal.com for assistance.");
+      alert("An error occurred while canceling the subscription.");
     } finally {
       setIsCanceling(false);
-    }
-  };
-
-  // Update email
-  const handleSaveEmail = async () => {
-    const res = await fetch(`${BACKEND_URL}/api/account/settings`, {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email: newEmail,
-        password: null,
-        plan: null,
-        landlordId, // Include landlord_id in the request
-      }),
-    });
-    if (res.ok) {
-      setEmail(newEmail);
-      setEditingEmail(false);
-    } else {
-      alert("Failed to update email");
     }
   };
 
@@ -119,20 +104,14 @@ export default function Settings() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        password: null,
-        plan: newPlan,
-        landlordId, // Include landlord_id in the request
-      }),
+      body: JSON.stringify({ plan: newPlan }),
     });
+
     if (res.ok) {
       setPlan(newPlan);
       alert("Plan updated successfully!");
     } else {
-      alert("Failed to update plan");
+      alert("Failed to update plan.");
     }
   };
 
@@ -173,7 +152,7 @@ export default function Settings() {
           {/* Render Active Section */}
           {activeTab === "account" && (
             <div className="space-y-6">
-              {/* Email */}
+              {/* Email Section */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Email</label>
                 <div className="flex items-center gap-4 mt-1">
@@ -219,32 +198,24 @@ export default function Settings() {
                   )}
                 </div>
               </div>
+            </div>
+          )}
 
-              {/* Plan */}
+          {activeTab === "subscription" && (
+            <div className="space-y-6">
+              {/* Plan Section */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Plan</label>
-                <div className="flex gap-4 mt-1">
-                  <select
-                    name="plan"
-                    value={plan}
-                    onChange={(e) => handlePlanChange(e.target.value)}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                  >
-                    <option value="basic">Basic</option>
-                    <option value="pro">Pro</option>
-                    <option value="organisation">Organisation</option>
-                    <option value="canceled">Canceled</option>
-                  </select>
-                  <select
-                    name="billing"
-                    value={billingCycle}
-                    disabled
-                    className="px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                  >
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                  </select>
-                </div>
+                <select
+                  value={plan}
+                  onChange={(e) => handlePlanChange(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                >
+                  <option value="basic">Basic</option>
+                  <option value="pro">Pro</option>
+                  <option value="organisation">Organisation</option>
+                  <option value="canceled">Canceled</option>
+                </select>
               </div>
 
               {/* Cancel Subscription Button */}
@@ -258,7 +229,6 @@ export default function Settings() {
               </button>
             </div>
           )}
-          {activeTab === "subscription" && <SubscriptionSettings />}
         </div>
       </main>
     </div>
