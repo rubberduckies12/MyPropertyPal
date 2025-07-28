@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const stripe = require("stripe")(process.env.SANDBOX_STRIPE_SECRET_KEY); // Initialize Stripe
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY); // Initialize Stripe
 
 // Cancel subscription endpoint
 router.post("/cancel", async (req, res) => {

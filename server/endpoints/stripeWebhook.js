@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Stripe = require('stripe');
-const stripe = Stripe(process.env.SANDBOX_STRIPE_SECRET_KEY); // Use sandbox key
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use sandbox key
 
 // Use raw body for Stripe signature verification
 router.post('/', express.raw({ type: 'application/json' }), async (req, res) => {
@@ -14,7 +14,7 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
     event = stripe.webhooks.constructEvent(
       req.body,
       sig,
-      process.env.SANDBOX_STRIPE_WEBHOOK_SECRET // Use the webhook secret from the environment
+      process.env.STRIPE_WEBHOOK_SECRET // Use the webhook secret from the environment
     );
     console.log('Webhook verified:', event.type);
   } catch (err) {
