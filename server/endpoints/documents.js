@@ -4,7 +4,8 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const authenticate = require("../middleware/authenticate");
-const pdfPoppler = require("pdf-poppler");
+const pdfjsLib = require("pdfjs-dist/legacy/build/pdf"); // Import PDF.js
+const { createCanvas } = require("canvas"); // For rendering PDF pages to images
 
 // Load Google Vision credentials JSON as an object
 const vision = require("@google-cloud/vision");
@@ -35,21 +36,37 @@ async function getLandlordId(pool, accountId) {
   return res.rows[0].id;
 }
 
-// Convert PDF to images
-async function convertPdfToImages(pdfPath) {
+// Helper function to convert PDF pages to images
+async function convertPdfToImagesWithPdfJs(pdfPath) {
   const outputDir = path.join(__dirname, "../../uploads/pdf-images");
-  const options = {
-    format: "jpeg",
-    out_dir: outputDir,
-    out_prefix: path.basename(pdfPath, path.extname(pdfPath)),
-    page: null, // Convert all pages
-  };
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
 
-  // Convert PDF to images
-  await pdfPoppler.convert(pdfPath, options);
+  const pdfData = new Uint8Array(fs.readFileSync(pdfPath));
+  const pdfDoc = await pdfjsLib.getDocument({ data: pdfData }).promise;
 
-  // Return paths to all generated images
-  return fs.readdirSync(outputDir).map(file => path.join(outputDir, file));
+  const imagePaths = [];
+  for (let i = 1; i <= pdfDoc.numPages; i++) {
+    const page = await pdfDoc.getPage(i);
+    const viewport = page.getViewport({ scale: 2.0 }); // Scale for better resolution
+
+    // Create a canvas to render the page
+    const canvas = createCanvas(viewport.width, viewport.height);
+    const context = canvas.getContext("2d");
+
+    // Render the page onto the canvas
+    await page.render({ canvasContext: context, viewport }).promise;
+
+    // Save the canvas as a JPEG file
+    const imagePath = path.join(outputDir, `page-${i}.jpeg`);
+    const out = fs.createWriteStream(imagePath);
+    const stream = canvas.createJPEGStream();
+    stream.pipe(out);
+
+    await new Promise((resolve) => out.on("finish", resolve));
+    imagePaths.push(imagePath);
+  }
+
+  return imagePaths;
 }
 
 // Upload and scan document
@@ -65,8 +82,8 @@ router.post("/upload", authenticate, upload.single("file"), async (req, res) => 
     console.log("Uploaded file path:", filePath, "MIME type:", req.file.mimetype);
 
     if (req.file.mimetype === "application/pdf") {
-      // Convert PDF to images
-      const imagePaths = await convertPdfToImages(filePath);
+      // Convert PDF to images using PDF.js
+      const imagePaths = await convertPdfToImagesWithPdfJs(filePath);
 
       // Process each image with Vision API
       for (const imagePath of imagePaths) {
@@ -81,7 +98,7 @@ router.post("/upload", authenticate, upload.single("file"), async (req, res) => 
     }
 
     // Log the OCR result
-    console.log("OCR TEXT:", text);
+    console.log("Extracted text:", text);
 
     // Clean up whitespace
     text = text.replace(/\s+/g, " ");
