@@ -50,9 +50,10 @@ router.post("/upload", authenticate, upload.single("file"), async (req, res) => 
     if (req.file.mimetype === "application/pdf") {
       // For PDFs, use documentTextDetection
       const [result] = await client.documentTextDetection(filePath);
-      text = result.fullTextAnnotation ? result.fullTextAnnotation.text : "";
-      // Log the Vision API result
-      console.log("Vision API result:", JSON.stringify(result, null, 2));
+      console.log("PDF Vision API result:", JSON.stringify(result, null, 2));
+      text = result.fullTextAnnotation
+        ? result.fullTextAnnotation.text
+        : result.textAnnotations.map(annotation => annotation.description).join(" ");
     } else {
       // For images, use textDetection
       const [result] = await client.textDetection(filePath);
