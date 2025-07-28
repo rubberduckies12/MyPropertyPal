@@ -4,7 +4,7 @@ const pool = require("../assets/databaseConnect"); // Database connection
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY); // Initialize Stripe
 
 // Cancel subscription endpoint
-router.post("/api/subscriptions/cancel", async (req, res) => {
+router.post("/cancel", async (req, res) => {
   const userId = req.user.id; // Assuming user ID is available from authentication middleware
 
   console.log("User ID:", userId);

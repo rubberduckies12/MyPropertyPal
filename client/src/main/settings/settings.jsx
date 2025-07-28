@@ -68,6 +68,8 @@ export default function Settings() {
       });
 
       if (res.ok) {
+        const data = await res.json();
+        console.log("Subscription canceled:", data);
         alert("Subscription canceled. You will retain access until the end of your billing cycle. If you have any issues, please email billing@mypropertypal.com.");
         setPlan("canceled"); // Update UI to reflect cancellation
       } else {
@@ -75,6 +77,7 @@ export default function Settings() {
         alert(`${data.error || "Failed to cancel subscription."} Please email billing@mypropertypal.com if there are any issues.`);
       }
     } catch (err) {
+      console.error("Error canceling subscription:", err);
       alert("An error occurred while canceling the subscription. Please email billing@mypropertypal.com for assistance.");
     } finally {
       setIsCanceling(false);
