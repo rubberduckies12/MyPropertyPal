@@ -4,14 +4,11 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const authenticate = require("../middleware/authenticate");
-const pdfjsLib = require("pdfjs-dist/legacy/build/pdf"); // Import PDF.js
-const { createCanvas } = require("canvas"); // For rendering PDF pages to images
+const vision = require("@google-cloud/vision");
 
 // Load Google Vision credentials JSON as an object
-const vision = require("@google-cloud/vision");
 const credentials = JSON.parse(fs.readFileSync("/etc/secrets/google-vision-key.json"));
 const client = new vision.ImageAnnotatorClient({ credentials });
-
 
 
 // Multer setup for file uploads
@@ -19,8 +16,8 @@ const upload = multer({
   dest: path.join(__dirname, "../../uploads"),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype.match(/(pdf|jpeg|jpg|png)$/i)) {
-      return cb(new Error("Only PDF, JPG, and PNG files are allowed"));
+    if (!file.mimetype.match(/(jpeg|jpg|png)$/i)) {
+      return cb(new Error("Only JPG and PNG files are allowed. For PDFs, convert them to JPEGs first."));
     }
     cb(null, true);
   }
@@ -36,39 +33,6 @@ async function getLandlordId(pool, accountId) {
   return res.rows[0].id;
 }
 
-// Helper function to convert PDF pages to images
-async function convertPdfToImagesWithPdfJs(pdfPath) {
-  const outputDir = path.join(__dirname, "../../uploads/pdf-images");
-  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
-
-  const pdfData = new Uint8Array(fs.readFileSync(pdfPath));
-  const pdfDoc = await pdfjsLib.getDocument({ data: pdfData }).promise;
-
-  const imagePaths = [];
-  for (let i = 1; i <= pdfDoc.numPages; i++) {
-    const page = await pdfDoc.getPage(i);
-    const viewport = page.getViewport({ scale: 2.0 }); // Scale for better resolution
-
-    // Create a canvas to render the page
-    const canvas = createCanvas(viewport.width, viewport.height);
-    const context = canvas.getContext("2d");
-
-    // Render the page onto the canvas
-    await page.render({ canvasContext: context, viewport }).promise;
-
-    // Save the canvas as a JPEG file
-    const imagePath = path.join(outputDir, `page-${i}.jpeg`);
-    const out = fs.createWriteStream(imagePath);
-    const stream = canvas.createJPEGStream();
-    stream.pipe(out);
-
-    await new Promise((resolve) => out.on("finish", resolve));
-    imagePaths.push(imagePath);
-  }
-
-  return imagePaths;
-}
-
 // Upload and scan document
 router.post("/upload", authenticate, upload.single("file"), async (req, res) => {
   try {
@@ -81,21 +45,9 @@ router.post("/upload", authenticate, upload.single("file"), async (req, res) => 
     // Log the uploaded file details
     console.log("Uploaded file path:", filePath, "MIME type:", req.file.mimetype);
 
-    if (req.file.mimetype === "application/pdf") {
-      // Convert PDF to images using PDF.js
-      const imagePaths = await convertPdfToImagesWithPdfJs(filePath);
-
-      // Process each image with Vision API
-      for (const imagePath of imagePaths) {
-        const [result] = await client.textDetection(imagePath);
-        text += result.fullTextAnnotation ? result.fullTextAnnotation.text : "";
-        fs.unlinkSync(imagePath); // Clean up the image
-      }
-    } else {
-      // Process images directly
-      const [result] = await client.textDetection(filePath);
-      text = result.fullTextAnnotation ? result.fullTextAnnotation.text : "";
-    }
+    // Process images directly with Vision API
+    const [result] = await client.textDetection(filePath);
+    text = result.fullTextAnnotation ? result.fullTextAnnotation.text : "";
 
     // Log the OCR result
     console.log("Extracted text:", text);

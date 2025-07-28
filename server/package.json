@@ -28,8 +28,6 @@
     "nodemailer": "^7.0.5",
     "openai": "^5.1.1",
     "path": "^0.12.7",
-    "pdf-poppler": "^0.2.1",
-    "pdfjs-dist": "^5.4.54",
     "pdfkit": "^0.17.1",
     "pg": "^8.16.3",
     "stripe": "^18.3.0",
