@@ -38,10 +38,7 @@ router.post("/cancel", async (req, res) => {
     console.log("Stripe Subscription ID:", stripe_subscription_id);
 
     // Cancel the subscription immediately in Stripe
-    const stripeResponse = await stripe.subscriptions.del(stripe_subscription_id, {
-      invoice_now: false, // Do not generate a final invoice
-      prorate: false, // Do not prorate charges
-    });
+    const stripeResponse = await stripe.subscriptions.cancel(stripe_subscription_id);
     console.log("Stripe cancellation response:", stripeResponse);
 
     // Update the subscription in the database
