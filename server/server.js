@@ -27,6 +27,7 @@ const stripeWebhookRouter = require('./endpoints/stripeWebhook');
 const accountRouter = require('./endpoints/account.js');
 const tenantRentRouter = require('./endpoints/tenants/tenantRent');
 const { searchContractors } = require('./database/getcontractors');
+const cancelAccountRouter = require('./endpoints/cancelAccount'); // Import the cancelAccount router
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -103,6 +104,9 @@ app.use(checkSubscriptionStatus);
 
 //account 
 app.use('/api/account', accountRouter);
+
+// Register the cancelAccount route
+app.use('/api/subscriptions', cancelAccountRouter);
 
 // Dashboard endpoints (now protected)
 app.use('/api/dashboard', dashRouter(pool));
