@@ -129,7 +129,7 @@ export default function Settings() {
   return (
     <div className="flex">
       <Sidebar />
-      <main className="flex-1 flex items-center justify-center bg-gray-100 min-h-screen">
+      <main className="flex-1 flex justify-center items-center bg-gray-100 min-h-screen">
         <div className="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full">
           <h1 className="text-2xl font-bold mb-6 text-center">Settings</h1>
 
