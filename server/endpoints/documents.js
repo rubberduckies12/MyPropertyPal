@@ -4,6 +4,7 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const authenticate = require("../middleware/authenticate");
+const pdfPoppler = require("pdf-poppler");
 
 // Load Google Vision credentials JSON as an object
 const vision = require("@google-cloud/vision");
@@ -34,11 +35,28 @@ async function getLandlordId(pool, accountId) {
   return res.rows[0].id;
 }
 
+// Convert PDF to images
+async function convertPdfToImages(pdfPath) {
+  const outputDir = path.join(__dirname, "../../uploads/pdf-images");
+  const options = {
+    format: "jpeg",
+    out_dir: outputDir,
+    out_prefix: path.basename(pdfPath, path.extname(pdfPath)),
+    page: null, // Convert all pages
+  };
+
+  // Convert PDF to images
+  await pdfPoppler.convert(pdfPath, options);
+
+  // Return paths to all generated images
+  return fs.readdirSync(outputDir).map(file => path.join(outputDir, file));
+}
+
 // Upload and scan document
 router.post("/upload", authenticate, upload.single("file"), async (req, res) => {
   try {
     const pool = req.app.get("pool");
-    const landlordId = await getLandlordId(pool, req.user.id); // implement this helper as in finances.js
+    const landlordId = await getLandlordId(pool, req.user.id);
 
     const filePath = req.file.path;
     let text = "";
@@ -46,20 +64,20 @@ router.post("/upload", authenticate, upload.single("file"), async (req, res) => 
     // Log the uploaded file details
     console.log("Uploaded file path:", filePath, "MIME type:", req.file.mimetype);
 
-    // OCR with Google Vision
     if (req.file.mimetype === "application/pdf") {
-      // For PDFs, use documentTextDetection
-      const [result] = await client.documentTextDetection(filePath);
-      console.log("PDF Vision API result:", JSON.stringify(result, null, 2));
-      text = result.fullTextAnnotation
-        ? result.fullTextAnnotation.text
-        : result.textAnnotations.map(annotation => annotation.description).join(" ");
+      // Convert PDF to images
+      const imagePaths = await convertPdfToImages(filePath);
+
+      // Process each image with Vision API
+      for (const imagePath of imagePaths) {
+        const [result] = await client.textDetection(imagePath);
+        text += result.fullTextAnnotation ? result.fullTextAnnotation.text : "";
+        fs.unlinkSync(imagePath); // Clean up the image
+      }
     } else {
-      // For images, use textDetection
+      // Process images directly
       const [result] = await client.textDetection(filePath);
       text = result.fullTextAnnotation ? result.fullTextAnnotation.text : "";
-      // Log the Vision API result
-      console.log("Vision API result:", JSON.stringify(result, null, 2));
     }
 
     // Log the OCR result
