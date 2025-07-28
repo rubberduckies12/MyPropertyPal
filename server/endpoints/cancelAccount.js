@@ -8,18 +8,23 @@ router.post("/subscriptions/:id/cancel", async (req, res) => {
   const { id } = req.params; // Subscription ID
   const userId = req.user.id; // Assuming user ID is available from authentication middleware
 
+  console.log('Canceling subscription with ID:', id);
+  console.log('User ID:', userId);
+
   try {
     // Check if the subscription belongs to the user and is active
     const subscription = await pool.query(
-      "SELECT stripe_subscription_id, billing_cycle_end FROM subscription WHERE id = $1 AND landlord_id = $2 AND is_active = TRUE",
-      [id, userId]
+      "SELECT id, stripe_subscription_id FROM subscription WHERE landlord_id = $1 AND is_active = TRUE",
+      [userId]
     );
+
+    console.log('Subscription query result:', subscription.rows);
 
     if (subscription.rows.length === 0) {
       return res.status(404).json({ error: "Subscription not found or already canceled." });
     }
 
-    const { stripe_subscription_id, billing_cycle_end } = subscription.rows[0];
+    const { stripe_subscription_id } = subscription.rows[0];
 
     // Cancel the subscription immediately in Stripe
     await stripe.subscriptions.del(stripe_subscription_id, {
@@ -30,14 +35,13 @@ router.post("/subscriptions/:id/cancel", async (req, res) => {
     // Update the subscription in the database
     await pool.query(
       `UPDATE subscription
-       SET status = 'canceled', is_active = TRUE, canceled_at = NOW(), updated_at = NOW()
+       SET status = 'canceled', is_active = FALSE, canceled_at = NOW(), updated_at = NOW()
        WHERE id = $1`,
       [id]
     );
 
     res.status(200).json({
       message: "Subscription canceled. Access will remain active until the end of the billing cycle.",
-      billingCycleEnd: billing_cycle_end,
     });
   } catch (err) {
     console.error(err);
