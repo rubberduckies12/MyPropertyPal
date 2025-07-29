@@ -100,7 +100,7 @@ export default function Product() {
           icon: <MdOutlineManageAccounts size={40} color={brand} />,
           img: "/dashboard.png",
           alt: "Dashboard",
-          text: "See all your rental information at a glance. Stay on top of rent, maintenance, and important documents from one simple dashboard.",
+          text: "Get a complete overview of your rental portfolio. Track rent payments, maintenance requests, and compliance deadlines all from one intuitive dashboard.",
         },
         {
           title: "Property Manager",
@@ -110,18 +110,18 @@ export default function Product() {
           text: (
             <>
               <div>
-                <span className="font-semibold">Properties:</span> View all your rented properties, see key details, and manage your tenancy with ease.
+                <span className="font-semibold">Properties:</span> Manage all your properties in one place. View key details, track compliance, and stay organised.
               </div>
               <div>
-                <span className="font-semibold">Tenants:</span> Manage your household, see who’s on the tenancy, and keep everyone in the loop.
+                <span className="font-semibold">Tenants:</span> Keep track of your tenants and Communicate with ease, ensure everyone is informed.
               </div>
               <div style={{ marginTop: "1rem" }}>
                 <HiOutlineWrenchScrewdriver size={22} color={brand} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                <span className="font-semibold">Maintenance Requests:</span> Report issues and track progress in real time.
+                <span className="font-semibold">Maintenance Requests:</span> Receive and manage maintenance requests from tenants. Track progress and ensure issues are resolved quickly.
               </div>
               <div>
                 <MdHomeRepairService size={22} color={brand} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                <span className="font-semibold">Contractor Search Tool:</span> Find trusted local tradespeople for repairs and improvements.
+                <span className="font-semibold">Contractor Search Tool:</span> Find trusted local contractors to handle repairs and improvements efficiently.
               </div>
             </>
           ),
@@ -134,16 +134,16 @@ export default function Product() {
           text: (
             <>
               <div>
-                <span className="font-semibold">Finances:</span> Track your rent payments, see upcoming due dates, and always know where you stand.
+                <span className="font-semibold">Finances:</span> Stay on top of your rental income. Track payments, monitor due dates, and get a clear picture of your cash flow.
                 <div style={{ fontSize: "0.95rem", color: "#666", marginTop: 4 }}>
-                  <strong>Variable Rent Due Dates:</strong> Tenants can have rent due monthly, weekly, fortnightly, or every last Friday of the month.
+                  <strong>Flexible Rent Schedules:</strong> Accommodate tenants with monthly, weekly, or custom rent due dates.
                 </div>
               </div>
               <div style={{ marginTop: "1rem" }}>
                 <HiOutlineDocument size={22} color={brand} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                <span className="font-semibold">Documents:</span> Access all your important rental documents in one place.
+                <span className="font-semibold">Documents:</span> Organise and access all your important rental documents in one secure location.
                 <div style={{ fontSize: "0.95rem", color: "#666", marginTop: 4 }}>
-                  <strong>AI-powered Invoice/Receipt Scanning:</strong> Instantly scan and categorise receipts and invoices for your records.
+                  <strong>AI-powered Invoice/Receipt Scanning:</strong> Automatically scan and categorise receipts and invoices for tax and record-keeping purposes.
                 </div>
               </div>
             </>
@@ -157,9 +157,9 @@ export default function Product() {
           text: (
             <>
               <div>
-                <span className="font-semibold">Compliance Tracking:</span> Stay compliant with automated reminders for gas safety, EPC, and other legal requirements.
+                <span className="font-semibold">Compliance Tracking:</span> Ensure your properties meet legal requirements with automated reminders for gas safety, EPCs, and more.
                 <div style={{ fontSize: "0.95rem", color: "#666", marginTop: 4 }}>
-                  <strong>Email Reminders:</strong> Get notified before compliance deadlines so you’re always covered.
+                  <strong>Email Reminders:</strong> Stay ahead of compliance deadlines with timely notifications.
                 </div>
               </div>
             </>
@@ -173,11 +173,11 @@ export default function Product() {
           text: (
             <>
               <div>
-                <span className="font-semibold">AI Chatbot:</span> Get instant answers to your questions, 24/7. Our AI assistant helps you with everything from rent queries to maintenance tips.
+                <span className="font-semibold">AI Chatbot:</span> Get instant answers to your questions about property management, legal compliance, and more.
               </div>
               <div style={{ marginTop: "1rem" }}>
                 <HiOutlineChatBubbleLeftRight size={22} color={brand} style={{ marginRight: 8, verticalAlign: "middle" }} />
-                <span className="font-semibold">Messages:</span> Communicate directly with your landlord and housemates. Keep all your rental conversations in one secure place.
+                <span className="font-semibold">Messages:</span> Communicate directly with tenants and contractors. Keep all your conversations in one secure place.
               </div>
             </>
           ),
@@ -189,10 +189,10 @@ export default function Product() {
           alt: "Tenant Portal",
           text: (
             <ul style={{ fontSize: FONT_TEXT, color: "#444", paddingLeft: 0, margin: 0 }}>
-              <li><span className="font-semibold">Maintenance Requests:</span> Submit and track maintenance issues easily. See updates as your landlord or contractor responds.</li>
-              <li><span className="font-semibold">Landlord Messaging:</span> Message your landlord directly from the portal. No more lost emails or missed calls.</li>
-              <li><span className="font-semibold">Document Viewing:</span> Instantly access your tenancy agreement, compliance certificates, and other key documents.</li>
-              <li><span className="font-semibold">Rental Management:</span> Manage your rent, see your payment history, and stay organised with reminders and notifications.</li>
+              <li><span className="font-semibold">Maintenance Requests:</span> Tenants can submit and track maintenance issues, making it easier for you to respond and resolve them.</li>
+              <li><span className="font-semibold">Direct Messaging:</span> Tenants can message you directly through the portal, ensuring clear and organised communication.</li>
+              <li><span className="font-semibold">Document Access:</span> Share tenancy agreements, compliance certificates, and other important documents with tenants securely.</li>
+              <li><span className="font-semibold">Rental Management:</span> Tenants can view their rent payment history and receive reminders, reducing missed payments.</li>
             </ul>
           ),
         },
