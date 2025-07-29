@@ -223,10 +223,10 @@ function Sidebar() {
       {/* Logout Modal */}
       {showLogoutModal && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-[1010] flex items-center justify-center"
+          className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center"
           style={{ pointerEvents: "auto" }}
         >
-          <div className="bg-white rounded-lg p-6 shadow-lg z-[1020]">
+          <div className="bg-white rounded-lg p-6 shadow-lg z-[10000]">
             <p className="text-gray-800 mb-4">Are you sure you want to log out?</p>
             <div className="flex justify-end gap-4">
               <button
