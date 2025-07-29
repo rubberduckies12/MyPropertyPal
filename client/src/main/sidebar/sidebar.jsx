@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import './sidebar.css';
+import React, { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { FaHome, FaEnvelope, FaBuilding, FaFileAlt, FaGavel, FaRobot, FaCog, FaSignOutAlt } from "react-icons/fa";
 
 function Sidebar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -9,7 +9,7 @@ function Sidebar() {
 
   const handleLogout = () => {
     setShowLogoutModal(false);
-    navigate('/'); // Redirect to landing page
+    window.location.href = "https://www.mypropertypal.com/"; // Redirect to the landing page
   };
 
   const handleLogoutClick = (e) => {
@@ -22,107 +22,222 @@ function Sidebar() {
   };
 
   return (
-    <aside className="dashboard-sidebar">
-      <div className="dashboard-logo">
+    <aside className="bg-blue-700 text-white h-screen w-64 flex flex-col fixed">
+      {/* Logo Section */}
+      <div className="flex items-center justify-center py-6">
         <img
           src="/publicassets/LogoBB.png"
           alt="MyPropertyPal Logo"
-          className="sidebar-logo-img"
-          style={{ height: "100px", width: "auto", marginBottom: "12px" }}
+          className="h-16 w-auto"
         />
       </div>
-      <nav className="dashboard-nav">
 
-        {/* Dashboard Link */}
-        <div className="sidebar-section">
-          <NavLink to="/dashboard" className="dashboard-nav-link">Dashboard</NavLink>
-        </div>
+      {/* Navigation Links */}
+      <nav className="flex-1 px-4 space-y-2">
+        {/* Dashboard */}
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            `flex items-center gap-4 px-4 py-3 rounded-lg transition ${
+              isActive ? "bg-blue-800" : "hover:bg-blue-600"
+            }`
+          }
+        >
+          <FaHome className="text-xl" />
+          <span>Dashboard</span>
+        </NavLink>
 
         {/* Messages */}
-        <div className="sidebar-section">
-          <NavLink to="/messages" className="dashboard-nav-link">Messages</NavLink>
-        </div>
+        <NavLink
+          to="/messages"
+          className={({ isActive }) =>
+            `flex items-center gap-4 px-4 py-3 rounded-lg transition ${
+              isActive ? "bg-blue-800" : "hover:bg-blue-600"
+            }`
+          }
+        >
+          <FaEnvelope className="text-xl" />
+          <span>Messages</span>
+        </NavLink>
 
         {/* Property Manager */}
-        <div className="sidebar-section">
+        <div>
           <button
-            className="sidebar-section-btn"
-            onClick={() => toggleDropdown('property')}
-            aria-expanded={openDropdown === 'property'}
+            className="flex items-center justify-between w-full px-4 py-3 rounded-lg hover:bg-blue-600 transition"
+            onClick={() => toggleDropdown("property")}
           >
-            Property Manager
-            <span className={`sidebar-dropdown-arrow${openDropdown === 'property' ? ' open' : ''}`}>▼</span>
+            <div className="flex items-center gap-4">
+              <FaBuilding className="text-xl" />
+              <span>Property Manager</span>
+            </div>
+            <span>{openDropdown === "property" ? "▲" : "▼"}</span>
           </button>
-          {openDropdown === 'property' && (
-            <div className="sidebar-dropdown">
-              <NavLink to="/properties" className="dashboard-nav-link">Properties</NavLink>
-              <NavLink to="/tenants" className="dashboard-nav-link">Tenants</NavLink>
-              <NavLink to="/incidents" className="dashboard-nav-link">Maintenance</NavLink>
-              <NavLink to="/contractors" className="dashboard-nav-link">Contractors</NavLink>
+          {openDropdown === "property" && (
+            <div className="ml-6 mt-2 space-y-2">
+              <NavLink
+                to="/properties"
+                className={({ isActive }) =>
+                  `block px-4 py-2 rounded-lg transition ${
+                    isActive ? "bg-blue-800" : "hover:bg-blue-600"
+                  }`
+                }
+              >
+                Properties
+              </NavLink>
+              <NavLink
+                to="/tenants"
+                className={({ isActive }) =>
+                  `block px-4 py-2 rounded-lg transition ${
+                    isActive ? "bg-blue-800" : "hover:bg-blue-600"
+                  }`
+                }
+              >
+                Tenants
+              </NavLink>
+              <NavLink
+                to="/incidents"
+                className={({ isActive }) =>
+                  `block px-4 py-2 rounded-lg transition ${
+                    isActive ? "bg-blue-800" : "hover:bg-blue-600"
+                  }`
+                }
+              >
+                Maintenance
+              </NavLink>
+              <NavLink
+                to="/contractors"
+                className={({ isActive }) =>
+                  `block px-4 py-2 rounded-lg transition ${
+                    isActive ? "bg-blue-800" : "hover:bg-blue-600"
+                  }`
+                }
+              >
+                Contractors
+              </NavLink>
             </div>
           )}
         </div>
 
         {/* Financial Manager */}
-        <div className="sidebar-section">
+        <div>
           <button
-            className="sidebar-section-btn"
-            onClick={() => toggleDropdown('financial')}
-            aria-expanded={openDropdown === 'financial'}
+            className="flex items-center justify-between w-full px-4 py-3 rounded-lg hover:bg-blue-600 transition"
+            onClick={() => toggleDropdown("financial")}
           >
-            Financial Manager
-            <span className={`sidebar-dropdown-arrow${openDropdown === 'financial' ? ' open' : ''}`}>▼</span>
+            <div className="flex items-center gap-4">
+              <FaFileAlt className="text-xl" />
+              <span>Financial Manager</span>
+            </div>
+            <span>{openDropdown === "financial" ? "▲" : "▼"}</span>
           </button>
-          {openDropdown === 'financial' && (
-            <div className="sidebar-dropdown">
-              <NavLink to="/finances" className="dashboard-nav-link">Finances</NavLink>
-              <NavLink to="/documents" className="dashboard-nav-link">Documents</NavLink>
+          {openDropdown === "financial" && (
+            <div className="ml-6 mt-2 space-y-2">
+              <NavLink
+                to="/finances"
+                className={({ isActive }) =>
+                  `block px-4 py-2 rounded-lg transition ${
+                    isActive ? "bg-blue-800" : "hover:bg-blue-600"
+                  }`
+                }
+              >
+                Finances
+              </NavLink>
+              <NavLink
+                to="/documents"
+                className={({ isActive }) =>
+                  `block px-4 py-2 rounded-lg transition ${
+                    isActive ? "bg-blue-800" : "hover:bg-blue-600"
+                  }`
+                }
+              >
+                Documents
+              </NavLink>
             </div>
           )}
         </div>
 
         {/* Legal Manager */}
-        <div className="sidebar-section">
+        <div>
           <button
-            className="sidebar-section-btn"
-            onClick={() => toggleDropdown('legal')}
-            aria-expanded={openDropdown === 'legal'}
+            className="flex items-center justify-between w-full px-4 py-3 rounded-lg hover:bg-blue-600 transition"
+            onClick={() => toggleDropdown("legal")}
           >
-            Legal Manager
-            <span className={`sidebar-dropdown-arrow${openDropdown === 'legal' ? ' open' : ''}`}>▼</span>
+            <div className="flex items-center gap-4">
+              <FaGavel className="text-xl" />
+              <span>Legal Manager</span>
+            </div>
+            <span>{openDropdown === "legal" ? "▲" : "▼"}</span>
           </button>
-          {openDropdown === 'legal' && (
-            <div className="sidebar-dropdown">
-              <NavLink to="/compliance" className="dashboard-nav-link">Compliance</NavLink>
-              {/* Contracts link removed */}
+          {openDropdown === "legal" && (
+            <div className="ml-6 mt-2 space-y-2">
+              <NavLink
+                to="/compliance"
+                className={({ isActive }) =>
+                  `block px-4 py-2 rounded-lg transition ${
+                    isActive ? "bg-blue-800" : "hover:bg-blue-600"
+                  }`
+                }
+              >
+                Compliance
+              </NavLink>
             </div>
           )}
         </div>
 
         {/* AI Chatbot */}
-        <div className="sidebar-section">
-          <NavLink to="/chatbot" className="dashboard-nav-link">AI Chatbot</NavLink>
-        </div>
+        <NavLink
+          to="/chatbot"
+          className={({ isActive }) =>
+            `flex items-center gap-4 px-4 py-3 rounded-lg transition ${
+              isActive ? "bg-blue-800" : "hover:bg-blue-600"
+            }`
+          }
+        >
+          <FaRobot className="text-xl" />
+          <span>AI Chatbot</span>
+        </NavLink>
 
         {/* Settings */}
-        <div className="sidebar-section">
-          <NavLink to="/settings" className="dashboard-nav-link">Settings</NavLink>
-        </div>
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `flex items-center gap-4 px-4 py-3 rounded-lg transition ${
+              isActive ? "bg-blue-800" : "hover:bg-blue-600"
+            }`
+          }
+        >
+          <FaCog className="text-xl" />
+          <span>Settings</span>
+        </NavLink>
       </nav>
-      <span
-        className="dashboard-nav-link dashboard-logout-link"
-        style={{ cursor: 'pointer' }}
+
+      {/* Logout */}
+      <button
+        className="flex items-center gap-4 px-4 py-3 mt-auto text-red-500 hover:text-red-700 transition"
         onClick={handleLogoutClick}
       >
-        Log Out
-      </span>
+        <FaSignOutAlt className="text-xl" />
+        <span>Log Out</span>
+      </button>
+
+      {/* Logout Modal */}
       {showLogoutModal && (
-        <div className="logout-modal-overlay">
-          <div className="logout-modal">
-            <p>Are you sure you want to log out?</p>
-            <div className="logout-modal-actions">
-              <button onClick={handleLogout} className="logout-confirm-btn">Yes, log out</button>
-              <button onClick={() => setShowLogoutModal(false)} className="logout-cancel-btn">Cancel</button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg">
+            <p className="text-gray-800 mb-4">Are you sure you want to log out?</p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+              >
+                Yes, log out
+              </button>
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
