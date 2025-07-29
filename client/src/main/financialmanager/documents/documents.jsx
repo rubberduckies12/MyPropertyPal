@@ -70,7 +70,7 @@ export default function Documents() {
   return (
     <div className="flex min-h-screen bg-white">
       <Sidebar />
-      <main className="flex-1 ml-64 px-4 py-8">
+      <main className="flex-1 ml-64 px-4 py-8 pl-8">
         <div className="flex items-center justify-between mb-8 border-b border-blue-100 pb-4">
           <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Documents & Uploads</h1>
           <div>
@@ -79,7 +79,7 @@ export default function Documents() {
               accept="application/pdf,image/*"
               style={{ display: "none" }}
               ref={fileInputRef}
-              onChange={e => {
+              onChange={(e) => {
                 const file = e.target.files[0];
                 if (file) handleUpload(file);
               }}
@@ -95,9 +95,7 @@ export default function Documents() {
             </button>
           </div>
         </div>
-        {error && (
-          <div className="text-red-500 text-center mb-4">{error}</div>
-        )}
+        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
         <section className="bg-white rounded-2xl p-6 border border-blue-100 shadow mb-10">
           <h2 className="text-xl font-bold text-blue-700 mb-4">Uploaded Documents</h2>
           <div className="w-full overflow-x-auto">
@@ -126,11 +124,13 @@ export default function Documents() {
                       <td className="py-4 px-3">{doc.type}</td>
                       <td className="py-4 px-3">£{doc.amount}</td>
                       <td className="py-4 px-3">
-                        <span className={
-                          doc.status === "Processed"
-                            ? "bg-green-100 text-green-700 px-3 py-1 rounded-xl font-semibold text-sm"
-                            : "bg-red-100 text-red-700 px-3 py-1 rounded-xl font-semibold text-sm"
-                        }>
+                        <span
+                          className={
+                            doc.status === "Processed"
+                              ? "bg-green-100 text-green-700 px-3 py-1 rounded-xl font-semibold text-sm"
+                              : "bg-red-100 text-red-700 px-3 py-1 rounded-xl font-semibold text-sm"
+                          }
+                        >
                           {doc.status}
                         </span>
                       </td>

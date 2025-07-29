@@ -197,7 +197,7 @@ export default function Compliance() {
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <Sidebar />
-      <main className="flex-1 ml-64 px-4 py-8">
+      <main className="flex-1 ml-64 px-4 py-8 pl-8">
         <div className="flex items-center justify-between mb-8 border-b border-blue-100 pb-4">
           <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Compliance Manager</h1>
           <button
