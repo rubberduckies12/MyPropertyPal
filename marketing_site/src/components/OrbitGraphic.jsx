@@ -103,7 +103,7 @@ export default function OrbitGraphic() {
             >
               <div
                 style={{
-                  transform: `rotate(${angle * (180 / Math.PI)}deg)`,
+                  animation: `spin-icon ${duration}s linear infinite`,
                   width: "100%",
                   height: "100%",
                   display: "flex",
@@ -121,6 +121,11 @@ export default function OrbitGraphic() {
         @keyframes orbit-container {
           100% {
             transform: rotate(360deg);
+          }
+        }
+        @keyframes spin-icon {
+          100% {
+            transform: rotate(-360deg);
           }
         }
       `}</style>
