@@ -37,20 +37,22 @@ router.post("/cancel", async (req, res) => {
     console.log("Canceling subscription with ID:", subscriptionId);
     console.log("Stripe Subscription ID:", stripe_subscription_id);
 
-    // Cancel the subscription immediately in Stripe
-    const stripeResponse = await stripe.subscriptions.cancel(stripe_subscription_id);
+    // Set the subscription to cancel at the end of the billing cycle in Stripe
+    const stripeResponse = await stripe.subscriptions.update(stripe_subscription_id, {
+      cancel_at_period_end: true,
+    });
     console.log("Stripe cancellation response:", stripeResponse);
 
-    // Update the subscription in the database
+    // Update the subscription in the database to reflect the pending cancellation
     await pool.query(
       `UPDATE subscription
-       SET status = 'canceled', is_active = FALSE, canceled_at = NOW(), updated_at = NOW()
+       SET status = 'pending_cancellation', updated_at = NOW()
        WHERE id = $1`,
       [subscriptionId]
     );
 
     res.status(200).json({
-      message: "Subscription canceled successfully.",
+      message: "Subscription set to cancel at the end of the billing cycle.",
       subscriptionId,
     });
   } catch (err) {
