@@ -29,13 +29,14 @@ export default function DesktopAbout() {
             <Head>
                 <title>About | MyPropertyPal</title>
                 <meta name="description" content="Meet the founders and story behind MyPropertyPal. Built by landlords, for landlords." />
+                <meta name="robots" content="index, follow" /> {/* Robots meta tag */}
                 <meta property="og:title" content="About | MyPropertyPal" />
                 <meta property="og:description" content="Meet the founders and story behind MyPropertyPal. Built by landlords, for landlords." />
                 <meta property="og:image" content="/LogoWB.png" />
                 <meta property="og:type" content="website" />
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content="About | MyPropertyPal" />
-                <meta name="twitter:description" content="Meet the founderse and story behind MyPropertyPal. Built by landlords, for landlords." />
+                <meta name="twitter:description" content="Meet the founders and story behind MyPropertyPal. Built by landlords, for landlords." />
                 <meta name="twitter:image" content="/LogoWB.png" />
                 <link rel="icon" href="/LogoWB.png" />
             </Head>

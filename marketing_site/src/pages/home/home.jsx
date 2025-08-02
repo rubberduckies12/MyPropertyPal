@@ -260,10 +260,19 @@ export default function Landing() {
     return (
         <div className="bg-white text-[#171717] font-sans pt-16 md:pt-0 overflow-x-hidden">
             <Head>
-                <title>MyPropertyPal</title>
-                <meta name="description" content="All-in-one property management for landlords. Track rent, expenses, compliance, and more." />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+  <title>MyPropertyPal – All-in-One Property Management</title>
+  <meta name="description" content="Manage your properties effortlessly with MyPropertyPal. Track rent, expenses, compliance, and more in one place." />
+  <meta name="robots" content="index, follow" /> {/* Robots meta tag */}
+  <meta property="og:title" content="MyPropertyPal – All-in-One Property Management" />
+  <meta property="og:description" content="Manage your properties effortlessly with MyPropertyPal. Track rent, expenses, compliance, and more in one place." />
+  <meta property="og:image" content="/dashboard.png" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MyPropertyPal – All-in-One Property Management" />
+  <meta name="twitter:description" content="Manage your properties effortlessly with MyPropertyPal. Track rent, expenses, compliance, and more in one place." />
+  <meta name="twitter:image" content="/dashboard.png" />
+  <link rel="icon" href="/LogoWB.png" />
+</Head>
             {/* Mobile App Coming Soon Banner - hidden on desktop */}
             <div className="w-full flex justify-center md:hidden">
                 <div className="flex items-center gap-3 bg-[#2563eb] border border-[#2563eb] text-white px-4 py-2 rounded-b-xl shadow-sm mt-0 fixed top-0 left-0 right-0 z-50">

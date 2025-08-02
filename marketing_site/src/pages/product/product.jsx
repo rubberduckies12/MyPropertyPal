@@ -55,6 +55,7 @@ export default function Product() {
       <Head>
         <title>The Product – Beta Release | MyPropertyPal</title>
         <meta name="description" content="Explore all the features available in MyPropertyPal. Flexible rent schedules, maintenance requests, messaging, and more." />
+        <meta name="robots" content="index, follow" /> {/* Robots meta tag */}
         <meta property="og:title" content="The Product – Beta Release | MyPropertyPal" />
         <meta property="og:description" content="Explore all the features available in MyPropertyPal. Flexible rent schedules, maintenance requests, messaging, and more." />
         <meta property="og:image" content="/LogoWB.png" />
