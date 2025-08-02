@@ -270,13 +270,20 @@ export default function Tenants() {
                       </td>
                       <td className="py-4 px-3">{getNextDueDate(tenant)}</td>
                       <td className="py-4 px-3 text-center">
-                        <span className={
-                          `px-4 py-1 rounded-xl font-semibold text-sm
-                          ${tenant.pays_rent
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-800"}`
-                        }>
-                          {tenant.pays_rent ? "Active" : "Not Active"}
+                        <span
+                          className={`px-4 py-1 rounded-xl font-semibold text-sm ${
+                            tenant.is_pending
+                              ? "bg-yellow-100 text-yellow-800"
+                              : tenant.pays_rent
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {tenant.is_pending
+                            ? "Unconfirmed"
+                            : tenant.pays_rent
+                            ? "Active"
+                            : "Not Active"}
                         </span>
                       </td>
                       <td className="py-4 px-3">
