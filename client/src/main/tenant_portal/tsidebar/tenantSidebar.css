@@ -9,6 +9,7 @@
   height: 100vh;
   max-height: 100vh;
   padding: 0;
+  padding-right: 20px; /* Add padding to the right of the sidebar */
   position: fixed;
   top: 0;
   left: 0;
@@ -135,6 +136,9 @@
   box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   text-align: center;
   min-width: 260px;
+}
+.logout-modal p {
+  color: #000; /* Set text color to black */
 }
 .logout-modal-actions {
   margin-top: 20px;

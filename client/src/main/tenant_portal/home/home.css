@@ -22,7 +22,7 @@
   padding: var(--tenant-padding) 24px;
   background: var(--tenant-light);
   min-height: 100vh;
-  margin-left: 240px;
+  margin-left: 260px; /* Increased from 240px to 260px to add a gap */
 }
 
 .tenant-dashboard-header {
