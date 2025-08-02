@@ -199,24 +199,10 @@ function Sidebar() {
             <span>AI Chatbot</span>
           </NavLink>
 
-          {/* Settings */}
-          <NavLink
-            to="/settings"
-            className={({ isActive }) =>
-              `flex items-center gap-4 px-4 py-3 rounded-lg transition ${
-                isActive ? "bg-blue-800" : "hover:bg-blue-600"
-              }`
-            }
-          >
-            <FaCog className="text-xl" />
-            <span>Settings</span>
-          </NavLink>
-        </nav>
-
-        {/* Logout */}
-        <button
-          className="flex items-center gap-4 px-4 py-3 mt-auto text-red-500 hover:text-red-700 transition"
-          onClick={handleLogoutClick}
+          {/* Logout */}
+          <button
+            className="flex items-center gap-4 px-4 py-3 mt-auto text-red-500 hover:text-red-700 transition"
+              onClick={handleLogoutClick}
         >
           <FaSignOutAlt className="text-xl" />
           <span>Log Out</span>

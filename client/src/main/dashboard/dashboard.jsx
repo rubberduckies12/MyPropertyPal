@@ -229,8 +229,18 @@ function Dashboard() {
               Welcome, {user ? capitalize(user.first_name) : "User"}
             </h1>
           </div>
-          <div className="text-sm text-gray-700">
-            User ID: <strong>{user?.id || "—"}</strong>
+          <div className="flex items-center gap-4">
+            {/* Settings Icon */}
+            <button
+              onClick={() => navigate('/settings')}
+              className="text-blue-700 hover:text-blue-900 transition"
+              aria-label="Settings"
+            >
+              <HiCog className="text-2xl" />
+            </button>
+            <div className="text-sm text-gray-700">
+              User ID: <strong>{user?.id || "—"}</strong>
+            </div>
           </div>
         </header>
 
