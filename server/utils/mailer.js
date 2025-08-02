@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 
 async function sendTenantInviteEmail(to, inviteUrl) {
   const mailOptions = {
-    from: `"MyPropertyPal" <${process.env.EMAIL_USER}>`,
+    from: `"MyPropertyPal" <hello@mypropertypal.com>`, // Updated sender email
     to,
     subject: "You're invited to join MyPropertyPal as a tenant",
     html: `

@@ -243,7 +243,7 @@ cron.schedule("0 9 * * *", async () => {
           if (sentRes.rowCount === 0) {
             // Send email
             await transporter.sendMail({
-              from: process.env.EMAIL_USER,
+              from: "MyPropertyPal <hello@mypropertypal.com>",
               to: event.email,
               subject: `Reminder: Renew ${event.name} for ${event.property_name}`,
               text: `Hello, ${event.first_name}.\n\nThis is a reminder to renew ${event.name}.\n\nDescription: ${event.description}\n\nFor: ${event.property_name} (${event.address}) before ${dueDate.toLocaleDateString("en-GB")}\n\nKind regards,\n\nMyPropertyPal`
