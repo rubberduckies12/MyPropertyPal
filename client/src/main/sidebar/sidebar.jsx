@@ -198,6 +198,7 @@ function Sidebar() {
             <FaRobot className="text-xl" />
             <span>AI Chatbot</span>
           </NavLink>
+          </nav>
 
           {/* Logout */}
           <button
