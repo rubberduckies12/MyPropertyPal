@@ -35,6 +35,19 @@ body {
   }
 }
 
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out;
+}
+
 /* For Chrome, Edge, Safari */
 ::-webkit-scrollbar {
   width: 12px;
