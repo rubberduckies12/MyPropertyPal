@@ -9,9 +9,9 @@ export default function Privacy() {
         <div className="bg-white text-[#171717] font-sans">
             <Head>
                 <title>Privacy Policy | MyPropertyPal</title>
-                <meta name="description" content="Read the Privacy Policy for MyPropertyPal. We respect your privacy: no tracking, no cookies, no data selling." />
+                <meta name="description" content="Read the Privacy Policy for MyPropertyPal." />
                 <meta property="og:title" content="Privacy Policy | MyPropertyPal" />
-                <meta property="og:description" content="Read the Privacy Policy for MyPropertyPal. We respect your privacy: no tracking, no cookies, no data selling." />
+                <meta property="og:description" content="Read the Privacy Policy for MyPropertyPal." />
                 <meta property="og:type" content="website" />
                 <meta property="og:image" content="/LogoWB.png" />
                 <link rel="icon" href="/LogoWB.png" />
@@ -36,7 +36,7 @@ export default function Privacy() {
                     Effective Date: <span className="font-semibold">18/07/2025</span>
                 </div>
                 <p className="text-lg text-gray-700 max-w-xl mx-auto">
-                    At MyPropertyPal, your privacy isn’t just a legal checkbox — it’s a principle. We don’t track you, we don’t sell your data, and we keep things simple and respectful.
+                    At MyPropertyPal, your privacy is important to us. Please read below to understand how we handle your data.
                 </p>
             </section>
 
@@ -50,17 +50,8 @@ export default function Privacy() {
                             <li>Account details: name, email, password (hashed)</li>
                             <li>Property &amp; tenant data: the information you input into the app</li>
                             <li>Tax data: if you connect to HMRC, we retrieve your obligations and submissions via their secure API</li>
-                            <li>App usage info: what features you use (stored anonymously, no analytics scripts)</li>
+                            <li>App usage info: what features you use</li>
                         </ul>
-                        <div className="mt-4">
-                            <span className="font-semibold">We do not use:</span>
-                            <ul className="list-disc pl-6 space-y-1 mt-2">
-                                <li>Tracking cookies</li>
-                                <li>Ad pixels</li>
-                                <li>Third-party analytics</li>
-                                <li>Fingerprinting or session recording tools</li>
-                            </ul>
-                        </div>
                     </li>
                     <li>
                         <h2 className="text-xl font-bold text-[#2563eb] mb-2">2. How We Use Your Data</h2>
@@ -68,7 +59,7 @@ export default function Privacy() {
                             <li>Provide the app and its core features</li>
                             <li>Connect to HMRC on your behalf (only when you authorize it)</li>
                             <li>Send necessary service updates (e.g. tax submission confirmation)</li>
-                            <li>Improve the product (anonymously — no creepy tracking)</li>
+                            <li>Improve the product</li>
                         </ul>
                     </li>
                     <li>
@@ -111,14 +102,7 @@ export default function Privacy() {
                         </p>
                     </li>
                     <li>
-                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">7. Cookies</h2>
-                        <p className="mb-2">🍪 We don’t use them.</p>
-                        <p>
-                            There are no cookies on our site or app. No popups, no consent boxes, no trackers — just clean software.
-                        </p>
-                    </li>
-                    <li>
-                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">8. Third-Party Services</h2>
+                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">7. Third-Party Services</h2>
                         <ul className="list-disc pl-6 space-y-2">
                             <li>Stripe for payments</li>
                             <li>HMRC API (when you connect)</li>
@@ -130,7 +114,7 @@ export default function Privacy() {
                         </p>
                     </li>
                     <li>
-                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">9. Security</h2>
+                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">8. Security</h2>
                         <ul className="list-disc pl-6 space-y-2">
                             <li>Encrypted HTTPS connections</li>
                             <li>Hashed passwords</li>
@@ -139,23 +123,19 @@ export default function Privacy() {
                         </ul>
                     </li>
                     <li>
-                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">10. Changes</h2>
+                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">9. Changes</h2>
                         <p>
                             We’ll update this page if anything changes. If the changes are significant, we’ll notify you via email or in the app.
                         </p>
                     </li>
                     <li>
-                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">11. Contact</h2>
+                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">10. Contact</h2>
                         <p>
                             Questions about privacy? <br />
                             Email our CEO directly: <a href="mailto:Tommy.Rowe.Dev@gmail.com" className="underline text-[#2563eb]">Tommy.Rowe.Dev@gmail.com</a>
                         </p>
                     </li>
                 </ol>
-                <div className="mt-12 text-center text-lg text-[#2563eb] font-semibold flex flex-col items-center">
-                    <span className="text-2xl mb-2">🔒</span>
-                    No weird tracking. No cookies. Just clean, respectful software.
-                </div>
             </section>
 
             <Footer />

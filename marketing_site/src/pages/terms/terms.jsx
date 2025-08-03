@@ -9,9 +9,9 @@ export default function Terms() {
         <div className="bg-white text-[#171717] font-sans">
             <Head>
                 <title>Terms & Conditions | MyPropertyPal</title>
-                <meta name="description" content="Read the Terms & Conditions for using MyPropertyPal. We believe in privacy, transparency, and respectful software." />
+                <meta name="description" content="Read the Terms & Conditions for using MyPropertyPal." />
                 <meta property="og:title" content="Terms & Conditions | MyPropertyPal" />
-                <meta property="og:description" content="Read the Terms & Conditions for using MyPropertyPal. We believe in privacy, transparency, and respectful software." />
+                <meta property="og:description" content="Read the Terms & Conditions for using MyPropertyPal." />
                 <meta property="og:type" content="website" />
                 <meta property="og:image" content="/LogoWB.png" />
                 <link rel="icon" href="/LogoWB.png" />
@@ -46,7 +46,7 @@ export default function Terms() {
                     <li>
                         <h2 className="text-xl font-bold text-[#2563eb] mb-2">1. Who We Are</h2>
                         <p>
-                            We're a small team, building software for landlords and tenants to simplify property management, digital tax submissions, and communication — without the bloat or surveillance.
+                            We're a small team, building software for landlords and tenants to simplify property management, digital tax submissions, and communication — without the bloat.
                         </p>
                     </li>
                     <li>
@@ -64,15 +64,6 @@ export default function Terms() {
                             <li>You’re authorizing us to access your tax information through HMRC’s Making Tax Digital API.</li>
                             <li>We only access what’s needed to help you submit returns or retrieve obligations.</li>
                             <li>You can revoke access at any time via HMRC or within your account settings.</li>
-                        </ul>
-                    </li>
-                    <li>
-                        <h2 className="text-xl font-bold text-[#2563eb] mb-2">4. Privacy &amp; Tracking</h2>
-                        <ul className="list-disc pl-6 space-y-2">
-                            <li>We do not use cookies.</li>
-                            <li>We do not track you, run analytics scripts, or use ad pixels.</li>
-                            <li>We only store what we need to help you use the service — and never sell your data.</li>
-                            <li>You can read more in our Privacy Policy.</li>
                         </ul>
                     </li>
                     <li>
@@ -111,10 +102,6 @@ export default function Terms() {
                         </p>
                     </li>
                 </ol>
-                <div className="mt-12 text-center text-lg text-[#2563eb] font-semibold flex flex-col items-center">
-                    <span className="text-2xl mb-2">🚫</span>
-                    No weird tracking. No surveillance. Just software that respects your time and data.
-                </div>
             </section>
 
             <Footer />
