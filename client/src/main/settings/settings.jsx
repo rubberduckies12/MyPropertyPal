@@ -96,25 +96,6 @@ export default function Settings() {
     }
   };
 
-  // Update plan
-  const handlePlanChange = async (newPlan) => {
-    const res = await fetch(`${BACKEND_URL}/api/account/settings`, {
-      method: "PUT",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ plan: newPlan }),
-    });
-
-    if (res.ok) {
-      setPlan(newPlan);
-      alert("Plan updated successfully!");
-    } else {
-      alert("Failed to update plan.");
-    }
-  };
-
   if (!email) {
     return (
       <div className="flex">
@@ -203,20 +184,6 @@ export default function Settings() {
 
           {activeTab === "subscription" && (
             <div className="space-y-6">
-              {/* Plan Section */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Plan</label>
-                <select
-                  value={plan}
-                  onChange={(e) => handlePlanChange(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                >
-                  <option value="basic">Basic</option>
-                  <option value="pro">Pro</option>
-                  <option value="organisation">Organisation</option>
-                  <option value="canceled">Canceled</option>
-                </select>
-              </div>
 
               {/* Cancel Subscription Button */}
               <button
