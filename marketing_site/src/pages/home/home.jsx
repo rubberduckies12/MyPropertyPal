@@ -23,6 +23,7 @@ import { IoReceiptOutline } from "react-icons/io5";
 import OrbitGraphic from "../../components/OrbitGraphic";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
+import EmailListSection from "../../components/EmailListSection";
 
 const brand = "#2563eb";
 
@@ -402,17 +403,7 @@ export default function Landing() {
             </section>
 
             {/* Email List Section */}
-            <section className="w-full max-w-4xl mx-auto py-16 px-4 sm:px-6 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[#2563eb]">
-                Join Our Email List
-            </h2>
-            <p className="text-gray-700 mb-6">
-                Stay updated with the latest features, tips, and exclusive offers from MyPropertyPal.
-            </p>
-            <div className="flex justify-center">
-                <script async data-uid="af56587299" src="https://mypropertypal.kit.com/af56587299/index.js"></script>
-            </div>
-            </section>
+            <EmailListSection />
 
             {/* Powerful Features section */}
             <FeaturesSlider />
