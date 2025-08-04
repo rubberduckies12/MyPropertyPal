@@ -69,8 +69,8 @@ export default function App({ Component, pageProps }) {
 
       {/* Cookie Banner */}
       {cookiesAccepted === null && (
-        <div className="fixed bottom-0 left-0 right-0 bg-blue-600 text-white py-4 px-6 shadow-lg z-50 flex justify-between items-center animate-slide-up">
-          <p className="text-sm md:text-base">
+        <div className="fixed bottom-0 left-0 right-0 bg-blue-600 text-white py-4 px-4 sm:px-6 shadow-lg z-50 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0 animate-slide-up">
+          <p className="text-sm text-center sm:text-left md:text-base flex-1">
             We use cookies to improve your experience. By accepting them, it
             really helps us to develop our app and get it in front of people
             like you. See our{" "}
@@ -84,16 +84,16 @@ export default function App({ Component, pageProps }) {
             </a>{" "}
             for more info.
           </p>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <button
               onClick={handleAcceptCookies}
-              className="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-100 transition duration-300"
+              className="bg-white text-blue-600 font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-100 transition duration-300 w-full sm:w-auto"
             >
               Accept Cookies
             </button>
             <button
               onClick={handleDeclineCookies}
-              className="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-gray-300 transition duration-300"
+              className="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-gray-300 transition duration-300 w-full sm:w-auto"
             >
               Decline Cookies
             </button>

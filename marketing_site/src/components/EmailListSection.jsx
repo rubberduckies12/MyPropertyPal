@@ -18,7 +18,7 @@ export default function EmailListSection() {
       <p className="text-gray-700 mb-6">
         Stay updated with the latest features, tips, and exclusive offers from MyPropertyPal.
       </p>
-      <div id="email-list-form" className="flex justify-center"></div>
+      <div id="email-list-form" className="flex justify-center shadow-none"></div>
     </section>
   );
 }
