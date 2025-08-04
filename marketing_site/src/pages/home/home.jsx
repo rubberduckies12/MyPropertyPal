@@ -410,11 +410,7 @@ export default function Landing() {
                 Stay updated with the latest features, tips, and exclusive offers from MyPropertyPal.
             </p>
             <div className="flex justify-center">
-                <script
-                async
-                data-uid="af56587299"
-                src="https://mypropertypal.kit.com/af56587299/index.js"
-                ></script>
+                <script async data-uid="af56587299" src="https://mypropertypal.kit.com/af56587299/index.js"></script>
             </div>
             </section>
 
