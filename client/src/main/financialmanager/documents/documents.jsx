@@ -119,7 +119,9 @@ export default function Documents() {
                 ) : (
                   documents.map((doc) => (
                     <tr key={doc.id} className="hover:bg-blue-50 transition">
-                      <td className="py-4 px-3">{doc.date}</td>
+                      <td className="py-4 px-3">
+                        {new Date(doc.date).toLocaleDateString("en-GB")}
+                      </td>
                       <td className="py-4 px-3">{doc.name}</td>
                       <td className="py-4 px-3">{doc.type}</td>
                       <td className="py-4 px-3">£{doc.amount}</td>
