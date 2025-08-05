@@ -9,6 +9,9 @@ async function login(req, res, pool) {
             return res.status(400).json({ error: 'Email and password are required' });
         }
 
+        // Convert email to lowercase
+        const emailLowercase = email.toLowerCase();
+
         const query = {
             text: `
                 SELECT
@@ -20,9 +23,9 @@ async function login(req, res, pool) {
                 JOIN
                     account_role r ON a.role_id = r.id
                 WHERE
-                    a.email = $1
+                    LOWER(a.email) = $1
             `,
-            values: [email],
+            values: [emailLowercase],
         };
 
         const result = await pool.query(query);
