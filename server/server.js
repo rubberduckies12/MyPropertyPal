@@ -27,20 +27,19 @@ const stripeWebhookRouter = require('./endpoints/stripeWebhook');
 const accountRouter = require('./endpoints/account.js');
 const tenantRentRouter = require('./endpoints/tenants/tenantRent');
 const { searchContractors } = require('./database/getcontractors');
-const cancelAccountRouter = require('./endpoints/cancelAccount'); // Import the cancelAccount router
+const cancelAccountRouter = require('./endpoints/cancelAccount');
 
 const app = express();
 const port = process.env.PORT || 5001;
 const pool = createDatabaseConnection();
 app.set("pool", pool);
 
-
+//stripe webhook router defined before CORS middleware to ensure it can handle raw body parsing
 app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
 
-// --- Middleware ---
-// CORS and cookies must be set before any routes
+// --- Middleware and Cors---
 app.use(cors({
-  origin: 'https://app.mypropertypal.com', // ✅ exact match only
+  origin: 'https://app.mypropertypal.com',
   credentials: true
 }));
 app.use(express.json());
@@ -49,10 +48,8 @@ app.use(cookieParser());
 // --- Public Routes ---
 app.use('/api/chat', chatRoute);
 app.post('/login', (req, res) => login(req, res, pool));
-app.use('/register', register); // Updated to use the Express router for the register endpoint
+app.use('/register', register);
 app.use('/api/stripe', stripeRouter);
-//app.use('/api/stripe', stripeWebhookRouter);
-//app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
 
 app.get('/external-api', async (req, res) => {
   try {
@@ -76,7 +73,6 @@ app.get('/api/contractors', async (req, res) => {
   }
 });
 
-
 // --- Tenant Invite Endpoint (public, no auth) ---
 app.get('/api/tenants/invite/:token', async (req, res) => {
   const pool = req.app.get("pool");
@@ -95,9 +91,6 @@ app.get('/api/tenants/invite/:token', async (req, res) => {
 });
 
 // --- Protected Routes ---
-// Authenticate before any protected endpoints
-//app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
-
 // Apply authentication middleware for all other routes
 app.use(authenticate);
 app.use(checkSubscriptionStatus);
@@ -121,11 +114,8 @@ app.use('/api/tenant/rent', tenantRentRouter);
 app.use('/api/maintenance', maintenanceRouter);
 app.use('/api/messages', messagesRouter);
 
-
 // --- Static Exports ---
 app.use("/exports", express.static(path.join(__dirname, "../exports")));
-
-
 
 // --- Catch-all route ---
 app.get('*', (req, res) => res.status(404).send('Not Found'));

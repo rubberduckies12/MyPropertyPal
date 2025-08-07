@@ -10,7 +10,7 @@ module.exports = async function checkSubscriptionStatus(req, res, next) {
 
     const landlordId = req.user.landlord_id;
     if (!landlordId) {
-        // Not a landlord, skip subscription check
+        // Skip check if no landlord_id is found
         return next();
     }
 

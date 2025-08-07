@@ -7,10 +7,10 @@ async function authenticate(req, res, next) {
     // Exclude public routes and /webhook
     const excludedRoutes = ['/register', '/login', '/api/tenants/invite/:token', '/webhook'];
     if (excludedRoutes.some(route => req.originalUrl.startsWith(route))) {
-      return next(); // Skip authentication for excluded routes
+      return next(); 
     }
-
-    const token = req.cookies.token; // Read JWT from cookie
+    // Read JWT from cookie
+    const token = req.cookies.token; 
     if (!token) {
       return res.status(401).json({ error: 'Unauthorized: No token provided' });
     }
