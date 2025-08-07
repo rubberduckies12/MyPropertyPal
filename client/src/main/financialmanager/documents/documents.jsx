@@ -67,6 +67,19 @@ export default function Documents() {
     setUploading(false);
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/finances/expense/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to delete document/expense");
+      setDocuments((docs) => docs.filter((doc) => doc.id !== id));
+    } catch (err) {
+      setError(err.message || "Delete failed");
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-white">
       <Sidebar />
@@ -107,12 +120,13 @@ export default function Documents() {
                   <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Type</th>
                   <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Amount</th>
                   <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Status</th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {documents.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center text-gray-400 py-8">
+                    <td colSpan={6} className="text-center text-gray-400 py-8">
                       No documents uploaded yet.
                     </td>
                   </tr>
@@ -135,6 +149,14 @@ export default function Documents() {
                         >
                           {doc.status}
                         </span>
+                      </td>
+                      <td className="py-4 px-3">
+                        <button
+                          className="bg-red-600 text-white font-semibold rounded-lg px-3 py-1 hover:bg-red-700 transition"
+                          onClick={() => handleDelete(doc.id)}
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))
