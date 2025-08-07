@@ -32,7 +32,7 @@ function filterByPeriod(items, period) {
 
 export default function Finances() {
   // State
-  const [period, setPeriod] = useState("month");
+  const [period, setPeriod] = useState("year");
   const [rentPayments, setRentPayments] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [totalIncome, setTotalIncome] = useState(0);
