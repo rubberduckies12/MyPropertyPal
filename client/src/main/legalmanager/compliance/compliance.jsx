@@ -519,7 +519,7 @@ export default function Compliance() {
             </a>
             <a
               className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
-              href="https://www.gov.uk/government/collections/landlord-and-letting-agents-forms"
+              href="https://www.gov.uk/government/collections/housing-forms"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -546,7 +546,7 @@ export default function Compliance() {
             </a>
             <a
               className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
-              href="https://www.gov.uk/private-renting-energy-performance-certificates"
+              href="https://www.gov.uk/buy-sell-your-home/energy-performance-certificates"
               target="_blank"
               rel="noopener noreferrer"
             >
