@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 
-const API_BASE = "https://mypropertypal-3.onrender.com";
+const API_BASE = "https://api.mypropertypal.com/";
 
 export default function Properties() {
   // State

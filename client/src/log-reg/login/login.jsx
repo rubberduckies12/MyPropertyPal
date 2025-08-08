@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./login.css";
 
-const BACKEND_URL = "https://mypropertypal-3.onrender.com";
+const BACKEND_URL = "https://api.mypropertypal.com/";
 
 function Login({ onRegisterClick }) {
   const [email, setEmail] = useState("");

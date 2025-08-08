@@ -7,7 +7,7 @@
 async function fetchContractors(location, keyword = "contractor") {
   const params = new URLSearchParams({ location, keyword });
   // Use the Render backend URL for production
-  const backendUrl = "https://mypropertypal-3.onrender.com/api/contractors";
+  const backendUrl = "https://api.mypropertypal.com/api/contractors";
   try {
     const response = await fetch(`${backendUrl}?${params.toString()}`);
     if (!response.ok) throw new Error("Network response was not ok");

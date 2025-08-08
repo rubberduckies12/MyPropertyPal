@@ -80,10 +80,10 @@ export default function Finances() {
       setError("");
       try {
         const [finRes, propRes, tenantRes, expRentRes] = await Promise.all([
-          fetch("https://mypropertypal-3.onrender.com/api/finances", { credentials: "include" }),
-          fetch("https://mypropertypal-3.onrender.com/api/properties", { credentials: "include" }),
-          fetch("https://mypropertypal-3.onrender.com/api/tenants", { credentials: "include" }),
-          fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", { credentials: "include" }),
+          fetch("https://api.mypropertypal.com/api/finances", { credentials: "include" }),
+          fetch("https://api.mypropertypal.com/api/properties", { credentials: "include" }),
+          fetch("https://api.mypropertypal.com/api/tenants", { credentials: "include" }),
+          fetch("https://api.mypropertypal.com/api/finances/expected-rent", { credentials: "include" }),
         ]);
         if (!finRes.ok) throw new Error("Failed to fetch finances");
         const finData = await finRes.json();
@@ -206,7 +206,7 @@ export default function Finances() {
       };
       let res;
       if (editRentModal) {
-        res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/rent/${editRentModal.id}`, {
+        res = await fetch(`${API_BASE}/api/finances/rent/${editRentModal.id}`, {
           method: "PUT",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -220,7 +220,7 @@ export default function Finances() {
         const updated = await res.json();
         setRentPayments(prev => prev.map(r => r.id === editRentModal.id ? updated : r));
       } else {
-        res = await fetch("https://mypropertypal-3.onrender.com/api/finances/rent", {
+        res = await fetch(`${API_BASE}/api/finances/rent`, {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -235,7 +235,7 @@ export default function Finances() {
         setRentPayments(prev => [...prev, added]);
       }
       // Refetch expectedRent after saving rent
-      const expRentRes = await fetch("https://mypropertypal-3.onrender.com/api/finances/expected-rent", {
+      const expRentRes = await fetch(`${API_BASE}/api/finances/expected-rent`, {
         credentials: "include"
       });
       if (expRentRes.ok) {
@@ -253,7 +253,7 @@ export default function Finances() {
 
   async function confirmDeleteRentPayment() {
     if (!rentToDelete) return;
-    await fetch(`https://mypropertypal-3.onrender.com/api/finances/rent/${rentToDelete}`, {
+    await fetch(`${API_BASE}/api/finances/rent/${rentToDelete}`, {
       method: "DELETE",
       credentials: "include"
     });
@@ -279,7 +279,7 @@ export default function Finances() {
     try {
       let res;
       if (editExpenseModal) {
-        res = await fetch(`https://mypropertypal-3.onrender.com/api/finances/expense/${editExpenseModal.id}`, {
+        res = await fetch(`${API_BASE}/api/finances/expense/${editExpenseModal.id}`, {
           method: "PUT",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -293,7 +293,7 @@ export default function Finances() {
         const updated = await res.json();
         setExpenses(prev => prev.map(e => e.id === editExpenseModal.id ? updated : e));
       } else {
-        res = await fetch("https://mypropertypal-3.onrender.com/api/finances/expense", {
+        res = await fetch(`${API_BASE}/api/finances/expense`, {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -317,7 +317,7 @@ export default function Finances() {
 
   async function confirmDeleteExpense() {
     if (!expenseToDelete) return;
-    await fetch(`https://mypropertypal-3.onrender.com/api/finances/expense/${expenseToDelete}`, {
+    await fetch(`${API_BASE}/api/finances/expense/${expenseToDelete}`, {
       method: "DELETE",
       credentials: "include"
     });

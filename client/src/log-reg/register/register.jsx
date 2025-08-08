@@ -17,9 +17,9 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-// Update register function to use Render backend
+// Update register function to use new backend URL
 async function register(data) {
-  const res = await fetch('https://mypropertypal-3.onrender.com/register', { // Hardcoded backend URL
+  const res = await fetch('https://api.mypropertypal.com/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -51,7 +51,7 @@ export default function Register() {
     if (invite) {
       setInviteMode(true);
       setInviteToken(invite);
-      fetch(`https://mypropertypal-3.onrender.com/api/tenants/invite/${invite}`)
+      fetch(`https://api.mypropertypal.com/api/tenants/invite/${invite}`)
         .then(res => res.ok ? res.json() : Promise.reject())
         .then(data => {
           setFirstName(data.first_name);
@@ -103,7 +103,7 @@ export default function Register() {
         });
 
         // Step 2: Create Stripe Checkout Session
-        const res = await fetch('https://mypropertypal-3.onrender.com/api/stripe/create-checkout-session', {
+        const res = await fetch('https://api.mypropertypal.com/api/stripe/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

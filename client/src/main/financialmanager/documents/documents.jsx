@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 
-const BACKEND_URL = "https://mypropertypal-3.onrender.com";
+const BACKEND_URL = "https://api.mypropertypal.com";
 
 export default function Documents() {
   const [documents, setDocuments] = useState([]);

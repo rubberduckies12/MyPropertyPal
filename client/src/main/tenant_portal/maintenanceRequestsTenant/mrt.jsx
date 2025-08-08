@@ -15,7 +15,7 @@ function mapSeverityToColor(severity) {
   return "bg-gray-100 text-gray-700";
 }
 
-const BACKEND_URL = "https://mypropertypal-3.onrender.com";
+const BACKEND_URL = "https://api.mypropertypal.com/";
 
 export default function MaintenanceRequestsTenant() {
   const [incidents, setIncidents] = useState([]);

@@ -4,8 +4,8 @@ import Sidebar from '../sidebar/sidebar.jsx';
 import { HiUsers, HiCurrencyPound, HiMail, HiHome, HiExclamationCircle, HiCog } from "react-icons/hi";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
-// Hardcoded backend URLs
-const API_BASE = "https://mypropertypal-3.onrender.com";
+// Update backend URLs to use the new API base
+const API_BASE = "https://api.mypropertypal.com";
 const MAINTENANCE_URL = `${API_BASE}/api/maintenance/landlord`;
 const MESSAGES_CONTACTS_URL = `${API_BASE}/api/messages/contacts`;
 const TENANTS_COUNT_URL = `${API_BASE}/api/tenants/count`;

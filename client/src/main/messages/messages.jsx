@@ -5,7 +5,7 @@ function formatTimestamp(ts) {
   return new Date(ts).toLocaleString();
 }
 
-const BACKEND_URL = "https://mypropertypal-3.onrender.com";
+const BACKEND_URL = "https://api.mypropertypal.com";
 
 export default function Messages() {
   const [contacts, setContacts] = useState([]); // List of contacts
