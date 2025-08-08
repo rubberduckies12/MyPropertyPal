@@ -6,6 +6,8 @@ import DeleteConfirmModal from "./DeleteConfirmModal.jsx";
 import DeleteExpenseConfirmModal from "./DeleteExpenseConfirmModal.jsx";
 import { BarChart, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, Line, ResponsiveContainer } from "recharts";
 
+const API_BASE = "https://api.mypropertypal.com"; // <-- Add this line
+
 const PERIODS = [
   { label: "Monthly", value: "month" },
   { label: "Quarterly", value: "quarter" },
