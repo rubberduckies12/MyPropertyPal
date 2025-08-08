@@ -1,4 +1,4 @@
-const API_URL = "https://api.mypropertypal.com/chat";
+const API_URL = "https://api.mypropertypal.com/api/chat";
 
 export async function fetchChatbotReply(chatHistory) {
   const response = await fetch(API_URL, {
