@@ -49,7 +49,7 @@ async function login(req, res, pool) {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
-            domain: '.mypropertypal.com', // <-- Enables cross-subdomain cookies
+            //domain: '.mypropertypal.com', // <-- Enables cross-subdomain cookies
             maxAge: 60 * 60 * 1000 // 1 hour
         });
 
