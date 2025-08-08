@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "../../sidebar/sidebar.jsx";
 import ReactStars from "react-rating-stars-component";
 
-const API_BASE = "https://api.mypropertypal.com/";
+const API_BASE = "https://api.mypropertypal.com";
 
 const RECOMMENDED_KEYWORDS = [
   "plumber",

@@ -5,7 +5,7 @@ function formatTimestamp(ts) {
   return new Date(ts).toLocaleString();
 }
 
-const BACKEND_URL = "https://api.mypropertypal.com/";
+const BACKEND_URL = "https://api.mypropertypal.com";
 
 export default function Tmessages() {
   const [contacts, setContacts] = useState([]); // List of contacts (landlords for tenants)

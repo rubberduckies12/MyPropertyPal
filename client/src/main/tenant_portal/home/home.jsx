@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import TenantSidebar from "../tsidebar/tenantSidebar.jsx";
 import "./home.css";
 
-const API_BASE = "https://api.mypropertypal.com/";
+const API_BASE = "https://api.mypropertypal.com";
 
 // --- API Calls ---
 async function fetchTenantRent() {

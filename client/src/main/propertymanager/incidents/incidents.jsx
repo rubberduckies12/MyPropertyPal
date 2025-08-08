@@ -19,7 +19,7 @@ function getProgressColor(progress) {
   return "";
 }
 
-const BACKEND_URL = "https://api.mypropertypal.com/";
+const BACKEND_URL = "https://api.mypropertypal.com";
 
 export default function Incidents() {
   const [incidents, setIncidents] = useState([]);
