@@ -10,7 +10,7 @@ const createDatabaseConnection = require('./assets/databaseConnect');
 const authenticate = require('./middleware/authenticate');
 const checkSubscriptionStatus = require('./middleware/checkSubscriptionStatus');
 
-// Endpoint routers
+// Endpoint routers for app pages
 const login = require('./endpoints/login');
 const register = require('./endpoints/register');
 const dashRouter = require('./endpoints/dash');
