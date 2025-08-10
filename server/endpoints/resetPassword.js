@@ -44,7 +44,7 @@ router.post("/send-email", async (req, res) => {
 
     const resetLink = `https://app.mypropertypal.com/reset-password?token=${resetToken}`;
     const mailOptions = {
-      from: `"MyPropertyPal" <${process.env.EMAIL_USER}>`,
+      from: `"MyPropertyPal" <hello@mypropertypal.com>`, // <-- Hardcoded alias
       to: email,
       subject: "Reset Your Password",
       html: `
