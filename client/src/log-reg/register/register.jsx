@@ -28,6 +28,11 @@ async function register(data) {
   return res.json();
 }
 
+function isPasswordValid(password) {
+  // At least 8 chars, 1 uppercase, 1 number, 1 special char
+  return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(password);
+}
+
 export default function Register() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -77,6 +82,10 @@ export default function Register() {
     }
     if (!firstName || !lastName) {
       setError("First name and last name are required.");
+      return;
+    }
+    if (!isPasswordValid(password)) {
+      setError("Password must be at least 8 characters, include 1 uppercase letter, 1 number, and 1 special character.");
       return;
     }
 

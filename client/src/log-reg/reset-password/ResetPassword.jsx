@@ -3,6 +3,11 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 
 const BACKEND_URL = "https://api.mypropertypal.com";
 
+function isPasswordValid(password) {
+  // At least 8 chars, 1 uppercase, 1 number, 1 special char
+  return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(password);
+}
+
 export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,6 +27,13 @@ export default function ResetPassword() {
 
     if (newPassword !== confirmPassword) {
       setMessage("Passwords do not match.");
+      return;
+    }
+
+    if (!isPasswordValid(newPassword)) {
+      setMessage(
+        "Password must be at least 8 characters, include 1 uppercase letter, 1 number, and 1 special character."
+      );
       return;
     }
 
