@@ -28,6 +28,7 @@ const accountRouter = require('./endpoints/account.js');
 const tenantRentRouter = require('./endpoints/tenants/tenantRent');
 const { searchContractors } = require('./database/getcontractors');
 const cancelAccountRouter = require('./endpoints/cancelAccount');
+const resetPasswordRouter = require("./endpoints/resetPassword");
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -50,6 +51,8 @@ app.use('/api/chat', chatRoute);
 app.post('/login', (req, res) => login(req, res, pool));
 app.use('/register', register);
 app.use('/api/stripe', stripeRouter);
+// Add the reset password routes
+app.use("/api/account/reset-password", resetPasswordRouter);
 
 app.get('/external-api', async (req, res) => {
   try {

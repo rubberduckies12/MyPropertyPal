@@ -62,7 +62,7 @@ function Login({ onRegisterClick }) {
   const handleResetSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${BACKEND_URL}/api/account/forgot-password`, {
+      const res = await fetch("https://api.mypropertypal.com/api/account/reset-password/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: resetEmail }),

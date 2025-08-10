@@ -27,6 +27,7 @@ import Settings from './main/settings/settings.jsx';
 import Sidebar from './main/sidebar/sidebar.jsx';
 import TenantSidebar from './main/tenant_portal/tsidebar/tenantSidebar.jsx';
 import Success from './main/success.jsx'; // Import the Success page
+import ResetPassword from './log-reg/reset-password/ResetPassword.jsx'; // <-- Add this import
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -75,7 +76,8 @@ function AppRoutes() {
         <Route path="/" element={<AnimatedRoute><Login /></AnimatedRoute>} />
         <Route path="/login" element={<AnimatedRoute><Login /></AnimatedRoute>} />
         <Route path="/register" element={<AnimatedRoute><Register /></AnimatedRoute>} />
-        <Route path="/success" element={<AnimatedRoute><Success /></AnimatedRoute>} /> {/* Add Success page */}
+        <Route path="/success" element={<AnimatedRoute><Success /></AnimatedRoute>} />
+        <Route path="/reset-password" element={<AnimatedRoute><ResetPassword /></AnimatedRoute>} /> {/* <-- Add this line */}
 
         {/* Landlord App pages (with landlord sidebar) */}
         <Route path="/dashboard" element={
