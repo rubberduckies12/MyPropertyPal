@@ -2,13 +2,13 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-const pool = require("../database/connection"); // Adjust path to your database connection
 
 const router = express.Router();
 
 // POST: Send reset password email
 router.post("/send-email", async (req, res) => {
   const { email } = req.body;
+  const pool = req.app.get("pool"); // <-- Get pool from app
 
   try {
     if (!email) {
@@ -70,6 +70,7 @@ router.post("/send-email", async (req, res) => {
 // POST: Reset password
 router.post("/reset", async (req, res) => {
   const { token, newPassword } = req.body;
+  const pool = req.app.get("pool"); // <-- Get pool from app
 
   try {
     if (!token || !newPassword) {
