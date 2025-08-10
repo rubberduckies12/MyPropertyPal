@@ -56,7 +56,14 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-50">
+    <div className="min-h-screen flex items-center justify-center bg-blue-50 relative">
+      {/* Back to Login link */}
+      <a
+        href="https://app.mypropertypal.com/"
+        className="absolute top-6 right-8 text-blue-600 font-semibold hover:underline"
+      >
+        Back to Login
+      </a>
       <div className="bg-white border border-blue-100 rounded-2xl shadow-lg p-8 w-full max-w-md relative">
         <img
           src="/publicassets/LogoWB.png"

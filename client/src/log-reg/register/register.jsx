@@ -157,7 +157,7 @@ export default function Register() {
           }}
           onClick={handleMainBack}
         >
-          ← Back
+          ← Back to website
         </button>
         <h2>Register</h2>
         <form className="register-form" onSubmit={handleSubmit}>
