@@ -555,12 +555,12 @@ export default function Compliance() {
             </a>
             <a
               className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
-              href="https://www.gov.uk/government/publications/how-to-rent"
+              href="https://www.gov.uk/government/publications/electrical-safety-standards-in-the-private-rented-sector-guidance-for-landlords-tenants-and-local-authorities/guide-for-landlords-electrical-safety-standards-in-the-private-rented-sector"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <span className="font-bold text-blue-700">How to Rent Guide</span>
-              <span className="text-gray-700">Official government guide for tenants and landlords</span>
+              <span className="font-bold text-blue-700">Electrical Safety Standards</span>
+              <span className="text-gray-700">Guidance for landlords on electrical safety</span>
             </a>
           </div>
         </section>
