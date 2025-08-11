@@ -528,7 +528,7 @@ export default function Compliance() {
             </a>
             <a
               className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
-              href="https://www.gov.uk/deposit-protection-schemes-and-landlords"
+              href="https://www.gov.uk/guidance/assured-tenancy-forms"
               target="_blank"
               rel="noopener noreferrer"
             >
