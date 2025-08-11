@@ -43,14 +43,14 @@ router.post("/adminregister", async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail", // Use your email service
       auth: {
-        user: "hello@mypropertypal.com", // Your email address
-        pass: process.env.EMAIL_PASS, // Your email password or app-specific password
+        user: process.env.EMAIL_USER, // Sender email address from environment variables
+        pass: process.env.EMAIL_PASS, // Email password or app-specific password
       },
     });
 
     const mailOptions = {
-      from: "hello@mypropertypal.com", // Sender email address
-      to: "tommy.rowe@mypropertypal.com",
+      from: process.env.EMAIL_USER, // Sender email address from environment variables
+      to: "tommy.rowe.dev@gmail.com",
       subject: "New Admin Registration Approval Required",
       text: `A new admin has registered and requires approval:
       

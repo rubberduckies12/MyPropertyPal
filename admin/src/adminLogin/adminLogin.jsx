@@ -45,6 +45,13 @@ const AdminLogin = () => {
         >
           ← Back
         </button>
+        <button
+          type="button"
+          className="absolute top-4 right-4 text-blue-600 font-semibold hover:underline"
+          onClick={() => (window.location.href = "/adminregister")}
+        >
+          Register
+        </button>
         <h1 className="text-2xl font-extrabold text-blue-700 text-center mb-6">
           Admin Login
         </h1>
