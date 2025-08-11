@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const AdminRegistration = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const AdminRegistration = () => {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,10 +36,19 @@ const AdminRegistration = () => {
     }
 
     try {
+      // Convert email, first_name, and last_name to lowercase
+      const lowerCaseData = {
+        email: email.toLowerCase(),
+        password,
+        pin_number,
+        first_name: first_name.toLowerCase(),
+        last_name: last_name.toLowerCase(),
+      };
+
       const response = await fetch("https://api.mypropertypal.com/api/admin/adminregister", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(lowerCaseData),
       });
 
       if (!response.ok) {
@@ -45,14 +56,10 @@ const AdminRegistration = () => {
         throw new Error(data.error || "Registration failed.");
       }
 
-      setSuccess("Registration successful. Awaiting approval.");
-      setFormData({
-        email: "",
-        password: "",
-        pin_number: "",
-        first_name: "",
-        last_name: "",
-      });
+      setSuccess("Registration successful. Redirecting to login...");
+      setTimeout(() => {
+        navigate("/"); // Redirect to Admin Login after 2 seconds
+      }, 2000);
     } catch (err) {
       setError(err.message);
     }
