@@ -9,16 +9,16 @@ const AdminLogin = () => {
     e.preventDefault();
     setError("");
 
-    // Example login logic
     if (!email || !password) {
       setError("Please fill in all fields.");
       return;
     }
 
     try {
-      const response = await fetch("https://api.mypropertypal.com/admin/login", {
+      const response = await fetch("https://api.mypropertypal.com/api/admin/adminlogin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // Include cookies in the request
         body: JSON.stringify({ email, password }),
       });
 
@@ -27,8 +27,9 @@ const AdminLogin = () => {
         throw new Error(data.error || "Login failed");
       }
 
-      // Redirect or handle successful login
-      alert("Login successful!");
+      // Handle successful login
+      const data = await response.json();
+      alert(`Welcome, ${data.admin.first_name}!`);
     } catch (err) {
       setError(err.message);
     }
