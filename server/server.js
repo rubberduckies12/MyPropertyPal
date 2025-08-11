@@ -31,6 +31,7 @@ const cancelAccountRouter = require('./endpoints/cancelAccount');
 const resetPasswordRouter = require("./endpoints/resetPassword");
 const adminLoginRouter = require("./endpoints/admin/adminLogin"); // Import the admin login router
 const adminRegRouter = require("./endpoints/admin/adminReg"); // Import the admin registration router
+const approveAdminRouter = require("./endpoints/admin/approveAdmin"); // Import the admin approval router
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -77,6 +78,7 @@ app.use("/api/account/reset-password", resetPasswordRouter);
 // Add the admin login route
 app.use("/api/admin", adminLoginRouter); // Mount the admin login router
 app.use("/api/admin", adminRegRouter); // Mount the admin registration router
+app.use("/api/admin", approveAdminRouter); // Mount the admin approval router
 
 app.get('/external-api', async (req, res) => {
   try {

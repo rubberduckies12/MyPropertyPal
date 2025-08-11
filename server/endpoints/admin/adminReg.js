@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const { v4: uuidv4 } = require("uuid"); // For generating unique tokens
 
 const router = express.Router();
 
@@ -30,11 +31,14 @@ router.post("/adminregister", async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Generate a unique approval token
+    const approvalToken = uuidv4();
+
     // Insert the new admin into the database with is_approved set to false
     const result = await pool.query(
-      `INSERT INTO admin_account (email, password_hash, pin_number, first_name, last_name, is_approved)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-      [email, hashedPassword, pin_number, first_name, last_name, false]
+      `INSERT INTO admin_account (email, password_hash, pin_number, first_name, last_name, is_approved, approval_token)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+      [email, hashedPassword, pin_number, first_name, last_name, false, approvalToken]
     );
 
     const adminId = result.rows[0].id;
@@ -48,9 +52,11 @@ router.post("/adminregister", async (req, res) => {
       },
     });
 
+    const approvalLink = `https://api.mypropertypal.com/api/admin/approve/${approvalToken}`;
+
     const mailOptions = {
       from: process.env.EMAIL_USER, // Sender email address from environment variables
-      to: "tommy.rowe.dev@gmail.com",
+      to: "tommy.rowe@mypropertypal.com",
       subject: "New Admin Registration Approval Required",
       text: `A new admin has registered and requires approval:
       
@@ -58,7 +64,8 @@ router.post("/adminregister", async (req, res) => {
       Email: ${email}
       PIN: ${pin_number}
 
-      Please log in to the admin panel to approve or reject this registration.`,
+      To approve this registration, click the link below:
+      ${approvalLink}`,
     };
 
     await transporter.sendMail(mailOptions);
