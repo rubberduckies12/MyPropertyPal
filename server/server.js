@@ -29,6 +29,7 @@ const tenantRentRouter = require('./endpoints/tenants/tenantRent');
 const { searchContractors } = require('./database/getcontractors');
 const cancelAccountRouter = require('./endpoints/cancelAccount');
 const resetPasswordRouter = require("./endpoints/resetPassword");
+const adminLoginRouter = require("./endpoints/admin/adminLogin"); // Import the admin login router
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -70,8 +71,10 @@ app.use('/api/chat', chatRoute);
 app.post('/login', (req, res) => login(req, res, pool));
 app.use('/register', register);
 app.use('/api/stripe', stripeRouter);
-// Add the reset password routes
 app.use("/api/account/reset-password", resetPasswordRouter);
+
+// Add the admin login route
+app.use("/api/admin", adminLoginRouter); // Mount the admin login router
 
 app.get('/external-api', async (req, res) => {
   try {
