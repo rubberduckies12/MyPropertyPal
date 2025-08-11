@@ -39,10 +39,29 @@ app.set("pool", pool);
 app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRouter);
 
 // --- Middleware and Cors---
-app.use(cors({
-  origin: 'https://app.mypropertypal.com',
-  credentials: true
-}));
+const whitelist = [
+  "https://app.mypropertypal.com", // Production frontend
+  "https://admin.mypropertypal.com", // Admin panel
+  "http://localhost:3000", // Local development
+];
+
+// Configure CORS middleware
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+
+    // Check if the origin is in the whitelist
+    if (whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Allow cookies to be sent
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
