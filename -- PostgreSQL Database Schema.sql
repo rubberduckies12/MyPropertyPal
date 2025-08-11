@@ -18,6 +18,17 @@ CREATE TABLE public.account (
     email_verified BOOLEAN DEFAULT FALSE NOT NULL
 );
 
+-- ===== Admin Accounts =====
+CREATE TABLE public.admin_account (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    pin_number CHAR(4) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
 -- ===== Audit Log =====
 CREATE TABLE public.audit_log (
     id SERIAL PRIMARY KEY,
@@ -252,6 +263,56 @@ CREATE TABLE public.tenant (
     stripe_payment_method_id VARCHAR(64)
 );
 
+-- ===== Financial Budgets =====
+CREATE TABLE public.financial (
+    id SERIAL PRIMARY KEY,
+    admin_id INT NOT NULL REFERENCES public.admin_account(id) ON DELETE CASCADE,
+    budget_name VARCHAR(100) NOT NULL,
+    budget_amount NUMERIC(10, 2) NOT NULL,
+    budget_description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- ===== Productivity Tasks =====
+CREATE TABLE public.productivity_task (
+    id SERIAL PRIMARY KEY,
+    admin_id INT NOT NULL REFERENCES public.admin_account(id) ON DELETE CASCADE,
+    task_name VARCHAR(100) NOT NULL,
+    importance VARCHAR(20) NOT NULL CHECK (importance IN ('Not Important', 'Important')),
+    urgency VARCHAR(20) NOT NULL CHECK (urgency IN ('Not Urgent', 'Urgent')),
+    date_needed DATE NOT NULL,
+    date_to_start DATE,
+    progress VARCHAR(20) DEFAULT 'Not Started' CHECK (progress IN ('In Progress', 'Not Started', 'Completed')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE public.productivity_subtask (
+    id SERIAL PRIMARY KEY,
+    task_id INT NOT NULL REFERENCES public.productivity_task(id) ON DELETE CASCADE,
+    subtask_name VARCHAR(100) NOT NULL,
+    description TEXT,
+    urgency VARCHAR(20) NOT NULL CHECK (urgency IN ('Not Urgent', 'Urgent')),
+    importance VARCHAR(20) NOT NULL CHECK (importance IN ('Not Important', 'Important')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+-- ===== Leads =====
+CREATE TABLE public.lead (
+    id SERIAL PRIMARY KEY,
+    admin_id INT NOT NULL REFERENCES public.admin_account(id) ON DELETE CASCADE,
+    lead_name VARCHAR(100) NOT NULL,
+    contact_method VARCHAR(50),
+    phone_number VARCHAR(20),
+    email VARCHAR(255),
+    linkedin VARCHAR(255),
+    facebook VARCHAR(255),
+    contact_information TEXT,
+    contacted BOOLEAN DEFAULT FALSE NOT NULL,
+    responded BOOLEAN DEFAULT FALSE NOT NULL,
+    follow_up BOOLEAN DEFAULT FALSE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
 -- ===== Views =====
 CREATE OR REPLACE VIEW public.v_property_info AS
 SELECT
@@ -283,3 +344,16 @@ JOIN
     public.tenant t ON a.id = t.account_id
 JOIN
     public.property_tenant pt ON t.id = pt.tenant_id;
+
+CREATE TABLE public.job (
+    id SERIAL PRIMARY KEY,
+    admin_id INT NOT NULL REFERENCES public.admin_account(id) ON DELETE CASCADE,
+    job_name VARCHAR(100) NOT NULL,
+    person_responsible VARCHAR(100),
+    urgency VARCHAR(20) NOT NULL CHECK (urgency IN ('Not Urgent', 'Urgent')),
+    importance VARCHAR(20) NOT NULL CHECK (importance IN ('Not Important', 'Important')),
+    date_to_be_completed DATE NOT NULL,
+    additional_details TEXT,
+    category VARCHAR(50) NOT NULL CHECK (category IN ('Marketing', 'Software', 'Customer Service', 'Outreach', 'Finances', 'HR')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
