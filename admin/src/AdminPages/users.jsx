@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+
+const BASE_URL = "https://api.mypropertypal.com"; // Hardcoded backend URL
 
 const Users = () => {
   const [users, setUsers] = useState([]); // All users
@@ -13,11 +14,15 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("/api/admin/manage-users/all", {
-          withCredentials: true,
+        const response = await fetch(`${BASE_URL}/api/admin/manage-users/all`, {
+          credentials: "include",
         });
-        setUsers(response.data);
-        setFilteredUsers(response.data);
+        if (!response.ok) {
+          throw new Error("Failed to fetch users");
+        }
+        const data = await response.json();
+        setUsers(data);
+        setFilteredUsers(data);
       } catch (err) {
         console.error("Error fetching users:", err);
       }
@@ -43,10 +48,14 @@ const Users = () => {
   // Handle user selection
   const handleUserClick = async (userId) => {
     try {
-      const response = await axios.get(`/api/admin/manage-users/details/${userId}`, {
-        withCredentials: true,
+      const response = await fetch(`${BASE_URL}/api/admin/manage-users/details/${userId}`, {
+        credentials: "include",
       });
-      setSelectedUser(response.data);
+      if (!response.ok) {
+        throw new Error("Failed to fetch user details");
+      }
+      const data = await response.json();
+      setSelectedUser(data);
       setEditMode(false); // Exit edit mode if active
     } catch (err) {
       console.error("Error fetching user details:", err);
@@ -57,11 +66,22 @@ const Users = () => {
   const handleEdit = async () => {
     try {
       const { account_id, first_name, last_name, email, role_id } = selectedUser;
-      await axios.put(
-        `/api/admin/manage-users/edit/${account_id}`,
-        { firstName: first_name, lastName: last_name, email, roleId: role_id },
-        { withCredentials: true }
-      );
+      const response = await fetch(`${BASE_URL}/api/admin/manage-users/edit/${account_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          firstName: first_name,
+          lastName: last_name,
+          email,
+          roleId: role_id,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update user");
+      }
       alert("User updated successfully!");
       setEditMode(false);
     } catch (err) {
@@ -79,18 +99,26 @@ const Users = () => {
     }
 
     try {
-      await axios.delete(`/api/admin/manage-users/delete/${selectedUser.account_id}`, {
-        withCredentials: true,
+      const response = await fetch(`${BASE_URL}/api/admin/manage-users/delete/${selectedUser.account_id}`, {
+        method: "DELETE",
+        credentials: "include",
       });
+      if (!response.ok) {
+        throw new Error("Failed to delete user");
+      }
       alert("User deleted successfully!");
       setSelectedUser(null);
       setConfirmDeleteCount(0);
       // Refresh the user list
-      const response = await axios.get("/api/admin/manage-users/all", {
-        withCredentials: true,
+      const refreshResponse = await fetch(`${BASE_URL}/api/admin/manage-users/all`, {
+        credentials: "include",
       });
-      setUsers(response.data);
-      setFilteredUsers(response.data);
+      if (!refreshResponse.ok) {
+        throw new Error("Failed to refresh user list");
+      }
+      const data = await refreshResponse.json();
+      setUsers(data);
+      setFilteredUsers(data);
     } catch (err) {
       console.error("Error deleting user:", err);
       alert("Failed to delete user.");

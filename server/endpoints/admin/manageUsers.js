@@ -17,6 +17,9 @@ module.exports = (pool) => {
 
   // ===== 1. View All Data =====
   router.get("/all", async (req, res) => {
+    const { page = 1, limit = 50 } = req.query; // Default to page 1, 50 rows per page
+    const offset = (page - 1) * limit;
+
     try {
       const accountsQuery = `
         SELECT a.id AS account_id, a.email, a.first_name, a.last_name, ar.role, a.email_verified,
@@ -29,10 +32,11 @@ module.exports = (pool) => {
         LEFT JOIN payment_plan pp ON l.payment_plan_id = pp.id
         LEFT JOIN tenant t ON a.id = t.account_id
         LEFT JOIN property_tenant pt ON t.id = pt.tenant_id
-        LEFT JOIN property p ON pt.property_id = p.id;
+        LEFT JOIN property p ON pt.property_id = p.id
+        LIMIT $1 OFFSET $2;
       `;
 
-      const result = await pool.query(accountsQuery);
+      const result = await pool.query(accountsQuery, [limit, offset]);
       res.status(200).json(result.rows);
     } catch (err) {
       console.error("Error fetching all user data:", err);

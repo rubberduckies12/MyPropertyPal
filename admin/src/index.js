@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AdminLogin from "./adminLogin/adminLogin";
 import AdminRegistration from "./adminLogin/adminRegistration"; // Import Admin Registration
 import Dashboard from "./AdminPages/dashboard"; // Import Dashboard
+import Users from "./AdminPages/users"; // Import Users Page
 import ProtectedRoute from "./ProtectedRoute"; // Import ProtectedRoute
 import Header from "./components/header"; // Import Header
 import "./index.css"; // Import Tailwind CSS styles
@@ -25,6 +26,15 @@ const App = () => {
             <ProtectedRoute>
               <Header /> {/* Header is included for all protected routes */}
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <Users /> {/* Include the Users page */}
             </ProtectedRoute>
           }
         />
@@ -71,15 +81,6 @@ const App = () => {
             <ProtectedRoute>
               <Header />
               <div>Productivity Page</div>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoute>
-              <Header />
-              <div>Users Page</div>
             </ProtectedRoute>
           }
         />
