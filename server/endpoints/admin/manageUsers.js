@@ -3,18 +3,6 @@ const express = require("express");
 module.exports = (pool) => {
   const router = express.Router();
 
-  // Middleware to ensure only admins can access this endpoint
-  const authenticateAdmin = (req, res, next) => {
-    if (req.user && req.user.role === "admin") {
-      next();
-    } else {
-      res.status(403).json({ error: "Access denied. Admins only." });
-    }
-  };
-
-  // Apply the admin authentication middleware
-  router.use(authenticateAdmin);
-
   // ===== 1. View All Users =====
   router.get("/all-users", async (req, res) => {
     try {
