@@ -5,6 +5,7 @@ import AdminLogin from "./adminLogin/adminLogin";
 import AdminRegistration from "./adminLogin/adminRegistration"; // Import Admin Registration
 import Dashboard from "./AdminPages/dashboard"; // Import Dashboard
 import ProtectedRoute from "./ProtectedRoute"; // Import ProtectedRoute
+import Header from "./components/header"; // Import Header
 import "./index.css"; // Import Tailwind CSS styles
 
 const App = () => {
@@ -17,12 +18,68 @@ const App = () => {
         {/* Public Route for Admin Registration */}
         <Route path="/adminregister" element={<AdminRegistration />} />
 
-        {/* Protected Route for Dashboard */}
+        {/* Protected Routes */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
+              <Header /> {/* Header is included for all protected routes */}
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        {/* Add other protected routes here */}
+        <Route
+          path="/finances"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <div>Finances Page</div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/jobs"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <div>Jobs Page</div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/leads"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <div>Leads Page</div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/marketing"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <div>Marketing Page</div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/productivity"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <div>Productivity Page</div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute>
+              <Header />
+              <div>Users Page</div>
             </ProtectedRoute>
           }
         />
