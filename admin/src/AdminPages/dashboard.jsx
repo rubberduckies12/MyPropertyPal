@@ -4,7 +4,7 @@ import { HiUsers, HiCurrencyPound, HiClipboardList, HiCash } from "react-icons/h
 const Dashboard = () => {
   const [userCount, setUserCount] = useState(0); // Total users
   const [tasks, setTasks] = useState([]); // Recent tasks
-  const [totalFinancials, setTotalFinancials] = useState(0); // Total financials
+  const [totalOutgoing, setTotalOutgoing] = useState(2500); // Filler value for total outgoing
   const [monthlyIncome, setMonthlyIncome] = useState(0); // Monthly income
   const [isYearly, setIsYearly] = useState(false); // Toggle for yearly/monthly income
   const [loading, setLoading] = useState(true); // Loading state
@@ -50,7 +50,9 @@ const Dashboard = () => {
         const summaryData = await summaryResponse.json();
         setMonthlyIncome(summaryData.totalMonthlyIncome);
         setTasks(summaryData.recentTasks);
-        setTotalFinancials(summaryData.totalMonthlyIncome); // Assuming financials = monthly income for now
+
+        // Outgoing is currently a filler value
+        setTotalOutgoing(2500);
 
         setLoading(false);
       } catch (err) {
@@ -106,14 +108,14 @@ const Dashboard = () => {
           <p className="text-4xl font-bold text-blue-600 mt-4">{userCount}</p>
         </div>
 
-        {/* Financials Card */}
+        {/* Outgoing Card */}
         <div className="bg-white shadow-md rounded-xl p-6 flex flex-col items-center md:items-start">
           <div className="flex items-center gap-4">
-            <HiCash className="text-purple-500 text-4xl" />
-            <h2 className="text-xl font-semibold text-gray-700">Financials</h2>
+            <HiCash className="text-red-500 text-4xl" />
+            <h2 className="text-xl font-semibold text-gray-700">Outgoing</h2>
           </div>
-          <p className="text-4xl font-bold text-purple-600 mt-4">
-            £{totalFinancials.toLocaleString()}
+          <p className="text-4xl font-bold text-red-600 mt-4">
+            £{totalOutgoing.toLocaleString()}
           </p>
         </div>
 
