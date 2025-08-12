@@ -3,10 +3,9 @@ const express = require("express");
 module.exports = (pool) => {
   const router = express.Router();
 
-  // ===== 1. View All Landlords =====
-  router.get("/all-users", async (req, res) => {
-    const { page = 1, limit = 10 } = req.query; // Default to page 1, 10 rows per page
-    const offset = (page - 1) * limit;
+  // ===== Search Users =====
+  router.get("/search-users", async (req, res) => {
+    const { search = "" } = req.query; // Search term from the query string
 
     try {
       const query = `
@@ -19,99 +18,15 @@ module.exports = (pool) => {
         FROM landlord l
         INNER JOIN account a ON l.account_id = a.id
         LEFT JOIN payment_plan pp ON l.payment_plan_id = pp.id
-        LIMIT $1 OFFSET $2;
+        WHERE LOWER(a.first_name) LIKE $1 
+           OR LOWER(a.last_name) LIKE $1 
+           OR LOWER(a.email) LIKE $1;
       `;
 
-      const result = await pool.query(query, [limit, offset]);
+      const result = await pool.query(query, [`%${search.toLowerCase()}%`]);
       res.status(200).json(result.rows);
     } catch (err) {
-      console.error("Error fetching landlord data:", err);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  });
-
-  // ===== 2. Edit Landlord Data =====
-  router.put("/edit/:landlordId", async (req, res) => {
-    const { landlordId } = req.params;
-    const { firstName, lastName, email } = req.body;
-
-    try {
-      const updateQuery = `
-        UPDATE account
-        SET first_name = $1, last_name = $2, email = $3
-        WHERE id = $4
-        RETURNING id AS account_id, first_name, last_name, email;
-      `;
-
-      const result = await pool.query(updateQuery, [
-        firstName,
-        lastName,
-        email,
-        landlordId,
-      ]);
-
-      if (result.rowCount === 0) {
-        return res.status(404).json({ error: "Landlord not found." });
-      }
-
-      res.status(200).json({ message: "Landlord updated successfully.", account: result.rows[0] });
-    } catch (err) {
-      console.error("Error updating landlord:", err);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  });
-
-  // ===== 3. Delete Landlord Data =====
-  router.delete("/delete/:landlordId", async (req, res) => {
-    const { landlordId } = req.params;
-
-    try {
-      const deleteQuery = `
-        DELETE FROM landlord
-        WHERE account_id = $1
-        RETURNING account_id AS landlord_id;
-      `;
-
-      const result = await pool.query(deleteQuery, [landlordId]);
-
-      if (result.rowCount === 0) {
-        return res.status(404).json({ error: "Landlord not found." });
-      }
-
-      res.status(200).json({ message: "Landlord deleted successfully.", landlord: result.rows[0] });
-    } catch (err) {
-      console.error("Error deleting landlord:", err);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  });
-
-  // ===== 4. View Specific Landlord Details =====
-  router.get("/details/:landlordId", async (req, res) => {
-    const { landlordId } = req.params;
-
-    try {
-      const userDetailsQuery = `
-        SELECT 
-          l.account_id AS landlord_id, 
-          a.first_name, 
-          a.last_name, 
-          a.email, 
-          pp.name AS payment_plan_name
-        FROM landlord l
-        INNER JOIN account a ON l.account_id = a.id
-        LEFT JOIN payment_plan pp ON l.payment_plan_id = pp.id
-        WHERE l.account_id = $1;
-      `;
-
-      const result = await pool.query(userDetailsQuery, [landlordId]);
-
-      if (result.rowCount === 0) {
-        return res.status(404).json({ error: "Landlord not found." });
-      }
-
-      res.status(200).json(result.rows[0]);
-    } catch (err) {
-      console.error("Error fetching landlord details:", err);
+      console.error("Error searching for users:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   });
