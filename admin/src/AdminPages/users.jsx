@@ -1,55 +1,39 @@
 import React, { useState, useEffect } from "react";
 
-const BASE_URL = "https://api.mypropertypal.com"; // Hardcoded backend URL
+const BASE_URL = "https://api.mypropertypal.com"; // Backend URL
 
 const Users = () => {
-  const [users, setUsers] = useState([]); // All users for the table
-  const [filteredUsers, setFilteredUsers] = useState([]); // Filtered users for search
+  const [users, setUsers] = useState([]); // Current page of users
   const [selectedUser, setSelectedUser] = useState(null); // Selected user details
-  const [searchTerm, setSearchTerm] = useState(""); // Search term
-  const [loading, setLoading] = useState(false); // Loading state for fetch requests
+  const [page, setPage] = useState(1); // Current page number
+  const [loading, setLoading] = useState(false); // Loading state
   const [error, setError] = useState(null); // Error state
-  const [confirmDeleteCount, setConfirmDeleteCount] = useState(0); // Delete confirmation counter
 
-  // Fetch the list of users for the table on component mount
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(`${BASE_URL}/api/admin/manage-users/all-users`, {
-          credentials: "include",
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch users");
-        }
-        const data = await response.json();
-        setUsers(data);
-        setFilteredUsers(data);
-      } catch (err) {
-        console.error("Error fetching users:", err);
-        setError("Failed to load users.");
-      } finally {
-        setLoading(false);
+  // Fetch users from the backend
+  const fetchUsers = async (page) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${BASE_URL}/api/admin/manage-users/all-users?page=${page}&limit=10`, {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
       }
-    };
-
-    fetchUsers();
-  }, []);
-
-  // Handle search input
-  const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
-    setFilteredUsers(
-      users.filter(
-        (user) =>
-          user.email.toLowerCase().includes(term) ||
-          user.first_name.toLowerCase().includes(term) ||
-          user.last_name.toLowerCase().includes(term)
-      )
-    );
+      const data = await response.json();
+      setUsers(data);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+      setError("Failed to load users.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Fetch users when the page changes
+  useEffect(() => {
+    fetchUsers(page);
+  }, [page]);
 
   // Handle user selection
   const handleUserClick = async (userId) => {
@@ -75,19 +59,14 @@ const Users = () => {
   // Handle user edit
   const handleEdit = async () => {
     try {
-      const { account_id, first_name, last_name, email, payment_plan_id } = selectedUser;
+      const { account_id, first_name, last_name, email } = selectedUser;
       const response = await fetch(`${BASE_URL}/api/admin/manage-users/edit/${account_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({
-          firstName: first_name,
-          lastName: last_name,
-          email,
-          paymentPlanId: payment_plan_id,
-        }),
+        body: JSON.stringify({ firstName: first_name, lastName: last_name, email }),
       });
       if (!response.ok) {
         throw new Error("Failed to update user");
@@ -101,12 +80,6 @@ const Users = () => {
 
   // Handle user delete
   const handleDelete = async () => {
-    if (confirmDeleteCount < 2) {
-      setConfirmDeleteCount(confirmDeleteCount + 1);
-      alert(`Are you sure? (${3 - confirmDeleteCount} confirmations left)`);
-      return;
-    }
-
     try {
       const response = await fetch(`${BASE_URL}/api/admin/manage-users/delete/${selectedUser.account_id}`, {
         method: "DELETE",
@@ -117,17 +90,7 @@ const Users = () => {
       }
       alert("User deleted successfully!");
       setSelectedUser(null);
-      setConfirmDeleteCount(0);
-      // Refresh the user list
-      const refreshResponse = await fetch(`${BASE_URL}/api/admin/manage-users/all-users`, {
-        credentials: "include",
-      });
-      if (!refreshResponse.ok) {
-        throw new Error("Failed to refresh user list");
-      }
-      const data = await refreshResponse.json();
-      setUsers(data);
-      setFilteredUsers(data);
+      fetchUsers(page); // Refresh the user list
     } catch (err) {
       console.error("Error deleting user:", err);
       alert("Failed to delete user.");
@@ -142,48 +105,57 @@ const Users = () => {
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
-      {/* Search Bar */}
-      {!selectedUser && (
-        <input
-          type="text"
-          placeholder="Search by name, email, or plan..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-        />
-      )}
-
       {/* User Table */}
       {!selectedUser && !loading && (
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-300 p-2">First Name</th>
-              <th className="border border-gray-300 p-2">Last Name</th>
-              <th className="border border-gray-300 p-2">Email</th>
-              <th className="border border-gray-300 p-2">Plan</th>
-              <th className="border border-gray-300 p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map((user) => (
-              <tr key={user.account_id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 p-2">{user.first_name}</td>
-                <td className="border border-gray-300 p-2">{user.last_name}</td>
-                <td className="border border-gray-300 p-2">{user.email}</td>
-                <td className="border border-gray-300 p-2">{user.payment_plan_name || "N/A"}</td>
-                <td className="border border-gray-300 p-2">
-                  <button
-                    onClick={() => handleUserClick(user.account_id)}
-                    className="text-blue-500 hover:underline"
-                  >
-                    View
-                  </button>
-                </td>
+        <>
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-300 p-2">First Name</th>
+                <th className="border border-gray-300 p-2">Last Name</th>
+                <th className="border border-gray-300 p-2">Email</th>
+                <th className="border border-gray-300 p-2">Plan</th>
+                <th className="border border-gray-300 p-2">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.account_id} className="hover:bg-gray-50">
+                  <td className="border border-gray-300 p-2">{user.first_name}</td>
+                  <td className="border border-gray-300 p-2">{user.last_name}</td>
+                  <td className="border border-gray-300 p-2">{user.email}</td>
+                  <td className="border border-gray-300 p-2">{user.payment_plan_name || "N/A"}</td>
+                  <td className="border border-gray-300 p-2">
+                    <button
+                      onClick={() => handleUserClick(user.account_id)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Pagination Controls */}
+          <div className="mt-4 flex justify-between">
+            <button
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              disabled={page === 1}
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span>Page {page}</span>
+            <button
+              onClick={() => setPage((prev) => prev + 1)}
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+            >
+              Next
+            </button>
+          </div>
+        </>
       )}
 
       {/* User Details Card */}
@@ -229,15 +201,6 @@ const Users = () => {
                 setSelectedUser({ ...selectedUser, email: e.target.value })
               }
               className="w-full p-2 border border-gray-300 rounded"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block font-medium">Plan</label>
-            <input
-              type="text"
-              value={selectedUser.payment_plan_name || "N/A"}
-              disabled
-              className="w-full p-2 border border-gray-300 rounded bg-gray-100"
             />
           </div>
           <div className="flex gap-4">
