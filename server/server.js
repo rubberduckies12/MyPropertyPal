@@ -33,6 +33,7 @@ const adminLoginRouter = require("./endpoints/admin/adminLogin"); // Import the 
 const adminRegRouter = require("./endpoints/admin/adminReg"); // Import the admin registration router
 const approveAdminRouter = require("./endpoints/admin/approveAdmin"); // Import the admin approval router
 const adminDashboardDataRouter = require("./endpoints/admin/adminDashboardData"); // Import the admin dashboard data router
+const manageUsersRouter = require("./endpoints/admin/manageUsers"); // Import the manageUsers router
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -144,8 +145,9 @@ app.use('/api/tenant/rent', tenantRentRouter);
 app.use('/api/maintenance', maintenanceRouter);
 app.use('/api/messages', messagesRouter);
 
-// Add the admin dashboard data routes as authenticated routes
+// admin routes
 app.use("/api/admin/dashboard", authenticate, adminDashboardDataRouter);
+app.use("/api/admin/manage-users", authenticate, manageUsersRouter);
 
 // --- Static Exports ---
 app.use("/exports", express.static(path.join(__dirname, "../exports")));
