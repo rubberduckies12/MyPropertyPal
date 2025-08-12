@@ -6,6 +6,7 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState([]); // Recent tasks
   const [totalFinancials, setTotalFinancials] = useState(0); // Total financials
   const [monthlyIncome, setMonthlyIncome] = useState(0); // Monthly income
+  const [isYearly, setIsYearly] = useState(false); // Toggle for yearly/monthly income
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
 
@@ -62,6 +63,10 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
+  const toggleIncomeView = () => {
+    setIsYearly((prev) => !prev);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -79,9 +84,9 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 sm:p-8">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-8 flex flex-col gap-6">
       {/* Header */}
-      <header className="mb-8 text-center sm:text-left">
+      <header className="mb-4 text-center sm:text-left">
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
           Admin Dashboard
         </h1>
@@ -90,26 +95,87 @@ const Dashboard = () => {
         </p>
       </header>
 
-      {/* Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Users Card */}
-        <div className="bg-white shadow-md rounded-xl p-6 flex flex-col items-center text-center sm:text-left">
-          <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full">
-            <HiUsers className="text-blue-500 text-4xl" />
+      {/* Dashboard Layout */}
+      <div className="flex flex-1 gap-6">
+        {/* Left Column: Stacked Rows */}
+        <div className="flex flex-col flex-1 gap-6">
+          {/* Users Row */}
+          <div className="bg-white shadow-md rounded-xl p-6 flex items-center justify-between flex-grow">
+            <div className="flex items-center gap-4">
+              <HiUsers className="text-blue-500 text-4xl" />
+              <h2 className="text-2xl font-semibold text-gray-700">Users</h2>
+            </div>
+            <p className="text-5xl font-bold text-blue-600">{userCount}</p>
           </div>
-          <h2 className="text-xl font-semibold text-gray-700 mt-4">Users</h2>
-          <p className="text-4xl sm:text-5xl font-bold text-blue-600 mt-2">
-            {userCount}
-          </p>
+
+          {/* Financials Row */}
+          <div className="bg-white shadow-md rounded-xl p-6 flex items-center justify-between flex-grow">
+            <div className="flex items-center gap-4">
+              <HiCash className="text-purple-500 text-4xl" />
+              <h2 className="text-2xl font-semibold text-gray-700">Financials</h2>
+            </div>
+            <p className="text-5xl font-bold text-purple-600">
+              £{totalFinancials.toLocaleString()}
+            </p>
+          </div>
+
+          {/* Income Row */}
+          <div className="bg-white shadow-md rounded-xl p-6 flex items-center justify-between flex-grow">
+            <div className="flex items-center gap-4">
+              <HiCurrencyPound className="text-yellow-500 text-4xl" />
+              <h2 className="text-2xl font-semibold text-gray-700">Income</h2>
+            </div>
+            <div className="flex flex-col items-end">
+              <p className="text-5xl font-bold text-yellow-600">
+                £
+                {isYearly
+                  ? (monthlyIncome * 12).toLocaleString()
+                  : monthlyIncome.toLocaleString()}
+              </p>
+              {/* Toggle Switch */}
+              <div
+                className="mt-4 flex items-center gap-2 cursor-pointer"
+                onClick={toggleIncomeView}
+              >
+                <span
+                  className={`text-sm font-medium ${
+                    isYearly ? "text-gray-400" : "text-gray-800"
+                  }`}
+                >
+                  Monthly
+                </span>
+                <div
+                  className={`relative w-12 h-6 rounded-full transition-colors ${
+                    isYearly ? "bg-blue-500" : "bg-gray-300"
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-md transition-transform ${
+                      isYearly ? "translate-x-6" : "translate-x-0"
+                    }`}
+                  ></div>
+                </div>
+                <span
+                  className={`text-sm font-medium ${
+                    isYearly ? "text-gray-800" : "text-gray-400"
+                  }`}
+                >
+                  Yearly
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Tasks Card */}
-        <div className="bg-white shadow-md rounded-xl p-6 flex flex-col items-center text-center sm:text-left">
-          <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full">
+        {/* Right Column: Tasks Card */}
+        <div className="bg-white shadow-md rounded-xl p-6 flex flex-col flex-grow">
+          <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mx-auto lg:mx-0">
             <HiClipboardList className="text-green-500 text-4xl" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-700 mt-4">Tasks</h2>
-          <p className="text-4xl sm:text-5xl font-bold text-green-600 mt-2">
+          <h2 className="text-2xl font-semibold text-gray-700 mt-4 text-center lg:text-left">
+            Tasks
+          </h2>
+          <p className="text-5xl sm:text-6xl font-bold text-green-600 mt-2 text-center lg:text-left">
             {tasks.length}
           </p>
           <ul className="mt-4 text-sm text-gray-600 w-full">
@@ -122,30 +188,6 @@ const Dashboard = () => {
               <li className="text-blue-500">+ more</li>
             )}
           </ul>
-        </div>
-
-        {/* Financials Card */}
-        <div className="bg-white shadow-md rounded-xl p-6 flex flex-col items-center text-center sm:text-left">
-          <div className="flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full">
-            <HiCash className="text-purple-500 text-4xl" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-700 mt-4">
-            Financials
-          </h2>
-          <p className="text-4xl sm:text-5xl font-bold text-purple-600 mt-2">
-            £{totalFinancials.toLocaleString()}
-          </p>
-        </div>
-
-        {/* Income Card */}
-        <div className="bg-white shadow-md rounded-xl p-6 flex flex-col items-center text-center sm:text-left">
-          <div className="flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full">
-            <HiCurrencyPound className="text-yellow-500 text-4xl" />
-          </div>
-          <h2 className="text-xl font-semibold text-gray-700 mt-4">Income</h2>
-          <p className="text-4xl sm:text-5xl font-bold text-yellow-600 mt-2">
-            £{monthlyIncome.toLocaleString()}
-          </p>
         </div>
       </div>
     </div>
