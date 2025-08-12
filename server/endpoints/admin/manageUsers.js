@@ -3,7 +3,7 @@ const express = require("express");
 module.exports = (pool) => {
   const router = express.Router();
 
-  // ===== 1. View All Users =====
+  // ===== 1. View All Landlords =====
   router.get("/all-users", async (req, res) => {
     const { page = 1, limit = 10 } = req.query; // Default to page 1, 10 rows per page
     const offset = (page - 1) * limit;
@@ -11,13 +11,13 @@ module.exports = (pool) => {
     try {
       const query = `
         SELECT 
-          a.id AS account_id, 
+          l.account_id AS landlord_id, 
           a.first_name, 
           a.last_name, 
           a.email, 
           pp.name AS payment_plan_name
-        FROM account a
-        LEFT JOIN landlord l ON a.id = l.account_id
+        FROM landlord l
+        INNER JOIN account a ON l.account_id = a.id
         LEFT JOIN payment_plan pp ON l.payment_plan_id = pp.id
         LIMIT $1 OFFSET $2;
       `;
@@ -25,14 +25,14 @@ module.exports = (pool) => {
       const result = await pool.query(query, [limit, offset]);
       res.status(200).json(result.rows);
     } catch (err) {
-      console.error("Error fetching user data:", err);
+      console.error("Error fetching landlord data:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   });
 
-  // ===== 2. Edit User Data =====
-  router.put("/edit/:accountId", async (req, res) => {
-    const { accountId } = req.params;
+  // ===== 2. Edit Landlord Data =====
+  router.put("/edit/:landlordId", async (req, res) => {
+    const { landlordId } = req.params;
     const { firstName, lastName, email } = req.body;
 
     try {
@@ -47,71 +47,71 @@ module.exports = (pool) => {
         firstName,
         lastName,
         email,
-        accountId,
+        landlordId,
       ]);
 
       if (result.rowCount === 0) {
-        return res.status(404).json({ error: "Account not found." });
+        return res.status(404).json({ error: "Landlord not found." });
       }
 
-      res.status(200).json({ message: "Account updated successfully.", account: result.rows[0] });
+      res.status(200).json({ message: "Landlord updated successfully.", account: result.rows[0] });
     } catch (err) {
-      console.error("Error updating account:", err);
+      console.error("Error updating landlord:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   });
 
-  // ===== 3. Delete User Data =====
-  router.delete("/delete/:accountId", async (req, res) => {
-    const { accountId } = req.params;
+  // ===== 3. Delete Landlord Data =====
+  router.delete("/delete/:landlordId", async (req, res) => {
+    const { landlordId } = req.params;
 
     try {
       const deleteQuery = `
-        DELETE FROM account
-        WHERE id = $1
-        RETURNING id AS account_id, first_name, last_name, email;
+        DELETE FROM landlord
+        WHERE account_id = $1
+        RETURNING account_id AS landlord_id;
       `;
 
-      const result = await pool.query(deleteQuery, [accountId]);
+      const result = await pool.query(deleteQuery, [landlordId]);
 
       if (result.rowCount === 0) {
-        return res.status(404).json({ error: "Account not found." });
+        return res.status(404).json({ error: "Landlord not found." });
       }
 
-      res.status(200).json({ message: "Account deleted successfully.", account: result.rows[0] });
+      res.status(200).json({ message: "Landlord deleted successfully.", landlord: result.rows[0] });
     } catch (err) {
-      console.error("Error deleting account:", err);
+      console.error("Error deleting landlord:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   });
 
-  // ===== 4. View Specific User Details =====
-  router.get("/details/:accountId", async (req, res) => {
-    const { accountId } = req.params;
+  // ===== 4. View Specific Landlord Details =====
+  router.get("/details/:landlordId", async (req, res) => {
+    const { landlordId } = req.params;
 
     try {
       const userDetailsQuery = `
         SELECT 
-          a.id AS account_id, 
+          l.account_id AS landlord_id, 
           a.first_name, 
           a.last_name, 
           a.email, 
           pp.name AS payment_plan_name
-        FROM account a
-        LEFT JOIN landlord l ON a.id = l.account_id
+        FROM landlord l
+        INNER JOIN account a ON l.account_id = a.id
         LEFT JOIN payment_plan pp ON l.payment_plan_id = pp.id
-        WHERE a.id = $1;
+        WHERE l.account_id = $1;
       `;
 
-      const result = await pool.query(userDetailsQuery, [accountId]);
+      const result = await pool.query(userDetailsQuery, [landlordId]);
 
       if (result.rowCount === 0) {
-        return res.status(404).json({ error: "Account not found." });
+        return res.status(404).json({ error: "Landlord not found." });
       }
 
       res.status(200).json(result.rows[0]);
     } catch (err) {
-      console.error("Error fetching user details:", err);
+      console.error("Error fetching landlord details:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   });
