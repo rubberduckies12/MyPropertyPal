@@ -2,23 +2,66 @@ import React, { useState, useEffect } from "react";
 import { HiUsers, HiCurrencyPound, HiClipboardList, HiCash } from "react-icons/hi";
 
 const Dashboard = () => {
-  const [userCount, setUserCount] = useState(120); // Filler value for users
-  const [tasks, setTasks] = useState([
-    { title: "Complete tenant report" },
-    { title: "Review financial summary" },
-    { title: "Update property listings" },
-  ]); // Filler tasks
-  const [totalFinancials, setTotalFinancials] = useState(50000); // Filler value for financials
-  const [monthlyIncome, setMonthlyIncome] = useState(5000); // Filler value for income
+  const [userCount, setUserCount] = useState(0); // Total users
+  const [tasks, setTasks] = useState([]); // Recent tasks
+  const [totalFinancials, setTotalFinancials] = useState(0); // Total financials
+  const [monthlyIncome, setMonthlyIncome] = useState(0); // Monthly income
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
 
   useEffect(() => {
-    // Simulate fetching data with filler values
-    const fetchData = () => {
-      // These values are already set as filler data
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch landlord count
+        const landlordResponse = await fetch(
+          "/api/admin/dashboard/landlord-count",
+          {
+            credentials: "include", // Include cookies for authentication
+          }
+        );
+        const landlordData = await landlordResponse.json();
+        setUserCount(landlordData.landlordCount);
+
+        // Fetch dashboard summary
+        const summaryResponse = await fetch(
+          "/api/admin/dashboard/dashboard-summary",
+          {
+            credentials: "include", // Include cookies for authentication
+          }
+        );
+        const summaryData = await summaryResponse.json();
+        setMonthlyIncome(summaryData.totalMonthlyIncome);
+        setTasks(summaryData.recentTasks);
+        setTotalFinancials(summaryData.totalMonthlyIncome); // Assuming financials = monthly income for now
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+        setError("Failed to load dashboard data.");
+        setLoading(false);
+      }
     };
 
-    fetchData();
+    fetchDashboardData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-red-500">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-8">
@@ -57,7 +100,7 @@ const Dashboard = () => {
           <ul className="mt-4 text-sm text-gray-600 w-full">
             {tasks.slice(0, 3).map((task, index) => (
               <li key={index} className="truncate">
-                - {task.title}
+                - {task.task_name} ({task.progress})
               </li>
             ))}
             {tasks.length > 3 && (
