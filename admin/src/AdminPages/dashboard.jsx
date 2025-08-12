@@ -14,23 +14,38 @@ const Dashboard = () => {
       try {
         setLoading(true);
 
+        // Replace with your backend's base URL
+        const BASE_URL = "https://api.mypropertypal.com";
+
         // Fetch landlord count
         const landlordResponse = await fetch(
-          "/api/admin/dashboard/landlord-count",
+          `${BASE_URL}/api/admin/dashboard/landlord-count`,
           {
             credentials: "include", // Include cookies for authentication
           }
         );
+
+        if (!landlordResponse.ok) {
+          const errorText = await landlordResponse.text();
+          throw new Error(`Landlord Count Error: ${errorText}`);
+        }
+
         const landlordData = await landlordResponse.json();
         setUserCount(landlordData.landlordCount);
 
         // Fetch dashboard summary
         const summaryResponse = await fetch(
-          "/api/admin/dashboard/dashboard-summary",
+          `${BASE_URL}/api/admin/dashboard/dashboard-summary`,
           {
             credentials: "include", // Include cookies for authentication
           }
         );
+
+        if (!summaryResponse.ok) {
+          const errorText = await summaryResponse.text();
+          throw new Error(`Dashboard Summary Error: ${errorText}`);
+        }
+
         const summaryData = await summaryResponse.json();
         setMonthlyIncome(summaryData.totalMonthlyIncome);
         setTasks(summaryData.recentTasks);
