@@ -95,23 +95,22 @@ router.post('/', async (req, res) => {
 
     // If landlord, insert into landlord table and create subscription
     if (role === 'landlord') {
-      const planResult = await pool.query(
-        'SELECT id, name, monthly_rate, yearly_rate FROM payment_plan WHERE LOWER(name) = $1',
-        [plan_name.toLowerCase()]
-      );
-      if (planResult.rows.length === 0) {
-        return res.status(400).json({ error: 'Invalid plan selected.' });
-      }
-      const plan = planResult.rows[0];
+      // Map plan_name and billing_cycle to payment_plan.id
+      const planMapping = {
+        basic: { monthly: 11, yearly: 12 },
+        pro: { monthly: 13, yearly: 14 },
+        organisation: { monthly: 15, yearly: 16 },
+      };
 
-      if (!['monthly', 'yearly'].includes(billing_cycle)) {
-        return res.status(400).json({ error: 'Invalid billing cycle.' });
+      const planId = planMapping[plan_name.toLowerCase()]?.[billing_cycle.toLowerCase()];
+      if (!planId) {
+        return res.status(400).json({ error: 'Invalid plan or billing cycle selected.' });
       }
 
       // Insert into landlord table with payment_plan_id
       const landlordResult = await pool.query(
         `INSERT INTO landlord (account_id, payment_plan_id) VALUES ($1, $2) RETURNING id`,
-        [accountId, plan.id]
+        [accountId, planId]
       );
       const landlordId = landlordResult.rows[0].id;
 
@@ -120,7 +119,7 @@ router.post('/', async (req, res) => {
         `INSERT INTO subscription (
           landlord_id, plan_id, status, is_active, created_at, updated_at
         ) VALUES ($1, $2, 'active', TRUE, NOW(), NOW())`,
-        [landlordId, plan.id]
+        [landlordId, planId]
       );
     }
 
