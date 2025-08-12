@@ -15,31 +15,25 @@ module.exports = (pool) => {
   // Apply the admin authentication middleware
   router.use(authenticateAdmin);
 
-  // ===== 1. View All Data =====
-  router.get("/all", async (req, res) => {
-    const { page = 1, limit = 50 } = req.query; // Default to page 1, 50 rows per page
-    const offset = (page - 1) * limit;
-
+  // ===== 1. View All Users =====
+  router.get("/all-users", async (req, res) => {
     try {
-      const accountsQuery = `
-        SELECT a.id AS account_id, a.email, a.first_name, a.last_name, ar.role, a.email_verified,
-               l.id AS landlord_id, l.payment_plan_id, pp.name AS payment_plan_name, pp.monthly_rate, pp.yearly_rate,
-               t.id AS tenant_id, t.is_pending, t.stripe_customer_id,
-               p.id AS property_id, p.address, p.city, p.postcode, pt.rent_amount, pt.rent_due_date
+      const query = `
+        SELECT 
+          a.id AS account_id, 
+          a.first_name, 
+          a.last_name, 
+          a.email, 
+          pp.name AS payment_plan_name
         FROM account a
-        LEFT JOIN account_role ar ON a.role_id = ar.id
         LEFT JOIN landlord l ON a.id = l.account_id
-        LEFT JOIN payment_plan pp ON l.payment_plan_id = pp.id
-        LEFT JOIN tenant t ON a.id = t.account_id
-        LEFT JOIN property_tenant pt ON t.id = pt.tenant_id
-        LEFT JOIN property p ON pt.property_id = p.id
-        LIMIT $1 OFFSET $2;
+        LEFT JOIN payment_plan pp ON l.payment_plan_id = pp.id;
       `;
 
-      const result = await pool.query(accountsQuery, [limit, offset]);
+      const result = await pool.query(query);
       res.status(200).json(result.rows);
     } catch (err) {
-      console.error("Error fetching all user data:", err);
+      console.error("Error fetching user data:", err);
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -47,21 +41,20 @@ module.exports = (pool) => {
   // ===== 2. Edit User Data =====
   router.put("/edit/:accountId", async (req, res) => {
     const { accountId } = req.params;
-    const { firstName, lastName, email, roleId } = req.body;
+    const { firstName, lastName, email } = req.body;
 
     try {
       const updateQuery = `
         UPDATE account
-        SET first_name = $1, last_name = $2, email = $3, role_id = $4
-        WHERE id = $5
-        RETURNING *;
+        SET first_name = $1, last_name = $2, email = $3
+        WHERE id = $4
+        RETURNING id AS account_id, first_name, last_name, email;
       `;
 
       const result = await pool.query(updateQuery, [
         firstName,
         lastName,
         email,
-        roleId,
         accountId,
       ]);
 
@@ -84,7 +77,7 @@ module.exports = (pool) => {
       const deleteQuery = `
         DELETE FROM account
         WHERE id = $1
-        RETURNING *;
+        RETURNING id AS account_id, first_name, last_name, email;
       `;
 
       const result = await pool.query(deleteQuery, [accountId]);
@@ -106,17 +99,15 @@ module.exports = (pool) => {
 
     try {
       const userDetailsQuery = `
-        SELECT a.id AS account_id, a.email, a.first_name, a.last_name, ar.role, a.email_verified,
-               l.id AS landlord_id, l.payment_plan_id, pp.name AS payment_plan_name, pp.monthly_rate, pp.yearly_rate,
-               t.id AS tenant_id, t.is_pending, t.stripe_customer_id,
-               p.id AS property_id, p.address, p.city, p.postcode, pt.rent_amount, pt.rent_due_date
+        SELECT 
+          a.id AS account_id, 
+          a.first_name, 
+          a.last_name, 
+          a.email, 
+          pp.name AS payment_plan_name
         FROM account a
-        LEFT JOIN account_role ar ON a.role_id = ar.id
         LEFT JOIN landlord l ON a.id = l.account_id
         LEFT JOIN payment_plan pp ON l.payment_plan_id = pp.id
-        LEFT JOIN tenant t ON a.id = t.account_id
-        LEFT JOIN property_tenant pt ON t.id = pt.tenant_id
-        LEFT JOIN property p ON pt.property_id = p.id
         WHERE a.id = $1;
       `;
 

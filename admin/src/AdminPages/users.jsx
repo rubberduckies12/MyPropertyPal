@@ -3,18 +3,21 @@ import React, { useState, useEffect } from "react";
 const BASE_URL = "https://api.mypropertypal.com"; // Hardcoded backend URL
 
 const Users = () => {
-  const [users, setUsers] = useState([]); // All users
+  const [users, setUsers] = useState([]); // All users for the table
   const [filteredUsers, setFilteredUsers] = useState([]); // Filtered users for search
   const [selectedUser, setSelectedUser] = useState(null); // Selected user details
   const [searchTerm, setSearchTerm] = useState(""); // Search term
-  const [editMode, setEditMode] = useState(false); // Toggle edit mode
+  const [loading, setLoading] = useState(false); // Loading state for fetch requests
+  const [error, setError] = useState(null); // Error state
   const [confirmDeleteCount, setConfirmDeleteCount] = useState(0); // Delete confirmation counter
 
-  // Fetch all users on component mount
+  // Fetch the list of users for the table on component mount
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        const response = await fetch(`${BASE_URL}/api/admin/manage-users/all`, {
+        const response = await fetch(`${BASE_URL}/api/admin/manage-users/all-users`, {
           credentials: "include",
         });
         if (!response.ok) {
@@ -25,6 +28,9 @@ const Users = () => {
         setFilteredUsers(data);
       } catch (err) {
         console.error("Error fetching users:", err);
+        setError("Failed to load users.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -47,6 +53,8 @@ const Users = () => {
 
   // Handle user selection
   const handleUserClick = async (userId) => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${BASE_URL}/api/admin/manage-users/details/${userId}`, {
         credentials: "include",
@@ -56,16 +64,18 @@ const Users = () => {
       }
       const data = await response.json();
       setSelectedUser(data);
-      setEditMode(false); // Exit edit mode if active
     } catch (err) {
       console.error("Error fetching user details:", err);
+      setError("Failed to load user details.");
+    } finally {
+      setLoading(false);
     }
   };
 
   // Handle user edit
   const handleEdit = async () => {
     try {
-      const { account_id, first_name, last_name, email, role_id } = selectedUser;
+      const { account_id, first_name, last_name, email, payment_plan_id } = selectedUser;
       const response = await fetch(`${BASE_URL}/api/admin/manage-users/edit/${account_id}`, {
         method: "PUT",
         headers: {
@@ -76,14 +86,13 @@ const Users = () => {
           firstName: first_name,
           lastName: last_name,
           email,
-          roleId: role_id,
+          paymentPlanId: payment_plan_id,
         }),
       });
       if (!response.ok) {
         throw new Error("Failed to update user");
       }
       alert("User updated successfully!");
-      setEditMode(false);
     } catch (err) {
       console.error("Error updating user:", err);
       alert("Failed to update user.");
@@ -110,7 +119,7 @@ const Users = () => {
       setSelectedUser(null);
       setConfirmDeleteCount(0);
       // Refresh the user list
-      const refreshResponse = await fetch(`${BASE_URL}/api/admin/manage-users/all`, {
+      const refreshResponse = await fetch(`${BASE_URL}/api/admin/manage-users/all-users`, {
         credentials: "include",
       });
       if (!refreshResponse.ok) {
@@ -129,34 +138,40 @@ const Users = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">User Management</h1>
 
+      {/* Loading and Error States */}
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+
       {/* Search Bar */}
-      <input
-        type="text"
-        placeholder="Search by name or email..."
-        value={searchTerm}
-        onChange={handleSearch}
-        className="w-full p-2 border border-gray-300 rounded mb-4"
-      />
+      {!selectedUser && (
+        <input
+          type="text"
+          placeholder="Search by name, email, or plan..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="w-full p-2 border border-gray-300 rounded mb-4"
+        />
+      )}
 
       {/* User Table */}
-      {!selectedUser && (
+      {!selectedUser && !loading && (
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-gray-100">
-              <th className="border border-gray-300 p-2">Name</th>
+              <th className="border border-gray-300 p-2">First Name</th>
+              <th className="border border-gray-300 p-2">Last Name</th>
               <th className="border border-gray-300 p-2">Email</th>
-              <th className="border border-gray-300 p-2">Role</th>
+              <th className="border border-gray-300 p-2">Plan</th>
               <th className="border border-gray-300 p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map((user) => (
               <tr key={user.account_id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 p-2">
-                  {user.first_name} {user.last_name}
-                </td>
+                <td className="border border-gray-300 p-2">{user.first_name}</td>
+                <td className="border border-gray-300 p-2">{user.last_name}</td>
                 <td className="border border-gray-300 p-2">{user.email}</td>
-                <td className="border border-gray-300 p-2">{user.role}</td>
+                <td className="border border-gray-300 p-2">{user.payment_plan_name || "N/A"}</td>
                 <td className="border border-gray-300 p-2">
                   <button
                     onClick={() => handleUserClick(user.account_id)}
@@ -171,79 +186,74 @@ const Users = () => {
         </table>
       )}
 
-      {/* User Details */}
+      {/* User Details Card */}
       {selectedUser && (
-        <div className="mt-6">
+        <div className="mt-6 p-4 border border-gray-300 rounded shadow-md">
           <button
             onClick={() => setSelectedUser(null)}
             className="text-blue-500 hover:underline mb-4"
           >
             Back to User List
           </button>
-
-          {!editMode ? (
-            <div>
-              <h2 className="text-xl font-bold mb-4">
-                {selectedUser.first_name} {selectedUser.last_name}
-              </h2>
-              <p><strong>Email:</strong> {selectedUser.email}</p>
-              <p><strong>Role:</strong> {selectedUser.role}</p>
-              <p><strong>Payment Plan:</strong> {selectedUser.payment_plan_name}</p>
-              <p><strong>Rent Due Date:</strong> {selectedUser.rent_due_date || "N/A"}</p>
-
-              <div className="mt-4">
-                <button
-                  onClick={() => setEditMode(true)}
-                  className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="bg-red-500 text-white px-4 py-2 rounded"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <h2 className="text-xl font-bold mb-4">Edit User</h2>
-              <input
-                type="text"
-                value={selectedUser.first_name}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, first_name: e.target.value })
-                }
-                placeholder="First Name"
-                className="w-full p-2 border border-gray-300 rounded mb-2"
-              />
-              <input
-                type="text"
-                value={selectedUser.last_name}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, last_name: e.target.value })
-                }
-                placeholder="Last Name"
-                className="w-full p-2 border border-gray-300 rounded mb-2"
-              />
-              <input
-                type="email"
-                value={selectedUser.email}
-                onChange={(e) =>
-                  setSelectedUser({ ...selectedUser, email: e.target.value })
-                }
-                placeholder="Email"
-                className="w-full p-2 border border-gray-300 rounded mb-2"
-              />
-              <button
-                onClick={handleEdit}
-                className="bg-green-500 text-white px-4 py-2 rounded"
-              >
-                Save Changes
-              </button>
-            </div>
-          )}
+          <h2 className="text-xl font-bold mb-4">
+            {selectedUser.first_name} {selectedUser.last_name}
+          </h2>
+          <div className="mb-4">
+            <label className="block font-medium">First Name</label>
+            <input
+              type="text"
+              value={selectedUser.first_name}
+              onChange={(e) =>
+                setSelectedUser({ ...selectedUser, first_name: e.target.value })
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-medium">Last Name</label>
+            <input
+              type="text"
+              value={selectedUser.last_name}
+              onChange={(e) =>
+                setSelectedUser({ ...selectedUser, last_name: e.target.value })
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-medium">Email</label>
+            <input
+              type="email"
+              value={selectedUser.email}
+              onChange={(e) =>
+                setSelectedUser({ ...selectedUser, email: e.target.value })
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block font-medium">Plan</label>
+            <input
+              type="text"
+              value={selectedUser.payment_plan_name || "N/A"}
+              disabled
+              className="w-full p-2 border border-gray-300 rounded bg-gray-100"
+            />
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={handleEdit}
+              className="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              Save Changes
+            </button>
+            <button
+              onClick={handleDelete}
+              className="bg-red-500 text-white px-4 py-2 rounded"
+            >
+              Delete User
+            </button>
+          </div>
         </div>
       )}
     </div>
