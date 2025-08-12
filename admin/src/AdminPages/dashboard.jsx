@@ -133,7 +133,7 @@ const Dashboard = () => {
             Financials
           </h2>
           <p className="text-4xl sm:text-5xl font-bold text-purple-600 mt-2">
-            ${totalFinancials.toLocaleString()}
+            £{totalFinancials.toLocaleString()}
           </p>
         </div>
 
@@ -144,7 +144,7 @@ const Dashboard = () => {
           </div>
           <h2 className="text-xl font-semibold text-gray-700 mt-4">Income</h2>
           <p className="text-4xl sm:text-5xl font-bold text-yellow-600 mt-2">
-            ${monthlyIncome.toLocaleString()}
+            £{monthlyIncome.toLocaleString()}
           </p>
         </div>
       </div>
