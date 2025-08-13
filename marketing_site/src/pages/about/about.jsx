@@ -103,6 +103,23 @@ export default function DesktopAbout() {
                 </div>
             </section>
 
+            {/* Special Mentions */}
+            <section className="max-w-6xl mx-auto py-16 px-4">
+                <h2 className="text-3xl font-bold text-center mb-10 text-[#2563eb]">Special Mentions</h2>
+                <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch">
+                    {/* Rowan Anstee */}
+                    <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
+                        <FounderIcon letter="R" color="#2563eb" />
+                        <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Rowan Anstee</h3>
+                        <div className="text-sm text-gray-500 mb-1">The Creative</div>
+                        <div className="text-sm text-gray-700 mb-2">Presentation Designer</div>
+                        <p className="text-gray-700 text-center text-base">
+                            “Rowan helped develop stunning presentation assets for our Airbus Defence and Space presentation, ensuring our ideas were communicated with clarity and impact.”
+                        </p>
+                    </div>
+                </div>
+            </section>
+
             {/* CTA Section */}
             <section className="bg-[#2563eb] py-16 px-4 text-white text-center">
                 <h2 className="text-3xl font-bold mb-3">
