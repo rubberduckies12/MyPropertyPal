@@ -114,7 +114,7 @@ export default function DesktopAbout() {
                         <div className="text-sm text-gray-500 mb-1">The Creative</div>
                         <div className="text-sm text-gray-700 mb-2">Presentation Designer</div>
                         <p className="text-gray-700 text-center text-base">
-                            “Rowan helped develop stunning presentation assets for our Airbus Defence and Space presentation, ensuring our ideas were communicated with clarity and impact.”
+                            “Rowan helped develop stunning presentation assets for our Airbus Defence and Space presentation, ensuring this project was communicated with clarity and impact.”
                         </p>
                     </div>
                 </div>
