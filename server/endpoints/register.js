@@ -99,7 +99,7 @@ router.post('/', async (req, res) => {
       const planMapping = {
         basic: { monthly: 11, yearly: 12 },
         pro: { monthly: 13, yearly: 14 },
-        organisation: { monthly: 15, yearly: 16 },
+        organisation: { monthly: 15, yearly: 16 }, // Update to match the frontend
       };
 
       const planId = planMapping[plan_name.toLowerCase()]?.[billing_cycle.toLowerCase()];
