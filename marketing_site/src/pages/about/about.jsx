@@ -84,10 +84,10 @@ export default function DesktopAbout() {
                     <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
                         <FounderIcon letter="F" color="#2563eb" />
                         <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Finn Perkins</h3>
-                        <div className="text-sm text-gray-500 mb-1">The Engine</div>
-                        <div className="text-sm text-gray-700 mb-2">Software Engineer</div>
+                        <div className="text-sm text-gray-500 mb-1">The Engineer</div>
+                        <div className="text-sm text-gray-700 mb-2">Database & Authentication</div>
                         <p className="text-gray-700 text-center text-base">
-                            “Finn lives in the backend — the unsung hero behind our APIs, integrations, and platform performance. If it runs, he probably wrote it.”
+                            “Finn laid the groundwork for our database and authentication systems, ensuring a secure and reliable foundation for MyPropertyPal.”
                         </p>
                     </div>
                     {/* Chris Thomson */}
