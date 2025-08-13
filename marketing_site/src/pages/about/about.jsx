@@ -111,10 +111,30 @@ export default function DesktopAbout() {
                     <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
                         <FounderIcon letter="R" color="#2563eb" />
                         <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Rowan Anstee</h3>
-                        <div className="text-sm text-gray-500 mb-1">The Creative</div>
+                        <div className="text-sm text-gray-500 mb-1">The Collaborator</div>
                         <div className="text-sm text-gray-700 mb-2">Presentation Designer</div>
                         <p className="text-gray-700 text-center text-base">
                             “Rowan helped develop stunning presentation assets for our Airbus Defence and Space presentation, ensuring this project was communicated with clarity and impact.”
+                        </p>
+                    </div>
+                    {/* Landlords and Testers */}
+                    <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
+                        <FounderIcon letter="L" color="#2563eb" />
+                        <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Landlords and Testers</h3>
+                        <div className="text-sm text-gray-500 mb-1">The Real MVPs</div>
+                        <div className="text-sm text-gray-700 mb-2">Our Early Adopters</div>
+                        <p className="text-gray-700 text-center text-base">
+                            “To the landlords and testers who gave us feedback, tested features, and made sure MyPropertyPal is truly useful — thank you for being part of the journey.”
+                        </p>
+                    </div>
+                    {/* Gareth Proctor */}
+                    <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
+                        <FounderIcon letter="G" color="#2563eb" />
+                        <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Gareth Proctor</h3>
+                        <div className="text-sm text-gray-500 mb-1">The Creative</div>
+                        <div className="text-sm text-gray-700 mb-2">Graphic Designer</div>
+                        <p className="text-gray-700 text-center text-base">
+                            “Gareth helped perfect the UI and copy, ensuring every word and design element worked together to create a seamless experience for landlords.”
                         </p>
                     </div>
                 </div>
