@@ -77,7 +77,7 @@ app.use('/register', register);
 app.use('/api/stripe', stripeRouter);
 app.use("/api/account/reset-password", resetPasswordRouter);
 
-// Add the admin login route
+//the admin login route
 app.use("/api/admin", adminLoginRouter); // Mount the admin login router
 app.use("/api/admin", adminRegRouter); // Mount the admin registration router
 app.use("/api/admin", approveAdminRouter); // Mount the admin approval router

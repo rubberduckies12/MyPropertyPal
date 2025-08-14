@@ -112,9 +112,9 @@ export default function DesktopAbout() {
                         <FounderIcon letter="R" color="#2563eb" />
                         <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Rowan Anstee</h3>
                         <div className="text-sm text-gray-500 mb-1">The Collaborator</div>
-                        <div className="text-sm text-gray-700 mb-2">Presentation Designer</div>
+                        <div className="text-sm text-gray-700 mb-2">Event Organiser</div>
                         <p className="text-gray-700 text-center text-base">
-                            “Rowan helped develop stunning presentation assets for our demonstrations and presentations, ensuring this project was communicated with clarity and impact.”
+                            “Rowan helped us organise and develop our stands and demos at events and showcases to communicate our vision clearly and effectively.”
                         </p>
                     </div>
                     {/* Landlords and Testers */}
