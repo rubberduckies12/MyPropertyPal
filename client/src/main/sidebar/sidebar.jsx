@@ -164,7 +164,7 @@ function Sidebar() {
                 <NavLink
                   to="/documents"
                   className={({ isActive }) =>
-                    `block px-4 py-2 rounded-lg transition ${
+                    `block px-4 py-2 rounded-lg transition hidden lg:block ${
                       isActive ? "bg-blue-800" : "hover:bg-blue-600"
                     }`
                   }
