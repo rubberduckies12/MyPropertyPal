@@ -218,10 +218,15 @@ function Dashboard() {
 
   return (
     <div className="flex h-screen bg-blue-50 overflow-auto">
-      <div className="w-64 flex-shrink-0">
+      {/* Sidebar: full width on desktop, hidden on mobile */}
+      <div className="hidden lg:block w-64 flex-shrink-0">
         <Sidebar />
       </div>
-      <main className="flex-1 px-4 sm:px-6 py-4">
+      {/* Sidebar as hamburger on mobile */}
+      <div className="block lg:hidden fixed top-0 left-0 z-50">
+        <Sidebar />
+      </div>
+      <main className="flex-1 px-2 sm:px-4 py-4 pt-16 lg:pt-4">
         {/* Header */}
         <header className="flex justify-between items-center mb-4 border-b border-blue-100 pb-2">
           <div>
@@ -382,101 +387,122 @@ function Dashboard() {
             </button>
           </div>
 
-          {/* Maintenance Requests Card */}
-          <div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-3 min-h-0">
-            <div className="flex items-center gap-2 mb-4">
-              <HiCog className="text-blue-500 text-2xl" />
-              <h3 className="text-lg font-bold text-blue-700">Maintenance Requests</h3>
-            </div>
-            <div className="w-full overflow-x-auto">
-              <table className="min-w-full bg-white rounded-2xl text-sm divide-y divide-blue-100">
-                <thead>
-                  <tr>
-                    <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-left">Title</th>
-                    <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-left">Property</th>
-                    <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-center">Severity</th>
-                    <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-center">Progress</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {incidents.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="text-center text-gray-400 py-4">
-                        No maintenance requests available.
-                      </td>
-                    </tr>
-                  ) : (
-                    incidents.slice(0, 3).map((incident) => (
-                      <tr key={incident.id} className="hover:bg-blue-50 transition">
-                        <td className="py-2 px-3 font-semibold text-blue-700">{incident.title}</td>
-                        <td className="py-2 px-3">{incident.property_display}</td>
-                        <td className="py-2 px-3 text-center">
-                          <span className={`px-3 py-1 rounded-xl font-semibold text-xs ${getSeverityColor(incident.severity)}`}>
-                            {incident.severity}
-                          </span>
-                        </td>
-                        <td className="py-2 px-3 text-center">
-                          <span className={`px-3 py-1 rounded-xl font-semibold text-xs ${getProgressColor(incident.progress)}`}>
-                            {incident.progress}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <button
-              className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
-              onClick={() => navigate('/incidents')}
-            >
-              View All Maintenance Requests
-            </button>
+       {/* Maintenance Requests Card */}
+        <div className="bg-white rounded-2xl shadow p-4 flex flex-col col-span-1 md:col-span-3 min-h-0">
+          {/* Card Header */}
+          <div className="flex items-center gap-2 mb-4">
+            <HiCog className="text-blue-500 text-2xl" />
+            <h3 className="text-lg font-bold text-blue-700">Maintenance Requests</h3>
           </div>
 
-          {/* Received Income vs Expenses Graph */}
-          <div className="bg-white rounded-2xl shadow p-6 col-span-1 md:col-span-3">
-            <h2 className="text-xl font-bold text-blue-700 mb-4">Received Income vs Expenses</h2>
-            <div className="w-full h-72">
-              <ResponsiveContainer>
-                <LineChart data={monthlySummaryData}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
-                  <YAxis stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
-                  <Tooltip
-                    formatter={value => `£${value.toLocaleString()}`}
-                    contentStyle={{ backgroundColor: "#f9fafb", borderRadius: "8px", border: "1px solid #2563eb" }}
-                    labelStyle={{ color: "#2563eb", fontWeight: "bold" }}
-                  />
-                  <Legend
-                    wrapperStyle={{ paddingTop: 10 }}
-                    iconType="circle"
-                    formatter={(value, entry) => (
-                      <span style={{ color: entry.color, fontWeight: 700 }}>{value}</span>
-                    )}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="income"
-                    name="Rental Income"
-                    stroke="#22c55e"
-                    strokeWidth={3}
-                    dot={{ r: 5 }}
-                    activeDot={{ r: 7 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="expenses"
-                    name="Expenses"
-                    stroke="#ef4444"
-                    strokeWidth={3}
-                    dot={{ r: 5 }}
-                    activeDot={{ r: 7 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+          {/* Mobile View: Show Count */}
+        <div className="block lg:hidden">
+          <div className="text-3xl font-extrabold text-blue-600 mb-2">
+            {incidents.length}
           </div>
+          <div className="text-gray-600 mb-4">Total Maintenance Requests</div>
+          <button
+            className="w-full bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition"
+            onClick={() => navigate('/incidents')}
+          >
+            View All Maintenance Requests
+          </button>
+        </div>
+
+  {/* Desktop View: Show Table */}
+  <div className="hidden lg:block w-full overflow-x-auto">
+    <table className="min-w-full bg-white rounded-2xl text-sm divide-y divide-blue-100">
+      <thead>
+        <tr>
+          <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-left">Title</th>
+          <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-left">Property</th>
+          <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-center">Severity</th>
+          <th className="bg-blue-50 text-blue-700 font-bold py-2 px-3 text-center">Progress</th>
+        </tr>
+      </thead>
+      <tbody>
+        {incidents.length === 0 ? (
+          <tr>
+            <td colSpan={4} className="text-center text-gray-400 py-4">
+              No maintenance requests available.
+            </td>
+          </tr>
+        ) : (
+          incidents.slice(0, 3).map((incident) => (
+            <tr key={incident.id} className="hover:bg-blue-50 transition">
+              <td className="py-2 px-3 font-semibold text-blue-700">{incident.title}</td>
+              <td className="py-2 px-3">{incident.property_display}</td>
+              <td className="py-2 px-3 text-center">
+                <span className={`px-3 py-1 rounded-xl font-semibold text-xs ${getSeverityColor(incident.severity)}`}>
+                  {incident.severity}
+                </span>
+              </td>
+              <td className="py-2 px-3 text-center">
+                <span className={`px-3 py-1 rounded-xl font-semibold text-xs ${getProgressColor(incident.progress)}`}>
+                  {incident.progress}
+                </span>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+
+  {/* View All Button */}
+  <button
+    className="mt-4 bg-blue-600 text-white rounded-lg px-4 py-2 font-semibold hover:bg-blue-700 transition hidden lg:block"
+    onClick={() => navigate('/incidents')}
+  >
+    View All Maintenance Requests
+  </button>
+</div>
+
+        {/* Received Income vs Expenses Graph */}
+        {/* Received Income vs Expenses Graph */}
+        <div className="hidden lg:block bg-white rounded-2xl shadow p-6 col-span-1 md:col-span-3">
+          <h2 className="text-xl font-bold text-blue-700 mb-4">Received Income vs Expenses</h2>
+          <div className="w-full h-72">
+            <ResponsiveContainer>
+              <LineChart data={monthlySummaryData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="month" stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
+                <YAxis stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
+                <Tooltip
+                  formatter={(value) => `£${value.toLocaleString()}`}
+                  contentStyle={{ backgroundColor: "#f9fafb", borderRadius: "8px", border: "1px solid #2563eb" }}
+                  labelStyle={{ color: "#2563eb", fontWeight: "bold" }}
+                />
+                <Legend
+                  wrapperStyle={{ paddingTop: 10 }}
+                  iconType="circle"
+                  formatter={(value, entry) => (
+                    <span style={{ color: entry.color, fontWeight: 700 }}>{value}</span>
+                  )}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="income"
+                  name="Rental Income"
+                  stroke="#22c55e"
+                  strokeWidth={3}
+                  dot={{ r: 5 }}
+                  activeDot={{ r: 7 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="expenses"
+                  name="Expenses"
+                  stroke="#ef4444"
+                  strokeWidth={3}
+                  dot={{ r: 5 }}
+                  activeDot={{ r: 7 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        {/* Add closing tag for dashboard grid container */}
         </div>
       </main>
     </div>

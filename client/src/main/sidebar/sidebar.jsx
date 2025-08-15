@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { FaHome, FaEnvelope, FaBuilding, FaFileAlt, FaGavel, FaRobot, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaEnvelope, FaBuilding, FaFileAlt, FaGavel, FaRobot, FaCog, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
 
 function Sidebar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for mobile sidebar
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -21,10 +22,26 @@ function Sidebar() {
     setOpenDropdown(openDropdown === section ? null : section);
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className={`${showLogoutModal ? "pointer-events-none" : ""}`}>
+      {/* Hamburger Icon for Mobile */}
+      <button
+        className="lg:hidden fixed top-4 left-4 z-50 bg-blue-700 text-white p-3 rounded-full shadow-lg"
+        onClick={toggleSidebar}
+      >
+        {isSidebarOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
+      </button>
+
       {/* Sidebar Component */}
-      <aside className="bg-blue-700 text-white h-screen w-64 flex flex-col fixed">
+      <aside
+        className={`bg-blue-700 text-white h-screen w-64 flex flex-col fixed z-40 transition-transform transform ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
+      >
         {/* Logo Section */}
         <div className="flex items-center justify-center py-6">
           <img
@@ -198,12 +215,12 @@ function Sidebar() {
             <FaRobot className="text-xl" />
             <span>AI Chatbot</span>
           </NavLink>
-          </nav>
+        </nav>
 
-          {/* Logout */}
-          <button
-            className="flex items-center gap-4 px-4 py-3 mt-auto text-red-500 hover:text-red-700 transition"
-              onClick={handleLogoutClick}
+        {/* Logout */}
+        <button
+          className="flex items-center gap-4 px-4 py-3 mt-auto text-red-500 hover:text-red-700 transition"
+          onClick={handleLogoutClick}
         >
           <FaSignOutAlt className="text-xl" />
           <span>Log Out</span>
