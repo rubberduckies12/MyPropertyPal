@@ -13,7 +13,7 @@ const RECOMMENDED_KEYWORDS = [
   "carpenter",
   "handyman",
   "heating engineer",
-  "locksmith"
+  "locksmith",
 ];
 
 async function fetchContractors(location, keyword = "contractor") {
@@ -55,15 +55,21 @@ export default function ContractorsPage() {
     `https://www.google.com/maps/place/?q=place_id:${placeId}`;
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="w-64 flex-shrink-0 h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* Sidebar */}
+      <div className="hidden lg:block w-64 flex-shrink-0 h-screen">
         <Sidebar />
       </div>
-      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-y-auto">
+
+      {/* Main Content */}
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 pt-16 overflow-y-auto">
         <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
-          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Find Home Improvement Professionals</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-blue-700 tracking-tight">
+            Find Home Improvement Professionals
+          </h1>
         </div>
 
+        {/* Search Form */}
         <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl mx-auto mb-8 border border-blue-100">
           <form className="flex flex-col sm:flex-row gap-4 items-center" onSubmit={handleSearch}>
             <input
@@ -71,7 +77,7 @@ export default function ContractorsPage() {
               type="text"
               placeholder="Enter your location (e.g. London, UK)"
               value={location}
-              onChange={e => setLocation(e.target.value)}
+              onChange={(e) => setLocation(e.target.value)}
               required
             />
             <input
@@ -79,7 +85,7 @@ export default function ContractorsPage() {
               type="text"
               placeholder="Type of contractor (e.g. plumber)"
               value={keyword}
-              onChange={e => setKeyword(e.target.value)}
+              onChange={(e) => setKeyword(e.target.value)}
               list="recommended-keywords"
             />
             <datalist id="recommended-keywords">
@@ -112,14 +118,63 @@ export default function ContractorsPage() {
 
         {error && <div className="text-red-500 text-center mb-4">{error}</div>}
 
-        <div className="w-full overflow-x-auto mt-8">
+        {/* Mobile View: Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
+          {results.length === 0 ? (
+            <div className="text-center text-gray-400 py-8">
+              No contractors found
+            </div>
+          ) : (
+            results.map((c, idx) => (
+              <div
+                key={c.place_id || idx}
+                className="bg-white rounded-2xl shadow p-4 flex flex-col gap-2"
+              >
+                <h3 className="text-lg font-bold text-blue-700">{c.name}</h3>
+                <p className="text-sm text-gray-500">{c.address}</p>
+                <div className="flex items-center gap-2">
+                  <ReactStars
+                    count={5}
+                    value={Number(c.rating) || 0}
+                    size={22}
+                    isHalf={true}
+                    edit={false}
+                    activeColor="#fbbf24"
+                  />
+                  <span className="text-sm text-black">
+                    {c.rating ? `${c.rating} (${c.user_ratings_total} reviews)` : "No rating"}
+                  </span>
+                </div>
+                <a
+                  href={getGoogleMapsUrl(c.place_id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition text-center"
+                >
+                  View on Google Maps
+                </a>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View: Table */}
+        <div className="hidden lg:block w-full overflow-x-auto mt-8">
           <table className="min-w-[900px] w-full bg-white rounded-2xl text-base divide-y divide-blue-100">
             <thead>
               <tr>
-                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Name</th>
-                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Address</th>
-                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Rating</th>
-                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Google Maps</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                  Name
+                </th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                  Address
+                </th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                  Rating
+                </th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                  Google Maps
+                </th>
               </tr>
             </thead>
             <tbody>
