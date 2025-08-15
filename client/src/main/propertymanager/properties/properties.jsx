@@ -33,7 +33,7 @@ export default function Properties() {
   const fetchProperties = () => {
     setLoading(true);
     fetch(`${API_BASE}/api/properties`, {
-      credentials: "include"
+      credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => {
@@ -110,7 +110,7 @@ export default function Properties() {
     try {
       const res = await fetch(`${API_BASE}/api/properties/${propertyId}`, {
         method: "DELETE",
-        credentials: "include"
+        credentials: "include",
       });
       if (!res.ok) {
         const data = await res.json();
@@ -125,7 +125,7 @@ export default function Properties() {
 
   const handleAddPropertyClick = async () => {
     try {
-      const res = await fetch(`${API_BASE}/api/properties/canAddProperty`, { // Use the correct endpoint
+      const res = await fetch(`${API_BASE}/api/properties/canAddProperty`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -136,7 +136,9 @@ export default function Properties() {
       if (data.canAdd) {
         setShowAddModal(true); // Open the Add Property modal
       } else {
-        alert("You have reached the maximum number of properties allowed by your subscription plan. Upgrade your plan to add more properties.");
+        alert(
+          "You have reached the maximum number of properties allowed by your subscription plan. Upgrade your plan to add more properties."
+        );
       }
     } catch (err) {
       alert(err.message || "Error checking property limit");
@@ -145,15 +147,20 @@ export default function Properties() {
 
   // Render
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="w-64 flex-shrink-0 h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* Sidebar */}
+      <div className="hidden lg:block w-64 flex-shrink-0 h-screen">
         <Sidebar />
       </div>
-      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-y-auto">
+
+      {/* Main Content */}
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 pt-16 overflow-y-auto">
         <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
-          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Your Properties</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-blue-700 tracking-tight">
+            Your Properties
+          </h1>
           <button
-            className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+            className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 sm:py-3 text-sm sm:text-base hover:bg-blue-700 transition"
             onClick={handleAddPropertyClick}
           >
             + Add Property
@@ -164,76 +171,180 @@ export default function Properties() {
         {error && <div className="text-red-500">{error}</div>}
 
         {!loading && !error && (
-          <div className="w-full overflow-x-auto mt-8">
-            <table className="min-w-[900px] w-full bg-white rounded-2xl text-base divide-y divide-blue-100">
-              <thead>
-                <tr>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Name</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Address</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-center">Status</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Tenant</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Next Rent Due</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Rental Income</th>
-                </tr>
-              </thead>
-              <tbody>
-                {properties.length === 0 ? (
+          <>
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
+              {properties.length === 0 ? (
+                <div className="text-center text-gray-400 py-8">
+                  No properties added yet
+                </div>
+              ) : (
+                properties.map((prop, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-white rounded-2xl shadow p-4 flex flex-col gap-2"
+                    onClick={() => handleRowClick(prop)}
+                  >
+                    <h3 className="text-lg font-bold text-blue-700">
+                      {prop.name || "-"}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {prop.address || "-"}
+                    </p>
+                    <div className="text-sm">
+                      <strong>Status:</strong>{" "}
+                      <span
+                        className={`px-4 py-1 rounded-xl font-semibold text-sm ${
+                          prop.status === "Available"
+                            ? "bg-green-100 text-green-700"
+                            : prop.status === "Occupied"
+                            ? "bg-blue-100 text-blue-700"
+                            : prop.status === "Under Maintenance"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {prop.status}
+                      </span>
+                    </div>
+                    <div className="text-sm">
+                      <strong>Tenant:</strong>{" "}
+                      {prop.tenants && prop.tenants.length > 0
+                        ? prop.tenants
+                            .map((t) => `${t.first_name} ${t.last_name}`)
+                            .join(", ")
+                        : "No tenant"}
+                    </div>
+                    <div className="text-sm">
+                      <strong>Next Rent Due:</strong>{" "}
+                      {(() => {
+                        if (!prop.nextRentDue) return "N/A";
+                        const match = prop.nextRentDue.match(
+                          /[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{4} \d{2}:\d{2}:\d{2}/
+                        );
+                        const dateStr = match
+                          ? match[0]
+                          : prop.nextRentDue;
+                        const dateObj = new Date(dateStr);
+                        return !isNaN(dateObj)
+                          ? dateObj.toLocaleDateString("en-GB")
+                          : "N/A";
+                      })()}
+                    </div>
+                    <div className="text-sm">
+                      <strong>Rental Income:</strong>{" "}
+                      {prop.rental_income
+                        ? `${prop.rental_income.toLocaleString()}`
+                        : "N/A"}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden lg:block w-full overflow-x-auto mt-8">
+              <table className="min-w-[900px] w-full bg-white rounded-2xl text-base divide-y divide-blue-100">
+                <thead>
                   <tr>
-                    <td colSpan={6} className="text-center text-gray-400 py-8">
-                      No properties added yet
-                    </td>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Name
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Address
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-center">
+                      Status
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Tenant
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Next Rent Due
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Rental Income
+                    </th>
                   </tr>
-                ) : (
-                  properties.map((prop, idx) => (
-                    <tr
-                      key={idx}
-                      className="hover:bg-blue-50 transition cursor-pointer"
-                      onClick={() => handleRowClick(prop)}
-                    >
-                      <td className="py-4 px-3">{prop.name || "-"}</td>
-                      <td className="py-4 px-3">{prop.address || "-"}</td>
-                      <td className="py-4 px-3 text-center">
-                        <span className={
-                          `px-4 py-1 rounded-xl font-semibold text-sm
-                          ${prop.status === "Available" ? "bg-green-100 text-green-700"
-                            : prop.status === "Occupied" ? "bg-blue-100 text-blue-700"
-                            : prop.status === "Under Maintenance" ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-700"}`
-                        }>
-                          {prop.status}
-                        </span>
+                </thead>
+                <tbody>
+                  {properties.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="text-center text-gray-400 py-8"
+                      >
+                        No properties added yet
                       </td>
-                      <td className="py-4 px-3">
-                        {prop.tenants && prop.tenants.length > 0
-                          ? prop.tenants.map(t => `${t.first_name} ${t.last_name}`).join(", ")
-                          : "No tenant"}
-                      </td>
-                      <td className="py-4 px-3">
-                        {(() => {
-                          if (!prop.nextRentDue) return "N/A";
-                          // Try to extract a valid date substring
-                          const match = prop.nextRentDue.match(/[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{4} \d{2}:\d{2}:\d{2}/);
-                          const dateStr = match ? match[0] : prop.nextRentDue;
-                          const dateObj = new Date(dateStr);
-                          return !isNaN(dateObj)
-                            ? dateObj.toLocaleDateString("en-GB")
-                            : "N/A";
-                        })()}
-                      </td>
-                      <td className="py-4 px-3">{prop.rental_income}</td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    properties.map((prop, idx) => (
+                      <tr
+                        key={idx}
+                        className="hover:bg-blue-50 transition cursor-pointer"
+                        onClick={() => handleRowClick(prop)}
+                      >
+                        <td className="py-4 px-3">{prop.name || "-"}</td>
+                        <td className="py-4 px-3">{prop.address || "-"}</td>
+                        <td className="py-4 px-3 text-center">
+                          <span
+                            className={`px-4 py-1 rounded-xl font-semibold text-sm ${
+                              prop.status === "Available"
+                                ? "bg-green-100 text-green-700"
+                                : prop.status === "Occupied"
+                                ? "bg-blue-100 text-blue-700"
+                                : prop.status === "Under Maintenance"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {prop.status}
+                          </span>
+                        </td>
+                        <td className="py-4 px-3">
+                          {prop.tenants && prop.tenants.length > 0
+                            ? prop.tenants
+                                .map(
+                                  (t) =>
+                                    `${t.first_name} ${t.last_name}`
+                                )
+                                .join(", ")
+                            : "No tenant"}
+                        </td>
+                        <td className="py-4 px-3">
+                          {(() => {
+                            if (!prop.nextRentDue) return "N/A";
+                            const match = prop.nextRentDue.match(
+                              /[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{4} \d{2}:\d{2}:\d{2}/
+                            );
+                            const dateStr = match
+                              ? match[0]
+                              : prop.nextRentDue;
+                            const dateObj = new Date(dateStr);
+                            return !isNaN(dateObj)
+                              ? dateObj.toLocaleDateString("en-GB")
+                              : "N/A";
+                          })()}
+                        </td>
+                        <td className="py-4 px-3">
+                          {prop.rental_income}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* Add Property Modal */}
         {showAddModal && (
           <div className="fixed inset-0 bg-black bg-opacity-30 flex items-start justify-center z-50 overflow-y-auto">
             <div className="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-md sm:max-w-lg my-8 flex flex-col gap-6 border border-blue-100">
-              <h2 className="text-2xl font-extrabold text-blue-700 text-center mb-2">Add Property</h2>
+              <h2 className="text-2xl font-extrabold text-blue-700 text-center mb-2">
+                Add Property
+              </h2>
               <form onSubmit={handleAddProperty} className="flex flex-col gap-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <label className="font-semibold text-blue-700">
@@ -297,7 +408,9 @@ export default function Properties() {
                     />
                   </label>
                 </div>
-                {addError && <div className="text-red-500 text-center">{addError}</div>}
+                {addError && (
+                  <div className="text-red-500 text-center">{addError}</div>
+                )}
                 <div className="flex gap-4 mt-4">
                   <button
                     type="submit"
@@ -328,10 +441,12 @@ export default function Properties() {
               </h2>
               <div className="bg-blue-50 rounded-lg p-4 mb-2 text-base text-gray-700 flex flex-col gap-2">
                 <div>
-                  <strong className="text-blue-700">Address:</strong> {selectedProperty.address}
+                  <strong className="text-blue-700">Address:</strong>{" "}
+                  {selectedProperty.address}
                 </div>
                 <div>
-                  <strong className="text-blue-700">Status:</strong> {selectedProperty.status}
+                  <strong className="text-blue-700">Status:</strong>{" "}
+                  {selectedProperty.status}
                 </div>
                 <div>
                   <strong className="text-blue-700">Tenants:</strong>{" "}
