@@ -268,7 +268,7 @@ function Dashboard() {
           </div>
 
           {/* Income Card */}
-          <div className="bg-white rounded-2xl shadow p-4 flex flex-col relative min-h-0">
+          <div className="bg-white rounded-2xl shadow p-4 flex flex-col relative min-h-0 order-first md:order-none">
             <div className="flex items-center gap-2 mb-2">
               <HiCurrencyPound className="text-blue-500 text-2xl" />
               <h3 className="text-lg font-bold text-blue-700">Income</h3>
