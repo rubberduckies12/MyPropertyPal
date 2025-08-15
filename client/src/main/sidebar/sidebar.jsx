@@ -218,13 +218,15 @@ function Sidebar() {
         </nav>
 
         {/* Logout */}
-        <button
-          className="flex items-center gap-4 px-4 py-3 mt-auto text-red-500 hover:text-red-700 transition"
-          onClick={handleLogoutClick}
-        >
-          <FaSignOutAlt className="text-xl" />
-          <span>Log Out</span>
-        </button>
+        <div className="mt-auto px-4 py-3">
+          <button
+            className="flex items-center gap-4 w-full text-red-500 hover:text-red-700 transition"
+            onClick={handleLogoutClick}
+          >
+            <FaSignOutAlt className="text-xl" />
+            <span>Log Out</span>
+          </button>
+        </div>
       </aside>
 
       {/* Logout Modal */}
