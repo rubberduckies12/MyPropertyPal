@@ -22,30 +22,29 @@ export default function Compliance() {
   const [editEvent, setEditEvent] = useState(null);
   const fileInputRef = useRef();
 
-  // Fetch compliance events, documents, and properties from backend using cookies
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/compliance/events`, {
-      credentials: "include"
+      credentials: "include",
     })
-      .then(res => res.json())
-      .then(data => setDeadlines(Array.isArray(data) ? data : []))
+      .then((res) => res.json())
+      .then((data) => setDeadlines(Array.isArray(data) ? data : []))
       .catch(() => setError("Failed to load deadlines"));
 
     fetch(`${BACKEND_URL}/api/compliance/documents`, {
-      credentials: "include"
+      credentials: "include",
     })
-      .then(res => res.json())
-      .then(data => setDocuments(Array.isArray(data) ? data : []))
+      .then((res) => res.json())
+      .then((data) => setDocuments(Array.isArray(data) ? data : []))
       .catch(() => setError("Failed to load documents"));
 
     fetch(`${BACKEND_URL}/api/properties`, {
-      credentials: "include"
+      credentials: "include",
     })
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch properties");
         return res.json();
       })
-      .then(data => setProperties(data.properties || []))
+      .then((data) => setProperties(data.properties || []))
       .catch(() => setError("Failed to load properties"));
   }, []);
 
@@ -186,7 +185,7 @@ export default function Compliance() {
     const dueDate = new Date(dueDateStr);
     const now = new Date();
     const diffDays = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
-    const reminders = (reminderDaysArr && reminderDaysArr.length > 0) ? reminderDaysArr : [90];
+    const reminders = reminderDaysArr && reminderDaysArr.length > 0 ? reminderDaysArr : [90];
     const soonest = Math.min(...reminders);
 
     if (diffDays < 0) return "status-overdue";
@@ -195,11 +194,23 @@ export default function Compliance() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <Sidebar />
-      <main className="flex-1 ml-64 px-4 py-8 pl-8">
-        <div className="flex items-center justify-between mb-8 border-b border-blue-100 pb-4">
-          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Compliance Manager</h1>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* Sidebar */}
+      <div className="hidden lg:block w-64 flex-shrink-0 h-screen">
+        <Sidebar />
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-auto">
+        {/* Header Section */}
+        <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3 pt-8">
+         
+          
+
+          {/* Page Title */}
+          <h1 className="text-xl sm:text-2xl font-extrabold text-blue-700 tracking-tight">
+            Compliance Manager
+          </h1>
           <button
             className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
             type="button"
@@ -300,13 +311,24 @@ export default function Compliance() {
           </div>
         )}
 
-        {/* Event Details Modal */}
+        {/* Compliance Popup */}
         {selectedEvent && (
           <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-8 w-full max-w-md border border-blue-100 shadow-lg">
+            <div className="bg-white rounded-2xl p-8 w-full max-w-md border border-blue-100 shadow-lg relative">
+              {/* Close Button */}
+              <button
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 focus:outline-none"
+                onClick={() => {
+                  setSelectedEvent(null);
+                  setEditEvent(null);
+                }}
+              >
+                &times;
+              </button>
               <h2 className="text-2xl font-extrabold text-blue-700 text-center mb-6">
                 {editEvent && editEvent.onlyRenew ? "Renew Compliance" : "Compliance Event Details"}
               </h2>
+              {/* Popup Content */}
               {!editEvent ? (
                 <>
                   <div className="bg-blue-50 rounded-lg p-4 mb-4 text-base text-gray-700 flex flex-col gap-2">
@@ -333,12 +355,6 @@ export default function Compliance() {
                       onClick={() => handleDeleteEvent(selectedEvent.id)}
                     >
                       Delete
-                    </button>
-                    <button
-                      className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
-                      onClick={() => { setSelectedEvent(null); setEditEvent(null); }}
-                    >
-                      Close
                     </button>
                   </div>
                 </>
@@ -435,30 +451,83 @@ export default function Compliance() {
           </div>
         )}
 
-        {/* Compliance Tracker */}
-        <section className="bg-white rounded-2xl p-6 border border-blue-100 shadow mb-10">
+        {/* Mobile View: Compliance Tracker */}
+        <div className="grid grid-cols-1 gap-4 lg:hidden">
+          <h2 className="text-lg font-bold text-blue-700">Compliance Tracker</h2>
+          {deadlines.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white rounded-2xl shadow p-4 flex flex-col gap-2 cursor-pointer"
+              onClick={() => {
+                setSelectedEvent(item);
+                setEventSuccess("");
+                setError("");
+              }}
+            >
+              <h3 className="text-lg font-bold text-blue-700">{item.name}</h3>
+              <p className="text-sm text-gray-500">
+                Property: {item.property_name}
+                {item.property_address ? `, ${item.property_address}` : ""}
+                {item.property_postcode ? `, ${item.property_postcode}` : ""}
+              </p>
+              <p className="text-sm text-gray-500">Description: {item.description}</p>
+              <p className="text-sm text-gray-500">
+                Due Date:{" "}
+                <span
+                  className={`px-4 py-1 rounded-xl font-semibold text-sm ${
+                    getDueStatus(item.due_date, item.reminder_days) === "status-overdue"
+                      ? "bg-red-100 text-red-700"
+                      : getDueStatus(item.due_date, item.reminder_days) === "status-expiringsoon"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-green-100 text-green-700"
+                  }`}
+                >
+                  {formatDate(item.due_date)}
+                </span>
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop View: Compliance Tracker */}
+        <section className="hidden lg:block bg-white rounded-2xl p-6 border border-blue-100 shadow mb-10">
           <h2 className="text-xl font-bold text-blue-700 mb-4">Compliance Tracker</h2>
           <div className="w-full overflow-x-auto">
             <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
               <thead>
                 <tr>
-                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Name</th>
-                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Property</th>
-                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Description</th>
-                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">Due Date</th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">
+                    Name
+                  </th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">
+                    Property
+                  </th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">
+                    Description
+                  </th>
+                  <th className="py-4 px-3 text-left bg-blue-50 text-blue-700 font-bold border-b border-blue-100">
+                    Due Date
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {(Array.isArray(deadlines) && deadlines.length === 0) ? (
+                {deadlines.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="text-center text-gray-400 py-8">
                       No compliance deadlines added yet
                     </td>
                   </tr>
                 ) : (
-                  (Array.isArray(deadlines) ? deadlines : []).map(item => (
-                    <tr key={item.id} className="hover:bg-blue-50 transition cursor-pointer"
-                      onClick={() => { setSelectedEvent(item); setEventSuccess(""); setError(""); }}>
+                  deadlines.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="hover:bg-blue-50 transition cursor-pointer"
+                      onClick={() => {
+                        setSelectedEvent(item);
+                        setEventSuccess("");
+                        setError("");
+                      }}
+                    >
                       <td className="py-4 px-3">{item.name}</td>
                       <td className="py-4 px-3">
                         {item.property_name}
@@ -467,14 +536,15 @@ export default function Compliance() {
                       </td>
                       <td className="py-4 px-3">{item.description}</td>
                       <td className="py-4 px-3">
-                        <span className={
-                          `px-4 py-1 rounded-xl font-semibold text-sm
-                          ${getDueStatus(item.due_date, item.reminder_days) === "status-overdue"
-                            ? "bg-red-100 text-red-700"
-                            : getDueStatus(item.due_date, item.reminder_days) === "status-expiringsoon"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-green-100 text-green-700"}`
-                        }>
+                        <span
+                          className={`px-4 py-1 rounded-xl font-semibold text-sm ${
+                            getDueStatus(item.due_date, item.reminder_days) === "status-overdue"
+                              ? "bg-red-100 text-red-700"
+                              : getDueStatus(item.due_date, item.reminder_days) === "status-expiringsoon"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-green-100 text-green-700"
+                          }`}
+                        >
                           {formatDate(item.due_date)}
                         </span>
                       </td>
@@ -486,10 +556,11 @@ export default function Compliance() {
           </div>
         </section>
 
-        {/* Resource Hub */}
-        <section className="bg-white rounded-2xl p-6 border border-blue-100 shadow mb-10">
+        {/* Hide Government Links on Mobile */}
+        <section className="hidden lg:block bg-white rounded-2xl p-6 border border-blue-100 shadow mb-10">
           <h2 className="text-xl font-bold text-blue-700 mb-4">Regulation Resources</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {/* Links */}
             <a
               className="bg-blue-50 rounded-lg p-4 flex flex-col gap-2 hover:bg-blue-100 transition"
               href="https://www.gov.uk/private-renting/your-landlords-safety-responsibilities"
