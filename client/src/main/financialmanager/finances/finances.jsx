@@ -394,9 +394,22 @@ export default function Finances() {
   const visibleRentPayments = showAllRentPayments ? rentPayments : rentPayments.slice(0, 5);
   const visibleExpenses = showAllExpenses ? filteredExpenses : filteredExpenses.slice(0, 5);
 
+  // State for managing the selected transaction for the popup
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+  // Function to handle card click (open popup)
+  const handleCardClick = (transaction) => {
+    setSelectedTransaction(transaction);
+  };
+
+  // Function to close the popup
+  const handleClosePopup = () => {
+    setSelectedTransaction(null);
+  };
+
   // --- Main UI ---
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-b from-blue-50 to-white">
       <ExpenseModal
         show={showExpenseModal}
         onClose={() => { setShowExpenseModal(false); setEditExpenseModal(null); }}
@@ -424,28 +437,48 @@ export default function Finances() {
         onClose={() => setShowDeleteExpenseConfirm(false)}
         onDelete={confirmDeleteExpense}
       />
-      <div className="w-64 flex-shrink-0 h-screen">
+      <div className="hidden lg:block w-64 flex-shrink-0 h-screen">
         <Sidebar />
       </div>
-      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-auto">
-        <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
-          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Financial Manager</h1>
-          <div className="flex gap-4">
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 pt-4 overflow-auto">
+        <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3 pt-12">
+       
+
+          {/* Page Title */}
+          <h1 className="text-xl sm:text-2xl font-extrabold text-blue-700 tracking-tight">
+            Financial Manager
+          </h1>
+
+          {/* Add Expense and Mark Rent Received Buttons */}
+          <div className="flex flex-col gap-2 lg:hidden mt-4">
             <button
-              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+              className="bg-blue-600 text-white font-medium rounded-lg px-3 py-2 text-sm hover:bg-blue-700 transition"
               onClick={() => {
                 setEditExpenseModal(null);
-                setExpenseForm({ property_id: "", amount: "", category: "", description: "", incurred_on: "" });
+                setExpenseForm({
+                  property_id: "",
+                  amount: "",
+                  category: "",
+                  description: "",
+                  incurred_on: "",
+                });
                 setShowExpenseModal(true);
               }}
             >
               + Add Expense
             </button>
             <button
-              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+              className="bg-blue-600 text-white font-medium rounded-lg px-3 py-2 text-sm hover:bg-blue-700 transition"
               onClick={() => {
                 setEditRentModal(null);
-                setRentForm({ property_id: "", tenant_id: "", amount: "", paid_on: "", method: "", reference: "" });
+                setRentForm({
+                  property_id: "",
+                  tenant_id: "",
+                  amount: "",
+                  paid_on: "",
+                  method: "",
+                  reference: "",
+                });
                 setShowRentModal(true);
               }}
             >
@@ -454,373 +487,467 @@ export default function Finances() {
           </div>
         </div>
 
-        <div className="flex gap-4 mb-8">
-          {PERIODS.map(opt => (
-            <button
-              key={opt.value}
-              className={`font-semibold rounded-lg px-4 py-2 border border-blue-100 transition ${
-                period === opt.value
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-blue-700 hover:bg-blue-50"
-              }`}
-              onClick={() => setPeriod(opt.value)}
-              type="button"
+        {/* Mobile View: Incoming Rent */}
+        <div className="grid grid-cols-1 gap-4 lg:hidden">
+          <h2 className="text-lg font-bold text-blue-700">Incoming Rent</h2>
+          {visibleExpectedRent.map((payment) => (
+            <div
+              key={payment.id}
+              className="bg-white rounded-2xl shadow p-4 flex flex-col gap-2 cursor-pointer"
+              onClick={() => handleCardClick(payment)} // Opens the popup when the card is clicked
             >
-              {opt.label}
-            </button>
+              <h3 className="text-lg font-bold text-blue-700">{payment.property}</h3>
+              <p className="text-sm text-gray-500">Tenant: {payment.tenant}</p>
+              <p className="text-sm text-gray-500">Amount: £{payment.amount}</p>
+              <p className="text-sm text-gray-500">
+                Due Date: {formatDate(payment.due_date)}
+              </p>
+              <div className="mt-4">
+                <button
+                  className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition w-full"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevents the card's onClick from being triggered
+                    openAddRentModal(payment); // Opens the "Mark Rent Received" form
+                  }}
+                >
+                  Mark as Received
+                </button>
+              </div>
+            </div>
           ))}
         </div>
 
-        {loading ? (
-          <div>Loading...</div>
-        ) : error ? (
-          <div className="text-red-500">{error}</div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-2xl p-6 border border-blue-100 flex flex-col items-center">
-                <div className="font-semibold text-blue-700 mb-2">Total Rent Received</div>
-                <div className="text-2xl font-bold text-black">£{totalIncome.toLocaleString()}</div>
+        {/* Mobile View: Rent Received */}
+        <div className="grid grid-cols-1 gap-4 lg:hidden mt-8">
+          <h2 className="text-lg font-bold text-blue-700">Rent Received</h2>
+          {visibleRentPayments.map((payment) => (
+            <div
+              key={payment.id}
+              className="bg-white rounded-2xl shadow p-4 flex flex-col gap-2 cursor-pointer"
+              onClick={() => handleCardClick(payment)}
+            >
+              <h3 className="text-lg font-bold text-blue-700">{payment.property}</h3>
+              <p className="text-sm text-gray-500">Tenant: {payment.tenant}</p>
+              <p className="text-sm text-gray-500">Amount: £{payment.amount}</p>
+              <p className="text-sm text-gray-500">
+                Paid On: {formatDate(payment.paid_on)}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile View: Expenses */}
+        <div className="grid grid-cols-1 gap-4 lg:hidden mt-8">
+          <h2 className="text-lg font-bold text-blue-700">Expenses</h2>
+          {visibleExpenses.map((expense) => (
+            <div
+              key={expense.id}
+              className="bg-white rounded-2xl shadow p-4 flex flex-col gap-2 cursor-pointer"
+              onClick={() => handleCardClick(expense)}
+            >
+              <h3 className="text-lg font-bold text-blue-700">
+                {expense.category || "Expense"}
+              </h3>
+              <p className="text-sm text-gray-500">Amount: £{expense.amount}</p>
+              <p className="text-sm text-gray-500">
+                Incurred On: {formatDate(expense.incurred_on)}
+              </p>
+              <p className="text-sm text-gray-500">
+                Description: {expense.description || "N/A"}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Popup Card for Mobile */}
+        {selectedTransaction && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+              <button
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                onClick={handleClosePopup}
+              >
+                &times;
+              </button>
+              <h3 className="text-xl font-bold text-blue-700 mb-4">
+                {selectedTransaction.property || selectedTransaction.category}
+              </h3>
+              <p className="text-sm text-gray-500">
+                Tenant: {selectedTransaction.tenant || "N/A"}
+              </p>
+              <p className="text-sm text-gray-500">
+                Amount: £{selectedTransaction.amount}
+              </p>
+              <p className="text-sm text-gray-500">
+                {selectedTransaction.due_date
+                  ? `Due Date: ${formatDate(selectedTransaction.due_date)}`
+                  : selectedTransaction.paid_on
+                  ? `Paid On: ${formatDate(selectedTransaction.paid_on)}`
+                  : `Incurred On: ${formatDate(selectedTransaction.incurred_on)}`}
+              </p>
+              <p className="text-sm text-gray-500">
+                Description: {selectedTransaction.description || "N/A"}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Desktop View: Tables */}
+        <div className="hidden lg:block">
+          {/* Expected Rent Table */}
+          <section className="mb-10">
+            <div className="bg-white rounded-2xl p-6 border border-blue-100">
+              <h2 className="text-xl font-bold text-blue-700 mb-4">
+                Expected & Overdue Rent Payments
+              </h2>
+              <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
+                <thead>
+                  <tr>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Property
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Tenant
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Amount
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Date Due
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Status
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleExpectedRent.map((payment) => (
+                    <tr key={payment.id}>
+                      <td className="py-4 px-3">{payment.property}</td>
+                      <td className="py-4 px-3">{payment.tenant}</td>
+                      <td className="py-4 px-3">£{payment.amount}</td>
+                      <td className="py-4 px-3">
+                        {formatDate(payment.due_date)}
+                      </td>
+                      <td className="py-4 px-3">
+                        {getStatusBubble(payment.status)}
+                      </td>
+                      <td className="py-4 px-3">
+                        <button
+                          className="bg-blue-600 text-white font-semibold rounded-lg px-3 py-1 hover:bg-blue-700 transition"
+                          onClick={() => openAddRentModal(payment)}
+                        >
+                          Mark as Received
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Paid Rent Table */}
+          <section className="mb-10">
+            <div className="bg-white rounded-2xl p-6 border border-blue-100">
+              <h2 className="text-xl font-bold text-blue-700 mb-4">Rent Paid</h2>
+              <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
+                <thead>
+                  <tr>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Property
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Tenant
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Amount
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Date Due
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Date Paid
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Method
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Reference
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Status
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">
+                      Action
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleRentPayments.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="text-center text-gray-400 py-8">
+                        No payments added yet
+                      </td>
+                    </tr>
+                  ) : (
+                    visibleRentPayments.map(payment => (
+                      <tr key={payment.id}>
+                        <td className="py-4 px-3">{payment.property}</td>
+                        <td className="py-4 px-3">{payment.tenant}</td>
+                        <td className="py-4 px-3">£{payment.amount}</td>
+                        <td className="py-4 px-3">{payment.due_date ? formatDate(payment.due_date) : ""}</td>
+                        <td className="py-4 px-3">{payment.paid_on ? formatDate(payment.paid_on) : ""}</td>
+                        <td className="py-4 px-3">{payment.method || ""}</td>
+                        <td className="py-4 px-3">{payment.reference || ""}</td>
+                        <td className="py-4 px-3">{getStatusBubble(payment.payment_status)}</td>
+                        <td className="py-4 px-3">
+                          <div className="relative">
+                            <button
+                              className="bg-white text-blue-700 font-semibold rounded-lg px-3 py-1 border border-blue-200 hover:bg-blue-50 transition"
+                              onClick={e => {
+                                e.stopPropagation();
+                                setOpenRentDropdown(payment.id === openRentDropdown ? null : payment.id);
+                              }}
+                            >
+                              Actions ▼
+                            </button>
+                            {openRentDropdown === payment.id && (
+                              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden z-10">
+                                <button
+                                  className="w-full text-left px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition"
+                                  onClick={() => openEditRentModal(payment)}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition"
+                                  onClick={() => {
+                                    setRentToDelete(payment.id);
+                                    setShowDeleteConfirm(true);
+                                  }}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Outgoing Expenses Table */}
+          <section className="mb-10">
+            <div className="bg-white rounded-2xl p-6 border border-blue-100">
+              <h2 className="text-xl font-bold text-blue-700 mb-4">Outgoing Expenses</h2>
+              <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
+                <thead>
+                  <tr>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date</th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Category</th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Description</th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Amount</th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleExpenses.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="text-center text-gray-400 py-8">
+                        No payments added yet
+                      </td>
+                    </tr>
+                  ) : (
+                    visibleExpenses.map(expense => (
+                      <tr key={expense.id}>
+                        <td className="py-4 px-3">{formatDate(expense.date || expense.incurred_on)}</td>
+                        <td className="py-4 px-3">{expense.category}</td>
+                        <td className="py-4 px-3">{expense.description}</td>
+                        <td className="py-4 px-3">£{expense.amount}</td>
+                        <td className="py-4 px-3">
+                          <div className="relative">
+                            <button
+                              className="bg-white text-blue-700 font-semibold rounded-lg px-3 py-1 border border-blue-200 hover:bg-blue-50 transition"
+                              onClick={e => {
+                                e.stopPropagation();
+                                setOpenExpenseDropdown(expense.id === openExpenseDropdown ? null : expense.id);
+                              }}
+                            >
+                              Actions ▼
+                            </button>
+                            {openExpenseDropdown === expense.id && (
+                              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden z-10">
+                                <button
+                                  className="w-full text-left px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition"
+                                  onClick={() => openEditExpenseModal(expense)}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition"
+                                  onClick={() => {
+                                    setExpenseToDelete(expense.id);
+                                    setShowDeleteExpenseConfirm(true);
+                                  }}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Hide Graph on Mobile */}
+          <section className="hidden lg:block mb-10">
+            <div className="bg-white rounded-2xl p-8 border border-blue-100 shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-extrabold text-blue-700 tracking-tight">
+                  Monthly Income & Expenses
+                </h2>
+                <div className="flex items-center">
+                  <span className="mr-2 text-blue-700 font-semibold text-sm">
+                    Bar
+                  </span>
+                  <span
+                    className="relative inline-block w-12 h-6 bg-blue-200 rounded-full transition"
+                    onClick={() =>
+                      setChartType(chartType === "bar" ? "line" : "bar")
+                    }
+                    role="button"
+                    aria-pressed={chartType === "line"}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ")
+                        setChartType(chartType === "bar" ? "line" : "bar");
+                    }}
+                  >
+                    <span
+                      className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
+                        chartType === "line" ? "translate-x-6" : ""
+                      }`}
+                    ></span>
+                  </span>
+                  <span className="ml-2 text-blue-700 font-semibold text-sm">
+                    Line
+                  </span>
+                </div>
               </div>
-              <div className="bg-white rounded-2xl p-6 border border-blue-100 flex flex-col items-center">
-                <div className="font-semibold text-blue-700 mb-2">Total Expenses</div>
-                <div className="text-2xl font-bold text-black">£{totalExpenses.toLocaleString()}</div>
-              </div>
-              <div className="bg-white rounded-2xl p-6 border border-blue-100 flex flex-col items-center">
-                <div className="font-semibold text-blue-700 mb-2">Taxable Profit</div>
-                <div className="text-2xl font-bold text-black">£{taxableProfit.toLocaleString()}</div>
+              <div className="w-full h-72 bg-white rounded-xl shadow-md p-4 flex items-center justify-center">
+                <ResponsiveContainer>
+                  {chartType === "bar" ? (
+                    <BarChart data={monthlySummaryData} barCategoryGap="30%">
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="month"
+                        stroke="#2563eb"
+                        tick={{ fontWeight: 600, fontSize: 14 }}
+                      />
+                      <YAxis
+                        stroke="#2563eb"
+                        tick={{ fontWeight: 600, fontSize: 14 }}
+                      />
+                      <Tooltip
+                        formatter={(value) => `£${value.toLocaleString()}`}
+                        contentStyle={{
+                          backgroundColor: "#f9fafb",
+                          borderRadius: "8px",
+                          border: "1px solid #2563eb",
+                        }}
+                        labelStyle={{ color: "#2563eb", fontWeight: "bold" }}
+                      />
+                      <Legend
+                        wrapperStyle={{ paddingTop: 10 }}
+                        iconType="circle"
+                        formatter={(value, entry) => (
+                          <span
+                            style={{ color: entry.color, fontWeight: 700 }}
+                          >
+                            {value}
+                          </span>
+                        )}
+                      />
+                      <Bar
+                        dataKey="income"
+                        name="Rental Income"
+                        fill="#22c55e"
+                        shape={<HouseBarShape />}
+                      />
+                      <Bar
+                        dataKey="expenses"
+                        name="Expenses"
+                        fill="#ef4444"
+                        shape={<HouseBarShape />}
+                      />
+                    </BarChart>
+                  ) : (
+                    <LineChart data={monthlySummaryData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="month"
+                        stroke="#2563eb"
+                        tick={{ fontWeight: 600, fontSize: 14 }}
+                      />
+                      <YAxis
+                        stroke="#2563eb"
+                        tick={{ fontWeight: 600, fontSize: 14 }}
+                      />
+                      <Tooltip
+                        formatter={(value) => `£${value.toLocaleString()}`}
+                        contentStyle={{
+                          backgroundColor: "#f9fafb",
+                          borderRadius: "8px",
+                          border: "1px solid #2563eb",
+                        }}
+                        labelStyle={{ color: "#2563eb", fontWeight: "bold" }}
+                      />
+                      <Legend
+                        wrapperStyle={{ paddingTop: 10 }}
+                        iconType="circle"
+                        formatter={(value, entry) => (
+                          <span
+                            style={{ color: entry.color, fontWeight: 700 }}
+                          >
+                            {value}
+                          </span>
+                        )}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="income"
+                        name="Rental Income"
+                        stroke="#22c55e"
+                        strokeWidth={3}
+                        dot={false}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="expenses"
+                        name="Expenses"
+                        stroke="#ef4444"
+                        strokeWidth={3}
+                        dot={false}
+                      />
+                    </LineChart>
+                  )}
+                </ResponsiveContainer>
               </div>
             </div>
-
-            {/* Expected/Overdue Rent Table */}
-            <section className="mb-10">
-              <div className="bg-white rounded-2xl p-6 border border-blue-100">
-                <h2 className="text-xl font-bold text-blue-700 mb-4">Expected & Overdue Rent Payments</h2>
-                <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
-                  <thead>
-                    <tr>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Property</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Tenant</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Amount</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date Due</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Status</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleExpectedRent.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="text-center text-gray-400 py-8">
-                          No payments added yet
-                        </td>
-                      </tr>
-                    ) : (
-                      visibleExpectedRent.map(payment => (
-                        <tr key={payment.property_id + "-" + payment.tenant_id + "-" + payment.due_date}>
-                          <td className="py-4 px-3">{payment.property}</td>
-                          <td className="py-4 px-3">{payment.tenant}</td>
-                          <td className="py-4 px-3">£{payment.amount}</td>
-                          <td className="py-4 px-3">{payment.due_date ? formatDate(payment.due_date) : ""}</td>
-                          <td className="py-4 px-3">{getStatusBubble(payment.status)}</td>
-                          <td className="py-4 px-3">
-                            <button
-                              className="bg-blue-600 text-white font-semibold rounded-lg px-3 py-1 hover:bg-blue-700 transition"
-                              onClick={() => openAddRentModal(payment)}
-                            >
-                              Mark as Received
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-                {expectedRent.length > 5 && (
-                  <button
-                    className="mt-4 text-blue-600 font-semibold hover:underline"
-                    onClick={() => setShowAllExpectedRent(!showAllExpectedRent)}
-                  >
-                    {showAllExpectedRent ? "Show Less" : "Show More"}
-                  </button>
-                )}
-              </div>
-            </section>
-
-            {/* Paid Rent Table */}
-            <section className="mb-10">
-              <div className="bg-white rounded-2xl p-6 border border-blue-100">
-                <h2 className="text-xl font-bold text-blue-700 mb-4">Rent Paid</h2>
-                <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
-                  <thead>
-                    <tr>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Property</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Tenant</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Amount</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date Due</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date Paid</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Method</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Reference</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Status</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleRentPayments.length === 0 ? (
-                      <tr>
-                        <td colSpan={9} className="text-center text-gray-400 py-8">
-                          No payments added yet
-                        </td>
-                      </tr>
-                    ) : (
-                      visibleRentPayments.map(payment => (
-                        <tr key={payment.id}>
-                          <td className="py-4 px-3">{payment.property}</td>
-                          <td className="py-4 px-3">{payment.tenant}</td>
-                          <td className="py-4 px-3">£{payment.amount}</td>
-                          <td className="py-4 px-3">{payment.due_date ? formatDate(payment.due_date) : ""}</td>
-                          <td className="py-4 px-3">{payment.paid_on ? formatDate(payment.paid_on) : ""}</td>
-                          <td className="py-4 px-3">{payment.method || ""}</td>
-                          <td className="py-4 px-3">{payment.reference || ""}</td>
-                          <td className="py-4 px-3">{getStatusBubble(payment.payment_status)}</td>
-                          <td className="py-4 px-3">
-                            <div className="relative">
-                              <button
-                                className="bg-white text-blue-700 font-semibold rounded-lg px-3 py-1 border border-blue-200 hover:bg-blue-50 transition"
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  setOpenRentDropdown(payment.id === openRentDropdown ? null : payment.id);
-                                }}
-                              >
-                                Actions ▼
-                              </button>
-                              {openRentDropdown === payment.id && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden z-10">
-                                  <button
-                                    className="w-full text-left px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition"
-                                    onClick={() => openEditRentModal(payment)}
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition"
-                                    onClick={() => {
-                                      setRentToDelete(payment.id);
-                                      setShowDeleteConfirm(true);
-                                    }}
-                                  >
-                                    Delete
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-                {rentPayments.length > 5 && (
-                  <button
-                    className="mt-4 text-blue-600 font-semibold hover:underline"
-                    onClick={() => setShowAllRentPayments(!showAllRentPayments)}
-                  >
-                    {showAllRentPayments ? "Show Less" : "Show More"}
-                  </button>
-                )}
-              </div>
-            </section>
-
-            {/* Outgoing Expenses Table */}
-            <section className="mb-10">
-              <div className="bg-white rounded-2xl p-6 border border-blue-100">
-                <h2 className="text-xl font-bold text-blue-700 mb-4">Outgoing Expenses</h2>
-                <table className="min-w-[900px] w-full text-base divide-y divide-blue-100">
-                  <thead>
-                    <tr>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Category</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Description</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Amount</th>
-                      <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visibleExpenses.length === 0 ? (
-                      <tr>
-                        <td colSpan={5} className="text-center text-gray-400 py-8">
-                          No payments added yet
-                        </td>
-                      </tr>
-                    ) : (
-                      visibleExpenses.map(expense => (
-                        <tr key={expense.id}>
-                          <td className="py-4 px-3">{formatDate(expense.date || expense.incurred_on)}</td>
-                          <td className="py-4 px-3">{expense.category}</td>
-                          <td className="py-4 px-3">{expense.description}</td>
-                          <td className="py-4 px-3">£{expense.amount}</td>
-                          <td className="py-4 px-3">
-                            <div className="relative">
-                              <button
-                                className="bg-white text-blue-700 font-semibold rounded-lg px-3 py-1 border border-blue-200 hover:bg-blue-50 transition"
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  setOpenExpenseDropdown(expense.id === openExpenseDropdown ? null : expense.id);
-                                }}
-                              >
-                                Actions ▼
-                              </button>
-                              {openExpenseDropdown === expense.id && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg overflow-hidden z-10">
-                                  <button
-                                    className="w-full text-left px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition"
-                                    onClick={() => openEditExpenseModal(expense)}
-                                  >
-                                    Edit
-                                  </button>
-                                  <button
-                                    className="w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition"
-                                    onClick={() => {
-                                      setExpenseToDelete(expense.id);
-                                      setShowDeleteExpenseConfirm(true);
-                                    }}
-                                  >
-                                    Delete
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-                {filteredExpenses.length > 5 && (
-                  <button
-                    className="mt-4 text-blue-600 font-semibold hover:underline"
-                    onClick={() => setShowAllExpenses(!showAllExpenses)}
-                  >
-                    {showAllExpenses ? "Show Less" : "Show More"}
-                  </button>
-                )}
-              </div>
-            </section>
-
-            {/* Interactive Summary Section */}
-            <section className="mb-10">
-              <div className="bg-white rounded-2xl p-8 border border-blue-100 shadow-lg">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-extrabold text-blue-700 tracking-tight">Monthly Income & Expenses</h2>
-                  <div className="flex items-center">
-                    <span className="mr-2 text-blue-700 font-semibold text-sm">Bar</span>
-                    <span
-                      className="relative inline-block w-12 h-6 bg-blue-200 rounded-full transition"
-                      onClick={() => setChartType(chartType === "bar" ? "line" : "bar")}
-                      role="button"
-                      aria-pressed={chartType === "line"}
-                      onKeyDown={e => {
-                        if (e.key === "Enter" || e.key === " ") setChartType(chartType === "bar" ? "line" : "bar");
-                      }}
-                    >
-                      <span
-                        className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
-                          chartType === "line" ? "translate-x-6" : ""
-                        }`}
-                      ></span>
-                    </span>
-                    <span className="ml-2 text-blue-700 font-semibold text-sm">Line</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                  <div className="text-center">
-                    <div className="text-sm font-semibold text-blue-700 mb-1">Total Income</div>
-                    <div className="text-3xl font-bold text-black">£{totalIncome.toLocaleString()}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-semibold text-blue-700 mb-1">Total Expenses</div>
-                    <div className="text-3xl font-bold text-black">£{totalExpenses.toLocaleString()}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-semibold text-blue-700 mb-1">Taxable Profit</div>
-                    <div className="text-3xl font-bold text-black">£{taxableProfit.toLocaleString()}</div>
-                  </div>
-                </div>
-                <hr className="my-6 border-blue-100" />
-                <div className="w-full h-72 bg-white rounded-xl shadow-md p-4 flex items-center justify-center">
-                  <ResponsiveContainer>
-                    {chartType === "bar" ? (
-                      <BarChart data={monthlySummaryData} barCategoryGap="30%">
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="month" stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
-                        <YAxis stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
-                        <Tooltip
-                          formatter={value => `£${value.toLocaleString()}`}
-                          contentStyle={{ backgroundColor: "#f9fafb", borderRadius: "8px", border: "1px solid #2563eb" }}
-                          labelStyle={{ color: "#2563eb", fontWeight: "bold" }}
-                        />
-                        <Legend
-                          wrapperStyle={{ paddingTop: 10 }}
-                          iconType="circle"
-                          formatter={(value, entry) => (
-                            <span style={{ color: entry.color, fontWeight: 700 }}>{value}</span>
-                          )}
-                        />
-                        <Bar
-                          dataKey="income"
-                          name="Rental Income"
-                          fill="#22c55e"
-                          shape={<HouseBarShape />}
-                        />
-                        <Bar
-                          dataKey="expenses"
-                          name="Expenses"
-                          fill="#ef4444"
-                          shape={<HouseBarShape />}
-                        />
-                      </BarChart>
-                    ) : (
-                      <LineChart data={monthlySummaryData}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="month" stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
-                        <YAxis stroke="#2563eb" tick={{ fontWeight: 600, fontSize: 14 }} />
-                        <Tooltip
-                          formatter={value => `£${value.toLocaleString()}`}
-                          contentStyle={{ backgroundColor: "#f9fafb", borderRadius: "8px", border: "1px solid #2563eb" }}
-                          labelStyle={{ color: "#2563eb", fontWeight: "bold" }}
-                        />
-                        <Legend
-                          wrapperStyle={{ paddingTop: 10 }}
-                          iconType="circle"
-                          formatter={(value, entry) => (
-                            <span style={{ color: entry.color, fontWeight: 700 }}>{value}</span>
-                          )}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="income"
-                          name="Rental Income"
-                          stroke="#22c55e"
-                          strokeWidth={3}
-                          dot={{ r: 5 }}
-                          activeDot={{ r: 7 }}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="expenses"
-                          name="Expenses"
-                          stroke="#ef4444"
-                          strokeWidth={3}
-                          dot={{ r: 5 }}
-                          activeDot={{ r: 7 }}
-                        />
-                      </LineChart>
-                    )}
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </section>
-          </>
-        )}
+          </section>
+        </div>
       </main>
     </div>
   );
