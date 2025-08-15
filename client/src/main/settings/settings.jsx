@@ -98,9 +98,11 @@ export default function Settings() {
 
   if (!email) {
     return (
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 flex items-center justify-center bg-gray-100 min-h-screen ml-[270px]">
+      <div className="flex flex-col lg:flex-row">
+        <div className="hidden lg:block w-64 flex-shrink-0">
+          <Sidebar />
+        </div>
+        <main className="flex-1 flex items-center justify-center bg-gray-100 min-h-screen px-4 sm:px-8">
           <div className="text-center">Loading...</div>
         </main>
       </div>
@@ -108,22 +110,35 @@ export default function Settings() {
   }
 
   return (
-    <div className="flex">
-      <Sidebar />
-      <main className="flex-1 flex justify-center items-center bg-gray-100 min-h-screen ml-[270px]">
-        <div className="bg-white shadow-lg rounded-lg p-8 max-w-lg w-full">
+    <div className="flex flex-col lg:flex-row">
+      {/* Sidebar */}
+      <div className="hidden lg:block w-64 flex-shrink-0">
+        <Sidebar />
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 flex justify-center items-center bg-gray-100 min-h-screen px-4 sm:px-8">
+        <div className="bg-white shadow-lg rounded-lg p-6 sm:p-8 max-w-lg w-full">
           <h1 className="text-2xl font-bold mb-6 text-center">Settings</h1>
 
           {/* Tabs */}
           <div className="flex justify-center gap-4 mb-6">
             <button
-              className={`px-4 py-2 rounded-lg ${activeTab === "account" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
+              className={`px-4 py-2 rounded-lg text-sm sm:text-base ${
+                activeTab === "account"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
               onClick={() => setActiveTab("account")}
             >
               Account
             </button>
             <button
-              className={`px-4 py-2 rounded-lg ${activeTab === "subscription" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"}`}
+              className={`px-4 py-2 rounded-lg text-sm sm:text-base ${
+                activeTab === "subscription"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
               onClick={() => setActiveTab("subscription")}
             >
               Subscription
@@ -135,8 +150,10 @@ export default function Settings() {
             <div className="space-y-6">
               {/* Email Section */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <div className="flex items-center gap-4 mt-1">
+                <label className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <div className="flex flex-col sm:flex-row items-center gap-4 mt-1">
                   {editingEmail ? (
                     <>
                       <input
@@ -147,14 +164,14 @@ export default function Settings() {
                       />
                       <button
                         type="button"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base"
                         onClick={handleSaveEmail}
                       >
                         Save
                       </button>
                       <button
                         type="button"
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm sm:text-base"
                         onClick={() => setEditingEmail(false)}
                       >
                         Cancel
@@ -170,7 +187,7 @@ export default function Settings() {
                       />
                       <button
                         type="button"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm sm:text-base"
                         onClick={() => setEditingEmail(true)}
                       >
                         Change
@@ -184,11 +201,10 @@ export default function Settings() {
 
           {activeTab === "subscription" && (
             <div className="space-y-6">
-
               {/* Cancel Subscription Button */}
               <button
                 type="button"
-                className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm sm:text-base"
                 onClick={handleCancelSubscription}
                 disabled={isCanceling}
               >
