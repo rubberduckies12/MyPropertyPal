@@ -203,15 +203,21 @@ export default function Tenants() {
 
   // Render
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="w-64 flex-shrink-0 h-screen">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* Sidebar */}
+      <div className="hidden lg:block w-64 flex-shrink-0 h-screen">
         <Sidebar />
       </div>
-      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-y-auto">
+
+      {/* Main Content */}
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 pt-16 overflow-y-auto">
         <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
-          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Tenants</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-blue-700 tracking-tight">
+            Tenants
+          </h1>
           <div className="flex items-center gap-4">
-            <label className="font-semibold text-blue-700 flex items-center gap-2">
+            {/* Hide Show Yearly Rent Option on Mobile */}
+            <label className="font-semibold text-blue-700 flex items-center gap-2 hidden sm:flex">
               <input
                 type="checkbox"
                 checked={showYearly}
@@ -221,7 +227,7 @@ export default function Tenants() {
               Show yearly rent
             </label>
             <button
-              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+              className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 text-sm sm:text-base hover:bg-blue-700 transition"
               onClick={() => setShowAddModal(true)}
             >
               + Add Tenant
@@ -233,124 +239,191 @@ export default function Tenants() {
         {error && <div className="text-red-500">{error}</div>}
 
         {!loading && !error && (
-          <div className="w-full overflow-x-auto mt-8">
-            <table className="min-w-[900px] w-full bg-white rounded-2xl text-base divide-y divide-blue-100">
-              <thead>
-                <tr>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Name</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Property Address</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Rental Income</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Rent Due</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-center">Status</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Days Left</th>
-                  <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tenants.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="text-center text-gray-400 py-8">
-                      No tenants added yet
-                    </td>
-                  </tr>
-                ) : (
-                  tenants.map((tenant) => (
-                    <tr
-                      key={tenant.id}
-                      className="hover:bg-blue-50 transition cursor-pointer"
-                      onClick={() => handleRowClick(tenant)}
-                    >
-                      <td className="py-4 px-3">{tenant.first_name} {tenant.last_name}</td>
-                      <td className="py-4 px-3">{tenant.address}</td>
-                      <td className="py-4 px-3">
-                        £{showYearly
-                          ? (tenant.rent_amount * 12).toLocaleString()
-                          : tenant.rent_amount.toLocaleString()}
-                        /{showYearly ? "yr" : "mo"}
-                      </td>
-                      <td className="py-4 px-3">{getNextDueDate(tenant)}</td>
-                      <td className="py-4 px-3 text-center">
-                        <span
-                          className={`px-4 py-1 rounded-xl font-semibold text-sm ${
-                            tenant.is_pending
-                              ? "bg-yellow-100 text-yellow-800"
-                              : tenant.pays_rent
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {tenant.is_pending
-                            ? "Unconfirmed"
+          <>
+            {/* Mobile View: Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
+              {tenants.length === 0 ? (
+                <div className="text-center text-gray-400 py-8">
+                  No tenants added yet
+                </div>
+              ) : (
+                tenants.map((tenant) => (
+                  <div
+                    key={tenant.id}
+                    className="bg-white rounded-2xl shadow p-4 flex flex-col gap-2 cursor-pointer"
+                    onClick={() => setSelectedTenant(tenant)} // Open tenant details modal
+                  >
+                    <h3 className="text-lg font-bold text-blue-700">
+                      {tenant.first_name} {tenant.last_name}
+                    </h3>
+                    <p className="text-sm text-gray-500">{tenant.address}</p>
+                    <div className="text-sm">
+                      <strong>Rental Income:</strong> £
+                      {showYearly
+                        ? (tenant.rent_amount * 12).toLocaleString()
+                        : tenant.rent_amount.toLocaleString()}
+                      /{showYearly ? "yr" : "mo"}
+                    </div>
+                    <div className="text-sm">
+                      <strong>Rent Due:</strong> {getNextDueDate(tenant)}
+                    </div>
+                    <div className="text-sm">
+                      <strong>Status:</strong>{" "}
+                      <span
+                        className={`px-4 py-1 rounded-xl font-semibold text-sm ${
+                          tenant.is_pending
+                            ? "bg-yellow-100 text-yellow-800"
                             : tenant.pays_rent
-                            ? "Active"
-                            : "Not Active"}
-                        </span>
-                      </td>
-                      <td className="py-4 px-3">
-                        <span className="">{daysLeft(tenant)} days</span>
-                      </td>
-                      <td className="py-4 px-3">
-                        <button
-                          className="bg-blue-50 text-blue-700 font-semibold rounded-lg px-3 py-1 border border-blue-100 hover:bg-blue-100 transition"
-                          onClick={e => {
-                            e.stopPropagation();
-                            handleEditTenant(tenant);
-                          }}
-                        >
-                          Edit
-                        </button>
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {tenant.is_pending
+                          ? "Unconfirmed"
+                          : tenant.pays_rent
+                          ? "Active"
+                          : "Not Active"}
+                      </span>
+                    </div>
+                    <div className="text-sm">
+                      <strong>Days Left:</strong> {daysLeft(tenant)} days
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden lg:block w-full overflow-x-auto mt-8">
+              <table className="min-w-[900px] w-full bg-white rounded-2xl text-base divide-y divide-blue-100">
+                <thead>
+                  <tr>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Name
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Property Address
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Rental Income
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Rent Due
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-center">
+                      Status
+                    </th>
+                    <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                      Days Left
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tenants.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="text-center text-gray-400 py-8">
+                        No tenants added yet
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    tenants.map((tenant) => (
+                      <tr
+                        key={tenant.id}
+                        className="hover:bg-blue-50 transition cursor-pointer"
+                        onClick={() => setSelectedTenant(tenant)} // Open tenant details modal
+                      >
+                        <td className="py-4 px-3">
+                          {tenant.first_name} {tenant.last_name}
+                        </td>
+                        <td className="py-4 px-3">{tenant.address}</td>
+                        <td className="py-4 px-3">
+                          £
+                          {showYearly
+                            ? (tenant.rent_amount * 12).toLocaleString()
+                            : tenant.rent_amount.toLocaleString()}
+                          /{showYearly ? "yr" : "mo"}
+                        </td>
+                        <td className="py-4 px-3">{getNextDueDate(tenant)}</td>
+                        <td className="py-4 px-3 text-center">
+                          <span
+                            className={`px-4 py-1 rounded-xl font-semibold text-sm ${
+                              tenant.is_pending
+                                ? "bg-yellow-100 text-yellow-800"
+                                : tenant.pays_rent
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {tenant.is_pending
+                              ? "Unconfirmed"
+                              : tenant.pays_rent
+                              ? "Active"
+                              : "Not Active"}
+                          </span>
+                        </td>
+                        <td className="py-4 px-3">{daysLeft(tenant)} days</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* Add Tenant Modal */}
         {showAddModal && (
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg flex flex-col gap-6 border border-blue-100">
-              <h2 className="text-2xl font-extrabold text-blue-700 text-center mb-4">Add Tenant</h2>
-              <form onSubmit={handleAddTenant} className="flex flex-col gap-5">
+            <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 w-full max-w-lg flex flex-col gap-4 sm:gap-5 border border-blue-100">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-blue-700 text-center mb-4">
+                Add Tenant
+              </h2>
+              <form onSubmit={handleAddTenant} className="flex flex-col gap-4 sm:gap-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <label className="font-semibold text-black flex flex-col">
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
                     First Name
                     <input
                       required
                       value={addForm.first_name}
-                      onChange={e => setAddForm(f => ({ ...f, first_name: e.target.value }))}
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                      onChange={(e) =>
+                        setAddForm((f) => ({ ...f, first_name: e.target.value }))
+                      }
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                     />
                   </label>
-                  <label className="font-semibold text-black flex flex-col">
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
                     Last Name
                     <input
                       required
                       value={addForm.last_name}
-                      onChange={e => setAddForm(f => ({ ...f, last_name: e.target.value }))}
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                      onChange={(e) =>
+                        setAddForm((f) => ({ ...f, last_name: e.target.value }))
+                      }
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                     />
                   </label>
                 </div>
-                <label className="font-semibold text-black flex flex-col">
+                <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
                   Email
                   <input
                     type="email"
                     required
                     value={addForm.email}
-                    onChange={e => setAddForm(f => ({ ...f, email: e.target.value }))}
-                    className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                    onChange={(e) =>
+                      setAddForm((f) => ({ ...f, email: e.target.value }))
+                    }
+                    className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                   />
                 </label>
-                <label className="font-semibold text-black flex flex-col">
+                <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
                   Property Address
                   <select
                     required
                     value={addForm.property_id}
-                    onChange={e => setAddForm(f => ({ ...f, property_id: e.target.value }))}
-                    className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                    onChange={(e) =>
+                      setAddForm((f) => ({ ...f, property_id: e.target.value }))
+                    }
+                    className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                   >
                     <option value="">Select property</option>
                     {properties.map((p) => (
@@ -361,31 +434,34 @@ export default function Tenants() {
                   </select>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <label className="font-semibold text-black flex flex-col">
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
                     Rent Amount (£)
                     <input
                       type="number"
                       required
                       min="0"
                       value={addForm.rent_amount || ""}
-                      onChange={e => setAddForm(f => ({ ...f, rent_amount: e.target.value }))}
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                      onChange={(e) =>
+                        setAddForm((f) => ({ ...f, rent_amount: e.target.value }))
+                      }
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                     />
                   </label>
-                  <label className="font-semibold text-black flex flex-col">
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
                     Rent Schedule
                     <select
                       value={addForm.rent_schedule_type || "monthly"}
-                      onChange={e => {
+                      onChange={(e) => {
                         const type = e.target.value;
-                        setAddForm(f => ({
+                        setAddForm((f) => ({
                           ...f,
                           rent_schedule_type: type,
-                          rent_schedule_value: (type === "last_friday") ? null : ""
+                          rent_schedule_value:
+                            type === "last_friday" ? null : "",
                         }));
                       }}
                       required
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                     >
                       <option value="monthly">Specific day of month</option>
                       <option value="weekly">Weekly (choose weekday)</option>
@@ -395,25 +471,32 @@ export default function Tenants() {
                   </label>
                 </div>
                 {addForm.rent_schedule_type === "monthly" && (
-                  <label className="font-semibold text-black flex flex-col">
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col relative">
                     Rent Due Date
                     <input
                       type="date"
                       value={addForm.rent_due_date || ""}
-                      onChange={e => setAddForm(f => ({ ...f, rent_due_date: e.target.value }))}
+                      onChange={(e) =>
+                        setAddForm((f) => ({ ...f, rent_due_date: e.target.value }))
+                      }
                       required
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                     />
                   </label>
                 )}
                 {["weekly", "biweekly"].includes(addForm.rent_schedule_type) && (
-                  <label className="font-semibold text-black flex flex-col">
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
                     Weekday
                     <select
                       value={addForm.rent_schedule_value || ""}
-                      onChange={e => setAddForm(f => ({ ...f, rent_schedule_value: e.target.value }))}
+                      onChange={(e) =>
+                        setAddForm((f) => ({
+                          ...f,
+                          rent_schedule_value: e.target.value,
+                        }))
+                      }
                       required
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
                     >
                       <option value="">Select weekday</option>
                       <option value="1">Monday</option>
@@ -428,172 +511,32 @@ export default function Tenants() {
                 )}
                 {addForm.rent_schedule_type === "last_friday" && (() => {
                   const today = new Date();
-                  const lastFriday = getLastFriday(today.getFullYear(), today.getMonth());
+                  const lastFriday = getLastFriday(
+                    today.getFullYear(),
+                    today.getMonth()
+                  );
                   return (
-                    <div className="font-semibold text-black mt-2">
+                    <div className="font-semibold text-sm sm:text-base text-black mt-2">
                       Next rent due date: {lastFriday.toLocaleDateString("en-GB")}
                     </div>
                   );
                 })()}
-                {addError && <div className="text-red-500 text-center">{addError}</div>}
-                <div className="flex gap-4 mt-6">
+                {addError && (
+                  <div className="text-red-500 text-center text-sm sm:text-base">
+                    {addError}
+                  </div>
+                )}
+                <div className="flex gap-4 mt-4">
                   <button
                     type="submit"
-                    className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition flex-1"
+                    className="bg-blue-600 text-white font-bold rounded-lg px-3 py-2 text-sm sm:text-base hover:bg-blue-700 transition flex-1"
                   >
                     Add Tenant
                   </button>
                   <button
                     type="button"
-                    className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
+                    className="bg-gray-100 text-gray-700 font-bold rounded-lg px-3 py-2 text-sm sm:text-base border border-blue-100 hover:bg-gray-200 transition flex-1"
                     onClick={() => setShowAddModal(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Edit Tenant Modal */}
-        {editTenant && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg flex flex-col gap-6 border border-blue-100">
-              <h2 className="text-2xl font-extrabold text-blue-700 text-center mb-4">Edit Tenant</h2>
-              <form onSubmit={handleEditSubmit} className="flex flex-col gap-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <label className="font-semibold text-black flex flex-col">
-                    First Name
-                    <input
-                      required
-                      value={editForm.first_name}
-                      onChange={e => setEditForm(f => ({ ...f, first_name: e.target.value }))}
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
-                    />
-                  </label>
-                  <label className="font-semibold text-black flex flex-col">
-                    Last Name
-                    <input
-                      required
-                      value={editForm.last_name}
-                      onChange={e => setEditForm(f => ({ ...f, last_name: e.target.value }))}
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
-                    />
-                  </label>
-                </div>
-                <label className="font-semibold text-black flex flex-col">
-                  Email
-                  <input
-                    type="email"
-                    required
-                    value={editForm.email}
-                    onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
-                    className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
-                  />
-                </label>
-                <label className="font-semibold text-black flex flex-col">
-                  Property Address
-                  <select
-                    required
-                    value={editForm.property_id}
-                    onChange={e => setEditForm(f => ({ ...f, property_id: e.target.value }))}
-                    className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
-                  >
-                    <option value="">Select property</option>
-                    {properties.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.address}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <label className="font-semibold text-black flex flex-col">
-                    Rent Amount (£)
-                    <input
-                      type="number"
-                      required
-                      min="0"
-                      value={editForm.rent_amount || ""}
-                      onChange={e => setEditForm(f => ({ ...f, rent_amount: e.target.value }))}
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
-                    />
-                  </label>
-                  <label className="font-semibold text-black flex flex-col">
-                    Rent Schedule
-                    <select
-                      value={editForm.rent_schedule_type || "monthly"}
-                      onChange={e => {
-                        const type = e.target.value;
-                        setEditForm(f => ({
-                          ...f,
-                          rent_schedule_type: type,
-                          rent_schedule_value: (type === "last_friday") ? null : ""
-                        }));
-                      }}
-                      required
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
-                    >
-                      <option value="monthly">Specific day of month</option>
-                      <option value="weekly">Weekly (choose weekday)</option>
-                      <option value="biweekly">Every two weeks (choose weekday)</option>
-                      <option value="last_friday">Last Friday of the month</option>
-                    </select>
-                  </label>
-                </div>
-                {editForm.rent_schedule_type === "monthly" && (
-                  <label className="font-semibold text-black flex flex-col">
-                    Rent Due Date
-                    <input
-                      type="date"
-                      value={editForm.rent_due_date || ""}
-                      onChange={e => setEditForm(f => ({ ...f, rent_due_date: e.target.value }))}
-                      required
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
-                    />
-                  </label>
-                )}
-                {["weekly", "biweekly"].includes(editForm.rent_schedule_type) && (
-                  <label className="font-semibold text-black flex flex-col">
-                    Weekday
-                    <select
-                      value={editForm.rent_schedule_value || ""}
-                      onChange={e => setEditForm(f => ({ ...f, rent_schedule_value: e.target.value }))}
-                      required
-                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
-                    >
-                      <option value="">Select weekday</option>
-                      <option value="1">Monday</option>
-                      <option value="2">Tuesday</option>
-                      <option value="3">Wednesday</option>
-                      <option value="4">Thursday</option>
-                      <option value="5">Friday</option>
-                      <option value="6">Saturday</option>
-                      <option value="0">Sunday</option>
-                    </select>
-                  </label>
-                )}
-                {editForm.rent_schedule_type === "last_friday" && (() => {
-                  const today = new Date();
-                  const lastFriday = getLastFriday(today.getFullYear(), today.getMonth());
-                  return (
-                    <div className="font-semibold text-black mt-2">
-                      Next rent due date: {lastFriday.toLocaleDateString("en-GB")}
-                    </div>
-                  );
-                })()}
-                <div className="flex gap-4 mt-6">
-                  <button
-                    type="submit"
-                    className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition flex-1"
-                  >
-                    Save Changes
-                  </button>
-                  <button
-                    type="button"
-                    className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
-                    onClick={() => setEditTenant(null)}
                   >
                     Cancel
                   </button>
@@ -626,12 +569,13 @@ export default function Tenants() {
                 </div>
                 <div>
                   <strong className="text-blue-700">Status:</strong>{" "}
-                  <span className={
-                    `px-4 py-1 rounded-xl font-semibold text-sm
-                    ${selectedTenant.pays_rent
-                      ? "bg-green-100 text-green-700"
-                      : "bg-yellow-100 text-yellow-800"}`
-                  }>
+                  <span
+                    className={`px-4 py-1 rounded-xl font-semibold text-sm ${
+                      selectedTenant.pays_rent
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
                     {selectedTenant.pays_rent ? "Active" : "Not Active"}
                   </span>
                 </div>
@@ -642,17 +586,149 @@ export default function Tenants() {
               <div className="flex gap-4 mt-2">
                 <button
                   onClick={handleCloseModal}
-                  className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
+                  className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 text-sm border border-blue-100 hover:bg-gray-200 transition flex-1"
                 >
                   Close
                 </button>
                 <button
-                  className="bg-red-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 transition flex-1"
+                  className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 text-sm hover:bg-blue-700 transition flex-1"
+                  onClick={() => handleEditTenant(selectedTenant)} // Open edit tenant modal
+                >
+                  Edit Tenant
+                </button>
+                <button
+                  className="bg-red-600 text-white font-bold rounded-lg px-4 py-2 text-sm hover:bg-red-700 transition flex-1"
                   onClick={() => handleRemoveTenant(selectedTenant.id)}
                 >
                   Delete Tenant
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Tenant Modal */}
+        {editTenant && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 w-full max-w-lg flex flex-col gap-4 sm:gap-5 border border-blue-100">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-blue-700 text-center mb-4">
+                Edit Tenant
+              </h2>
+              <form onSubmit={handleEditSubmit} className="flex flex-col gap-4 sm:gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
+                    First Name
+                    <input
+                      required
+                      value={editForm.first_name}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, first_name: e.target.value }))
+                      }
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
+                    />
+                  </label>
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
+                    Last Name
+                    <input
+                      required
+                      value={editForm.last_name}
+                      onChange={(e) =>
+                        setEditForm((f) => ({ ...f, last_name: e.target.value }))
+                      }
+                      className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
+                    />
+                  </label>
+                </div>
+                <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
+                  Email
+                  <input
+                    type="email"
+                    required
+                    value={editForm.email}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, email: e.target.value }))
+                    }
+                    className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
+                  />
+                </label>
+                <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
+                  Property Address
+                  <select
+                    required
+                    value={editForm.property_id}
+                    onChange={(e) =>
+                      setEditForm((f) => ({ ...f, property_id: e.target.value }))
+                    }
+                    className="mt-1 px-3 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
+                  >
+                    <option value="">Select property</option>
+                    {properties.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.address}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
+                    Rent Amount (£)
+                    <input
+                      type="number"
+                      required
+                      min="0"
+                      value={editForm.rent_amount || ""}
+                      onChange={(e) => setEditForm(f => ({ ...f, rent_amount: e.target.value }))}
+                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                    />
+                  </label>
+                  <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
+                    Rent Schedule
+                    <select
+                      value={editForm.rent_schedule_type || "monthly"}
+                      onChange={e => {
+                        const type = e.target.value;
+                        setEditForm(f => ({
+                          ...f,
+                          rent_schedule_type: type,
+                          rent_schedule_value: (type === "last_friday") ? null : ""
+                        }));
+                      }}
+                      required
+                      className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                    >
+                      <option value="monthly">Specific day of month</option>
+                      <option value="weekly">Weekly (choose weekday)</option>
+                      <option value="biweekly">Every two weeks (choose weekday)</option>
+                      <option value="last_friday">Last Friday of the month</option>
+                    </select>
+                  </label>
+                </div>
+                <label className="font-semibold text-sm sm:text-base text-black flex flex-col">
+                  Rent Due Date
+                  <input
+                    type="date"
+                    value={editForm.rent_due_date || ""}
+                    onChange={e => setEditForm(f => ({ ...f, rent_due_date: e.target.value }))}
+                    required
+                    className="mt-1 px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-400"
+                  />
+                </label>
+                <div className="flex gap-4 mt-6">
+                  <button
+                    type="submit"
+                    className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition flex-1"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
+                    onClick={() => setEditTenant(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
