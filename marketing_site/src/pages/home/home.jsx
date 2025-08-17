@@ -279,7 +279,7 @@ export default function Landing() {
                 <div className="flex items-center gap-3 bg-[#2563eb] border border-[#2563eb] text-white px-4 py-2 rounded-b-xl shadow-sm mt-0 fixed top-0 left-0 right-0 z-50">
                     <BsHourglassSplit className="animate-spin-slow text-white" size={22} />
                     <span className="font-medium text-sm">
-                        Mobile app is coming soon – join us on desktop for the best experience in the meantime!
+                        Mobile app is coming soon – Use our webapp in the meantime!
                     </span>
                 </div>
             </div>
@@ -295,13 +295,13 @@ export default function Landing() {
             <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-24">
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h1 className="text-2xl md:text-5xl font-extrabold mb-4 md:mb-6 text-[#2563eb] leading-tight">
-                        The Easiest Way To<br className="hidden md:block" /> Manage Your Properties
+                        The Only Way To<br className="hidden md:block" /> Manage Your Properties in 2025
                     </h1>
                     <h3 className="text-lg md:text-2xl font-semibold mb-2 text-[#2563eb] tracking-tight leading-snug" style={{ letterSpacing: "-0.5px" }}>
-                        Manage your rentals in minutes not hours
+                        Win back time with MyPropertyPal.
                     </h3>
                     <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8">
-                        Free 30 Minute Onboarding Call. Reach Out Now.
+                        We'll get you set up in a quick and free 30 minute call.
                     </p>
                     <button
                         className="bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto"
@@ -338,7 +338,7 @@ export default function Landing() {
                         Cut Out The Need For Property Managers
                     </h2>
                     <p className="text-gray-700 mb-6 text-center md:text-left">
-                        All-in-one tools for the small landlords who want to save thousands on property management fees, hours of time every month, and have full control over their properties.
+                        We get it, you can now finally take control of your property management, without spending hours on admin, and without being charged silly fees.
                     </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
