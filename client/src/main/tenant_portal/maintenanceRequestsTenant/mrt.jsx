@@ -101,11 +101,18 @@ export default function MaintenanceRequestsTenant() {
   };
 
   return (
-    <div className="flex min-h-screen bg-blue-50">
-      <Sidebar />
-      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 overflow-y-auto ml-64">
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* Sidebar */}
+      <div className="hidden lg:block w-64 flex-shrink-0 h-screen">
+        <Sidebar />
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 pt-16 overflow-y-auto">
         <div className="flex items-center justify-between mb-6 border-b border-blue-100 pb-3">
-          <h1 className="text-3xl font-extrabold text-blue-700 tracking-tight">Maintenance Requests</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-blue-700 tracking-tight">
+            Maintenance Requests
+          </h1>
           <button
             className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
             onClick={() => setShowAddModal(true)}
@@ -113,15 +120,75 @@ export default function MaintenanceRequestsTenant() {
             + New Request
           </button>
         </div>
-        <div className="w-full overflow-x-auto mt-8">
+
+        {/* Mobile View: Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden">
+          {incidents.length === 0 ? (
+            <div className="text-center text-gray-400 py-8">
+              No new maintenance requests
+            </div>
+          ) : (
+            incidents.map((incident) => (
+              <div
+                key={incident.id}
+                className="bg-white rounded-2xl shadow p-4 flex flex-col gap-2 cursor-pointer"
+                onClick={() => handleRowClick(incident)}
+              >
+                <h3 className="text-lg font-bold text-blue-700">
+                  {incident.title}
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {incident.property_address}
+                </p>
+                <div className="text-sm">
+                  <strong>Date Posted:</strong>{" "}
+                  {new Date(incident.created_at).toLocaleDateString("en-GB")}
+                </div>
+                <div className="text-sm">
+                  <strong>Severity:</strong>{" "}
+                  <span
+                    className={`px-4 py-1 rounded-xl font-semibold text-sm ${mapSeverityToColor(
+                      incident.severity
+                    )}`}
+                  >
+                    {incident.severity}
+                  </span>
+                </div>
+                <div className="text-sm">
+                  <strong>Progress:</strong>{" "}
+                  <span
+                    className={`px-4 py-1 rounded-xl font-semibold text-sm ${getProgressColor(
+                      incident.progress
+                    )}`}
+                  >
+                    {incident.progress}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop View: Table */}
+        <div className="hidden lg:block w-full overflow-x-auto mt-8">
           <table className="min-w-[900px] w-full bg-white rounded-2xl text-base divide-y divide-blue-100">
             <thead>
               <tr>
-                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Title</th>
-                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Property Address</th>
-                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Date Posted</th>
-                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-center">Severity</th>
-                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 text-left">Progress</th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                  Title
+                </th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                  Property Address
+                </th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                  Date Posted
+                </th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-center">
+                  Severity
+                </th>
+                <th className="bg-blue-50 text-blue-700 font-bold py-4 px-3 border-b border-blue-100 sticky top-0 z-10 text-left">
+                  Progress
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -140,25 +207,41 @@ export default function MaintenanceRequestsTenant() {
                   >
                     <td className="py-4 px-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-blue-700">{incident.title}</span>
-                        <span className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 ml-2">#{incident.id}</span>
+                        <span className="font-semibold text-blue-700">
+                          {incident.title}
+                        </span>
+                        <span className="text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 ml-2">
+                          #{incident.id}
+                        </span>
                       </div>
                     </td>
                     <td className="py-4 px-3">
-                      <span className="font-medium text-black">{incident.property_address}</span>
+                      <span className="font-medium text-black">
+                        {incident.property_address}
+                      </span>
                     </td>
                     <td className="py-4 px-3">
                       <span className="text-gray-600">
-                        {new Date(incident.created_at).toLocaleDateString("en-GB")}
+                        {new Date(incident.created_at).toLocaleDateString(
+                          "en-GB"
+                        )}
                       </span>
                     </td>
                     <td className="py-4 px-3 text-center">
-                      <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${mapSeverityToColor(incident.severity)}`}>
+                      <span
+                        className={`px-4 py-1 rounded-xl font-semibold text-sm ${mapSeverityToColor(
+                          incident.severity
+                        )}`}
+                      >
                         {incident.severity}
                       </span>
                     </td>
                     <td className="py-4 px-3">
-                      <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${getProgressColor(incident.progress)}`}>
+                      <span
+                        className={`px-4 py-1 rounded-xl font-semibold text-sm ${getProgressColor(
+                          incident.progress
+                        )}`}
+                      >
                         {incident.progress}
                       </span>
                     </td>
@@ -186,22 +269,33 @@ export default function MaintenanceRequestsTenant() {
               <div className="bg-blue-50 rounded-lg p-4 mb-2 text-base text-black flex flex-col gap-2">
                 <div>
                   <strong className="text-blue-700">Severity:</strong>{" "}
-                  <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${mapSeverityToColor(selectedIncident.severity)}`}>
+                  <span
+                    className={`px-4 py-1 rounded-xl font-semibold text-sm ${mapSeverityToColor(
+                      selectedIncident.severity
+                    )}`}
+                  >
                     {selectedIncident.severity}
                   </span>
                 </div>
                 <div>
                   <strong className="text-blue-700">Progress:</strong>{" "}
-                  <span className={`px-4 py-1 rounded-xl font-semibold text-sm ${getProgressColor(selectedIncident.progress)}`}>
+                  <span
+                    className={`px-4 py-1 rounded-xl font-semibold text-sm ${getProgressColor(
+                      selectedIncident.progress
+                    )}`}
+                  >
                     {selectedIncident.progress}
                   </span>
                 </div>
                 <div>
-                  <strong className="text-blue-700">Property:</strong> {selectedIncident.property_address}
+                  <strong className="text-blue-700">Property:</strong>{" "}
+                  {selectedIncident.property_address}
                 </div>
                 <div>
                   <strong className="text-blue-700">Date Posted:</strong>{" "}
-                  {new Date(selectedIncident.created_at).toLocaleDateString("en-GB")}
+                  {new Date(selectedIncident.created_at).toLocaleDateString(
+                    "en-GB"
+                  )}
                 </div>
                 <div>
                   <strong className="text-blue-700">Description:</strong>
@@ -210,13 +304,13 @@ export default function MaintenanceRequestsTenant() {
               </div>
               <div className="flex gap-4 mt-2">
                 <button
-                  className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1"
+                  className="bg-gray-100 text-gray-700 font-bold rounded-lg px-4 py-2 border border-blue-100 hover:bg-gray-200 transition flex-1 text-sm"
                   onClick={handleCloseModal}
                 >
                   Close
                 </button>
                 <button
-                  className="bg-red-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 transition flex-1"
+                  className="bg-red-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-red-700 transition flex-1 text-sm"
                   onClick={() => handleDeleteIncident(selectedIncident.id)}
                 >
                   Delete Request

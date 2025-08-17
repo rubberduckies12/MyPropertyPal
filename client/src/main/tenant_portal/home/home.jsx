@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import TenantSidebar from "../tsidebar/tenantSidebar.jsx";
-import "./home.css";
 
 const API_BASE = "https://api.mypropertypal.com";
 
@@ -41,7 +41,7 @@ async function fetchTenantUser() {
 
 async function fetchUnreadMessages() {
   const res = await fetch(`${API_BASE}/api/messages/unread/count`, {
-    credentials: "include", // Include cookies for authentication
+    credentials: "include",
   });
   if (!res.ok) {
     console.error("Failed to fetch unread messages");
@@ -57,6 +57,7 @@ export default function TenantHome() {
   const [incidents, setIncidents] = useState([]);
   const [user, setUser] = useState(null);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     async function loadData() {
@@ -87,70 +88,94 @@ export default function TenantHome() {
     });
 
     if (res.ok) {
-      setUnreadMessages(await fetchUnreadMessages()); // Refresh unread message count
+      setUnreadMessages(await fetchUnreadMessages());
     } else {
       console.error("Failed to mark messages as read");
     }
   }
 
   return (
-    <div className="tenant-home-container">
-      <TenantSidebar />
-      <main className="tenant-dashboard-main">
-        <header className="tenant-dashboard-header">
-          <h1>
-            Hey{user && user.first_name ? `, ${user.first_name}` : ""}!
-          </h1>
-          <p>
-            Here you can view your tenancy details, report issues, download
-            documents, and contact your landlord.
-          </p>
+    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <div className="hidden lg:block w-64 flex-shrink-0">
+        <TenantSidebar />
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 px-4 sm:px-8 py-6 sm:py-10 pt-16">
+        {/* Header */}
+        <header className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
+          {/* Sidebar Icon */}
+          <div className="lg:hidden mr-4">
+            {/* The sidebar icon is already handled in TenantSidebar */}
+          </div>
+
+          {/* Page Title */}
+          <div className="flex-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-blue-700">
+              Hey{user && user.first_name ? `, ${user.first_name}` : ""}!
+            </h1>
+          </div>
         </header>
-        <div className="tenant-dashboard-grid">
+
+        {/* Dashboard Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Rent Amount Card */}
-          <div className="tenant-dashboard-card">
-            <h3>Rent Amount</h3>
-            <div className="tenant-dashboard-card-main">
+          <div className="bg-white shadow-md rounded-xl p-6 flex flex-col">
+            <h3 className="text-lg font-semibold text-blue-700 mb-4">
+              Rent Amount
+            </h3>
+            <p className="text-4xl font-bold text-blue-600">
               £
               {rent && rent.rent_amount !== undefined && rent.rent_amount !== null
                 ? Number(rent.rent_amount).toLocaleString()
                 : "0"}
-            </div>
-            <div className="tenant-dashboard-card-label">
+            </p>
+            <p className="text-gray-600 mt-2">
               {rent && rent.rent_due_date
                 ? `Next Due: ${new Date(rent.rent_due_date).toLocaleDateString()}`
                 : "No upcoming due date"}
-            </div>
+            </p>
           </div>
 
           {/* Maintenance Requests Card */}
-          <div className="tenant-dashboard-card">
-            <h3>Maintenance Requests</h3>
-            <div className="tenant-dashboard-card-main">{incidents.length}</div>
-            <div className="tenant-dashboard-card-label">Open Requests</div>
-            <div className="tenant-dashboard-list">
+          <div className="bg-white shadow-md rounded-xl p-6 flex flex-col">
+            <h3 className="text-lg font-semibold text-blue-700 mb-4">
+              Maintenance Requests
+            </h3>
+            <p className="text-4xl font-bold text-blue-600">{incidents.length}</p>
+            <p className="text-gray-600 mt-2">Open Requests</p>
+            <div className="mt-4 space-y-2">
               {incidents.slice(0, 3).map((incident, idx) => (
-                <div key={idx} className="tenant-dashboard-list-item">
-                  <strong>{incident.title || "Request"}</strong>
-                  <span>{incident.progress ? incident.progress : "Open"}</span>
+                <div
+                  key={idx}
+                  className="bg-gray-100 rounded-lg px-4 py-2 flex justify-between items-center"
+                >
+                  <strong className="text-blue-700">
+                    {incident.title || "Request"}
+                  </strong>
+                  <span className="text-gray-500">
+                    {incident.progress ? incident.progress : "Open"}
+                  </span>
                 </div>
               ))}
               {incidents.length === 0 && (
-                <div className="tenant-dashboard-list-empty">
-                  No open requests.
-                </div>
+                <div className="text-gray-500">No open requests.</div>
               )}
             </div>
-            <button className="tenant-dashboard-btn">View All Requests</button>
+            <button
+              className="mt-auto bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+              onClick={() => navigate("/tenant-maintenance")} // Navigate to mrt page
+            >
+              View All Requests
+            </button>
           </div>
 
           {/* Messages Card */}
-          <div className="tenant-dashboard-card">
-            <h3>Messages</h3>
-            <div className="tenant-dashboard-card-main">
-              {unreadMessages} {/* Display unread message count */}
-            </div>
-            <div className="tenant-dashboard-card-label">New Messages</div>
+          <div className="bg-white shadow-md rounded-xl p-6 flex flex-col">
+            <h3 className="text-lg font-semibold text-blue-700 mb-4">Messages</h3>
+            <p className="text-4xl font-bold text-blue-600">{unreadMessages}</p>
+            <p className="text-gray-600 mt-2">New Messages</p>
           </div>
         </div>
       </main>
