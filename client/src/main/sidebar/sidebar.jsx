@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { FaHome, FaEnvelope, FaBuilding, FaFileAlt, FaGavel, FaRobot, FaCog, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
+import { FaHome, FaEnvelope, FaBuilding, FaFileAlt, FaGavel, FaRobot, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
 
 function Sidebar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -49,6 +49,17 @@ function Sidebar() {
             alt="MyPropertyPal Logo"
             className="h-16 w-auto"
           />
+        </div>
+
+        {/* Logout Button for Mobile */}
+        <div className="lg:hidden px-4 py-3 border-b border-blue-600">
+          <button
+            className="flex items-center gap-4 w-full text-red-500 hover:text-red-700 transition"
+            onClick={handleLogoutClick}
+          >
+            <FaSignOutAlt className="text-xl" />
+            <span>Log Out</span>
+          </button>
         </div>
 
         {/* Navigation Links */}
@@ -217,8 +228,8 @@ function Sidebar() {
           </NavLink>
         </nav>
 
-        {/* Logout */}
-        <div className="mt-auto px-4 py-3">
+        {/* Logout Button for Desktop */}
+        <div className="hidden lg:block mt-auto px-4 py-3">
           <button
             className="flex items-center gap-4 w-full text-red-500 hover:text-red-700 transition"
             onClick={handleLogoutClick}
