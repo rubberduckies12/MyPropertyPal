@@ -370,16 +370,17 @@ export default function Landing() {
             {showForm && (
   <div
     className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-    style={{ background: "transparent" }} // Remove the dark background
+    style={{ background: "transparent" }} // Keep the background transparent
   >
     <div
-      className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md pointer-events-auto"
+      className="bg-[#2563eb] text-white rounded-lg shadow-lg p-6 w-full max-w-md pointer-events-auto"
       style={{
         position: "absolute",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
         zIndex: 1000, // Ensure it appears above everything
+        border: "4px solid #1e40af", // Add a darker blue border
       }}
     >
       {!formSubmitted ? (
@@ -394,7 +395,7 @@ export default function Landing() {
               placeholder="First Name"
               value={formData.first_name}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               required
             />
             <input
@@ -403,7 +404,7 @@ export default function Landing() {
               placeholder="Last Name"
               value={formData.last_name}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               required
             />
             <input
@@ -412,18 +413,18 @@ export default function Landing() {
               placeholder="Email Address"
               value={formData.email}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               required
             />
             <button
               type="submit"
-              className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+              className="bg-white text-[#2563eb] font-bold rounded-lg px-4 py-2 hover:bg-gray-100 transition"
             >
               Submit
             </button>
           </form>
           <button
-            className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
+            className="mt-4 text-gray-200 hover:text-gray-100 text-sm"
             onClick={() => setShowForm(false)}
           >
             Cancel
@@ -436,12 +437,12 @@ export default function Landing() {
           <a
             href="/Landlord-Starter-Kit.zip"
             download
-            className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+            className="bg-white text-[#2563eb] font-bold rounded-lg px-4 py-2 hover:bg-gray-100 transition"
           >
             Download Now
           </a>
           <button
-            className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
+            className="mt-4 text-gray-200 hover:text-gray-100 text-sm"
             onClick={() => setShowForm(false)}
           >
             Close
