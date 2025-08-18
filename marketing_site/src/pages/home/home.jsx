@@ -276,7 +276,7 @@ export default function Landing() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/leads", {
+      const response = await fetch("https://api.mypropertypal.com/api/leads", { // Updated URL
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -288,6 +288,8 @@ export default function Landing() {
         setFormSubmitted(true); // Mark form as submitted
       } else {
         console.error("Failed to submit form");
+        const errorData = await response.json();
+        console.error("Error details:", errorData);
       }
     } catch (err) {
       console.error("Error submitting form:", err);
@@ -366,77 +368,89 @@ export default function Landing() {
 
             {/* Form Modal */}
             {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-            {!formSubmitted ? (
-              <>
-                <h2 className="text-xl font-bold text-center mb-4">
-                  Enter Your Info to Get Your Free Guide
-                </h2>
-                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                  <input
-                    type="text"
-                    name="first_name"
-                    placeholder="First Name"
-                    value={formData.first_name}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="last_name"
-                    placeholder="Last Name"
-                    value={formData.last_name}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email Address"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
-                  >
-                    Submit
-                  </button>
-                </form>
-                <button
-                  className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
-                  onClick={() => setShowForm(false)}
-                >
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <div className="text-center">
-                <h2 className="text-xl font-bold mb-4">Thank You!</h2>
-                <p className="mb-4">Your free guide is ready to download.</p>
-                <a
-                  href="marketing_site/public/Landlord-Starter-Kit.zip"
-                  download
-                  className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
-                >
-                  Download Now
-                </a>
-                <button
-                  className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
-                  onClick={() => setShowForm(false)}
-                >
-                  Close
-                </button>
-              </div>
-            )}
-          </div>
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+    style={{ background: "transparent" }} // Remove the dark background
+  >
+    <div
+      className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md pointer-events-auto"
+      style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 1000, // Ensure it appears above everything
+      }}
+    >
+      {!formSubmitted ? (
+        <>
+          <h2 className="text-xl font-bold text-center mb-4">
+            Enter Your Info to Get Your Free Guide
+          </h2>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <input
+              type="text"
+              name="first_name"
+              placeholder="First Name"
+              value={formData.first_name}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            <input
+              type="text"
+              name="last_name"
+              placeholder="Last Name"
+              value={formData.last_name}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+            >
+              Submit
+            </button>
+          </form>
+          <button
+            className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
+            onClick={() => setShowForm(false)}
+          >
+            Cancel
+          </button>
+        </>
+      ) : (
+        <div className="text-center">
+          <h2 className="text-xl font-bold mb-4">Thank You!</h2>
+          <p className="mb-4">Your free guide is ready to download.</p>
+          <a
+            href="/Landlord-Starter-Kit.zip"
+            download
+            className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+          >
+            Download Now
+          </a>
+          <button
+            className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
+            onClick={() => setShowForm(false)}
+          >
+            Close
+          </button>
         </div>
       )}
+    </div>
+  </div>
+)}
 
             {/* Effortless Property Management section */}
             <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-20">
