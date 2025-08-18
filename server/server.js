@@ -48,7 +48,7 @@ app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRout
 const whitelist = [
   "https://app.mypropertypal.com", // Production frontend
   "https://admin.mypropertypal.com", // Admin panel
-  "https://www.mypropertypal.com/", //landing page
+  "https://mypropertypal.com/", //landing page
   "http://localhost:3000", // Local development
 ];
 
