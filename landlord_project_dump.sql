@@ -331,6 +331,21 @@ CREATE TABLE public.landlord (
 ALTER TABLE public.landlord OWNER TO landlord_project_user;
 
 --
+-- Name: leads; Type: TABLE; Schema: public; Owner: landlord_project_user
+--
+
+CREATE TABLE public.leads (
+    id SERIAL PRIMARY KEY, -- Auto-incrementing primary key
+    email VARCHAR(255) NOT NULL, -- Email address (not unique)
+    first_name VARCHAR(50) NOT NULL, -- First name
+    last_name VARCHAR(50) NOT NULL, -- Last name
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL -- Timestamp of when the info was added
+);
+
+
+ALTER TABLE public.leads OWNER TO landlord_project_user;
+
+--
 -- Name: payment_plan; Type: TABLE; Schema: public; Owner: landlord_project_user
 --
 

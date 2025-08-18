@@ -242,25 +242,61 @@ function FullScreenImageModal({ src, alt, onClose }) {
 }
 
 export default function Landing() {
-    const [billing, setBilling] = useState("monthly");
-    const [modalImg, setModalImg] = useState(null);
-    const discount = 0.15;
+  const [billing, setBilling] = useState("monthly");
+  const [modalImg, setModalImg] = useState(null);
+  const [showForm, setShowForm] = useState(false); // State to toggle the form modal
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+  });
+  const [formSubmitted, setFormSubmitted] = useState(false); // State to track form submission
+  const discount = 0.15;
 
-    function getPlanPrice(plan) {
-        if (billing === "yearly") {
-            const yearly = plan.price * 12 * (1 - discount);
-            return `£${yearly.toFixed(0)}`;
-        }
-        return `£${plan.price}`;
+  function getPlanPrice(plan) {
+      if (billing === "yearly") {
+          const yearly = plan.price * 12 * (1 - discount);
+          return `£${yearly.toFixed(0)}`;
+      }
+      return `£${plan.price}`;
+  }
+
+  function getPlanPeriod() {
+      return billing === "yearly" ? "per year (15% off)" : "per month";
+  }
+
+  // Handle input changes in the form
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setFormSubmitted(true); // Mark form as submitted
+      } else {
+        console.error("Failed to submit form");
+      }
+    } catch (err) {
+      console.error("Error submitting form:", err);
     }
+  };
 
-    function getPlanPeriod() {
-        return billing === "yearly" ? "per year (15% off)" : "per month";
-    }
-
-    return (
-        <div className="bg-white text-[#171717] font-sans pt-16 md:pt-0 overflow-x-hidden">
-            <Head>
+  return (
+    <div className="bg-white text-[#171717] font-sans pt-16 md:pt-0 overflow-x-hidden">
+      <Head>
   <title>MyPropertyPal – All-in-One Property Management</title>
   <meta name="description" content="Manage your properties effortlessly with MyPropertyPal. Track rent, expenses, compliance, and more in one place." />
   <meta name="robots" content="index, follow" /> {/* Robots meta tag */}
@@ -301,23 +337,20 @@ export default function Landing() {
                         Win back time with MyPropertyPal.
                     </h3>
                     <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8">
-                        We'll get you set up in a quick and free 30 minute call.
+                        Get your free landlord package now.
                     </p>
+                    {/* Updated button to open the form modal */}
                     <button
                         className="bg-[#2563eb] text-white font-semibold rounded-lg px-6 md:px-8 py-3 shadow hover:bg-blue-700 transition w-full md:w-auto"
-                        onClick={() =>
-                          window.location.href =
-                            "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ00tJyuVNIkMFfFr4kCXBtwkhQSTM4PqaC-JMNe7mxLk3mf8nsa44MRj49R1H-Oc2hTPlfhKDwT"
-                        }
+                        onClick={() => setShowForm(true)} // Show the form modal
                     >
-                        Book A Free Call
+                        Download Free Starter Kit Now
                     </button>
                 </div>
                 <div className="flex justify-center">
                     <div
                         className="w-full max-w-md h-40 md:h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden cursor-zoom-in"
-                        onClick={() => setModalImg({ src: "/dashboard.png", alt: "Dashboard Preview" })}
-                        title="Click to view full screen"
+                        title="Dashboard Preview"
                     >
                         <Image
                             src="/dashboard.png"
@@ -330,6 +363,80 @@ export default function Landing() {
                     </div>
                 </div>
             </section>
+
+            {/* Form Modal */}
+            {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            {!formSubmitted ? (
+              <>
+                <h2 className="text-xl font-bold text-center mb-4">
+                  Enter Your Info to Get Your Free Guide
+                </h2>
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  <input
+                    type="text"
+                    name="first_name"
+                    placeholder="First Name"
+                    value={formData.first_name}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="last_name"
+                    placeholder="Last Name"
+                    value={formData.last_name}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+                  >
+                    Submit
+                  </button>
+                </form>
+                <button
+                  className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
+                  onClick={() => setShowForm(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <div className="text-center">
+                <h2 className="text-xl font-bold mb-4">Thank You!</h2>
+                <p className="mb-4">Your free guide is ready to download.</p>
+                <a
+                  href="marketing_site/public/Landlord-Starter-Kit.zip"
+                  download
+                  className="bg-blue-600 text-white font-bold rounded-lg px-4 py-2 hover:bg-blue-700 transition"
+                >
+                  Download Now
+                </a>
+                <button
+                  className="mt-4 text-gray-500 hover:text-gray-700 text-sm"
+                  onClick={() => setShowForm(false)}
+                >
+                  Close
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
             {/* Effortless Property Management section */}
             <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-20">
@@ -664,6 +771,7 @@ export default function Landing() {
                 />
             )}
 
+            {/* Existing Footer */}
             <Footer />
         </div>
     );

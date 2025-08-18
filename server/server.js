@@ -34,6 +34,7 @@ const adminRegRouter = require("./endpoints/admin/adminReg"); // Import the admi
 const approveAdminRouter = require("./endpoints/admin/approveAdmin"); // Import the admin approval router
 const adminDashboardDataRouter = require("./endpoints/admin/adminDashboardData"); // Import the admin dashboard data router
 const manageUsersRouter = require("./endpoints/admin/manageUsers"); // Import the manageUsers router
+const leadMagnateRouter = require("./endpoints/leadMagnate"); // Import the leadMagnate router
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -47,6 +48,7 @@ app.use('/webhook', express.raw({ type: 'application/json' }), stripeWebhookRout
 const whitelist = [
   "https://app.mypropertypal.com", // Production frontend
   "https://admin.mypropertypal.com", // Admin panel
+  "https://www.mypropertypal.com/", //landing page
   "http://localhost:3000", // Local development
 ];
 
@@ -76,6 +78,7 @@ app.post('/login', (req, res) => login(req, res, pool));
 app.use('/register', register);
 app.use('/api/stripe', stripeRouter);
 app.use("/api/account/reset-password", resetPasswordRouter);
+app.use("/api/leads", leadMagnateRouter); // Mount the leadMagnate router
 
 //the admin login route
 app.use("/api/admin", adminLoginRouter); // Mount the admin login router
