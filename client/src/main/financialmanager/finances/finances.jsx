@@ -450,7 +450,7 @@ export default function Finances() {
           </h1>
 
           {/* Add Expense and Mark Rent Received Buttons */}
-          <div className="flex flex-col gap-2 lg:hidden mt-4">
+          <div className="flex flex-col gap-2 mt-4">
             <button
               className="bg-blue-600 text-white font-medium rounded-lg px-3 py-2 text-sm hover:bg-blue-700 transition"
               onClick={() => {
