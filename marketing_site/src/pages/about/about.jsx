@@ -68,7 +68,7 @@ export default function DesktopAbout() {
 
             {/* Meet the Founders */}
             <section className="max-w-6xl mx-auto py-16 px-4">
-                <h2 className="text-3xl font-bold text-center mb-10 text-[#2563eb]">Meet the Founders</h2>
+                <h2 className="text-3xl font-bold text-center mb-10 text-[#2563eb]">Meet the Team</h2>
                 <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch">
                     {/* Tommy Rowe */}
                     <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
