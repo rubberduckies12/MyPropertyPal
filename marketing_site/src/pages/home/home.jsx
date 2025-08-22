@@ -265,7 +265,7 @@ function TestimonialsSlider() {
     {
       name: "Anonymous",
       title: "Landlord, London",
-      quote: "MyPropertyPal has completely transformed how I manage my properties. It's as easy as Facebook!",
+      quote: "MyPropertyPal is so simple, it's like using Facebook!",
     },
     {
       name: "Sarah",
@@ -312,7 +312,7 @@ function TestimonialsSlider() {
 
   return (
     <section className="w-full flex flex-col items-center py-20 px-2 sm:px-4 bg-gray-50">
-      <h2 className="text-2xl font-bold text-center mb-8 text-[#2563eb]">What our users say</h2>
+      <h2 className="text-2xl font-bold text-center mb-8">What our users say</h2>
       <div className="w-full flex flex-col items-center">
         <div className="w-full flex flex-col items-center">
           <AnimatePresence mode="wait" initial={false}>
