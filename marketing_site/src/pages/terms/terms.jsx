@@ -98,7 +98,7 @@ export default function Terms() {
                         <h2 className="text-xl font-bold text-[#2563eb] mb-2">9. Contact Us</h2>
                         <p>
                             Questions? Concerns? <br />
-                            Reach out to our CEO directly: <a href="mailto:Tommy.Rowe.Dev@gmail.com" className="underline text-[#2563eb]">Tommy.Rowe.Dev@gmail.com</a>
+                            Reach out to our CEO directly: <a href="mailto:Tommy.Rowe@mypropertypal.com" className="underline text-[#2563eb]">Tommy.Rowe.Dev@gmail.com</a>
                         </p>
                     </li>
                 </ol>

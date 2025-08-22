@@ -66,47 +66,45 @@ export default function DesktopAbout() {
                 </p>
             </section>
 
-            {/* Meet the Founders */}
+            {/* Meet the Team */}
             <section className="max-w-6xl mx-auto py-16 px-4">
                 <h2 className="text-3xl font-bold text-center mb-10 text-[#2563eb]">Meet the Team</h2>
-                <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Tommy Rowe */}
+                    <a
+                      href="https://www.linkedin.com/in/tommy-rowe-3a720b338/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100 hover:shadow-xl transition"
+                    >
+                      <FounderIcon letter="T" color="#2563eb" />
+                      <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Tommy Rowe</h3>
+                      <div className="text-sm text-gray-500 mb-1">The Builder</div>
+                      <div className="text-sm text-gray-700 mb-2">Co-Founder & CEO</div>
+                      <p className="text-gray-700 text-center text-base">
+                        “Tommy writes the code and sets the vision. With a love for clean UX and no-nonsense tools, he brings landlord pain points into real features.”
+                      </p>
+                    </a>
+                    {/* Chris Thomson */}
                     <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
-                        <FounderIcon letter="T" color="#2563eb" />
-                        <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Tommy Rowe</h3>
-                        <div className="text-sm text-gray-500 mb-1">The Builder</div>
-                        <div className="text-sm text-gray-700 mb-2">CEO & Lead Developer</div>
+                        <FounderIcon letter="C" color="#2563eb" />
+                        <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Chris Thomson</h3>
+                        <div className="text-sm text-gray-500 mb-1">The Strategist</div>
+                        <div className="text-sm text-gray-700 mb-2">Co-Founder & COO</div>
                         <p className="text-gray-700 text-center text-base">
-                            “Tommy writes the code and sets the vision. With a love for clean UX and no-nonsense tools, he brings landlord pain points into real features.”
+                            “Chris connects the tech to the people. He leads our marketing and business strategy with one mission: make landlords’ lives easier.”
                         </p>
                     </div>
-                    {/* Fin Perkins */}
+                    {/* Finn Perkins */}
                     <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
                         <FounderIcon letter="F" color="#2563eb" />
                         <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Finn Perkins</h3>
                         <div className="text-sm text-gray-500 mb-1">The Engineer</div>
                         <div className="text-sm text-gray-700 mb-2">Database & Authentication</div>
                         <p className="text-gray-700 text-center text-base">
-                            “Finn laid the groundwork for our database and authentication systems, ensuring a secure and reliable foundation for MyPropertyPal.”
+                            “Finn was around right at the beginnings and laid the groundwork for our database and authentication systems, ensuring a secure and reliable foundation for MyPropertyPal.”
                         </p>
                     </div>
-                    {/* Chris Thomson */}
-                    <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
-                        <FounderIcon letter="C" color="#2563eb" />
-                        <h3 className="text-xl font-bold mb-1 text-[#2563eb]">Chris Thomson</h3>
-                        <div className="text-sm text-gray-500 mb-1">The Strategist</div>
-                        <div className="text-sm text-gray-700 mb-2">Head of Marketing & Business Strategy</div>
-                        <p className="text-gray-700 text-center text-base">
-                            “Chris connects the tech to the people. He leads our marketing and business strategy with one mission: make landlords’ lives easier.”
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Special Mentions */}
-            <section className="max-w-6xl mx-auto py-16 px-4">
-                <h2 className="text-3xl font-bold text-center mb-10 text-[#2563eb]">Special Mentions</h2>
-                <div className="flex flex-col md:flex-row gap-8 justify-center items-stretch">
                     {/* Rowan Anstee */}
                     <div className="flex-1 bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border border-blue-100">
                         <FounderIcon letter="R" color="#2563eb" />
@@ -124,7 +122,7 @@ export default function DesktopAbout() {
                         <div className="text-sm text-gray-500 mb-1">The Real MVPs</div>
                         <div className="text-sm text-gray-700 mb-2">Our Early Adopters</div>
                         <p className="text-gray-700 text-center text-base">
-                            “To the landlords and testers who gave us feedback, tested features, and made sure MyPropertyPal is truly useful — thank you for being part of the journey.”
+                            “To the landlords who gave us feedback, tested features, and made sure MyPropertyPal is truly useful — thank you for being part of the journey.”
                         </p>
                     </div>
                     {/* Gareth Proctor */}
@@ -149,7 +147,7 @@ export default function DesktopAbout() {
                     Follow our journey or get in touch — we're building MyPropertyPal for landlords like you.
                 </p>
                 <a
-                    href="mailto:hello@mypropertypal.co.uk"
+                    href="mailto:hello@mypropertypal.com"
                     className="inline-block bg-white text-[#2563eb] font-semibold rounded-lg px-8 py-3 shadow hover:bg-blue-100 transition"
                 >
                     Contact Us

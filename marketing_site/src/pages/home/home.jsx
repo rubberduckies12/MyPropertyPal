@@ -23,7 +23,6 @@ import { IoReceiptOutline } from "react-icons/io5";
 import OrbitGraphic from "../../components/OrbitGraphic";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
-import EmailListSection from "../../components/EmailListSection";
 
 const brand = "#2563eb";
 
@@ -238,6 +237,134 @@ function FullScreenImageModal({ src, alt, onClose }) {
       </button>
     </div>,
     document.body
+  );
+}
+
+function TestimonialIcon({ letter, color }) {
+  return (
+    <div
+      className="flex items-center justify-center rounded-full mb-4"
+      style={{
+        width: 96,
+        height: 96,
+        background: "#e0e7ff",
+        color: color || "#2563eb",
+        fontWeight: "bold",
+        fontSize: "2.5rem",
+        border: `3px solid ${color || "#2563eb"}`,
+        userSelect: "none",
+      }}
+    >
+      {letter}
+    </div>
+  );
+}
+
+function TestimonialsSlider() {
+  const testimonials = [
+    {
+      name: "Anonymous",
+      title: "Landlord, London",
+      quote: "MyPropertyPal has completely transformed how I manage my properties. It's as easy as Facebook!",
+    },
+    {
+      name: "Sarah",
+      title: "Landlord, Manchester",
+      quote: "Very simple. Highly recommend!",
+    },
+    {
+      name: "Michael",
+      title: "Landlord, London",
+      quote: "The best tool I have used. Amazing platform!",
+    },
+  ];
+
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const intervalRef = useRef();
+
+  const prev = () => {
+    setDirection(-1);
+    setCurrent((c) => (c === 0 ? testimonials.length - 1 : c - 1));
+  };
+
+  const next = () => {
+    setDirection(1);
+    setCurrent((c) => (c === testimonials.length - 1 ? 0 : c + 1));
+  };
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setDirection(1);
+      setCurrent((c) => (c === testimonials.length - 1 ? 0 : c + 1));
+    }, 5000); // Auto-slide every 5 seconds
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  const handleManualNav = (fn) => {
+    clearInterval(intervalRef.current);
+    fn();
+    intervalRef.current = setInterval(() => {
+      setDirection(1);
+      setCurrent((c) => (c === testimonials.length - 1 ? 0 : c + 1));
+    }, 5000);
+  };
+
+  return (
+    <section className="w-full flex flex-col items-center py-20 px-2 sm:px-4 bg-gray-50">
+      <h2 className="text-2xl font-bold text-center mb-8 text-[#2563eb]">What our users say</h2>
+      <div className="w-full flex flex-col items-center">
+        <div className="w-full flex flex-col items-center">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={current}
+              initial={{ opacity: 0, x: direction > 0 ? 60 : -60, scale: 0.98 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: direction > 0 ? -60 : 60, scale: 0.98 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 w-full max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto flex flex-col items-center"
+              style={{
+                minWidth: 0,
+                minHeight: 220,
+                boxSizing: "border-box",
+              }}
+            >
+              {/* Replace image with TestimonialIcon */}
+              <TestimonialIcon letter={testimonials[current].name[0]} color="#2563eb" />
+              <p className="text-gray-700 text-center text-base md:text-lg italic mb-4">
+                "{testimonials[current].quote}"
+              </p>
+              <h3 className="text-lg font-bold text-[#2563eb]">{testimonials[current].name}</h3>
+              <p className="text-sm text-gray-500">{testimonials[current].title}</p>
+            </motion.div>
+          </AnimatePresence>
+          <div className="flex gap-4 mt-8">
+            <button
+              aria-label="Previous testimonial"
+              onClick={() => handleManualNav(prev)}
+              className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition cursor-pointer"
+            >
+              <HiChevronLeft size={28} />
+            </button>
+            <button
+              aria-label="Next testimonial"
+              onClick={() => handleManualNav(next)}
+              className="w-10 h-10 rounded-full border border-[#2563eb] flex items-center justify-center text-[#2563eb] hover:bg-[#2563eb] hover:text-white transition cursor-pointer"
+            >
+              <HiChevronRight size={28} />
+            </button>
+          </div>
+          <div className="flex gap-2 mt-4">
+            {testimonials.map((_, idx) => (
+              <span
+                key={idx}
+                className={`w-3 h-3 rounded-full ${idx === current ? "bg-[#2563eb]" : "bg-blue-100"}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -456,11 +583,11 @@ export default function Landing() {
             <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-20">
                 <div>
                     <h2 className="text-3xl font-bold mb-4 text-center md:text-left">
-                        Cut Out The Need For Property Managers
+                        No Middle-Man, No Hassle
                     </h2>
                     <p className="text-gray-700 mb-6 text-center md:text-left">
-                        We get it, you can now finally take control of your property management, without spending hours on admin, and without being charged silly fees.
-                    </p>
+                        Say goodbye to expensive property managers and endless admin. Our platform empowers you to manage your properties efficiently - saving time, money and stress.
+                  </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
@@ -489,11 +616,11 @@ export default function Landing() {
             {/* Everything Your Tenants Need, In One Place */}
             <section className="bg-[#2563eb] py-20 px-4 sm:px-6 text-white text-center">
                 <h2 className="text-3xl font-bold mb-4">
-                    The Only Property Platform Built For Smaller Hands On Landlords
+                    The Only Property Platform Built For Hands-On, Individual Landlords
                 </h2>
                 <p className="max-w-2xl mx-auto text-lg">
-                    We know you’re managing rent, chasing tenants, logging receipts — and now HMRC wants digital tax too?
-                    <br /><br />MyPropertyPal handles it all.
+                    Juggling rent, chasing tenants, tracking expenses?
+                    <br /><br />We are here to make it simple.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mt-6 mb-2">
                     <li className="flex flex-col items-center text-white">
@@ -523,9 +650,6 @@ export default function Landing() {
                 </ul>
             </section>
 
-            {/* Email List Section */}
-            <EmailListSection />
-
             {/* Powerful Features section */}
             <FeaturesSlider />
 
@@ -539,9 +663,8 @@ export default function Landing() {
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h2 className="text-3xl font-bold mb-4">Stay Organised</h2>
                     <p className="text-gray-700 mb-6 max-w-xl">
-                        Never lose track of a payment or receipt again.
-                        All your rental income, expenses, and tax records, automatically categorised, beautifully presented,
-                        and always up to date. One login. One place. Zero spreadsheets.
+                        No more digging through emails or hunting down receipts. Your rent payments, expenses and tax records are all in one place.
+                        Automatically sorted, always current, and easy to understand. One login. Total Control.
                     </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
@@ -556,11 +679,11 @@ export default function Landing() {
             <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-20">
                 <div className="order-1 md:order-2 flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h2 className="text-3xl font-bold mb-4">
-                        Stay Compliant Effortlessly
+                        Stay Compliant
                     </h2>
                     <p className="text-gray-700 mb-6">
-                        From gas safety to EPC, never miss a deadline. We'll track your legal obligations and remind you
-                        before anything is due. So you stay compliant without stress.
+                        Gas safety, EPCs, and more — we track it all and give you a nudge before anything's due.  
+                        No panic. No penalties. Just peace of mind.
                     </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
@@ -587,12 +710,15 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* How we are different section */}
+            {/* Testimonials Section */}
+            <TestimonialsSlider />
+
+            {/* Why we're better Section */}
             <section className="w-full max-w-4xl mx-auto px-2 sm:px-4 py-16">
-                <h2 className="text-3xl font-bold text-center mb-4">How we are different</h2>
+                <h2 className="text-3xl font-bold text-center mb-4">Why We're Better</h2>
                 <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
-                    Traditional platforms are either too simple, too clunky, or built for big agencies. 
-                    MyPropertyPal gives smaller landlords everything they need — no fluff, no stress.
+                    Tired of bloated systems made for big agencies? Or juggling disconnected apps that dont do enough?
+                    MyPropertyPal is the smart, streamlined alternative designed for landlords who do it all. It just works.
                 </p>
                 <div className="w-full overflow-x-auto">
                     <table className="min-w-[360px] sm:min-w-[600px] bg-white rounded-2xl mx-auto text-xs sm:text-base">
