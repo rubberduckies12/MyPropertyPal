@@ -133,6 +133,21 @@ export default function Blog() {
 					name="description"
 					content="Explore our latest blog posts on property management, compliance, and more."
 				/>
+				<meta name="robots" content="index, follow" />
+				<meta property="og:title" content="Blog | MyPropertyPal" />
+				<meta
+					property="og:description"
+					content="Explore our latest blog posts on property management, compliance, and more."
+				/>
+				<meta property="og:image" content="/LogoWB.png" />
+				<meta property="og:type" content="website" />
+				<meta name="twitter:card" content="summary_large_image" />
+				<meta name="twitter:title" content="Blog | MyPropertyPal" />
+				<meta
+					name="twitter:description"
+					content="Explore our latest blog posts on property management, compliance, and more."
+				/>
+				<meta name="twitter:image" content="/LogoWB.png" />
 				<link rel="icon" href="/LogoWB.png" />
 			</Head>
 
