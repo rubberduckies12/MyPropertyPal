@@ -80,12 +80,85 @@ const blogPosts = [
 		description:
 			"Discover how landlords can track rent payments without spreadsheets. Learn how MyPropertyPal simplifies rent tracking and portfolio management.",
 	},
+	{
+		title: "How to Handle Late Rent Payments Professionally",
+		slug: "TenantAndCompliance/LateRent",
+		images: ["/BlogImages/T&Comp/LateRent.png"],
+		category: "Tenant & Compliance",
+		topics: ["Tenant & Compliance"],
+		description:
+			"Learn how landlords can handle late rent payments professionally. Discover how MyPropertyPal simplifies rent tracking and tenant communication.",
+	},
+	{
+		title: "How to Screen Tenants Properly (Without Breaking the Law)",
+		slug: "TenantAndCompliance/TenantScreening",
+		images: ["/BlogImages/T&Comp/tenant screening.png"],
+		category: "Tenant & Compliance",
+		topics: ["Tenant & Compliance"],
+		description:
+			"Learn how landlords can screen tenants effectively while staying compliant with legal guidelines. Discover how MyPropertyPal simplifies tenant screening.",
+	},
+	{
+		title: "Landlords’ Legal Responsibilities in 2025",
+		slug: "TenantAndCompliance/Legal",
+		images: ["/BlogImages/T&Comp/legal.png"],
+		category: "Tenant & Compliance",
+		topics: ["Tenant & Compliance"],
+		description:
+			"Learn about landlords' legal responsibilities in 2025, including gas safety, EPCs, and deposit protection. Discover how MyPropertyPal simplifies compliance.",
+	},
+	{
+		title: "What Landlords Need to Know About EPC Regulations",
+		slug: "TenantAndCompliance/EPC",
+		images: ["/BlogImages/T&Comp/EPC.png"],
+		category: "Tenant & Compliance",
+		topics: ["Tenant & Compliance"],
+		description:
+			"Learn about EPC regulations for landlords, including legal requirements, MEES standards, and compliance deadlines. Discover how MyPropertyPal simplifies EPC tracking.",
+	},
+	{
+		title: "5 Property Management Tools Every Landlord Should Be Using",
+		slug: "Investment&Growth/5Tools",
+		images: ["/BlogImages/investment&growth/5tools.png"],
+		category: "Investment & Growth",
+		topics: ["Investment & Growth"],
+		description:
+			"Discover five essential property management tools every landlord should be using. Learn how MyPropertyPal simplifies property management and tenant communication.",
+	},
+	{
+		title: "How to Increase Rental Yield Without Raising Rent",
+		slug: "Investment&Growth/increaseyeildwithoutrent",
+		images: ["/BlogImages/investment&growth/increaseyieldwithoutrent.png"],
+		category: "Investment & Growth",
+		topics: ["Investment & Growth"],
+		description:
+			"Discover smarter ways to increase rental yield without raising rent. Learn how MyPropertyPal helps landlords reduce voids, cut costs, and stay compliant.",
+	},
+	{
+		title: "Is 2025 Still a Good Year to Invest in Buy-to-Let Property?",
+		slug: "Investment&Growth/buy-to-letin2025",
+		images: ["/BlogImages/investment&growth/buy-to-let2025.png"],
+		category: "Investment & Growth",
+		topics: ["Investment & Growth"],
+		description:
+			"Discover why 2025 is still a good year to invest in buy-to-let property. Learn how MyPropertyPal helps landlords succeed with rental properties.",
+	},
+	{
+		title: "The Pros and Cons of Self-Managing Your Properties vs. Using an Agent",
+		slug: "Investment&Growth/pros&cons",
+		images: ["/BlogImages/investment&growth/pros&cons.png"],
+		category: "Investment & Growth",
+		topics: ["Investment & Growth"],
+		description:
+			"Discover the pros and cons of self-managing your properties vs. using an agent. Learn how MyPropertyPal simplifies self-management for landlords.",
+	},
 ];
 
 const topics = [
-	//"Tenant & Compliance",
+	"Tenant & Compliance",
 	"Tax & Finance",
 	"Landlord & Portfolio Management",
+	"Investment & Growth",
 ];
 
 function BlogSlider({ images }) {
