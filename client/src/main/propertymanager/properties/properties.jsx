@@ -396,17 +396,6 @@ export default function Properties() {
                       className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
                     />
                   </label>
-                  <label className="font-semibold text-blue-700">
-                    Rent Amount
-                    <input
-                      name="rent_amount"
-                      value={addForm.rent_amount}
-                      onChange={handleAddFormChange}
-                      required
-                      type="number"
-                      className="mt-1 px-4 py-2 rounded-lg border border-blue-200 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-                    />
-                  </label>
                 </div>
                 {addError && (
                   <div className="text-red-500 text-center">{addError}</div>
@@ -494,3 +483,4 @@ export default function Properties() {
     </div>
   );
 }
+
