@@ -28,6 +28,7 @@ import Sidebar from './main/sidebar/sidebar.jsx';
 import TenantSidebar from './main/tenant_portal/tsidebar/tenantSidebar.jsx';
 import Success from './main/success.jsx'; // Import the Success page
 import ResetPassword from './log-reg/reset-password/ResetPassword.jsx'; // <-- Add this import
+import SplashOverlay from "./components/SplashOverlay";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -233,6 +234,7 @@ function AppRoutes() {
 
 root.render(
   <React.StrictMode>
+    <SplashOverlay />
     <BrowserRouter>
       <AppRoutes />
     </BrowserRouter>

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./login.css";
+// SplashOverlay mounted globally in App.jsx
 
 const BACKEND_URL = "https://api.mypropertypal.com";
 
@@ -13,12 +13,19 @@ function Login({ onRegisterClick }) {
   const [resetMsg, setResetMsg] = useState("");
   const navigate = useNavigate();
 
-  // Login function moved from login.js
+  // splash / transition states
+  const [splashMounted, setSplashMounted] = useState(false); // overlay in DOM
+  const [overlayOpaque, setOverlayOpaque] = useState(false); // overlay opacity
+  const [showWelcome, setShowWelcome] = useState(false); // welcome text visible
+
+  const timers = useRef([]);
+
+  // Login function
   const login = async (email, password) => {
     try {
       const response = await fetch(`${BACKEND_URL}/login`, {
         method: 'POST',
-        credentials: 'include', // <-- Add this line!
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -37,28 +44,74 @@ function Login({ onRegisterClick }) {
     }
   };
 
+  useEffect(() => {
+    return () => {
+      // clear any running timers on unmount
+      timers.current.forEach((t) => clearTimeout(t));
+      timers.current = [];
+    };
+  }, []);
+
+  // start splash sequence: blank white -> welcome (blue, fade) -> fade out -> navigate
+  const startPostLoginSplash = (targetPath) => {
+    // mount overlay
+    setSplashMounted(true);
+
+    // small delay to allow mount before starting CSS transition
+    timers.current.push(
+      setTimeout(() => {
+        // fade overlay in (white)
+        setOverlayOpaque(true);
+      }, 20)
+    );
+
+    // after 1s of blank white, show welcome text (fade in)
+    timers.current.push(
+      setTimeout(() => {
+        setShowWelcome(true);
+      }, 1000)
+    );
+
+    // after 2s total, start fading welcome out + overlay out
+    timers.current.push(
+      setTimeout(() => {
+        setShowWelcome(false);
+        setOverlayOpaque(false);
+      }, 2000)
+    );
+
+    // after fade out completes (match duration below), navigate and unmount overlay
+    timers.current.push(
+      setTimeout(() => {
+        setSplashMounted(false);
+        navigate(targetPath);
+      }, 2000 + 500) // 500ms matches transition duration used below
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Normalize email to lowercase
       const normalizedEmail = email.trim().toLowerCase();
-
       const user = await login(normalizedEmail, password);
       setMessage("Login successful!");
       localStorage.setItem("token", user.token);
       localStorage.setItem("role", user.role);
 
-      if (user.role === "tenant" || user.type === "tenant") {
-        navigate("/tenant-home");
-      } else {
-        navigate("/dashboard");
-      }
+      // navigate immediately to target and let the global SplashOverlay (App-level)
+      // display the post-login animation so there is no intermediate flash back to login
+      const target = (user.role === "tenant" || user.type === "tenant") ? "/tenant-home" : "/dashboard";
+      sessionStorage.setItem("postLoginSplashTarget", target);
+      // notify SplashOverlay in the same tab to run immediately
+      window.dispatchEvent(new Event("postLoginSplash"));
+      // mark when splash should start (optional)
+      sessionStorage.setItem("postLoginSplashStart", Date.now().toString());
+      navigate(target, { replace: true });
     } catch (err) {
       setMessage("Invalid email or password.");
     }
   };
 
-  // Password reset function moved from login.js
   const handleResetSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -77,86 +130,117 @@ function Login({ onRegisterClick }) {
     }
   };
 
-  // Add this function for the main back button
   const handleMainBack = () => {
     window.location.href = "https://www.mypropertypal.com/";
   };
 
   return (
-    <div className="login-popup-container">
-      <div className="login-popup">
-        <button
-          type="button"
-          className="login-main-back"
-          style={{
-            position: "absolute",
-            left: 24,
-            top: 24,
-            background: "none",
-            border: "none",
-            color: "#2563eb",
-            fontWeight: 600,
-            fontSize: "1rem",
-            cursor: "pointer"
-          }}
-          onClick={handleMainBack}
+    <>
+      {/* Splash overlay (mounted only during transition). Uses Tailwind for smooth fade. */}
+      {splashMounted && (
+        <div
+          aria-hidden={!overlayOpaque && !showWelcome}
+          className={`fixed inset-0 flex items-center justify-center z-50 pointer-events-auto transition-opacity duration-500 ease-out ${
+            overlayOpaque ? "opacity-100" : "opacity-0"
+          } bg-white`}
         >
-          ← Back
-        </button>
-        <img src="/publicassets/LogoWB.png" alt="MyPropertyPal Logo" className="login-logo" />
-        {message && <p className="login-error">{message}</p>}
-        {!showReset ? (
-          <>
-            <form onSubmit={handleSubmit} className="login-form">
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <button type="submit">Log In</button>
-            </form>
-            <div className="login-forgot">
+          {/* Welcome text container; fade in/out and scale slightly for smoothness */}
+          <div
+            className={`transform transition-all duration-500 ease-out ${
+              showWelcome ? "opacity-100 translate-y-0 scale-100" : "opacity-0 -translate-y-2 scale-95"
+            }`}
+          >
+            <span className="text-4xl sm:text-5xl font-extrabold text-blue-600 select-none">
+              Welcome
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Main login UI (Tailwind classes) */}
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="relative bg-white border border-gray-200 rounded-2xl shadow-lg p-8 w-full max-w-md">
+          <button
+            type="button"
+            onClick={handleMainBack}
+            className="absolute left-6 top-6 text-blue-600 font-semibold hover:text-blue-800"
+          >
+            ← Back
+          </button>
+
+          <img src="/publicassets/LogoWB.png" alt="MyPropertyPal Logo" className="block mx-auto mb-6 w-40" />
+
+          {message && (
+            <p className="text-red-600 text-center mb-3 text-sm">{message}</p>
+          )}
+
+          {!showReset ? (
+            <>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition"
+                >
+                  Log In
+                </button>
+              </form>
+
+              <div className="text-right mt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowReset(true)}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="mt-2">
+              <form onSubmit={handleResetSubmit} className="space-y-3">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                />
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition"
+                >
+                  Send Reset Link
+                </button>
+              </form>
+              {resetMsg && <div className="text-blue-600 text-sm mt-3">{resetMsg}</div>}
               <button
-                type="button"
-                className="login-forgot-btn"
-                onClick={() => setShowReset(true)}
+                onClick={() => setShowReset(false)}
+                className="mt-4 text-sm text-blue-600 hover:underline"
               >
-                Forgot password?
+                Back to login
               </button>
             </div>
-          </>
-        ) : (
-          <div className="login-reset">
-            <form onSubmit={handleResetSubmit}>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={resetEmail}
-                onChange={(e) => setResetEmail(e.target.value)}
-                required
-              />
-              <button type="submit">Send Reset Link</button>
-              {resetMsg && <div className="login-reset-msg">{resetMsg}</div>}
-            </form>
-            <button
-              className="login-back-btn"
-              onClick={() => setShowReset(false)}
-            >
-              Back to login
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
