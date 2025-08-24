@@ -43,37 +43,68 @@ export default function MobileHeader() {
                 <nav className="absolute top-16 left-0 w-full bg-white shadow-lg z-50 flex flex-col items-start px-6 py-4 gap-4 border-t border-gray-100">
                     <a
                         href="/"
-                        className={`w-full py-2 ${currentPath === "/" ? "text-[#2563eb] font-bold underline underline-offset-4" : "text-gray-900"} transition`}
+                        className={`w-full py-2 ${
+                            currentPath === "/"
+                                ? "text-[#2563eb] font-bold underline underline-offset-4"
+                                : "text-gray-900"
+                        } transition`}
                         onClick={() => setMenuOpen(false)}
                     >
                         Home
                     </a>
                     <a
                         href="/product"
-                        className={`w-full py-2 ${currentPath === "/product" ? "text-[#2563eb] font-bold underline underline-offset-4" : "text-gray-900"} transition`}
+                        className={`w-full py-2 ${
+                            currentPath === "/product"
+                                ? "text-[#2563eb] font-bold underline underline-offset-4"
+                                : "text-gray-900"
+                        } transition`}
                         onClick={() => setMenuOpen(false)}
                     >
                         Product
                     </a>
                     <a
                         href="/about"
-                        className={`w-full py-2 ${currentPath === "/about" ? "text-[#2563eb] font-bold underline underline-offset-4" : "text-gray-900"} transition`}
+                        className={`w-full py-2 ${
+                            currentPath === "/about"
+                                ? "text-[#2563eb] font-bold underline underline-offset-4"
+                                : "text-gray-900"
+                        } transition`}
                         onClick={() => setMenuOpen(false)}
                     >
                         About
+                    </a>
+                    <a
+                        href="/blog"
+                        className={`w-full py-2 ${
+                            currentPath === "/blog"
+                                ? "text-[#2563eb] font-bold underline underline-offset-4"
+                                : "text-gray-900"
+                        } transition`}
+                        onClick={() => setMenuOpen(false)}
+                    >
+                        Blog
                     </a>
                     <div className="w-full">
                         <span className="block text-gray-900 font-medium mb-1">Legal Stuff</span>
                         <a
                             href="/terms"
-                            className={`block pl-4 py-2 ${currentPath === "/terms" ? "text-[#2563eb] font-bold underline underline-offset-4" : "text-gray-900"} transition`}
+                            className={`block pl-4 py-2 ${
+                                currentPath === "/terms"
+                                    ? "text-[#2563eb] font-bold underline underline-offset-4"
+                                    : "text-gray-900"
+                            } transition`}
                             onClick={() => setMenuOpen(false)}
                         >
                             Terms and Conditions
                         </a>
                         <a
                             href="/privacy"
-                            className={`block pl-4 py-2 ${currentPath === "/privacy" ? "text-[#2563eb] font-bold underline underline-offset-4" : "text-gray-900"} transition`}
+                            className={`block pl-4 py-2 ${
+                                currentPath === "/privacy"
+                                    ? "text-[#2563eb] font-bold underline underline-offset-4"
+                                    : "text-gray-900"
+                            } transition`}
                             onClick={() => setMenuOpen(false)}
                         >
                             Privacy Policy

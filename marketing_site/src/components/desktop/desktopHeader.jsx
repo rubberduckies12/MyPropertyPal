@@ -54,6 +54,17 @@ export default function Header() {
                         About
                     </a>
                 </Link>
+                <Link href="/blog" passHref legacyBehavior>
+                    <a
+                        className={`hover:text-[#2563eb] transition ${
+                            currentPath === "/blog"
+                                ? "text-[#2563eb] font-bold underline underline-offset-4"
+                                : ""
+                        }`}
+                    >
+                        Blog
+                    </a>
+                </Link>
                 <div className="relative" ref={dropdownRef}>
                     <button
                         type="button"
