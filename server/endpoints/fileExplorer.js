@@ -488,7 +488,14 @@ router.get("/", async (req, res) => {
 
     const { rows } = await pool.query(query, [accountId]);
 
-    res.json({ documents: rows });
+    // Prepend the Supabase S3 endpoint to the file_url
+    const SUPABASE_STORAGE_URL = `${process.env.SUPABASE_S3_ENDPOINT}/storage/v1/object/public/${process.env.SUPABASE_S3_BUCKET}`;
+    const documents = rows.map((doc) => ({
+      ...doc,
+      file_url: `${SUPABASE_STORAGE_URL}/${doc.file_url}`, // Prepend the full Supabase S3 URL
+    }));
+
+    res.json({ documents });
   } catch (err) {
     console.error("Error fetching documents:", err);
     res.status(500).json({ success: false, error: "Failed to fetch documents" });
