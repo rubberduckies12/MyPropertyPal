@@ -466,10 +466,28 @@ router.get("/", async (req, res) => {
   if (!accountId) return res.status(401).json({ success: false, error: "Not authenticated" });
 
   try {
-    const { rows } = await pool.query(
-      "SELECT * FROM public.documents WHERE account_id = $1 ORDER BY created_at DESC",
-      [accountId]
-    );
+    const query = `
+      SELECT 
+        d.id,
+        d.file_name,
+        d.file_url,
+        d.category,
+        d.shared_with_tenant,
+        d.created_at,
+        d.updated_at,
+        p.name AS property_name,
+        CONCAT_WS(', ', p.address, p.city, p.county, p.postcode) AS property_address,
+        CONCAT(a.first_name, ' ', a.last_name) AS tenant_name
+      FROM public.documents d
+      LEFT JOIN public.property p ON d.property_id = p.id
+      LEFT JOIN public.tenant t ON d.tenant_id = t.id
+      LEFT JOIN public.account a ON t.account_id = a.id
+      WHERE d.account_id = $1
+      ORDER BY d.created_at DESC
+    `;
+
+    const { rows } = await pool.query(query, [accountId]);
+
     res.json({ documents: rows });
   } catch (err) {
     console.error("Error fetching documents:", err);
