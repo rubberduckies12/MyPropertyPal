@@ -30,6 +30,7 @@ import Success from './main/success.jsx'; // Import the Success page
 import ResetPassword from './log-reg/reset-password/ResetPassword.jsx'; // <-- Add this import
 import SplashOverlay from "./components/SplashOverlay";
 import FileExplorer from './main/fileExplorer/fileExplorer.jsx'; // Import the FileExplorer component
+import Cancel from './main/cancel/cancel.jsx'; // Import the Cancel page
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -79,7 +80,8 @@ function AppRoutes() {
         <Route path="/login" element={<AnimatedRoute><Login /></AnimatedRoute>} />
         <Route path="/register" element={<AnimatedRoute><Register /></AnimatedRoute>} />
         <Route path="/success" element={<AnimatedRoute><Success /></AnimatedRoute>} />
-        <Route path="/reset-password" element={<AnimatedRoute><ResetPassword /></AnimatedRoute>} /> {/* <-- Add this line */}
+        <Route path="/cancel" element={<AnimatedRoute><Cancel /></AnimatedRoute>} /> {/* Add Cancel route */}
+        <Route path="/reset-password" element={<AnimatedRoute><ResetPassword /></AnimatedRoute>} />
 
         {/* Landlord App pages (with landlord sidebar) */}
         <Route path="/dashboard" element={
