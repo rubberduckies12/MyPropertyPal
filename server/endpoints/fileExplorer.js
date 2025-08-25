@@ -488,12 +488,26 @@ router.get("/", async (req, res) => {
 
     const { rows } = await pool.query(query, [accountId]);
 
-    // Prepend the Supabase S3 endpoint to the file_url
-    const SUPABASE_STORAGE_URL = `${process.env.SUPABASE_S3_ENDPOINT}/storage/v1/object/public/${process.env.SUPABASE_S3_BUCKET}`;
-    const documents = rows.map((doc) => ({
-      ...doc,
-      file_url: `${SUPABASE_STORAGE_URL}/${doc.file_url}`, // Prepend the full Supabase S3 URL
-    }));
+    // Generate signed URLs for private buckets
+    const documents = await Promise.all(
+      rows.map(async (doc) => {
+        let signedUrl = null;
+        if (supabaseAdmin) {
+          const { data, error } = await supabaseAdmin.storage
+            .from(S3_BUCKET)
+            .createSignedUrl(doc.file_url, 60 * 60); // URL valid for 1 hour
+          if (error) {
+            console.error("Error generating signed URL:", error.message);
+          } else {
+            signedUrl = data.signedUrl;
+          }
+        }
+        return {
+          ...doc,
+          file_url: signedUrl || `${process.env.SUPABASE_S3_ENDPOINT}/storage/v1/object/public/${S3_BUCKET}/${doc.file_url}`, // Fallback to public URL
+        };
+      })
+    );
 
     res.json({ documents });
   } catch (err) {
