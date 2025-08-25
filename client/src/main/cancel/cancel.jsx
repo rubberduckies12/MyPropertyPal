@@ -95,6 +95,12 @@ const Cancel = () => {
         >
           {loading ? "Redirecting to Checkout..." : "Retry Checkout"}
         </button>
+        <button
+          onClick={() => (window.location.href = "https://www.mypropertypal.com/")}
+          className="w-full mt-4 px-4 py-2 text-blue-600 font-medium rounded-md border border-blue-600 hover:bg-blue-50 transition"
+        >
+          Back to Home
+        </button>
       </div>
     </div>
   );

@@ -49,12 +49,9 @@ async function login(req, res, pool) {
             text: `
                 SELECT
                     s.is_active,
-                    p.name AS plan_name,
-                    p.price
+                    s.plan_id
                 FROM
                     subscription s
-                JOIN
-                    plan p ON s.plan_id = p.id
                 WHERE
                     s.landlord_id = $1
                 LIMIT 1
@@ -72,8 +69,8 @@ async function login(req, res, pool) {
 
         const subscription = subscriptionResult.rows[0];
 
-        // Skip payment if the user is on the "Test" plan with a price of $0.00
-        if (subscription.plan_name === 'Test' && parseFloat(subscription.price) === 0.0) {
+        // Skip payment if the user is on the "Test" plan (plan_id = 17)
+        if (subscription.plan_id === 17) {
             const token = await generateAuthToken(user.id);
 
             // Set JWT in HTTP-only cookie
