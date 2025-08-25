@@ -69,6 +69,9 @@ async function login(req, res, pool) {
 
         const subscription = subscriptionResult.rows[0];
 
+        // Debugging: Log subscription details
+        console.log("Subscription details:", subscription);
+
         // Skip payment if the user is on the "Test" plan (plan_id = 17)
         if (subscription.plan_id === 17) {
             const token = await generateAuthToken(user.id);
@@ -103,7 +106,7 @@ async function login(req, res, pool) {
 
                 // Return the Stripe Checkout URL to the frontend
                 return res.status(403).json({
-                    error: 'Your subscription is inactive. Please complete the checkout process.',
+                    error: 'Your subscription is inactive. Redirecting to checkout.',
                     checkoutUrl: session.url,
                 });
             } catch (err) {
