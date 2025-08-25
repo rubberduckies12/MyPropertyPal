@@ -12,6 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/vision": "^5.3.0",
+    "@supabase/supabase-js": "^2.56.0",
+    "aws-sdk": "^2.1692.0",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
@@ -30,6 +32,7 @@
     "path": "^0.12.7",
     "pdfkit": "^0.17.1",
     "pg": "^8.16.3",
+    "sanitize-filename": "^1.6.3",
     "stripe": "^18.3.0",
     "uuid": "^11.1.0"
   }

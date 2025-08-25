@@ -35,6 +35,7 @@ const approveAdminRouter = require("./endpoints/admin/approveAdmin"); // Import 
 const adminDashboardDataRouter = require("./endpoints/admin/adminDashboardData"); // Import the admin dashboard data router
 const manageUsersRouter = require("./endpoints/admin/manageUsers"); // Import the manageUsers router
 const leadMagnateRouter = require("./endpoints/leadMagnate"); // Import the leadMagnate router
+const fileExplorerRouter = require("./endpoints/fileExplorer");
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -129,7 +130,7 @@ app.get('/api/tenants/invite/:token', async (req, res) => {
 app.use(authenticate);
 app.use(checkSubscriptionStatus);
 
-//account 
+// Account
 app.use('/api/account', accountRouter);
 
 // Register the cancelAccount route
@@ -148,9 +149,12 @@ app.use('/api/tenant/rent', tenantRentRouter);
 app.use('/api/maintenance', maintenanceRouter);
 app.use('/api/messages', messagesRouter);
 
-// admin routes
+// Admin routes
 app.use("/api/admin/dashboard", authenticate, adminDashboardDataRouter);
 app.use("/api/admin/manage-users", authenticate, manageUsersRouter);
+
+// Mount fileExplorer as a protected route
+app.use("/api/file-explorer", fileExplorerRouter);
 
 // --- Static Exports ---
 app.use("/exports", express.static(path.join(__dirname, "../exports")));

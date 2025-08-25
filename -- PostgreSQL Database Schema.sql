@@ -2,6 +2,7 @@
 -- Updated Version
 
 -- ===== Account Roles =====
+
 CREATE TABLE public.account_role (
     id SERIAL PRIMARY KEY,
     role VARCHAR(15) NOT NULL UNIQUE
@@ -122,6 +123,49 @@ CREATE TABLE public.document (
     document_path VARCHAR(255) NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+/* Documents table for files stored in Supabase Storage.
+   Uses existing naming (tenant_id, property_id, account_id, landlord_id) for consistency. */
+CREATE TABLE IF NOT EXISTS public.documents (
+  id                SERIAL PRIMARY KEY,
+  account_id        INT REFERENCES public.account(id) ON DELETE SET NULL,    -- who uploaded
+  landlord_id       INT REFERENCES public.landlord(id) ON DELETE CASCADE,   -- landlord owning the property
+  file_name         VARCHAR(255) NOT NULL,
+  file_type         VARCHAR(127),
+  file_size         BIGINT,
+  file_url          TEXT NOT NULL, -- storage path e.g. "documents/{user_id}/{filename}"
+  shared_with_tenant BOOLEAN DEFAULT FALSE NOT NULL,
+  property_id       INT REFERENCES public.property(id) ON DELETE SET NULL,
+  tenant_id         INT REFERENCES public.tenant(id) ON DELETE SET NULL,
+  category          VARCHAR(50),
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (file_url),
+  CONSTRAINT documents_uploader_chk CHECK (account_id IS NOT NULL)
+);
+
+-- Indexes for faster lookups (IF NOT EXISTS to avoid duplicate-index errors)
+CREATE INDEX IF NOT EXISTS documents_account_idx ON public.documents (account_id);
+CREATE INDEX IF NOT EXISTS documents_landlord_idx ON public.documents (landlord_id);
+CREATE INDEX IF NOT EXISTS documents_property_idx ON public.documents (property_id);
+CREATE INDEX IF NOT EXISTS documents_tenant_idx ON public.documents (tenant_id);
+CREATE INDEX IF NOT EXISTS documents_created_idx ON public.documents (created_at);
+
+-- Trigger to update updated_at automatically
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_set_updated_at_on_documents ON public.documents;
+
+CREATE TRIGGER trg_set_updated_at_on_documents
+BEFORE UPDATE ON public.documents
+FOR EACH ROW
+EXECUTE FUNCTION public.set_updated_at();
 
 -- ===== Expenses =====
 CREATE TABLE public.expense (
