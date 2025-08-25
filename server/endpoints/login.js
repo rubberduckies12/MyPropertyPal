@@ -7,14 +7,16 @@ async function login(req, res, pool) {
     try {
         const { email, password } = req.body || {};
 
+        // Validate input
         if (!email || !password) {
             return res.status(400).json({ error: 'Email and password are required' });
         }
 
-        // Convert email to lowercase
+        // Normalize email
         const emailLowercase = email.toLowerCase();
 
-        const query = {
+        // Fetch user details
+        const userQuery = {
             text: `
                 SELECT
                     a.id,
@@ -30,21 +32,21 @@ async function login(req, res, pool) {
             values: [emailLowercase],
         };
 
-        const result = await pool.query(query);
+        const userResult = await pool.query(userQuery);
 
-        if (result.rows.length === 0) {
+        if (userResult.rows.length === 0) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        const user = result.rows[0];
+        const user = userResult.rows[0];
 
+        // Verify password
         const passwordMatch = await bcrypt.compare(password, user.password);
-
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // Check if the user has an active subscription
+        // Fetch subscription details
         const subscriptionQuery = {
             text: `
                 SELECT
@@ -72,8 +74,9 @@ async function login(req, res, pool) {
         // Debugging: Log subscription details
         console.log("Subscription details:", subscription);
 
-        // Skip payment if the user is on the "Test" plan (plan_id = 17)
+        // Skip payment for users on the "Test" plan (plan_id = 17)
         if (subscription.plan_id === 17) {
+            console.log("User is on the Test plan (plan_id = 17). Skipping payment.");
             const token = await generateAuthToken(user.id);
 
             // Set JWT in HTTP-only cookie
@@ -87,8 +90,9 @@ async function login(req, res, pool) {
             return res.status(200).json({ role: user.role });
         }
 
-        // If the subscription is inactive, create a Stripe Checkout session
+        // Redirect to Stripe Checkout if subscription is inactive
         if (!subscription.is_active) {
+            console.log("Subscription is inactive. Redirecting to Stripe Checkout.");
             try {
                 const session = await stripe.checkout.sessions.create({
                     payment_method_types: ['card'],
@@ -115,6 +119,8 @@ async function login(req, res, pool) {
             }
         }
 
+        // Generate JWT token for active subscriptions
+        console.log("Subscription is active. Logging in the user.");
         const token = await generateAuthToken(user.id);
 
         // Set JWT in HTTP-only cookie
@@ -125,7 +131,7 @@ async function login(req, res, pool) {
             maxAge: 60 * 60 * 1000, // 1 hour
         });
 
-        // Return only the role (not the token)
+        // Return user role
         return res.status(200).json({ role: user.role });
     } catch (err) {
         console.error('Error in login:', err);
