@@ -516,4 +516,45 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /download/:id - Generate signed URL for a document
+router.get("/download/:id", async (req, res) => {
+  const pool = getPool(req);
+  const accountId = getAccountIdFromReq(req);
+  if (!accountId) return res.status(401).json({ success: false, error: "Not authenticated" });
+
+  const documentId = parseInt(req.params.id, 10);
+  if (!documentId) return res.status(400).json({ success: false, error: "Invalid document ID" });
+
+  try {
+    // Fetch the document from the database
+    const { rows } = await pool.query(
+      "SELECT file_url FROM public.documents WHERE id = $1",
+      [documentId]
+    );
+
+    if (rows.length === 0) return res.status(404).json({ success: false, error: "Document not found" });
+
+    const filePath = rows[0].file_url; // Must be relative path in bucket
+
+    if (!supabaseAdmin) {
+      return res.status(500).json({ success: false, error: "Supabase admin client not configured" });
+    }
+
+    // Generate signed URL
+    const { data, error } = await supabaseAdmin.storage
+      .from(S3_BUCKET)
+      .createSignedUrl(filePath, 60 * 60); // 1 hour
+
+    if (error) {
+      console.error("Error generating signed URL:", error);
+      return res.status(500).json({ success: false, error: "Failed to generate signed URL" });
+    }
+
+    res.json({ success: true, signedUrl: data.signedUrl });
+  } catch (err) {
+    console.error("Error generating signed URL:", err);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
+
 module.exports = router;
