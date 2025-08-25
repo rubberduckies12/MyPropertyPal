@@ -34,6 +34,14 @@ function Login({ onRegisterClick }) {
 
       if (!response.ok) {
         const errorData = await response.json();
+
+        // Handle inactive subscription (403 response)
+        if (response.status === 403 && errorData.checkoutUrl) {
+            // Redirect to Stripe Checkout
+            window.location.href = errorData.checkoutUrl;
+            return;
+        }
+
         throw new Error(errorData.error || 'Login failed');
       }
 
@@ -104,10 +112,11 @@ function Login({ onRegisterClick }) {
 
         if (!response.ok) {
             const errorData = await response.json();
+            console.log("Error response:", errorData);
 
             // Handle inactive subscription (403 response)
             if (response.status === 403 && errorData.checkoutUrl) {
-                // Redirect to Stripe Checkout
+                console.log("Redirecting to Stripe Checkout:", errorData.checkoutUrl);
                 window.location.href = errorData.checkoutUrl;
                 return;
             }
@@ -129,6 +138,7 @@ function Login({ onRegisterClick }) {
         sessionStorage.setItem('postLoginSplashStart', Date.now().toString());
         navigate(target, { replace: true });
     } catch (err) {
+        console.error("Error during login:", err);
         setMessage(err.message || 'Invalid email or password.');
     }
 };
