@@ -14,6 +14,9 @@ const s3 = new AWS.S3({
   region: process.env.SUPABASE_S3_REGION || "eu-west-2",
 });
 
+// Define S3_BUCKET from environment variables
+const S3_BUCKET = process.env.SUPABASE_S3_BUCKET;
+
 // Supabase admin/service client (optional, if you later add a service role key)
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || null;
@@ -481,16 +484,17 @@ router.get("/", async (req, res) => {
     const documents = await Promise.all(
       rows.map(async (doc) => {
         let signedUrl = null;
-        if (supabaseAdmin) {
-          const { data, error } = await supabaseAdmin.storage
-            .from(S3_BUCKET)
-            .createSignedUrl(doc.file_url, 60 * 60); // URL valid for 1 hour
-          if (error) {
-            console.error("Error generating signed URL:", error.message);
-          } else {
-            signedUrl = data.signedUrl;
-          }
+        try {
+          const url = s3.getSignedUrl("getObject", {
+            Bucket: process.env.SUPABASE_S3_BUCKET,
+            Key: doc.file_url, // Relative path inside the bucket
+            Expires: 3600, // 1 hour
+          });
+          signedUrl = url;
+        } catch (err) {
+          console.error("Error generating signed URL for file:", doc.file_url, err.message);
         }
+
         return {
           ...doc,
           file_url: signedUrl || `${process.env.SUPABASE_S3_ENDPOINT}/storage/v1/object/public/${S3_BUCKET}/${doc.file_url}`, // Fallback to public URL
