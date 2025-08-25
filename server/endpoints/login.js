@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const generateAuthToken = require('../assets/generateAuthToken');
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 async function login(req, res, pool) {
     try {
@@ -42,6 +44,53 @@ async function login(req, res, pool) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
+        // Check if the user has an active subscription
+        const subscriptionQuery = {
+            text: `
+                SELECT
+                    is_active
+                FROM
+                    subscription
+                WHERE
+                    landlord_id = $1
+                LIMIT 1
+            `,
+            values: [user.id],
+        };
+
+        const subscriptionResult = await pool.query(subscriptionQuery);
+
+        if (
+            subscriptionResult.rows.length === 0 || 
+            !subscriptionResult.rows[0].is_active
+        ) {
+            // If no active subscription, create a Stripe Checkout session
+            try {
+                const session = await stripe.checkout.sessions.create({
+                    payment_method_types: ['card'],
+                    customer_email: emailLowercase,
+                    line_items: [
+                        {
+                            price: process.env.BASIC_MONTHLY_PRICE_ID, // Replace with your Stripe Price ID
+                            quantity: 1,
+                        },
+                    ],
+                    mode: 'subscription',
+                    success_url: 'https://app.mypropertypal.com/success?session_id={CHECKOUT_SESSION_ID}',
+                    cancel_url: 'https://app.mypropertypal.com/cancel',
+                });
+
+                // Return the Stripe Checkout URL to the frontend
+                return res.status(403).json({
+                    error: 'Your subscription is inactive. Please complete the checkout process.',
+                    checkoutUrl: session.url,
+                });
+            } catch (err) {
+                console.error('Error creating Stripe Checkout session:', err);
+                return res.status(500).json({ error: 'Failed to create checkout session.' });
+            }
+        }
+
         const token = await generateAuthToken(user.id);
 
         // Set JWT in HTTP-only cookie
@@ -49,8 +98,7 @@ async function login(req, res, pool) {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
-            //domain: '.mypropertypal.com', // <-- Enables cross-subdomain cookies
-            maxAge: 60 * 60 * 1000 // 1 hour
+            maxAge: 60 * 60 * 1000, // 1 hour
         });
 
         // Return only the role (not the token)

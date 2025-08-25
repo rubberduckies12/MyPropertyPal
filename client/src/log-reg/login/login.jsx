@@ -92,25 +92,46 @@ function Login({ onRegisterClick }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const normalizedEmail = email.trim().toLowerCase();
-      const user = await login(normalizedEmail, password);
-      setMessage("Login successful!");
-      localStorage.setItem("token", user.token);
-      localStorage.setItem("role", user.role);
+        const normalizedEmail = email.trim().toLowerCase();
+        const response = await fetch(`${BACKEND_URL}/login`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: normalizedEmail, password }),
+        });
 
-      // navigate immediately to target and let the global SplashOverlay (App-level)
-      // display the post-login animation so there is no intermediate flash back to login
-      const target = (user.role === "tenant" || user.type === "tenant") ? "/tenant-home" : "/dashboard";
-      sessionStorage.setItem("postLoginSplashTarget", target);
-      // notify SplashOverlay in the same tab to run immediately
-      window.dispatchEvent(new Event("postLoginSplash"));
-      // mark when splash should start (optional)
-      sessionStorage.setItem("postLoginSplashStart", Date.now().toString());
-      navigate(target, { replace: true });
+        if (!response.ok) {
+            const errorData = await response.json();
+
+            // Handle inactive subscription (403 response)
+            if (response.status === 403 && errorData.checkoutUrl) {
+                // Redirect to Stripe Checkout
+                window.location.href = errorData.checkoutUrl;
+                return;
+            }
+
+            throw new Error(errorData.error || 'Login failed');
+        }
+
+        const user = await response.json();
+        setMessage('Login successful!');
+        localStorage.setItem('token', user.token);
+        localStorage.setItem('role', user.role);
+
+        const target =
+            user.role === 'tenant' || user.type === 'tenant'
+                ? '/tenant-home'
+                : '/dashboard';
+        sessionStorage.setItem('postLoginSplashTarget', target);
+        window.dispatchEvent(new Event('postLoginSplash'));
+        sessionStorage.setItem('postLoginSplashStart', Date.now().toString());
+        navigate(target, { replace: true });
     } catch (err) {
-      setMessage("Invalid email or password.");
+        setMessage(err.message || 'Invalid email or password.');
     }
-  };
+};
 
   const handleResetSubmit = async (e) => {
     e.preventDefault();
