@@ -29,6 +29,7 @@ import TenantSidebar from './main/tenant_portal/tsidebar/tenantSidebar.jsx';
 import Success from './main/success.jsx'; // Import the Success page
 import ResetPassword from './log-reg/reset-password/ResetPassword.jsx'; // <-- Add this import
 import SplashOverlay from "./components/SplashOverlay";
+import FileExplorer from './main/fileExplorer/fileExplorer.jsx'; // Import the FileExplorer component
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -86,6 +87,16 @@ function AppRoutes() {
             <AnimatedRoute>
               <ProtectedRoute allowedRoles={["landlord"]}>
                 <Dashboard />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } />
+        {/* Add File Explorer route */}
+        <Route path="/file-explorer" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["landlord"]}>
+                <FileExplorer />
               </ProtectedRoute>
             </AnimatedRoute>
           </AppLayout>

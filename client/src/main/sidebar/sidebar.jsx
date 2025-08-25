@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { FaHome, FaEnvelope, FaBuilding, FaFileAlt, FaGavel, FaRobot, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
+import { FaHome, FaEnvelope, FaBuilding, FaFileAlt, FaGavel, FaRobot, FaSignOutAlt, FaBars, FaTimes, FaFolder } from "react-icons/fa";
 
 function Sidebar() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -175,12 +175,22 @@ function Sidebar() {
                 <NavLink
                   to="/documents"
                   className={({ isActive }) =>
-                    `block px-4 py-2 rounded-lg transition hidden lg:block ${
+                    `block px-4 py-2 rounded-lg transition ${
                       isActive ? "bg-blue-800" : "hover:bg-blue-600"
                     }`
                   }
                 >
                   Documents
+                </NavLink>
+                <NavLink
+                  to="/file-explorer"
+                  className={({ isActive }) =>
+                    `block px-4 py-2 rounded-lg transition ${
+                      isActive ? "bg-blue-800" : "hover:bg-blue-600"
+                    }`
+                  }
+                >
+                  File Explorer
                 </NavLink>
               </div>
             )}
