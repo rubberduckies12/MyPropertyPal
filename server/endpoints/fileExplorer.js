@@ -459,4 +459,22 @@ router.patch("/:id/update", async (req, res) => {
   }
 });
 
+// GET /api/file-explorer - Fetch all uploaded documents
+router.get("/", async (req, res) => {
+  const pool = getPool(req);
+  const accountId = getAccountIdFromReq(req);
+  if (!accountId) return res.status(401).json({ success: false, error: "Not authenticated" });
+
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM public.documents WHERE account_id = $1 ORDER BY created_at DESC",
+      [accountId]
+    );
+    res.json({ documents: rows });
+  } catch (err) {
+    console.error("Error fetching documents:", err);
+    res.status(500).json({ success: false, error: "Failed to fetch documents" });
+  }
+});
+
 module.exports = router;
