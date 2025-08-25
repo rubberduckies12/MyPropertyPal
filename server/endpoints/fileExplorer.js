@@ -4,26 +4,15 @@ const sanitize = require("sanitize-filename");
 const { createClient } = require("@supabase/supabase-js");
 const AWS = require("aws-sdk");
 
-// S3 (aws-sdk v2) client for Supabase Free Plan S3 endpoint
-const S3_ACCESS_KEY_ID = process.env.SUPABASE_ACCESS_KEY; // Updated to match .env
-const S3_SECRET_ACCESS_KEY = process.env.SUPABASE_SECRET_ACCESS_KEY; // Updated to match .env
-const S3_ENDPOINT = process.env.SUPABASE_S3_ENDPOINT; // Updated to match .env
-const S3_BUCKET = process.env.SUPABASE_S3_BUCKET || "documents"; // Default bucket name
-const HAS_S3 = Boolean(S3_ACCESS_KEY_ID && S3_SECRET_ACCESS_KEY && S3_ENDPOINT);
-
-let s3 = null;
-if (HAS_S3) {
-  s3 = new AWS.S3({
-    endpoint: S3_ENDPOINT,
-    accessKeyId: S3_ACCESS_KEY_ID,
-    secretAccessKey: S3_SECRET_ACCESS_KEY,
-    s3ForcePathStyle: true,
-    signatureVersion: "v4",
-    region: process.env.SUPABASE_S3_REGION || "eu-west-2", // Default region
-  });
-} else {
-  console.warn("No S3 credentials configured (SUPABASE_ACCESS_KEY, SUPABASE_SECRET_ACCESS_KEY, SUPABASE_S3_ENDPOINT). S3 storage operations will be disabled.");
-}
+// Configure AWS S3 for Supabase Free Tier
+const s3 = new AWS.S3({
+  endpoint: process.env.SUPABASE_S3_ENDPOINT,
+  accessKeyId: process.env.SUPABASE_S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.SUPABASE_S3_SECRET_ACCESS_KEY,
+  s3ForcePathStyle: true,
+  signatureVersion: "v4",
+  region: process.env.SUPABASE_S3_REGION || "eu-west-2",
+});
 
 // Supabase admin/service client (optional, if you later add a service role key)
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -528,29 +517,22 @@ router.get("/download/:id", async (req, res) => {
   try {
     // Fetch the document from the database
     const { rows } = await pool.query(
-      "SELECT file_url FROM public.documents WHERE id = $1",
-      [documentId]
+      "SELECT file_url FROM public.documents WHERE id = $1 AND account_id = $2",
+      [documentId, accountId]
     );
 
     if (rows.length === 0) return res.status(404).json({ success: false, error: "Document not found" });
 
-    const filePath = rows[0].file_url; // Must be relative path in bucket
+    const filePath = rows[0].file_url; // Must be the relative path inside the bucket
 
-    if (!supabaseAdmin) {
-      return res.status(500).json({ success: false, error: "Supabase admin client not configured" });
-    }
+    // Generate signed URL using AWS S3
+    const url = s3.getSignedUrl("getObject", {
+      Bucket: process.env.SUPABASE_S3_BUCKET, // Your bucket name
+      Key: filePath,                          // Path inside the bucket
+      Expires: 3600,                          // URL valid for 1 hour
+    });
 
-    // Generate signed URL
-    const { data, error } = await supabaseAdmin.storage
-      .from(S3_BUCKET)
-      .createSignedUrl(filePath, 60 * 60); // 1 hour
-
-    if (error) {
-      console.error("Error generating signed URL:", error);
-      return res.status(500).json({ success: false, error: "Failed to generate signed URL" });
-    }
-
-    res.json({ success: true, signedUrl: data.signedUrl });
+    res.json({ success: true, signedUrl: url });
   } catch (err) {
     console.error("Error generating signed URL:", err);
     res.status(500).json({ success: false, error: "Internal server error" });
