@@ -1,7 +1,5 @@
 const bcrypt = require('bcrypt');
 const generateAuthToken = require('../assets/generateAuthToken');
-const Stripe = require('stripe');
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 async function login(req, res, pool) {
     try {
@@ -46,81 +44,7 @@ async function login(req, res, pool) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // Fetch subscription details
-        const subscriptionQuery = {
-            text: `
-                SELECT
-                    s.is_active,
-                    s.plan_id
-                FROM
-                    subscription s
-                WHERE
-                    s.landlord_id = $1
-                LIMIT 1
-            `,
-            values: [user.id],
-        };
-
-        const subscriptionResult = await pool.query(subscriptionQuery);
-
-        if (subscriptionResult.rows.length === 0) {
-            return res.status(403).json({
-                error: 'No subscription found. Please complete the checkout process.',
-            });
-        }
-
-        const subscription = subscriptionResult.rows[0];
-
-        // Debugging: Log subscription details
-        console.log("Subscription details:", subscription);
-
-        // Skip payment for users on the "Test" plan (plan_id = 17)
-        if (subscription.plan_id === 17) {
-            console.log("User is on the Test plan (plan_id = 17). Skipping payment.");
-            const token = await generateAuthToken(user.id);
-
-            // Set JWT in HTTP-only cookie
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none',
-                maxAge: 60 * 60 * 1000, // 1 hour
-            });
-
-            return res.status(200).json({ role: user.role });
-        }
-
-        // Redirect to Stripe Checkout if subscription is inactive
-        if (!subscription.is_active) {
-            console.log("Subscription is inactive. Redirecting to Stripe Checkout.");
-            try {
-                const session = await stripe.checkout.sessions.create({
-                    payment_method_types: ['card'],
-                    customer_email: emailLowercase,
-                    line_items: [
-                        {
-                            price: process.env.BASIC_MONTHLY_PRICE_ID, // Replace with your Stripe Price ID
-                            quantity: 1,
-                        },
-                    ],
-                    mode: 'subscription',
-                    success_url: 'https://app.mypropertypal.com/success?session_id={CHECKOUT_SESSION_ID}',
-                    cancel_url: 'https://app.mypropertypal.com/cancel',
-                });
-
-                // Return the Stripe Checkout URL to the frontend
-                return res.status(403).json({
-                    error: 'Your subscription is inactive. Redirecting to checkout.',
-                    checkoutUrl: session.url,
-                });
-            } catch (err) {
-                console.error('Error creating Stripe Checkout session:', err);
-                return res.status(500).json({ error: 'Failed to create checkout session.' });
-            }
-        }
-
-        // Generate JWT token for active subscriptions
-        console.log("Subscription is active. Logging in the user.");
+        // Generate JWT token
         const token = await generateAuthToken(user.id);
 
         // Set JWT in HTTP-only cookie
