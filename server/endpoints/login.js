@@ -48,11 +48,15 @@ async function login(req, res, pool) {
         const subscriptionQuery = {
             text: `
                 SELECT
-                    is_active
+                    s.is_active,
+                    p.name AS plan_name,
+                    p.price
                 FROM
-                    subscription
+                    subscription s
+                JOIN
+                    plan p ON s.plan_id = p.id
                 WHERE
-                    landlord_id = $1
+                    s.landlord_id = $1
                 LIMIT 1
             `,
             values: [user.id],
@@ -60,11 +64,31 @@ async function login(req, res, pool) {
 
         const subscriptionResult = await pool.query(subscriptionQuery);
 
-        if (
-            subscriptionResult.rows.length === 0 || 
-            !subscriptionResult.rows[0].is_active
-        ) {
-            // If no active subscription, create a Stripe Checkout session
+        if (subscriptionResult.rows.length === 0) {
+            return res.status(403).json({
+                error: 'No subscription found. Please complete the checkout process.',
+            });
+        }
+
+        const subscription = subscriptionResult.rows[0];
+
+        // Skip payment if the user is on the "Test" plan with a price of $0.00
+        if (subscription.plan_name === 'Test' && parseFloat(subscription.price) === 0.0) {
+            const token = await generateAuthToken(user.id);
+
+            // Set JWT in HTTP-only cookie
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 60 * 60 * 1000, // 1 hour
+            });
+
+            return res.status(200).json({ role: user.role });
+        }
+
+        // If the subscription is inactive, create a Stripe Checkout session
+        if (!subscription.is_active) {
             try {
                 const session = await stripe.checkout.sessions.create({
                     payment_method_types: ['card'],
