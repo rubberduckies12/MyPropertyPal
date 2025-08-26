@@ -1,6 +1,7 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
+const express = require("express");
+const bcrypt = require("bcrypt");
 const router = express.Router();
+const { sendEvent } = require("./CAPI"); // Import the sendEvent function
 
 // Helper to generate a random 6-digit number as a string
 async function generateUniqueSixDigitId(pool) {
@@ -8,17 +9,27 @@ async function generateUniqueSixDigitId(pool) {
   let id;
   while (!unique) {
     id = Math.floor(100000 + Math.random() * 900000).toString();
-    const result = await pool.query('SELECT 1 FROM account WHERE id = $1', [id]);
+    const result = await pool.query("SELECT 1 FROM account WHERE id = $1", [id]);
     if (result.rows.length === 0) unique = true;
   }
   return id;
 }
 
 // Register endpoint
-router.post('/', async (req, res) => {
-  const pool = req.app.get('pool'); // Access the database pool from the app
+router.post("/", async (req, res) => {
+  const pool = req.app.get("pool"); // Access the database pool from the app
   console.log("REGISTER BODY:", req.body);
-  const { email, password, role, propertyId, firstName, lastName, invite, plan_name, billing_cycle } = req.body || {};
+  const {
+    email,
+    password,
+    role,
+    propertyId,
+    firstName,
+    lastName,
+    invite,
+    plan_name,
+    billing_cycle,
+  } = req.body || {};
 
   if (invite) {
     // Invite-based registration (tenant)
@@ -42,39 +53,60 @@ router.post('/', async (req, res) => {
         `UPDATE tenant SET is_pending = FALSE, invite_token = NULL WHERE id = $1`,
         [tenantResult.rows[0].id]
       );
+
+      // Send CompleteRegistration event to Facebook
+      await sendEvent("CompleteRegistration", email, {
+        role: "tenant",
+      });
+
       return res.status(200).json({ message: "Tenant registration complete." });
     } catch (err) {
-      console.error('Error during invite registration:', err);
-      return res.status(500).json({ error: 'Internal server error' });
+      console.error("Error during invite registration:", err);
+      return res.status(500).json({ error: "Internal server error" });
     }
   }
 
   // Only landlords can self-register
   if (role !== "landlord") {
-    return res.status(400).json({ error: "Tenants must register using an invite link." });
+    return res
+      .status(400)
+      .json({ error: "Tenants must register using an invite link." });
   }
 
-  if (!email || !password || !role || !firstName || !lastName || !plan_name || !billing_cycle) {
-    return res.status(400).json({ error: 'Email, password, role, first name, last name, plan, and billing cycle are required.' });
+  if (
+    !email ||
+    !password ||
+    !role ||
+    !firstName ||
+    !lastName ||
+    !plan_name ||
+    !billing_cycle
+  ) {
+    return res
+      .status(400)
+      .json({
+        error:
+          "Email, password, role, first name, last name, plan, and billing cycle are required.",
+      });
   }
 
   try {
     // Check if user already exists
     const existingUser = await pool.query(
-      'SELECT id FROM account WHERE email = $1',
+      "SELECT id FROM account WHERE email = $1",
       [email]
     );
     if (existingUser.rows.length > 0) {
-      return res.status(409).json({ error: 'Email already registered.' });
+      return res.status(409).json({ error: "Email already registered." });
     }
 
     // Get role_id from account_role table
     const roleResult = await pool.query(
-      'SELECT id FROM account_role WHERE role = $1',
+      "SELECT id FROM account_role WHERE role = $1",
       [role]
     );
     if (roleResult.rows.length === 0) {
-      return res.status(400).json({ error: 'Invalid role.' });
+      return res.status(400).json({ error: "Invalid role." });
     }
     const role_id = roleResult.rows[0].id;
 
@@ -94,7 +126,7 @@ router.post('/', async (req, res) => {
     const accountId = accountResult.rows[0].id;
 
     // If landlord, insert into landlord table and create subscription
-    if (role === 'landlord') {
+    if (role === "landlord") {
       // Map plan_name and billing_cycle to payment_plan.id
       const planMapping = {
         basic: { monthly: 11, yearly: 12 },
@@ -102,9 +134,12 @@ router.post('/', async (req, res) => {
         organisation: { monthly: 15, yearly: 16 }, // Update to match the frontend
       };
 
-      const planId = planMapping[plan_name.toLowerCase()]?.[billing_cycle.toLowerCase()];
+      const planId =
+        planMapping[plan_name.toLowerCase()]?.[billing_cycle.toLowerCase()];
       if (!planId) {
-        return res.status(400).json({ error: 'Invalid plan or billing cycle selected.' });
+        return res
+          .status(400)
+          .json({ error: "Invalid plan or billing cycle selected." });
       }
 
       // Insert into landlord table with payment_plan_id
@@ -123,10 +158,17 @@ router.post('/', async (req, res) => {
       );
     }
 
+    // Send CompleteRegistration event to Facebook
+    await sendEvent("CompleteRegistration", email, {
+      role: "landlord",
+      plan_name,
+      billing_cycle,
+    });
+
     return res.status(201).json(accountResult.rows[0]);
   } catch (err) {
-    console.error('Error during registration:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error("Error during registration:", err);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

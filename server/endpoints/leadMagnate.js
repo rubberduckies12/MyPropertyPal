@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { sendEvent } = require("./CAPI"); // Import the sendEvent function
 
 router.post("/", async (req, res) => {
   const pool = req.app.get("pool"); // Get the database connection pool
@@ -19,6 +20,12 @@ router.post("/", async (req, res) => {
     `;
     const values = [email, first_name, last_name];
     const result = await pool.query(query, values);
+
+    // Send the Lead event to Facebook
+    await sendEvent("Lead", email, {
+      first_name,
+      last_name,
+    });
 
     // Respond with the inserted lead
     res.status(201).json({

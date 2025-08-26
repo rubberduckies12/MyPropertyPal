@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Use sandbox key
+const { sendEvent } = require('./CAPI');
 
 router.post('/create-checkout-session', async (req, res) => {
   const { plan_name, billing_cycle, email } = req.body;
@@ -34,6 +35,26 @@ router.post('/create-checkout-session', async (req, res) => {
     res.json({ url: session.url });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Payment success handler
+router.post('/payment-success', async (req, res) => {
+  const { email, amount } = req.body;
+
+  try {
+    // Process the payment success logic here...
+
+    // Send the purchase event to Facebook
+    await sendEvent("Purchase", email, {
+      value: amount,
+      currency: "USD",
+    });
+
+    res.status(200).json({ message: "Payment success and event sent to Facebook." });
+  } catch (err) {
+    console.error("Error handling payment success:", err);
+    res.status(500).json({ error: "Failed to process payment success." });
   }
 });
 
