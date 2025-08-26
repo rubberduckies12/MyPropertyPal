@@ -578,7 +578,7 @@ export default function Landing() {
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
-                        Get Started
+                        Try Free Now
                     </button>
                 </div>
                 <div className="flex justify-center">
@@ -656,7 +656,7 @@ export default function Landing() {
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
-                        Get Organised
+                        Organise My Properties
                     </button>
                 </div>
             </section>
@@ -852,7 +852,7 @@ export default function Landing() {
           className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition"
           onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
         >
-          Get Started Now
+          Try Free Now
         </button>
       </div>
     ))}
