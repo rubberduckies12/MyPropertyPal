@@ -402,3 +402,35 @@ CREATE TABLE public.job (
     category VARCHAR(50) NOT NULL CHECK (category IN ('Marketing', 'Software', 'Customer Service', 'Outreach', 'Finances', 'HR')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+-- Create the uploads table
+CREATE TABLE public.uploads (
+    id SERIAL PRIMARY KEY, -- Primary key
+    landlord_id INT NOT NULL REFERENCES public.landlord(id) ON DELETE CASCADE, -- Foreign key to landlord table
+    file_name TEXT NOT NULL, -- Name of the uploaded file
+    file_type TEXT NOT NULL, -- Type of the file (e.g., csv, xlsx)
+    status TEXT DEFAULT 'pending' NOT NULL CHECK (status IN ('pending', 'parsed', 'failed')), -- Status of the upload
+    uploaded_at TIMESTAMPTZ DEFAULT now() NOT NULL, -- Timestamp when the file was uploaded
+    parsed_at TIMESTAMPTZ -- Timestamp when the file was parsed (nullable)
+);
+
+-- Index for faster lookups by landlord_id
+CREATE INDEX IF NOT EXISTS uploads_landlord_idx ON public.uploads (landlord_id);
+
+-- Index for faster lookups by status
+CREATE INDEX IF NOT EXISTS uploads_status_idx ON public.uploads (status);
+
+-- Create the upload_mappings table
+CREATE TABLE public.upload_mappings (
+    id SERIAL PRIMARY KEY, -- Primary key
+    landlord_id INT NOT NULL REFERENCES public.landlord(id) ON DELETE CASCADE, -- Foreign key to landlord table
+    column_name TEXT NOT NULL, -- Name of the spreadsheet column (e.g., 'RentDue')
+    mapped_field TEXT NOT NULL, -- Internal system field (e.g., 'rent_amount')
+    created_at TIMESTAMPTZ DEFAULT now() NOT NULL -- Timestamp when the mapping was created
+);
+
+-- Index for faster lookups by landlord_id
+CREATE INDEX IF NOT EXISTS upload_mappings_landlord_idx ON public.upload_mappings (landlord_id);
+
+-- Index for faster lookups by column_name
+CREATE INDEX IF NOT EXISTS upload_mappings_column_name_idx ON public.upload_mappings (column_name);
