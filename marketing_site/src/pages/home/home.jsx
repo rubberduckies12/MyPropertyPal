@@ -780,94 +780,98 @@ export default function Landing() {
 
             {/* Pricing Table */}
             <section className="w-full max-w-7xl mx-auto py-24 px-4 sm:px-6">
-                <h2 className="text-3xl font-bold text-center mb-4">
-                    Choose Your Plan
-                </h2>
-                <p className="text-center text-gray-700 mb-12">
-                    Whether you're renting out your first flat or juggling a handful of properties,
-                    MyPropertyPal is built with you in mind. <br /><br />
-                    <span className="font-semibold">Start simple. Grow with confidence.</span>
-                </p>
-                <div className="flex justify-center mb-8 w-full max-w-xs mx-auto">
-                    <button
-                        className={`flex-1 px-6 py-2 rounded-l-lg border border-[#2563eb] font-semibold transition text-center ${
-                            billing === "monthly"
-                                ? "bg-[#2563eb] text-white"
-                                : "bg-white text-[#2563eb]"
-                        }`}
-                        onClick={() => setBilling("monthly")}
-                        style={{ minWidth: 0 }}
-                    >
-                        Monthly
-                    </button>
-                    <button
-                        className={`flex-1 px-6 py-2 rounded-r-lg border border-[#2563eb] font-semibold transition text-center ${
-                            billing === "yearly"
-                                ? "bg-[#2563eb] text-white"
-                                : "bg-white text-[#2563eb]"
-                        }`}
-                        onClick={() => setBilling("yearly")}
-                        style={{ minWidth: 0 }}
-                    >
-                        Yearly
-                    </button>
-                </div>
-                <div className="flex flex-col md:flex-row gap-8 justify-center">
-                    {plans.map((plan, i) => (
-                        <div
-                            key={plan.name}
-                            className={`flex-1 rounded-2xl border ${
-                                plan.featured
-                                    ? "border-[#2563eb] bg-blue-50 shadow-lg scale-105"
-                                    : "border-gray-200 bg-white shadow"
-                            } p-8 flex flex-col items-start min-w-0`}
-                        >
-                            <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                            <div className="flex items-end gap-2 mb-1">
-                                <span className="text-3xl font-extrabold text-[#2563eb]">
-                                    {getPlanPrice(plan)}
-                                </span>
-                                <span className="text-gray-600 font-medium">
-                                    {getPlanPeriod()}
-                                </span>
-                            </div>
-                            <div className="text-[#2563eb] font-semibold mb-4 text-sm">
-                                30 Day Money Back Guarantee
-                            </div>
-                            <ul className="mb-8 space-y-3 w-full">
-                                {plan.features.map((f, idx) => (
-                                    <li
-                                        key={idx}
-                                        className="flex items-center gap-2 text-gray-700"
-                                    >
-                                        <svg
-                                            width="20"
-                                            height="20"
-                                            fill="none"
-                                            stroke="#2563eb"
-                                            strokeWidth="2.5"
-                                            viewBox="0 0 20 20"
-                                        >
-                                            <path
-                                                d="M5 10.5l4 4 6-8"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            />
-                                        </svg>
-                                        <span>{f}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <button
-                                className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition"
-                                onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
-                            >
-                                Get Started Now
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            </section>
+  <h2 className="text-3xl font-bold text-center mb-4">
+    Choose Your Plan
+  </h2>
+  <p className="text-center text-gray-700 mb-12">
+    Whether you're renting out your first flat or juggling a handful of properties,
+    MyPropertyPal is built with you in mind. <br /><br />
+    <span className="font-semibold">Start simple. Grow with confidence.</span>
+  </p>
+  <div className="flex justify-center mb-8 w-full max-w-xs mx-auto">
+    <button
+      className={`flex-1 px-6 py-2 rounded-l-lg border border-[#2563eb] font-semibold transition text-center ${
+        billing === "monthly"
+          ? "bg-[#2563eb] text-white"
+          : "bg-white text-[#2563eb]"
+      }`}
+      onClick={() => setBilling("monthly")}
+      style={{ minWidth: 0 }}
+    >
+      Monthly
+    </button>
+    <button
+      className={`flex-1 px-6 py-2 rounded-r-lg border border-[#2563eb] font-semibold transition text-center ${
+        billing === "yearly"
+          ? "bg-[#2563eb] text-white"
+          : "bg-white text-[#2563eb]"
+      }`}
+      onClick={() => setBilling("yearly")}
+      style={{ minWidth: 0 }}
+    >
+      Yearly
+    </button>
+  </div>
+  <div className="flex flex-col md:flex-row gap-8 justify-center">
+    {plans.map((plan, i) => (
+      <div
+        key={plan.name}
+        className={`flex-1 rounded-2xl border ${
+          plan.featured
+            ? "border-[#2563eb] bg-blue-50 shadow-lg scale-105"
+            : "border-gray-200 bg-white shadow"
+        } p-8 flex flex-col items-start min-w-0`}
+      >
+        <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+        <div className="flex items-end gap-2 mb-1">
+          <span className="text-3xl font-extrabold text-[#2563eb]">
+            {getPlanPrice(plan)}
+          </span>
+          <span className="text-gray-600 font-medium">
+            {getPlanPeriod()}
+          </span>
+        </div>
+        <div className="text-[#2563eb] font-semibold mb-4 text-sm">
+          30 Day Money Back Guarantee
+        </div>
+        {/* Add 7-day free trial mention */}
+        <div className="text-gray-700 font-medium mb-4 text-sm">
+          Includes a <span className="font-bold">7-day free trial</span>.
+        </div>
+        <ul className="mb-8 space-y-3 w-full">
+          {plan.features.map((f, idx) => (
+            <li
+              key={idx}
+              className="flex items-center gap-2 text-gray-700"
+            >
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="#2563eb"
+                strokeWidth="2.5"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M5 10.5l4 4 6-8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+        <button
+          className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition"
+          onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
+        >
+          Get Started Now
+        </button>
+      </div>
+    ))}
+  </div>
+</section>
 
             {/* Your data and payments are safe section */}
             <section className="w-full max-w-4xl mx-auto py-10 px-4 sm:px-6 flex flex-col items-center">
