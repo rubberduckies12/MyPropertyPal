@@ -219,4 +219,30 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+// Delete account endpoint
+router.delete("/delete", async (req, res) => {
+  const pool = req.app.get("pool");
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required to delete the account." });
+  }
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM public.account WHERE email = $1 RETURNING id",
+      [email]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Account not found." });
+    }
+
+    res.status(200).json({ message: "Account deleted successfully." });
+  } catch (err) {
+    console.error("Error deleting account:", err);
+    res.status(500).json({ error: "An error occurred while deleting the account." });
+  }
+});
+
 module.exports = router;

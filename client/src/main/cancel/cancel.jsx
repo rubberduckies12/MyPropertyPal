@@ -52,6 +52,40 @@ const Cancel = () => {
     }
   };
 
+  // Handle account deletion
+  const handleDeleteAccount = async () => {
+    if (!email) {
+      setError("Email is required to delete the account.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await fetch("/api/account/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete the account.");
+      }
+
+      // Redirect to the home page after successful deletion
+      window.location.href = "https://www.mypropertypal.com/";
+    } catch (err) {
+      setError(err.message || "An error occurred while deleting the account.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
@@ -96,7 +130,7 @@ const Cancel = () => {
           {loading ? "Redirecting to Checkout..." : "Retry Checkout"}
         </button>
         <button
-          onClick={() => (window.location.href = "https://www.mypropertypal.com/")}
+          onClick={handleDeleteAccount}
           className="w-full mt-4 px-4 py-2 text-blue-600 font-medium rounded-md border border-blue-600 hover:bg-blue-50 transition"
         >
           Back to Home
