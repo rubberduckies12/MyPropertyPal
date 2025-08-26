@@ -303,7 +303,7 @@ function TestimonialsSlider() {
         <div className="w-full flex flex-col items-center">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
-              key={current}
+             
               initial={{ opacity: 0, x: direction > 0 ? 60 : -60, scale: 0.98 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: direction > 0 ? -60 : 60, scale: 0.98 }}
@@ -571,8 +571,8 @@ export default function Landing() {
                         No Middle-Man, No Hassle
                     </h2>
                     <p className="text-gray-700 mb-6 text-center md:text-left">
-                        Say goodbye to expensive property managers and endless admin. Our platform empowers you to manage your properties efficiently - saving time, money and stress.
-                  </p>
+                        Say goodbye to expensive property managers and endless admin. Our platform empowers you to manage your properties efficiently - saving time, money, and stress.
+                    </p>
                     <button
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
@@ -581,20 +581,14 @@ export default function Landing() {
                     </button>
                 </div>
                 <div className="flex justify-center">
-                    <div
-                        className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden cursor-zoom-in"
-                        onClick={() => setModalImg({ src: "/add-tenants.png", alt: "Add Tenants Preview" })}
-                        title="Click to view full screen"
-                    >
-                        <Image
-                            src="/add-tenants.png"
-                            alt="Add Tenants Preview"
-                            width={600}
-                            height={300}
-                            className="object-cover w-full h-full"
-                            priority
-                        />
-                    </div>
+                    <Image
+                        src="/finance.png" // Replace with the provided image path
+                        alt="No Middle-Man Preview"
+                        width={500} // Adjusted width to fit the section
+                        height={300} // Adjusted height to maintain aspect ratio
+                        className="object-contain" // Ensure the image scales proportionally
+                        priority
+                    />
                 </div>
             </section>
 
@@ -678,20 +672,16 @@ export default function Landing() {
                     </button>
                 </div>
                 <div className="flex justify-center order-2 md:order-1">
-                    <div
-                        className="w-full max-w-md h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden cursor-zoom-in"
-                        onClick={() => setModalImg({ src: "/finances.png", alt: "Finances Preview" })}
-                        title="Click to view full screen"
-                    >
-                        <Image
-                            src="/finances.png"
-                            alt="Finances Preview"
-                            width={600}
-                            height={300}
-                            className="object-cover w-full h-full"
-                            priority
-                        />
-                    </div>
+                   <div className="flex justify-center">
+                    <Image
+                        src="/NoMiddleMan.png" // Replace with the provided image path
+                        alt="No Middle-Man Preview"
+                        width={500} // Adjusted width to fit the section
+                        height={300} // Adjusted height to maintain aspect ratio
+                        className="object-contain" // Ensure the image scales proportionally
+                        priority
+                    />
+                </div>
                 </div>
             </section>
 
