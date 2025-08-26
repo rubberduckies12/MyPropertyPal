@@ -656,7 +656,7 @@ export default function Landing() {
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
-                        Organise My Properties
+                        Try Free Now
                     </button>
                 </div>
             </section>
@@ -675,7 +675,7 @@ export default function Landing() {
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
-                        Never Miss a Deadline
+                       Try Free Now
                     </button>
                 </div>
                 <div className="flex justify-center order-2 md:order-1">
