@@ -509,6 +509,61 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /api/file-explorer/tenant - Fetch documents shared with the tenant
+router.get("/tenant", async (req, res) => {
+  const pool = getPool(req);
+  const accountId = getAccountIdFromReq(req);
+  if (!accountId) return res.status(401).json({ success: false, error: "Not authenticated" });
+
+  try {
+    const query = `
+      SELECT 
+        d.id,
+        d.file_name,
+        d.file_url,
+        d.category,
+        d.created_at,
+        d.updated_at,
+        p.name AS property_name,
+        CONCAT_WS(', ', p.address, p.city, p.county, p.postcode) AS property_address
+      FROM public.documents d
+      LEFT JOIN public.property p ON d.property_id = p.id
+      WHERE d.tenant_id = (SELECT id FROM public.tenant WHERE account_id = $1 LIMIT 1)
+        AND d.shared_with_tenant = true
+      ORDER BY d.created_at DESC
+    `;
+
+    const { rows } = await pool.query(query, [accountId]);
+
+    // Generate signed URLs for private buckets
+    const documents = await Promise.all(
+      rows.map(async (doc) => {
+        let signedUrl = null;
+        try {
+          const url = s3.getSignedUrl("getObject", {
+            Bucket: process.env.SUPABASE_S3_BUCKET,
+            Key: doc.file_url, // Relative path inside the bucket
+            Expires: 3600, // 1 hour
+          });
+          signedUrl = url;
+        } catch (err) {
+          console.error("Error generating signed URL for file:", doc.file_url, err.message);
+        }
+
+        return {
+          ...doc,
+          file_url: signedUrl || `${process.env.SUPABASE_S3_ENDPOINT}/storage/v1/object/public/${S3_BUCKET}/${doc.file_url}`, // Fallback to public URL
+        };
+      })
+    );
+
+    res.json({ documents });
+  } catch (err) {
+    console.error("Error fetching tenant documents:", err);
+    res.status(500).json({ success: false, error: "Failed to fetch documents" });
+  }
+});
+
 // GET /download/:id - Generate signed URL for a document
 router.get("/download/:id", async (req, res) => {
   const pool = getPool(req);
