@@ -462,20 +462,19 @@ export default function Landing() {
                         Download Free Starter Kit Now
                     </button>
                 </div>
-                <div className="flex justify-center">
-                    <div
-                        className="w-full max-w-md h-40 md:h-64 bg-blue-100 rounded-2xl flex items-center justify-center overflow-hidden cursor-zoom-in"
-                        title="Dashboard Preview"
-                    >
-                        <Image
-                            src="/dashboard.png"
-                            alt="Dashboard Preview"
-                            width={600}
-                            height={600}
-                            className="object-cover w-full h-full"
-                            priority
-                        />
-                    </div>
+                <div
+                  className="w-full flex items-center justify-center"
+                  style={{ maxWidth: "none", height: "auto" }} // Remove max-width restriction
+                  title="Dashboard Preview"
+                >
+                  <Image
+                    src="/LandingpageHero.png"
+                    alt="Dashboard Preview"
+                    width={8000} // Large width
+                    height={6000} // Large height
+                    className="w-full max-w-none h-auto object-contain" // Ensure the image respects its dimensions
+                    priority
+                  />
                 </div>
             </section>
 
