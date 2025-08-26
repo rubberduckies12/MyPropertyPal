@@ -114,8 +114,7 @@ const Cancel = () => {
             id="email"
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-4 py-2"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={!!email} // Disable input if email is pre-filled
+            onChange={(e) => setEmail(e.target.value)} // Allow editing
           />
         </div>
         <button
