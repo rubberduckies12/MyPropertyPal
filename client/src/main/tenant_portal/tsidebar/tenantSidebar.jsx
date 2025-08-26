@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { FaHome, FaTools, FaEnvelope, FaRobot, FaSignOutAlt, FaBars, FaTimes } from "react-icons/fa";
+import { FaHome, FaTools, FaEnvelope, FaRobot, FaSignOutAlt, FaBars, FaTimes, FaFileAlt } from "react-icons/fa"; // Import FaFileAlt for documents icon
 
 
 function TenantSidebar() {
@@ -99,6 +99,19 @@ function TenantSidebar() {
           >
             <FaRobot className="text-xl" />
             <span>AI Chatbot</span>
+          </NavLink>
+
+          {/* Tenant Documents */}
+          <NavLink
+            to="/tenant-documents"
+            className={({ isActive }) =>
+              `flex items-center gap-4 px-4 py-3 rounded-lg transition ${
+                isActive ? "bg-blue-800" : "hover:bg-blue-600"
+              }`
+            }
+          >
+            <FaFileAlt className="text-xl" />
+            <span>Documents</span>
           </NavLink>
         </nav>
 

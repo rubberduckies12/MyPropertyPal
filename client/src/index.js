@@ -31,6 +31,7 @@ import ResetPassword from './log-reg/reset-password/ResetPassword.jsx'; // <-- A
 import SplashOverlay from "./components/SplashOverlay";
 import FileExplorer from './main/fileExplorer/fileExplorer.jsx'; // Import the FileExplorer component
 import Cancel from './main/cancel/cancel.jsx'; // Import the Cancel page
+import TenantDocuments from './main/tenant_portal/TDocuments/TenantDocuments.jsx'; // Import the TenantDocuments component
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -80,7 +81,7 @@ function AppRoutes() {
         <Route path="/login" element={<AnimatedRoute><Login /></AnimatedRoute>} />
         <Route path="/register" element={<AnimatedRoute><Register /></AnimatedRoute>} />
         <Route path="/success" element={<AnimatedRoute><Success /></AnimatedRoute>} />
-        <Route path="/cancel" element={<AnimatedRoute><Cancel /></AnimatedRoute>} /> {/* Add Cancel route */}
+        <Route path="/cancel" element={<AnimatedRoute><Cancel /></AnimatedRoute>} />
         <Route path="/reset-password" element={<AnimatedRoute><ResetPassword /></AnimatedRoute>} />
 
         {/* Landlord App pages (with landlord sidebar) */}
@@ -93,7 +94,6 @@ function AppRoutes() {
             </AnimatedRoute>
           </AppLayout>
         } />
-        {/* Add File Explorer route */}
         <Route path="/file-explorer" element={
           <AppLayout>
             <AnimatedRoute>
@@ -240,6 +240,15 @@ function AppRoutes() {
             </AnimatedRoute>
           </AppLayout>
         } />
+        <Route path="/tenant-documents" element={
+          <AppLayout>
+            <AnimatedRoute>
+              <ProtectedRoute allowedRoles={["tenant"]}>
+                <TenantDocuments />
+              </ProtectedRoute>
+            </AnimatedRoute>
+          </AppLayout>
+        } /> {/* Add TenantDocuments route */}
       </Routes>
     </AnimatePresence>
   );

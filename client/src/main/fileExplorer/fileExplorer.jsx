@@ -249,6 +249,15 @@ export default function FileExplorer() {
                 onChange={(e) => setCustomFileName(e.target.value)}
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Share with Tenant</label>
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={shareWithTenant}
+                onChange={(e) => setShareWithTenant(e.target.checked)}
+              />
+            </div>
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700">Files</label>
               <input
@@ -298,6 +307,9 @@ export default function FileExplorer() {
                   </p>
                   <p className="text-sm text-gray-500">
                     <strong>Category:</strong> {doc.category || "N/A"}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    <strong>Shared with Tenant:</strong> {doc.shared_with_tenant ? "Yes" : "No"}
                   </p>
                   <div className="flex justify-between mt-4">
                     <a
