@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./register.css";
 
 const ROLES = [
   { label: "Landlord", value: "landlord" },
@@ -17,19 +16,17 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-// Update register function to use new backend URL
 async function register(data) {
-  const res = await fetch('https://api.mypropertypal.com/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const res = await fetch("https://api.mypropertypal.com/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error((await res.json()).error || 'Registration failed');
+  if (!res.ok) throw new Error((await res.json()).error || "Registration failed");
   return res.json();
 }
 
 function isPasswordValid(password) {
-  // At least 8 chars, 1 uppercase, 1 number, 1 special char
   return /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/.test(password);
 }
 
@@ -41,13 +38,12 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState(ROLES[0].value);
-  const [propertyId, setPropertyId] = useState(""); // <-- use propertyId instead of landlordId
+  const [plan, setPlan] = useState("");
+  const [billingCycle, setBillingCycle] = useState("monthly");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [inviteMode, setInviteMode] = useState(false);
   const [inviteToken, setInviteToken] = useState("");
-  const [plan, setPlan] = useState("");
-  const [billingCycle, setBillingCycle] = useState("monthly");
   const navigate = useNavigate();
   const query = useQuery();
 
@@ -57,8 +53,8 @@ export default function Register() {
       setInviteMode(true);
       setInviteToken(invite);
       fetch(`https://api.mypropertypal.com/api/tenants/invite/${invite}`)
-        .then(res => res.ok ? res.json() : Promise.reject())
-        .then(data => {
+        .then((res) => (res.ok ? res.json() : Promise.reject()))
+        .then((data) => {
           setFirstName(data.first_name);
           setLastName(data.last_name);
           setEmail(data.email);
@@ -85,13 +81,14 @@ export default function Register() {
       return;
     }
     if (!isPasswordValid(password)) {
-      setError("Password must be at least 8 characters, include 1 uppercase letter, 1 number, and 1 special character.");
+      setError(
+        "Password must be at least 8 characters, include 1 uppercase letter, 1 number, and 1 special character."
+      );
       return;
     }
 
     try {
       if (inviteMode) {
-        // Tenant Invite Flow
         await register({
           password,
           invite: inviteToken,
@@ -99,8 +96,6 @@ export default function Register() {
         setSuccess("Registration successful! Redirecting to login...");
         setTimeout(() => navigate("/login"), 1500);
       } else {
-        // Landlord Registration and Stripe Checkout Flow
-        // Step 1: Register the account
         await register({
           email,
           password,
@@ -111,21 +106,22 @@ export default function Register() {
           billing_cycle: billingCycle,
         });
 
-        // Step 2: Create Stripe Checkout Session
-        const res = await fetch('https://api.mypropertypal.com/api/stripe/create-checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            plan_name: plan,
-            billing_cycle: billingCycle,
-          }),
-        });
+        const res = await fetch(
+          "https://api.mypropertypal.com/api/stripe/create-checkout-session",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email,
+              plan_name: plan,
+              billing_cycle: billingCycle,
+            }),
+          }
+        );
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to create checkout session");
 
-        // Redirect to Stripe Checkout
         window.location.href = data.url;
       }
     } catch (err) {
@@ -133,154 +129,230 @@ export default function Register() {
     }
   };
 
-  // Add this function for the main back button
   const handleMainBack = () => {
     window.location.href = "https://www.mypropertypal.com/";
   };
 
   return (
-    <div className="register-root">
-      <div className="register-popup">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-md relative">
+        {/* Adjusted button positioning */}
         <button
           type="button"
-          className="register-main-back"
-          style={{
-            position: "absolute",
-            left: 24,
-            top: 24,
-            background: "none",
-            border: "none",
-            color: "#2563eb",
-            fontWeight: 600,
-            fontSize: "1rem",
-            cursor: "pointer"
-          }}
+          className="absolute top-6 left-6 text-blue-600 font-semibold"
           onClick={handleMainBack}
         >
           ← Back to website
         </button>
-        <h2>Register</h2>
-        <form className="register-form" onSubmit={handleSubmit}>
+        <h2 className="text-2xl font-bold text-blue-700 mb-6 text-center mt-4">Register</h2>
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Form content remains unchanged */}
           {inviteMode ? (
-            // TENANT INVITE FLOW: Only show password and confirm password
             <>
-              <label>Set your password</label>
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-              />
-              <label>Confirm your password</label>
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                required
-              />
-              <button type="submit" disabled={!password || !confirmPassword}>Register</button>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Set your password</label>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-4 py-2"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Confirm your password</label>
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-4 py-2"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                disabled={!password || !confirmPassword}
+              >
+                Register
+              </button>
             </>
           ) : (
-            // LANDLORD FLOW: keep your existing multi-step logic here
             <>
+              {/* Steps remain unchanged */}
               {step === 1 && (
                 <>
-                  <label>Hi, what's your name?</label>
-                  <input
-                    type="text"
-                    placeholder="First Name"
-                    value={firstName}
-                    onChange={e => setFirstName(e.target.value)}
-                    required
-                  />
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChange={e => setLastName(e.target.value)}
-                    required
-                  />
-                  <button type="button" onClick={handleNext} disabled={!firstName || !lastName}>Next</button>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">First Name</label>
+                    <input
+                      type="text"
+                      placeholder="First Name"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-4 py-2"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                    <input
+                      type="text"
+                      placeholder="Last Name"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-4 py-2"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                    disabled={!firstName || !lastName}
+                  >
+                    Next
+                  </button>
                 </>
               )}
               {step === 2 && (
                 <>
-                  <label>Enter your email</label>
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    required
-                  />
-                  <button type="button" onClick={handleBack}>Back</button>
-                  <button type="button" onClick={handleNext} disabled={!email}>Next</button>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-4 py-2"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <button
+                      type="button"
+                      onClick={handleBack}
+                      className="bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md hover:bg-gray-400 transition"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                      disabled={!email}
+                    >
+                      Next
+                    </button>
+                  </div>
                 </>
               )}
               {step === 3 && (
                 <>
-                  <label>Select your plan</label>
-                  <select value={plan} onChange={e => setPlan(e.target.value)} required>
-                    <option value="">Select a plan</option>
-                    {PLANS.map(p => (
-                      <option key={p.value} value={p.value}>{p.label}</option>
-                    ))}
-                  </select>
-                  <div className="register-billing-toggle">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Select your plan</label>
+                    <select
+                      value={plan}
+                      onChange={(e) => setPlan(e.target.value)}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-4 py-2"
+                      required
+                    >
+                      <option value="">Select a plan</option>
+                      {PLANS.map((p) => (
+                        <option key={p.value} value={p.value}>
+                          {p.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex justify-between">
                     <button
                       type="button"
-                      className={billingCycle === "monthly" ? "active" : ""}
-                      onClick={() => setBillingCycle("monthly")}
+                      onClick={handleBack}
+                      className="bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md hover:bg-gray-400 transition"
                     >
-                      Monthly
+                      Back
                     </button>
                     <button
                       type="button"
-                      className={billingCycle === "yearly" ? "active" : ""}
-                      onClick={() => setBillingCycle("yearly")}
+                      onClick={handleNext}
+                      className="bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                      disabled={!plan}
                     >
-                      Yearly
+                      Next
                     </button>
                   </div>
-                  <button type="button" onClick={handleBack}>Back</button>
-                  <button type="button" onClick={handleNext} disabled={!plan}>Next</button>
                 </>
               )}
               {step === 4 && (
                 <>
-                  <label>Set your password</label>
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    required
-                  />
-                  <button type="button" onClick={handleBack}>Back</button>
-                  <button type="button" onClick={handleNext} disabled={!password}>Next</button>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Set your password</label>
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-4 py-2"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <button
+                      type="button"
+                      onClick={handleBack}
+                      className="bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md hover:bg-gray-400 transition"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                      disabled={!password}
+                    >
+                      Next
+                    </button>
+                  </div>
                 </>
               )}
               {step === 5 && (
                 <>
-                  <label>Confirm your password</label>
-                  <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChange={e => setConfirmPassword(e.target.value)}
-                    required
-                  />
-                  <button type="button" onClick={handleBack}>Back</button>
-                  <button type="submit" disabled={!confirmPassword}>Register</button>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Confirm your password</label>
+                    <input
+                      type="password"
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 px-4 py-2"
+                      required
+                    />
+                  </div>
+                  <div className="flex justify-between">
+                    <button
+                      type="button"
+                      onClick={handleBack}
+                      className="bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md hover:bg-gray-400 transition"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition"
+                      disabled={!confirmPassword}
+                    >
+                      Register
+                    </button>
+                  </div>
                 </>
               )}
             </>
           )}
         </form>
-        {error && <div className="register-error">{error}</div>}
-        {success && <div className="register-success">{success}</div>}
+        {error && <div className="text-red-500 text-sm mt-4">{error}</div>}
+        {success && <div className="text-green-500 text-sm mt-4">{success}</div>}
       </div>
     </div>
   );
