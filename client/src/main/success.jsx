@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Success() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (window.gtag) {
+      window.gtag('event', 'conversion', {
+        'send_to': 'AW-17437964703/myjyCJqPioAbEJ_ziPtA',
+        'value': 1.0,
+        'currency': 'GBP',
+        'transaction_id': ''
+      });
+    }
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 text-center">
