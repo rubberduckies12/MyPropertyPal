@@ -33,6 +33,22 @@ export default function App({ Component, pageProps }) {
         {/* Meta Pixel Code - Only load if cookies are accepted */}
         {cookiesAccepted === true && (
           <>
+            {/* Google tag (gtag.js) */}
+            <script
+              async
+              src="https://www.googletagmanager.com/gtag/js?id=AW-17437964703"
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', 'AW-17437964703');
+                `,
+              }}
+            />
+            {/* Meta Pixel Code */}
             <script
               dangerouslySetInnerHTML={{
                 __html: `
