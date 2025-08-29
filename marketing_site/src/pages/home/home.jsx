@@ -256,12 +256,12 @@ function TestimonialsSlider() {
     {
       name: "Sarah",
       title: "Landlord, Manchester",
-      quote: "Very simple. Highly recommend!",
+      quote: "Simple, saves me hours!",
     },
     {
       name: "Michael",
       title: "Landlord, London",
-      quote: "The best tool I have used. Amazing platform!",
+      quote: "It's like having a property manager in my pocket",
     },
   ];
 
@@ -298,7 +298,7 @@ function TestimonialsSlider() {
 
   return (
     <section className="w-full flex flex-col items-center py-20 px-2 sm:px-4 bg-gray-50">
-      <h2 className="text-2xl font-bold text-center mb-8">What our users say</h2>
+      <h2 className="text-2xl font-bold text-center mb-8">Landlords Who Switched Say It Feels Like Cheating</h2>
       <div className="w-full flex flex-col items-center">
         <div className="w-full flex flex-col items-center">
           <AnimatePresence mode="wait" initial={false}>
@@ -446,13 +446,13 @@ export default function Landing() {
             <section className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center px-4 md:px-6 py-10 md:py-24">
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
                     <h1 className="text-2xl md:text-5xl font-extrabold mb-4 md:mb-6 text-[#2563eb] leading-tight">
-                        The Only Way To<br className="hidden md:block" /> Manage Your Properties in 2025
+                        Manage All Your Properties In One App <br className="hidden md:block" />
                     </h1>
                     <h3 className="text-lg md:text-2xl font-semibold mb-2 text-[#2563eb] tracking-tight leading-snug" style={{ letterSpacing: "-0.5px" }}>
-                        Win back time with MyPropertyPal.
+                        Save 10+ Hours a Week, Guaranteed.
                     </h3>
                     <p className="text-base md:text-lg text-gray-700 mb-6 md:mb-8">
-                        Get your free landlord package now.
+                        For UK landlords who are sick of spreadsheets, missed rent, and chasing tenants.
                     </p>
                     {/* Updated button to open the form modal */}
                     <button
@@ -577,7 +577,7 @@ export default function Landing() {
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
-                        Try Free Now
+                        Claim My Free Trial
                     </button>
                 </div>
                 <div className="flex justify-center">
@@ -595,16 +595,16 @@ export default function Landing() {
             {/* Everything Your Tenants Need, In One Place */}
             <section className="bg-[#2563eb] py-20 px-4 sm:px-6 text-white text-center">
                 <h2 className="text-3xl font-bold mb-4">
-                    The Only Property Platform Built For Hands-On, Individual Landlords
+                    Everything You Need
                 </h2>
                 <p className="max-w-2xl mx-auto text-lg">
-                    Juggling rent, chasing tenants, tracking expenses?
+                    Nothing You Don't
                     <br /><br />We are here to make it simple.
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mt-6 mb-2">
                     <li className="flex flex-col items-center text-white">
                         <FaPoundSign size={32} className="mb-2" />
-                        <span className="text-base font-medium text-center">Track rent, expenses & tax in one place</span>
+                        <span className="text-base font-medium text-center">Track rent, expenses & tax automatically (no awkward chases)</span>
                     </li>
                     <li className="flex flex-col items-center text-white">
                         <IoReceiptOutline size={32} className="mb-2" />
@@ -649,7 +649,7 @@ export default function Landing() {
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
-                        Try Free Now
+                        Claim My Free Trial
                     </button>
                 </div>
             </section>
@@ -668,7 +668,7 @@ export default function Landing() {
                         className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 hover:bg-[#2563eb] hover:text-white transition w-full md:w-auto text-center"
                         onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
                     >
-                       Try Free Now
+                       Claim My Free Trial
                     </button>
                 </div>
                 <div className="flex justify-center order-2 md:order-1">
@@ -841,7 +841,7 @@ export default function Landing() {
           className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition"
           onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
         >
-          Try Free Now
+          Claim My Free Trial
         </button>
       </div>
     ))}
@@ -877,7 +877,8 @@ export default function Landing() {
                     Built for landlords. Backed by a 30-day money-back guarantee.
                 </h2>
                 <p className="max-w-xl mx-auto text-lg">
-                    Try It And Love It. Or Your Money Back. Guaranteed.
+                    We’re so confident MyPropertyPal will simplify your life, we back it with a 30-day 100% money-back guarantee.
+                    If it doesn’t save you time, we’ll refund you. No hassle.
                 </p>
             </section>
 
