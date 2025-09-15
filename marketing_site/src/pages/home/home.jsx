@@ -365,19 +365,17 @@ export default function Landing() {
     email: "",
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [showPromo, setShowPromo] = useState(true); // Promo banner state
 
-  const discount = 0.15;
-  const promotion = 0.20; // 20% off
+  const discount = 0.15; // Only yearly discount remains
 
   function getPlanPrice(plan) {
+    // Only apply yearly discount, no 20% promo
     const base = billing === "yearly"
       ? plan.price * 12 * (1 - discount)
       : plan.price;
-    const discounted = base * (1 - promotion);
     return {
       original: base,
-      discounted,
+      discounted: base,
     };
   }
 
@@ -431,24 +429,7 @@ export default function Landing() {
   <meta name="twitter:description" content="Manage your properties effortlessly with MyPropertyPal. Track rent, expenses, compliance, and more in one place." />
   <meta name="twitter:image" content="/dashboard.png" />
   <link rel="icon" href="/LogoWB.png" />
-</Head>
-            {/* 20% Off Promo Banner */}
-            {showPromo && (
-  <div className="fixed top-0 left-0 w-full z-50 flex justify-center">
-    <div className="flex items-center justify-between bg-[#2563eb] text-white px-6 py-3 w-full md:w-auto rounded-b-xl shadow-lg font-semibold text-center text-base md:text-lg">
-      <span className="w-full text-white">
-        <span className="font-bold text-white">20% OFF FOR LIFE</span> – Sign up before 13/09/2025 and lock in your discount forever. <span className="hidden md:inline">No code needed. Offer ends soon!</span>
-      </span>
-      <button
-        className="ml-4"
-        onClick={() => setShowPromo(false)}
-        aria-label="Close"
-      >
-        <XMarkIcon className="h-6 w-6 text-white hover:text-gray-200" />
-      </button>
-    </div>
-  </div>
-)}
+</Head> 
 
             {/* Header always visible */}
             <div className="hidden md:block">
@@ -771,111 +752,101 @@ export default function Landing() {
 
             {/* Pricing Table */}
             <section className="w-full max-w-7xl mx-auto py-24 px-4 sm:px-6">
-  <h2 className="text-3xl font-bold text-center mb-4">
-    Plans That Pay For Themselves
-  </h2>
-  <p className="text-center text-gray-700 mb-12">
-    <span className="font-bold text-[#2563eb]">Limited Time:</span> 20% off for life for all new users!
-    <br />
-    Managing just one property with MyPropertyPal saves more than the monthly fee. Everything after that is profit.
-  </p>
-  <div className="flex justify-center mb-8 w-full max-w-xs mx-auto">
-    <button
-      className={`flex-1 px-6 py-2 rounded-l-lg border border-[#2563eb] font-semibold transition text-center ${
-        billing === "monthly"
-          ? "bg-[#2563eb] text-white"
-          : "bg-white text-[#2563eb]"
-      }`}
-      onClick={() => setBilling("monthly")}
-      style={{ minWidth: 0 }}
-    >
-      Monthly
-    </button>
-    <button
-      className={`flex-1 px-6 py-2 rounded-r-lg border border-[#2563eb] font-semibold transition text-center ${
-        billing === "yearly"
-          ? "bg-[#2563eb] text-white"
-          : "bg-white text-[#2563eb]"
-      }`}
-      onClick={() => setBilling("yearly")}
-      style={{ minWidth: 0 }}
-    >
-      Yearly
-    </button>
-  </div>
-  <div className="flex flex-col md:flex-row gap-8 justify-center">
-    {plans.map((plan, i) => {
-      const { original, discounted } = getPlanPrice(plan);
-      return (
-        <div
-          key={plan.name}
-          className={`flex-1 rounded-2xl border ${
-            plan.featured
-              ? "border-[#2563eb] bg-blue-50 shadow-lg scale-105"
-              : "border-gray-200 bg-white shadow"
-          } p-8 flex flex-col items-start min-w-0 relative`}
-        >
-          <span className="absolute top-4 right-4 bg-[#2563eb] text-white font-bold px-3 py-1 rounded-full text-xs shadow">
-            20% OFF FOR LIFE
-          </span>
-          <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-          <div className="flex items-end gap-2 mb-1">
-            <span className="text-3xl font-extrabold text-[#2563eb]">
-              £{discounted.toFixed(0)}
-            </span>
-            <span className="text-gray-400 line-through text-lg">
-              £{original.toFixed(0)}
-            </span>
-            <span className="text-gray-600 font-medium">
-              {getPlanPeriod()}
-            </span>
-          </div>
-          <div className="text-[#2563eb] font-semibold mb-4 text-sm">
-            30 Day Money Back Guarantee
-          </div>
-          <div className="text-gray-700 font-medium mb-4 text-sm">
-            Includes a <span className="font-bold">7-day free trial</span>.
-          </div>
-          <ul className="mb-8 space-y-3 w-full">
-            {plan.features.map((f, idx) => (
-              <li
-                key={idx}
-                className="flex items-center gap-2 text-gray-700"
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  fill="none"
-                  stroke="#2563eb"
-                  strokeWidth="2.5"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    d="M5 10.5l4 4 6-8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <span>{f}</span>
-              </li>
-            ))}
-          </ul>
+        <h2 className="text-3xl font-bold text-center mb-4">
+          Plans That Pay For Themselves
+        </h2>
+        <p className="text-center text-gray-700 mb-12">
+          Managing just one property with MyPropertyPal saves more than the monthly fee. Everything after that is profit.
+        </p>
+        <div className="flex justify-center mb-8 w-full max-w-xs mx-auto">
           <button
-            className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition"
-            onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
+            className={`flex-1 px-6 py-2 rounded-l-lg border border-[#2563eb] font-semibold transition text-center ${
+              billing === "monthly"
+                ? "bg-[#2563eb] text-white"
+                : "bg-white text-[#2563eb]"
+            }`}
+            onClick={() => setBilling("monthly")}
+            style={{ minWidth: 0 }}
           >
-            Claim My Free Trial
+            Monthly
+          </button>
+          <button
+            className={`flex-1 px-6 py-2 rounded-r-lg border border-[#2563eb] font-semibold transition text-center ${
+              billing === "yearly"
+                ? "bg-[#2563eb] text-white"
+                : "bg-white text-[#2563eb]"
+            }`}
+            onClick={() => setBilling("yearly")}
+            style={{ minWidth: 0 }}
+          >
+            Yearly
           </button>
         </div>
-      );
-    })}
-  </div>
-  <div className="text-center mt-8 text-[#2563eb] font-bold text-lg">
-          Hurry! 20% off for life ends in 7 days. Don’t miss out.
+        <div className="flex flex-col md:flex-row gap-8 justify-center">
+          {plans.map((plan, i) => {
+            const { original } = getPlanPrice(plan);
+            return (
+              <div
+                key={plan.name}
+                className={`flex-1 rounded-2xl border ${
+                  plan.featured
+                    ? "border-[#2563eb] bg-blue-50 shadow-lg scale-105"
+                    : "border-gray-200 bg-white shadow"
+                } p-8 flex flex-col items-start min-w-0 relative`}
+              >
+                {/* Removed discount badge */}
+                <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
+                <div className="flex items-end gap-2 mb-1">
+                  <span className="text-3xl font-extrabold text-[#2563eb]">
+                    £{original.toFixed(0)}
+                  </span>
+                  <span className="text-gray-600 font-medium">
+                    {getPlanPeriod()}
+                  </span>
+                </div>
+                <div className="text-[#2563eb] font-semibold mb-4 text-sm">
+                  30 Day Money Back Guarantee
+                </div>
+                <div className="text-gray-700 font-medium mb-4 text-sm">
+                  Includes a <span className="font-bold">7-day free trial</span>.
+                </div>
+                <ul className="mb-8 space-y-3 w-full">
+                  {plan.features.map((f, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-center gap-2 text-gray-700"
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        fill="none"
+                        stroke="#2563eb"
+                        strokeWidth="2.5"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          d="M5 10.5l4 4 6-8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  className="border-2 border-[#2563eb] text-[#2563eb] font-semibold rounded-lg px-8 py-3 w-full hover:bg-[#2563eb] hover:text-white transition"
+                  onClick={() => window.location.href = "https://app.mypropertypal.com/register"}
+                >
+                  Claim My Free Trial
+                </button>
+              </div>
+            );
+          })}
         </div>
-</section>
+      </section>
 
-            {/* Your data and payments are safe section */}
+      {/* Your data and payments are safe section */}
             <section className="w-full max-w-4xl mx-auto py-10 px-4 sm:px-6 flex flex-col items-center">
                 <h3 className="text-lg font-semibold mb-4 text-center">Your data and payments are safe</h3>
                 <div className="flex flex-wrap gap-6 justify-center items-center">

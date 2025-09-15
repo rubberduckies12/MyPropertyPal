@@ -29,9 +29,6 @@ router.post('/create-checkout-session', async (req, res) => {
       subscription_data: {
         trial_period_days: 7, // <-- Add free trial period here
       },
-      discounts: [
-        { coupon: 'ph4Fdo6l' } // <-- Automatically apply this coupon
-      ],
       success_url: 'https://app.mypropertypal.com/success?session_id={CHECKOUT_SESSION_ID}', // Updated URL
       cancel_url: 'https://app.mypropertypal.com/cancel', // Updated URL
     });
